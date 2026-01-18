@@ -6,10 +6,10 @@ html, body {
 }
 
 #viewer {
-  position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  position: relative;
   touch-action: none;
 }
 
@@ -17,7 +17,7 @@ html, body {
   position: absolute;
   top: 50%;
   left: 0;
-  height: 80vh;
+  height: 80vh;            /* ここで大きさ調整 */
   transform: translateY(-50%);
   transition: transform 0.25s ease;
   user-select: none;
