@@ -4,13 +4,12 @@ let startX = 0;
 let offsetX = 0;
 let dragging = false;
 let maxOffset = 0; // 左端
-let minOffset = 0; // 右端（後で計算）
+let minOffset = 0; // 右端（負の値）
 
-// 右端の計算
 function updateBounds() {
   const containerWidth = container.scrollWidth;
   const viewerWidth = container.parentElement.clientWidth;
-  minOffset = viewerWidth - containerWidth - 20; // 少し余白
+  minOffset = viewerWidth - containerWidth - 20; // 右端少し余白
 }
 
 window.addEventListener("resize", updateBounds);
