@@ -34,16 +34,16 @@ html, body {
   left: 50%;
   transform: translate(-50%, -50%);
   box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-  transition: transform 0.4s ease, z-index 0s linear 0.4s;
+  transition: transform 0.4s ease;
 }
 
 .left-page {
-  transform: translate(-52%, -50%) scale(0.95);
+  transform: translate(-52%, -50%) scale(0.95); /* ほとんど見切れ */
   z-index: 1;
 }
 
 .right-page {
-  z-index: 2;
+  z-index: 2; /* 常に前面固定 */
 }
 </style>
 </head>
@@ -55,10 +55,6 @@ html, body {
 </div>
 
 <script>
-const leftPage = document.getElementById('leftPage');
-const rightPage = document.getElementById('rightPage');
-
-// 画像を設定
 const pages = [
   'https://picsum.photos/300/400?random=1',
   'https://picsum.photos/300/400?random=2',
@@ -66,34 +62,41 @@ const pages = [
   'https://picsum.photos/300/400?random=4'
 ];
 
+const leftPage = document.getElementById('leftPage');
+const rightPage = document.getElementById('rightPage');
+
 let currentIndex = 0;
+
+// 初期画像設定
 leftPage.style.backgroundImage = `url("${pages[currentIndex]}")`;
-rightPage.style.backgroundImage = `url("${pages[(currentIndex+1)%pages.length]}")`;
+rightPage.style.backgroundImage = `url("${pages[(currentIndex + 1) % pages.length]}")`;
 
 let isDragging = false;
 let startX = 0;
 const dragThreshold = 50;
 
-// 左ページ浮き上がりアニメーション
+// 左ページ浮き上がり
 function animateLeftPageForward() {
-  leftPage.style.transition = 'transform 0.4s ease, z-index 0s';
+  leftPage.style.transition = 'transform 0.4s ease';
   leftPage.style.zIndex = 3; // 前面に浮かせる
-  leftPage.style.transform = 'translate(-50%, -50%) rotateY(0deg) scale(1.05)';
+  leftPage.style.transform = 'translate(-50%, -50%) scale(1.05) rotateY(0deg)';
 
-  // アニメーション終了後に戻す
   setTimeout(() => {
-    currentIndex = (currentIndex - 1 + pages.length) % pages.length;
-    leftPage.style.transition = 'transform 0.4s ease, z-index 0s linear 0s';
+    // 左ページを元の見切れ位置に戻す
+    leftPage.style.transition = 'transform 0.4s ease';
     leftPage.style.transform = 'translate(-52%, -50%) scale(0.95)';
     leftPage.style.zIndex = 1;
 
-    // 右ページは次の画像に切り替え
-    rightPage.style.backgroundImage = `url("${pages[(currentIndex+1)%pages.length]}")`;
+    // インデックス更新
+    currentIndex = (currentIndex - 1 + pages.length) % pages.length;
+
+    // 背景を更新
     leftPage.style.backgroundImage = `url("${pages[currentIndex]}")`;
+    rightPage.style.backgroundImage = `url("${pages[(currentIndex + 1) % pages.length]}")`;
   }, 400);
 }
 
-// マウス / タッチ操作
+// マウス操作
 rightPage.addEventListener('mousedown', e => {
   isDragging = true;
   startX = e.clientX;
@@ -112,6 +115,7 @@ window.addEventListener('mouseup', e => {
   }
 });
 
+// タッチ操作
 rightPage.addEventListener('touchstart', e => {
   isDragging = true;
   startX = e.touches[0].clientX;
