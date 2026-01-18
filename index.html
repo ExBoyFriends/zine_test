@@ -325,4 +325,234 @@ body {
     }
 }
 
+// 画像ギャラリークラス
+class BookGallery {
+    constructor() {
+        // デモ用の画像URL（実際の使用時は置き換えてください）
+        this.images = [
+            'https://picsum.photos/400/500?random=1',
+            'https://picsum.photos/400/500?random=2',
+            'https://picsum.photos/400/500?random=3',
+            'https://picsum.photos/400/500?random=4',
+            'https://picsum.photos/400/500?random=5',
+            'https://picsum.photos/400/500?random=6'
+        ];
+        
+        this.currentIndex = 0;
+        this.isAnimating = false;
+        this.isForward = true;
+        
+        // DOM要素の取得
+        this.leftPage = document.getElementById('leftPage');
+        this.rightPage = document.getElementById('rightPage');
+        this.leftImage = document.getElementById('leftImage');
+        this.rightImage = document.getElementById('rightImage');
+        this.prevButton = document.getElementById('prevButton');
+        this.nextButton = document.getElementById('nextButton');
+        this.pageNumber = document.getElementById('pageNumber');
+        this.flipOverlay = document.getElementById('flipOverlay');
+        
+        this.init();
+    }
+    
+    init() {
+        this.updateImages();
+        this.bindEvents();
+        this.updateButtons();
+        this.preloadImages();
+    }
+    
+    // 画像のプリロード
+    preloadImages() {
+        const preloader = document.getElementById('imagePreloader');
+        this.images.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            preloader.appendChild(img);
+        });
+    }
+    
+    // イベントのバインド
+    bindEvents() {
+        this.prevButton.addEventListener('click', () => this.previousPage());
+        this.nextButton.addEventListener('click', () => this.nextPage());
+        
+        // キーボード操作
+        document.addEventListener('keydown', (e) => {
+            if (this.isAnimating) return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                    this.previousPage();
+                    break;
+                case 'ArrowRight':
+                case 'ArrowDown':
+                case ' ':
+                    this.nextPage();
+                    break;
+            }
+        });
+        
+        // タッチ操作
+        let startX = 0;
+        let startY = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            if (this.isAnimating) return;
+            
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+            
+            // スワイプの最小距離
+            const minSwipeDistance = 50;
+            
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > minSwipeDistance) {
+                if (diffX > 0) {
+                    // 左スワイプ - 次のページ
+                    this.nextPage();
+                } else {
+                    // 右スワイプ - 前のページ
+                    this.previousPage();
+                }
+            }
+        });
+        
+        // マウスホイール操作
+        document.addEventListener('wheel', (e) => {
+            if (this.isAnimating) return;
+            
+            e.preventDefault();
+            if (e.deltaY > 0) {
+                this.nextPage();
+            } else {
+                this.previousPage();
+            }
+        });
+    }
+    
+    // 次のページへ
+    nextPage() {
+        if (this.isAnimating || this.currentIndex >= this.images.length - 2) return;
+        
+        this.isForward = true;
+        this.currentIndex += 2;
+        this.performPageFlip();
+    }
+    
+    // 前のページへ
+    previousPage() {
+        if (this.isAnimating || this.currentIndex <= 0) return;
+        
+        this.isForward = false;
+        this.currentIndex -= 2;
+        this.performPageFlip();
+    }
+    
+    // ページめくりアニメーション
+    performPageFlip() {
+        this.isAnimating = true;
+        this.updateButtons();
+        
+        if (this.isForward) {
+            // 右ページをめくる
+            this.rightPage.classList.add('page-flipping-right');
+            
+            setTimeout(() => {
+                this.updateImages();
+                this.rightPage.classList.remove('page-flipping-right');
+                this.isAnimating = false;
+                this.updateButtons();
+            }, 800);
+        } else {
+            // 左ページをめくる
+            this.leftPage.classList.add('page-flipping-left');
+            
+            setTimeout(() => {
+                this.updateImages();
+                this.leftPage.classList.remove('page-flipping-left');
+                this.isAnimating = false;
+                this.updateButtons();
+            }, 800);
+        }
+    }
+    
+    // 画像の更新
+    updateImages() {
+        const leftIndex = this.currentIndex;
+        const rightIndex = this.currentIndex + 1;
+        
+        // 左ページの画像
+        if (leftIndex < this.images.length) {
+            this.leftImage.src = this.images[leftIndex];
+            this.leftPage.style.display = 'block';
+        } else {
+            this.leftPage.style.display = 'none';
+        }
+        
+        // 右ページの画像
+        if (rightIndex < this.images.length) {
+            this.rightImage.src = this.images[rightIndex];
+            this.rightPage.style.display = 'block';
+        } else {
+            this.rightPage.style.display = 'none';
+        }
+        
+        // ページ番号の更新
+        this.updatePageNumber();
+    }
+    
+    // ページ番号の更新
+    updatePageNumber() {
+        const totalPages = Math.ceil(this.images.length / 2);
+        const currentPage = Math.floor(this.currentIndex / 2) + 1;
+        this.pageNumber.textContent = `${currentPage} / ${totalPages}`;
+    }
+    
+    // ボタンの状態更新
+    updateButtons() {
+        this.prevButton.disabled = this.currentIndex <= 0;
+        this.nextButton.disabled = this.currentIndex >= this.images.length - 2;
+    }
+    
+    // 画像の追加
+    addImage(src) {
+        this.images.push(src);
+        this.updateButtons();
+        this.updatePageNumber();
+    }
+    
+    // 画像の設定（外部から呼び出し可能）
+    setImages(imageArray) {
+        this.images = imageArray;
+        this.currentIndex = 0;
+        this.updateImages();
+        this.updateButtons();
+        this.preloadImages();
+    }
+}
+
+// ページ読み込み後に初期化
+document.addEventListener('DOMContentLoaded', () => {
+    const gallery = new BookGallery();
+    
+    // グローバルにアクセス可能にする（カスタマイズ用）
+    window.bookGallery = gallery;
+    
+    console.log('📖 本のページめくり画像ギャラリーが初期化されました');
+    console.log('使い方:');
+    console.log('- 矢印ボタンまたはキーボードの左右矢印でページめくり');
+    console.log('- スワイプ操作にも対応（スマートフォン・タブレット）');
+    console.log('- マウスホイールでも操作可能');
+    console.log('');
+    console.log('カスタマイズ例:');
+    console.log('window.bookGallery.setImages(["image1.jpg", "image2.jpg"])');
+});
 
