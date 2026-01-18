@@ -82,15 +82,19 @@ function completeDrag() {
 }
 
 function reverseDrag() {
-  // 右ドラッグ → 前ページ
-  page.style.transition = 'transform 0.4s ease';
+  // まず currentIndex を戻す
+  currentIndex = (currentIndex - 1 + pages.length) % pages.length;
+  page.style.backgroundImage = `url("${pages[currentIndex]}")`;
+
+  // 最初に左端で右回転した状態にする
+  page.style.transition = 'none';
   page.style.transform = `rotateY(${maxRotation}deg) scale(${maxScale})`;
-  setTimeout(() => {
-    currentIndex = (currentIndex - 1 + pages.length) % pages.length;
-    page.style.transition = 'none';
+
+  // 少し待ってから自然に初期位置に戻す
+  requestAnimationFrame(() => {
+    page.style.transition = 'transform 0.4s ease';
     page.style.transform = 'rotateY(0deg) scale(1)';
-    page.style.backgroundImage = `url("${pages[currentIndex]}")`;
-  }, 400);
+  });
 }
 
 function resetDrag() {
