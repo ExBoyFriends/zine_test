@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZINE Image Viewer</title>
+<title>ZINE Viewer</title>
 
 <style>
 body {
@@ -20,7 +20,7 @@ body {
   touch-action: none;
 }
 
-/* 大きな一枚絵 */
+/* 作品画像 */
 #image {
   position: absolute;
   top: 50%;
@@ -30,23 +30,12 @@ body {
   -webkit-user-drag: none;
   will-change: transform;
 }
-
-/* 横向きのときは全体が必ず収まる */
-.landscape #image {
-  position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 100%;
-  max-height: 100%;
-}
 </style>
 </head>
 
 <body>
 
 <div id="viewer">
-  <!-- ここを自分の作品画像に差し替えて -->
   <img id="image" src="https://picsum.photos/2000/1200">
 </div>
 
@@ -55,87 +44,91 @@ const viewer = document.getElementById("viewer");
 const img = document.getElementById("image");
 
 let startX = 0;
-let currentX = 0;
-let offsetX = 0;   // 今の画像位置（固定される）
+let offsetX = 0;
 let dragging = false;
+
+let imgDisplayWidth = 0;  // 画面上での画像幅（基準）
+let maxOffset = 0;        // 右端までの移動量
 
 function isPortrait() {
   return window.innerHeight > window.innerWidth;
 }
 
-function updateLayout() {
+function setupLayout() {
+  const vw = viewer.clientWidth;
+  const vh = viewer.clientHeight;
+  const iw = img.naturalWidth;
+  const ih = img.naturalHeight;
+
+  if (!iw || !ih) return;
+
   if (isPortrait()) {
-    document.body.classList.remove("landscape");
+    // 縦型：横型での表示幅 × 2 を想定
+    const scale = vh / ih;                 // 高さ基準
+    imgDisplayWidth = iw * scale;
 
-    // 縦型では画像は「実寸」で置く
-    img.style.maxWidth = "none";
-    img.style.maxHeight = "none";
+    img.style.width = imgDisplayWidth + "px";
+    img.style.height = "auto";
 
-    // 初期状態：左半分が画面に来る
-    // = 左端をぴったり合わせる
-    if (offsetX === null) offsetX = 0;
+    offsetX = 0; // 左半分から開始
+    maxOffset = vw - imgDisplayWidth; // 右半分の限界
     applyTransform(offsetX);
 
   } else {
-    document.body.classList.add("landscape");
+    // 横型：全体が必ず収まる（contain）
+    const scale = Math.min(vw / iw, vh / ih);
+    const w = iw * scale;
+    const h = ih * scale;
 
-    // 横型は全体をフィット表示
+    img.style.width = w + "px";
+    img.style.height = h + "px";
+
+    img.style.left = "50%";
+    img.style.top = "50%";
+    img.style.transform = "translate(-50%, -50%)";
+
     offsetX = 0;
-    img.style.transform = "";
+    maxOffset = 0;
   }
 }
 
 function applyTransform(x) {
+  // 左端ストッパー：0
+  // 右端ストッパー：maxOffset（マイナス値）
+  x = Math.max(maxOffset, Math.min(0, x));
+  img.style.left = "0";
+  img.style.top = "50%";
   img.style.transform = `translate(${x}px, -50%)`;
 }
 
-// 画像サイズと画面サイズからドラッグ範囲を計算
-function clampOffset(x) {
-  const imgWidth = img.naturalWidth;
-  const viewWidth = viewer.clientWidth;
-
-  // 左端ストッパー：0
-  const maxX = 0;
-  // 右端ストッパー：画像の右端まで見える位置
-  const minX = viewWidth - imgWidth;
-
-  return Math.max(minX, Math.min(maxX, x));
-}
-
-/* 向き変更対応 */
-window.addEventListener("resize", updateLayout);
 img.onload = () => {
-  offsetX = 0;
-  updateLayout();
+  setupLayout();
 };
 
-/* ===== タッチ操作（縦型のみ有効）===== */
+window.addEventListener("resize", setupLayout);
+
+/* ===== タッチ操作（縦型のみ） ===== */
 
 viewer.addEventListener("touchstart", e => {
   if (!isPortrait()) return;
   dragging = true;
   startX = e.touches[0].clientX;
-  currentX = startX;
 });
 
 viewer.addEventListener("touchmove", e => {
   if (!dragging || !isPortrait()) return;
   e.preventDefault();
 
-  currentX = e.touches[0].clientX;
-  const dx = currentX - startX;
-  const nextX = clampOffset(offsetX + dx);
-
-  applyTransform(nextX);
+  const dx = e.touches[0].clientX - startX;
+  applyTransform(offsetX + dx);
 });
 
-viewer.addEventListener("touchend", () => {
+viewer.addEventListener("touchend", e => {
   if (!isPortrait()) return;
   dragging = false;
 
-  // 今の位置をそのまま固定する（戻らない）
-  const transform = img.style.transform;
-  const match = /translate\(([-0-9.]+)px/.exec(transform);
+  // 現在位置を固定
+  const match = /translate\(([-0-9.]+)px/.exec(img.style.transform);
   if (match) {
     offsetX = parseFloat(match[1]);
   }
