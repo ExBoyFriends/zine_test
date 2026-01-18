@@ -3,109 +3,96 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>左右ループページカルーセル</title>
+<title>ページめくりカルーセル</title>
 <style>
-  body {
-    margin: 0;
-    background: #111;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
+body {
+  margin: 0;
+  background: #111;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
 
-  .carousel-container {
-    position: relative;
-    width: 90vw;
-    max-width: 500px;
-    height: 400px;
-    perspective: 1200px;
-  }
+.carousel-container {
+  position: relative;
+  width: 90vw;
+  max-width: 500px;
+  height: 400px;
+  perspective: 1200px;
+}
 
-  .card {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-    background-size: cover;
-    background-position: center;
-    transform-origin: left center;
-    transition: transform 0.3s ease, z-index 0s 0.3s;
-  }
+.card {
+  position: absolute;
+  width: 90%;
+  height: 100%;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  left: 0;
+  top: 0;
+  transition: transform 0.3s ease, left 0.3s ease, z-index 0s 0.3s;
+  cursor: grab;
+}
 </style>
 </head>
 <body>
 
 <div class="carousel-container">
   <div class="card" style="background-image:url('image/king.of.spades.png'); z-index:4;"></div>
-  <div class="card" style="background-image:url('image/king.of.spades_mirror.png'); z-index:3;"></div>
-  <div class="card" style="background-image:url('image/queen.of.club.png'); z-index:2;"></div>
-  <div class="card" style="background-image:url('image/queen.of.club_mirror.png'); z-index:1;"></div>
+  <div class="card" style="background-image:url('image/king.of.spades_mirror.png'); z-index:3; left:50px;"></div>
+  <div class="card" style="background-image:url('image/queen.of.clubs.png'); z-index:2; left:100px;"></div>
+  <div class="card" style="background-image:url('image/queen.of.clubs_mirror.png'); z-index:1; left:150px;"></div>
 </div>
 
 <script>
 const cards = Array.from(document.querySelectorAll('.card'));
-let current = 0; // 前面カード
+let current = 0;
 let isDragging = false;
 let startX = 0;
-let currentRotation = 0;
+let dragThreshold = 50;
 const container = document.querySelector('.carousel-container');
 
-function setCardTransform(card, rotation, origin='left') {
-  card.style.transformOrigin = `${origin} center`;
-  card.style.transform = `rotateY(${rotation}deg)`;
+function bringForward(index) {
+  cards[index].style.zIndex = 4;
 }
 
 function rotateNext() {
   const currentCard = cards[current];
   const nextIndex = (current + 1) % cards.length;
   const nextCard = cards[nextIndex];
-  const behindIndex = (current + 2) % cards.length;
-  const behindCard = cards[behindIndex];
-
-  // 現在カードを折りたたむ（裏へ）
-  currentCard.style.transition = 'transform 0.3s ease, z-index 0s 0.3s';
-  setCardTransform(currentCard, -180, 'left');
-  setTimeout(() => {
-    currentCard.style.zIndex = 1;
-    setCardTransform(currentCard, 0, 'left');
-  }, 300);
 
   // 次カードを前面に
-  nextCard.style.zIndex = 4;
+  bringForward(nextIndex);
 
-  // 裏カードを初期位置待機
-  behindCard.style.zIndex = 2;
+  // 現在カードを裏に少し左にずらして待機
+  currentCard.style.left = '-50px';
+  currentCard.style.zIndex = 1;
+
+  // 次カードを初期位置に
+  nextCard.style.left = '0px';
 
   current = nextIndex;
 }
 
 function rotatePrev() {
-  const currentCard = cards[current];
   const prevIndex = (current - 1 + cards.length) % cards.length;
   const prevCard = cards[prevIndex];
-  const behindIndex = (current - 2 + cards.length) % cards.length;
-  const behindCard = cards[behindIndex];
+  const currentCard = cards[current];
 
-  // 左側カードを折りたたみ→前面に戻す
-  prevCard.style.transition = 'transform 0.3s ease, z-index 0s 0.3s';
-  setCardTransform(prevCard, 180, 'right');
-  setTimeout(() => {
-    prevCard.style.zIndex = 4;
-    setCardTransform(prevCard, 0, 'left');
-  }, 300);
+  // 前面に戻す
+  bringForward(prevIndex);
+  prevCard.style.left = '0px';
 
-  // 現在カードを裏に
+  // 現在カードを少し右にずらして待機
+  currentCard.style.left = '50px';
   currentCard.style.zIndex = 1;
-
-  // 裏カードを初期位置待機
-  behindCard.style.zIndex = 2;
 
   current = prevIndex;
 }
 
-// ドラッグ処理
+// ドラッグ
 container.addEventListener('mousedown', e => {
   isDragging = true;
   startX = e.clientX;
@@ -113,41 +100,15 @@ container.addEventListener('mousedown', e => {
 
 container.addEventListener('mousemove', e => {
   if (!isDragging) return;
-  const dx = e.clientX - startX;
-
-  const nextIndex = (current + 1) % cards.length;
-  const prevIndex = (current - 1 + cards.length) % cards.length;
-
-  if (dx < 0) {
-    // 右にページめくり
-    let rotation = Math.min(Math.abs(dx)/2, 180);
-    setCardTransform(cards[nextIndex], rotation, 'left');
-    cards[nextIndex].style.zIndex = 5;
-    currentRotation = rotation;
-  } else {
-    // 左にページめくり
-    let rotation = Math.min(dx/2, 180);
-    setCardTransform(cards[prevIndex], -rotation, 'right');
-    cards[prevIndex].style.zIndex = 5;
-    currentRotation = rotation;
-  }
+  // 今はシンプル: リアルタイム回転は未実装
 });
 
 container.addEventListener('mouseup', e => {
   if (!isDragging) return;
   isDragging = false;
   const dx = e.clientX - startX;
-  if (dx < -50) rotateNext();
-  else if (dx > 50) rotatePrev();
-  else {
-    // 少し動かしただけ → 元に戻す
-    const nextIndex = (current + 1) % cards.length;
-    const prevIndex = (current - 1 + cards.length) % cards.length;
-    setCardTransform(cards[nextIndex], 0, 'left');
-    setCardTransform(cards[prevIndex], 0, 'left');
-    cards[nextIndex].style.zIndex = 3;
-    cards[prevIndex].style.zIndex = 2;
-  }
+  if (dx < -dragThreshold) rotateNext();
+  else if (dx > dragThreshold) rotatePrev();
 });
 
 container.addEventListener('mouseleave', () => { if(isDragging) container.dispatchEvent(new Event('mouseup')); });
@@ -158,31 +119,14 @@ container.addEventListener('touchstart', e => {
   startX = e.touches[0].clientX;
 });
 
-container.addEventListener('touchmove', e => {
-  if (!isDragging) return;
-  const dx = e.touches[0].clientX - startX;
-  const nextIndex = (current + 1) % cards.length;
-  const prevIndex = (current - 1 + cards.length) % cards.length;
-
-  if (dx < 0) {
-    let rotation = Math.min(Math.abs(dx)/2, 180);
-    setCardTransform(cards[nextIndex], rotation, 'left');
-    cards[nextIndex].style.zIndex = 5;
-    currentRotation = rotation;
-  } else {
-    let rotation = Math.min(dx/2, 180);
-    setCardTransform(cards[prevIndex], -rotation, 'right');
-    cards[prevIndex].style.zIndex = 5;
-    currentRotation = rotation;
-  }
-});
-
 container.addEventListener('touchend', e => {
   if (!isDragging) return;
   isDragging = false;
   const dx = e.changedTouches[0].clientX - startX;
-  if (dx < -50) rotateNext();
-  else if (dx > 50) rotatePrev();
-  else {
-    const nextIndex = (current + 1) % cards.length;
-    const prevIndex
+  if (dx < -dragThreshold) rotateNext();
+  else if (dx > dragThreshold) rotatePrev();
+});
+</script>
+
+</body>
+</html>
