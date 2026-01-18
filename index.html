@@ -3,40 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-html,body{
-  margin:0;
-  background:#000;
-  overflow:hidden;
+html, body {
+  margin: 0;
+  background: #000;
+  overflow: hidden;
 }
-#viewer{
-  width:100vw;
-  height:100vh;
-  padding: 30px;
-  box-sizing: border-box;
-  position:relative;
-  overflow:hidden;
-  touch-action:none;
+
+/* ZINEの紙 */
+#viewer {
+  width: 100vw;
+  height: 100vh;
+  background: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-#image{
-  position:absolute;
-  top:50%;
-  left:0;
-  transform:translate(0,-50%);
-  user-select:none;
-  -webkit-user-drag:none;
+
+/* 余白を含んだキャンバス */
+#stage {
+  position: relative;
+  width: 92vw;     /* かなりゆったり */
+  height: 92vh;
+  overflow: hidden;
+  background: #000;
+}
+
+/* 作品画像 */
+#image {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(0, -50%);
+  user-select: none;
+  -webkit-user-drag: none;
 }
 </style>
 </head>
+
 <body>
 
 <div id="viewer">
-  <!-- 正方形画像を指定 -->
-  <img id="image" src="https://picsum.photos/2000">
+  <div id="stage">
+    <!-- スクエア画像を指定 -->
+    <img id="image" src="https://picsum.photos/2000" />
+  </div>
 </div>
 
 <script>
-const viewer = document.getElementById("viewer");
+const stage = document.getElementById("stage");
 const img = document.getElementById("image");
 
 let offsetX = 0;
@@ -44,27 +60,28 @@ let startX = 0;
 let dragging = false;
 let minOffsetX = 0;
 
+/*
+  縦型専用：
+  - スクエアの「半分だけ」が入る
+  - ゆったり余白あり
+*/
 function setupPortrait() {
-  const vw = viewer.clientWidth;
-  const vh = viewer.clientHeight;
+  const vw = stage.clientWidth;
+  const vh = stage.clientHeight;
 
-  // 縦型では必ずはみ出すサイズを作る
-
+  // 「半分が見切れる」＋「余白たっぷり」
+  const marginScale = 0.9;      // 0.85〜0.95で調整
   const size = vw * 2 * marginScale;
 
   img.style.width  = size + "px";
   img.style.height = size + "px";
 
-  img.style.position = "absolute";
   img.style.left = "0";
   img.style.top  = "50%";
   img.style.transform = "translate(0, -50%)";
 
-  // 左端表示から開始
   offsetX = 0;
-
-  // 右端まで動かせる限界
-  minOffsetX = vw - size;  // 必ずマイナスになる
+  minOffsetX = vw - size;   // 右半分まで動かせる限界
 
   apply(offsetX);
 }
@@ -75,19 +92,19 @@ function apply(x) {
 }
 
 /* タッチ操作 */
-viewer.addEventListener("touchstart", e => {
+stage.addEventListener("touchstart", e => {
   dragging = true;
   startX = e.touches[0].clientX;
 });
 
-viewer.addEventListener("touchmove", e => {
+stage.addEventListener("touchmove", e => {
   if (!dragging) return;
   e.preventDefault();
   const dx = e.touches[0].clientX - startX;
   apply(offsetX + dx);
 });
 
-viewer.addEventListener("touchend", () => {
+stage.addEventListener("touchend", () => {
   dragging = false;
   const m = /translate\(([-\d.]+)px/.exec(img.style.transform);
   if (m) offsetX = parseFloat(m[1]);
