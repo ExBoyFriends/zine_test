@@ -53,25 +53,26 @@ function setup(){
   let size;
 
   if (isPortrait()) {
-    // 縦型は意図的に拡大して「必ずはみ出させる」
+    // 縦型は常に“はみ出すサイズ”
     size = vw * 1.4;
   } else {
-    // 横型は必ず全体が収まる
+    // 横型は常に“収まるサイズ”
     size = Math.min(vw, vh);
   }
 
   img.style.width  = size + "px";
   img.style.height = size + "px";
 
-  if(isPortrait()){
+  if (isPortrait()){
     img.style.left = "0";
     img.style.top  = "50%";
 
-    offsetX = 0;
-    minOffsetX = vw - size;   // ここが必ずマイナスになる
+    // 縦型のたびに必ず再計算
+    minOffsetX = vw - size;   // 必ずマイナスになる
+    offsetX = Math.max(minOffsetX, Math.min(0, offsetX));
     apply(offsetX);
 
-  }else{
+  } else {
     img.style.left = "50%";
     img.style.top  = "50%";
     img.style.transform = "translate(-50%, -50%)";
