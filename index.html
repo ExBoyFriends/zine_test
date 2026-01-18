@@ -40,34 +40,18 @@ body {
 </div>
 
 <script>
-const viewer = document.getElementById("viewer");
-const img = document.getElementById("image");
-
-let startX = 0;
-let offsetX = 0;
-let dragging = false;
-
-// 横向きで収まったときの画像表示サイズ
-let displayWidth = 0;
-let displayHeight = 0;
-
-// 縦向きで動かせる最大量（マイナス値）
-let minOffsetX = 0;
-
-function isPortrait() {
-  return window.innerHeight > window.innerWidth;
-}
-
 function setupLayout() {
   const vw = viewer.clientWidth;
   const vh = viewer.clientHeight;
   const iw = img.naturalWidth;
   const ih = img.naturalHeight;
-
   if (!iw || !ih) return;
 
-  /* まず必ず「横向きで全体が収まるサイズ」を計算 */
-  const scale = Math.min(vw / iw, vh / ih);
+  /* ここが核心：横型サイズを常に基準にする */
+  const landscapeW = Math.max(vw, vh);
+  const landscapeH = Math.min(vw, vh);
+  const scale = Math.min(landscapeW / iw, landscapeH / ih);
+
   displayWidth  = iw * scale;
   displayHeight = ih * scale;
 
@@ -75,64 +59,21 @@ function setupLayout() {
   img.style.height = displayHeight + "px";
 
   if (isPortrait()) {
-    // 縦向き：左半分だけ見える
+    // 縦型：左半分だけ見せる
     img.style.left = "0";
     img.style.top  = "50%";
-
-    // 右端まで動かせる量
-    minOffsetX = vw - displayWidth;  // マイナス値
-
-    // 初期位置：左半分
+    minOffsetX = vw - displayWidth; 
     offsetX = 0;
     applyTransform(offsetX);
-
   } else {
-    // 横向き：全体を中央にフィット
+    // 横型：必ず全体が収まる
     img.style.left = "50%";
     img.style.top  = "50%";
     img.style.transform = "translate(-50%, -50%)";
-
     offsetX = 0;
     minOffsetX = 0;
   }
 }
-
-function applyTransform(x) {
-  // 範囲制限
-  x = Math.max(minOffsetX, Math.min(0, x));
-  img.style.transform = `translate(${x}px, -50%)`;
-}
-
-/* 画像ロード時と回転時 */
-img.onload = setupLayout;
-window.addEventListener("resize", setupLayout);
-
-/* ===== タッチ操作（縦向きのみ） ===== */
-
-viewer.addEventListener("touchstart", e => {
-  if (!isPortrait()) return;
-  dragging = true;
-  startX = e.touches[0].clientX;
-});
-
-viewer.addEventListener("touchmove", e => {
-  if (!dragging || !isPortrait()) return;
-  e.preventDefault();
-
-  const dx = e.touches[0].clientX - startX;
-  applyTransform(offsetX + dx);
-});
-
-viewer.addEventListener("touchend", () => {
-  if (!isPortrait()) return;
-  dragging = false;
-
-  // 現在位置を保存（戻らない）
-  const match = /translate\(([-0-9.]+)px/.exec(img.style.transform);
-  if (match) {
-    offsetX = parseFloat(match[1]);
-  }
-});
 </script>
 
 </body>
