@@ -41,94 +41,95 @@ let offsetX = 0;
 let startX = 0;
 let dragging = false;
 let minOffsetX = 0;
+let lastOrientation = null;
 
-function isPortrait(){
+function isPortrait() {
   return window.innerHeight > window.innerWidth;
 }
 
-function setup(){
+/* 位置適用 */
+function apply(x) {
+  x = Math.max(minOffsetX, Math.min(0, x));
+  img.style.transform = `translate(${x}px, -50%)`;
+}
+
+/* 向きごとの完全初期化レイアウト */
+function setup() {
   const vw = viewer.clientWidth;
   const vh = viewer.clientHeight;
 
   let size;
 
   if (isPortrait()) {
-    // 縦型：必ずはみ出すサイズ
-    size = vw * 1.8;
+    // 縦型：必ずはみ出させる
+    size = vw * 1.4;
 
-    img.style.width  = size + "px";
+    img.style.width = size + "px";
     img.style.height = size + "px";
 
     img.style.left = "0";
-    img.style.top  = "50%";
+    img.style.top = "50%";
 
-    // 縦型に入るたび必ずリセット
+    // 縦型は毎回リセット
     offsetX = 0;
     minOffsetX = vw - size;   // 必ずマイナス
 
     apply(offsetX);
 
   } else {
-    // 横型：必ず収まるサイズ
+    // 横型：必ず全体が収まる
     size = Math.min(vw, vh);
 
-    img.style.width  = size + "px";
+    img.style.width = size + "px";
     img.style.height = size + "px";
 
     img.style.left = "50%";
-    img.style.top  = "50%";
+    img.style.top = "50%";
     img.style.transform = "translate(-50%, -50%)";
 
-    // 横型は完全リセット
+    // 横型は完全固定
     offsetX = 0;
     minOffsetX = 0;
   }
 }
 
-function apply(x){
-  x = Math.max(minOffsetX, Math.min(0, x));
-  img.style.transform = `translate(${x}px, -50%)`;
+/* 向き変化検出 */
+function checkOrientation() {
+  const now = isPortrait() ? "portrait" : "landscape";
+  if (now !== lastOrientation) {
+    lastOrientation = now;
+    setup();
+  }
 }
 
-viewer.addEventListener("touchstart", e=>{
-  if(!isPortrait()) return;
-  if(minOffsetX === 0) return; // 動かせない時は無効
+/* タッチ操作（縦型のみ有効） */
+viewer.addEventListener("touchstart", e => {
+  if (!isPortrait()) return;
   dragging = true;
   startX = e.touches[0].clientX;
 });
 
-viewer.addEventListener("touchmove", e=>{
-  if(!dragging) return;
+viewer.addEventListener("touchmove", e => {
+  if (!dragging || !isPortrait()) return;
   e.preventDefault();
   const dx = e.touches[0].clientX - startX;
   apply(offsetX + dx);
 });
 
-viewer.addEventListener("touchend", ()=>{
-  if(!dragging) return;
+viewer.addEventListener("touchend", () => {
+  if (!dragging || !isPortrait()) return;
   dragging = false;
   const m = /translate\(([-\d.]+)px/.exec(img.style.transform);
-  if(m) offsetX = parseFloat(m[1]);
+  if (m) offsetX = parseFloat(m[1]);
 });
 
-window.addEventListener("resize", setup);
-img.onload = setup;
-
-let lastOrientation = null;
-
-function checkOrientation(){
-  const now = isPortrait() ? "portrait" : "landscape";
-  if(now !== lastOrientation){
-    lastOrientation = now;
-    setup();   // 向きが変わった瞬間だけ作り直す
-  }
-}
-
-window.addEventListener("resize", checkOrientation);
+/* 初期化 */
 img.onload = () => {
   lastOrientation = isPortrait() ? "portrait" : "landscape";
   setup();
 };
+
+window.addEventListener("resize", checkOrientation);
 
 
 </script>
