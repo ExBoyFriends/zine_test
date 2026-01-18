@@ -1,11 +1,17 @@
+// ============================
+// 設定
+// ============================
 const images = [
-  "image/king.of.spades.png",
-  "image/queen.of.clubs.png"
+  "img/img1.jpg",
+  "img/img2.jpg"
 ];
 
+// ============================
+// 状態
+// ============================
 let current = 0;
 
-// left = 左半分が見える
+// left  = 左半分が見える
 // right = 右半分が見える
 let viewState = "left";
 
@@ -21,34 +27,48 @@ let startX = 0;
 let dragging = false;
 let mode = "slide"; // slide / page
 
+// ============================
+// 初期ロード
+// ============================
 function loadImage() {
+  img.style.visibility = "hidden";
   img.src = images[current];
 }
 
+// 画像が読み込まれたら毎回ここに入る
 img.onload = () => {
-  vw = window.innerWidth;
-  imgW = img.offsetWidth;
+  img.style.visibility = "visible";
 
-  // 左右の限界
+  vw = window.innerWidth;
+  imgW = img.getBoundingClientRect().width;
+
+  // 左右の移動限界
   maxOffset = 0;
   minOffset = vw - imgW;
 
-  // 半分見切れの位置
+  // 「半分だけ見える」位置
   leftOffset  = minOffset / 2; // 左半分
   rightOffset = minOffset;     // 右半分
 
   setInitialPosition();
 };
 
+// ============================
+// 初期位置セット
+// ============================
 function setInitialPosition() {
   offsetX = (viewState === "left") ? leftOffset : rightOffset;
   img.style.transition = "none";
   img.style.transform = `translate(${offsetX}px, -50%)`;
+
   requestAnimationFrame(() => {
     img.style.transition = "transform 0.25s ease";
   });
 }
 
+// ============================
+// タッチ操作
+// ============================
 viewer.addEventListener("touchstart", e => {
   dragging = true;
   startX = e.touches[0].clientX;
@@ -63,7 +83,7 @@ viewer.addEventListener("touchmove", e => {
   const dx = x - startX;
   let next = offsetX + dx;
 
-  // スライドできる範囲
+  // スライドできる範囲：左半分～右半分
   if (next >= leftOffset && next <= rightOffset) {
     mode = "slide";
     next = Math.max(minOffset, Math.min(maxOffset, next));
@@ -81,7 +101,7 @@ viewer.addEventListener("touchend", () => {
   img.style.transition = "transform 0.3s ease";
 
   if (mode === "page") {
-    // ページ切り替え
+    // どちら側に寄っているかで進む／戻る
     if (offsetX <= leftOffset) {
       goPrev();
     } else {
@@ -92,11 +112,17 @@ viewer.addEventListener("touchend", () => {
   }
 });
 
+// ============================
+// 位置を半分状態に戻す
+// ============================
 function snap() {
   offsetX = (viewState === "left") ? leftOffset : rightOffset;
   img.style.transform = `translate(${offsetX}px, -50%)`;
 }
 
+// ============================
+// ページ送り
+// ============================
 function goNext() {
   if (current >= images.length - 1) {
     snap();
@@ -107,6 +133,9 @@ function goNext() {
   loadImage();
 }
 
+// ============================
+// ページ戻り
+// ============================
 function goPrev() {
   if (current <= 0) {
     snap();
@@ -117,4 +146,7 @@ function goPrev() {
   loadImage();
 }
 
+// ============================
+// 開始
+// ============================
 loadImage();
