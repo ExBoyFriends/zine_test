@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>左ページ浮き上がり確認</title>
+<title>左右ドラッグ対応ページめくり</title>
 <style>
 html, body {
   margin: 0;
@@ -20,7 +20,9 @@ html, body {
   perspective: 1500px;
   width: 100%;
   height: 100%;
-  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .page {
@@ -29,98 +31,113 @@ html, body {
   background-size: cover;
   background-position: center;
   border-radius: 6px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  transform-origin: left center;
+  cursor: grab;
   box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-  transition: transform 0.4s ease;
-}
-
-.left-page {
-  transform: translate(-45%, -50%) scale(0.9);
-  z-index: 1;
-}
-
-.right-page {
-  z-index: 2;
+  transition: transform 0.3s ease;
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="page left-page" id="leftPage"></div>
-  <div class="page right-page" id="rightPage"></div>
+  <div class="page" id="page"></div>
 </div>
 
 <script>
-// 表示確認用に確実に表示される画像URL
 const pages = [
-  './image/king.of.spades.png',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Google-flutter-logo.png/300px-Google-flutter-logo.png',
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Example.svg/300px-Example.svg.png'
+  'https://picsum.photos/300/400?random=1',
+  'https://picsum.photos/300/400?random=2',
+  'https://picsum.photos/300/400?random=3',
+  'https://picsum.photos/300/400?random=4'
 ];
 
-const leftPage = document.getElementById('leftPage');
-const rightPage = document.getElementById('rightPage');
-
 let currentIndex = 0;
-
-// 初期表示
-leftPage.style.backgroundImage = `url("${pages[currentIndex]}")`;
-rightPage.style.backgroundImage = `url("${pages[(currentIndex+1)%pages.length]}")`;
+const page = document.getElementById('page');
+page.style.backgroundImage = `url("${pages[currentIndex]}")`;
 
 let isDragging = false;
 let startX = 0;
-const dragThreshold = 50;
+const maxRotation = 120; // 左右の最大回転角度
+const maxScale = 1.05;   // 手前に出る感
+const dragThreshold = 50; // ドラッグ判定
 
-// 左ページ浮き上がり
-function animateLeftPageForward() {
-  leftPage.style.transition = 'transform 0.4s ease';
-  leftPage.style.zIndex = 3;
-  leftPage.style.transform = 'translate(-50%, -50%) scale(1.05) rotateY(0deg)';
+function updateDrag(dx) {
+  const ratio = Math.min(Math.abs(dx)/300, 1);
+  const rotation = dx < 0 ? -maxRotation * ratio : maxRotation * ratio;
+  const scale = 1 + (maxScale - 1) * ratio;
+  page.style.transform = `rotateY(${rotation}deg) scale(${scale})`;
+}
 
+function completeDrag() {
+  // 左ドラッグ → 次ページ
+  page.style.transition = 'transform 0.4s ease';
+  page.style.transform = `rotateY(${-maxRotation}deg) scale(${maxScale})`;
   setTimeout(() => {
-    currentIndex = (currentIndex - 1 + pages.length) % pages.length;
-
-    leftPage.style.transition = 'transform 0.4s ease';
-    leftPage.style.transform = 'translate(-45%, -50%) scale(0.9)';
-    leftPage.style.zIndex = 1;
-
-    leftPage.style.backgroundImage = `url("${pages[currentIndex]}")`;
-    rightPage.style.backgroundImage = `url("${pages[(currentIndex+1)%pages.length]}")`;
+    currentIndex = (currentIndex + 1) % pages.length;
+    page.style.transition = 'none';
+    page.style.transform = 'rotateY(0deg) scale(1)';
+    page.style.backgroundImage = `url("${pages[currentIndex]}")`;
   }, 400);
 }
 
-// マウス操作
-rightPage.addEventListener('mousedown', e => {
+function reverseDrag() {
+  // 右ドラッグ → 前ページ
+  page.style.transition = 'transform 0.4s ease';
+  page.style.transform = `rotateY(${maxRotation}deg) scale(${maxScale})`;
+  setTimeout(() => {
+    currentIndex = (currentIndex - 1 + pages.length) % pages.length;
+    page.style.transition = 'none';
+    page.style.transform = 'rotateY(0deg) scale(1)';
+    page.style.backgroundImage = `url("${pages[currentIndex]}")`;
+  }, 400);
+}
+
+function resetDrag() {
+  page.style.transition = 'transform 0.3s ease';
+  page.style.transform = 'rotateY(0deg) scale(1)';
+}
+
+// マウスイベント
+page.addEventListener('mousedown', e => {
   isDragging = true;
   startX = e.clientX;
+});
+
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const dx = e.clientX - startX;
+  updateDrag(dx);
 });
 
 window.addEventListener('mouseup', e => {
   if (!isDragging) return;
   isDragging = false;
   const dx = e.clientX - startX;
-  if (dx > dragThreshold) {
-    animateLeftPageForward();
-  }
+  if (dx < -dragThreshold) completeDrag();
+  else if (dx > dragThreshold) reverseDrag();
+  else resetDrag();
 });
 
-// タッチ操作
-rightPage.addEventListener('touchstart', e => {
+// タッチイベント
+page.addEventListener('touchstart', e => {
   isDragging = true;
   startX = e.touches[0].clientX;
+});
+
+window.addEventListener('touchmove', e => {
+  if (!isDragging) return;
+  const dx = e.touches[0].clientX - startX;
+  updateDrag(dx);
 });
 
 window.addEventListener('touchend', e => {
   if (!isDragging) return;
   isDragging = false;
   const dx = e.changedTouches[0].clientX - startX;
-  if (dx > dragThreshold) {
-    animateLeftPageForward();
-  }
+  if (dx < -dragThreshold) completeDrag();
+  else if (dx > dragThreshold) reverseDrag();
+  else resetDrag();
 });
 </script>
 
