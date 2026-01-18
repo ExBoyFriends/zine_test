@@ -1,9 +1,12 @@
-const images = ["img1.jpg", "img2.jpg"];
+const images = [
+  "img1.jpg",
+  "img2.jpg"
+];
+
 let current = 0;
 
-// 表示状態
-// "left" = 左半分見え
-// "right" = 右半分見え
+// left = 左半分が見える
+// right = 右半分が見える
 let viewState = "left";
 
 const viewer = document.getElementById("viewer");
@@ -11,45 +14,46 @@ const img = document.getElementById("img");
 
 let vw, imgW;
 let minOffset, maxOffset;
-let initialLeftOffset, initialRightOffset;
+let leftOffset, rightOffset;
 let offsetX = 0;
 
 let startX = 0;
 let dragging = false;
-let mode = "slide"; // slide or page
+let mode = "slide"; // slide / page
 
-function setup() {
-  vw = window.innerWidth;
-
-  img.onload = () => {
-    imgW = img.offsetWidth;
-
-    // 画面には常に半分しか入らない前提
-    minOffset = vw - imgW; // 右端
-    maxOffset = 0;         // 左端
-
-    // 半分見えの位置
-    initialLeftOffset = minOffset / 2;
-    initialRightOffset = minOffset;
-
-    applyInitialPosition();
-  };
+function loadImage() {
+  img.src = images[current];
 }
 
-function applyInitialPosition() {
-  if (viewState === "left") {
-    offsetX = initialLeftOffset;
-  } else {
-    offsetX = initialRightOffset;
-  }
+img.onload = () => {
+  vw = window.innerWidth;
+  imgW = img.offsetWidth;
+
+  // 左右の限界
+  maxOffset = 0;
+  minOffset = vw - imgW;
+
+  // 半分見切れの位置
+  leftOffset  = minOffset / 2; // 左半分
+  rightOffset = minOffset;     // 右半分
+
+  setInitialPosition();
+};
+
+function setInitialPosition() {
+  offsetX = (viewState === "left") ? leftOffset : rightOffset;
+  img.style.transition = "none";
   img.style.transform = `translate(${offsetX}px, -50%)`;
+  requestAnimationFrame(() => {
+    img.style.transition = "transform 0.25s ease";
+  });
 }
 
 viewer.addEventListener("touchstart", e => {
   dragging = true;
   startX = e.touches[0].clientX;
-  img.style.transition = "none";
   mode = "slide";
+  img.style.transition = "none";
 });
 
 viewer.addEventListener("touchmove", e => {
@@ -57,64 +61,60 @@ viewer.addEventListener("touchmove", e => {
 
   const x = e.touches[0].clientX;
   const dx = x - startX;
-
   let next = offsetX + dx;
 
-  // 右半分まで行ったら「ページモード」
-  if (viewState === "left" && next <= initialRightOffset) {
+  // スライドできる範囲
+  if (next >= leftOffset && next <= rightOffset) {
     mode = "slide";
+    next = Math.max(minOffset, Math.min(maxOffset, next));
+    img.style.transform = `translate(${next}px, -50%)`;
+    offsetX = next;
   } else {
     mode = "page";
   }
 
-  if (mode === "slide") {
-    next = Math.max(minOffset, Math.min(maxOffset, next));
-    img.style.transform = `translate(${next}px, -50%)`;
-  }
-
   startX = x;
-  offsetX = next;
 });
 
 viewer.addEventListener("touchend", () => {
   dragging = false;
   img.style.transition = "transform 0.3s ease";
 
-  // ページめくり判定
   if (mode === "page") {
-    goNext();
+    // ページ切り替え
+    if (offsetX <= leftOffset) {
+      goPrev();
+    } else {
+      goNext();
+    }
   } else {
-    snapBack();
+    snap();
   }
 });
 
-function snapBack() {
-  if (viewState === "left") {
-    offsetX = initialLeftOffset;
-  } else {
-    offsetX = initialRightOffset;
-  }
+function snap() {
+  offsetX = (viewState === "left") ? leftOffset : rightOffset;
   img.style.transform = `translate(${offsetX}px, -50%)`;
 }
 
 function goNext() {
   if (current >= images.length - 1) {
-    snapBack();
+    snap();
     return;
   }
-
   current++;
   viewState = "left";
-  img.src = images[current];
-  setup();
+  loadImage();
 }
 
 function goPrev() {
-  if (current <= 0) return;
+  if (current <= 0) {
+    snap();
+    return;
+  }
   current--;
   viewState = "right";
-  img.src = images[current];
-  setup();
+  loadImage();
 }
 
-setup();
+loadImage();
