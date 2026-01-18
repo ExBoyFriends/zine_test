@@ -3,17 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ページめくりテスト</title>
+<title>手前に傾くページめくり</title>
 <style>
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
+  overflow: hidden; /* 縦スクロール禁止 */
+  background: #222;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #222;
+}
+
+.container {
+  perspective: 1500px; /* 手前に傾く奥行き感 */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .page {
@@ -23,15 +32,17 @@ html, body {
   background-position: center;
   border-radius: 6px;
   transform-origin: left center;
-  transition: transform 0.3s ease;
   cursor: grab;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+  transition: transform 0.3s ease;
 }
 </style>
 </head>
 <body>
 
-<div class="page" id="page"></div>
+<div class="container">
+  <div class="page" id="page"></div>
+</div>
 
 <script>
 const pages = [
@@ -47,43 +58,47 @@ page.style.backgroundImage = `url("${pages[currentIndex]}")`;
 
 let isDragging = false;
 let startX = 0;
-const maxRotation = 120;
+const maxRotation = 120; // 最大回転角度
+const maxScale = 1.05;   // 手前に出る感
 const dragThreshold = 50;
 
 function updateDrag(dx) {
-  if (dx > 0) return;
+  if (dx > 0) return; // 左ドラッグのみ
   const ratio = Math.min(Math.abs(dx)/300, 1);
   const rotation = -maxRotation * ratio;
-  page.style.transform = `rotateY(${rotation}deg)`;
+  const scale = 1 + (maxScale - 1) * ratio;
+  page.style.transform = `rotateY(${rotation}deg) scale(${scale})`;
 }
 
 function completeDrag() {
   page.style.transition = 'transform 0.4s ease';
-  page.style.transform = `rotateY(${-maxRotation}deg)`;
+  page.style.transform = `rotateY(${-maxRotation}deg) scale(${maxScale})`;
 
   setTimeout(() => {
     currentIndex = (currentIndex + 1) % pages.length;
     page.style.transition = 'none';
-    page.style.transform = 'rotateY(0deg)';
+    page.style.transform = 'rotateY(0deg) scale(1)';
     page.style.backgroundImage = `url("${pages[currentIndex]}")`;
   }, 400);
 }
 
 function resetDrag() {
   page.style.transition = 'transform 0.3s ease';
-  page.style.transform = 'rotateY(0deg)';
+  page.style.transform = 'rotateY(0deg) scale(1)';
 }
 
-// マウス
+// マウスイベント
 page.addEventListener('mousedown', e => {
   isDragging = true;
   startX = e.clientX;
 });
+
 window.addEventListener('mousemove', e => {
   if (!isDragging) return;
   const dx = e.clientX - startX;
   updateDrag(dx);
 });
+
 window.addEventListener('mouseup', e => {
   if (!isDragging) return;
   isDragging = false;
@@ -92,16 +107,18 @@ window.addEventListener('mouseup', e => {
   else resetDrag();
 });
 
-// タッチ
+// タッチイベント
 page.addEventListener('touchstart', e => {
   isDragging = true;
   startX = e.touches[0].clientX;
 });
+
 window.addEventListener('touchmove', e => {
   if (!isDragging) return;
   const dx = e.touches[0].clientX - startX;
   updateDrag(dx);
 });
+
 window.addEventListener('touchend', e => {
   if (!isDragging) return;
   isDragging = false;
