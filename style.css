@@ -10,20 +10,20 @@ html, body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  position: relative;
-  touch-action: none;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center;      /* 縦中央 */
+  justify-content: center;  /* 横中央 */
+  touch-action: none;
+  position: relative;
 }
 
 #viewer img {
+  position: relative;       /* 左上固定ではなく相対 */
   width: auto;
   height: auto;
-  max-width: 90vw;   /* 横余白5％ずつ */
-  max-height: 90vh;  /* 上下余白5％ずつ */
+  max-width: 90vw;          /* 横余白5%ずつ */
+  max-height: 90vh;         /* 上下余白5%ずつ */
   transition: transform 0.2s ease;
   user-select: none;
   -webkit-user-drag: none;
-  position: absolute;
 }
