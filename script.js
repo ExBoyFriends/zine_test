@@ -40,15 +40,31 @@ img.onload = () => {
   img.style.visibility = "visible";
 
   vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  // 高さ基準で一度サイズを決める
+  const scale = (vh * 0.9) / img.naturalHeight;
+  const displayWidth = img.naturalWidth * scale;
+
+  // もし横幅が画面より小さかったら、横基準で拡大し直す
+  if (displayWidth < vw * 2) {
+    const scaleW = (vw * 2) / img.naturalWidth;
+    img.style.height = "auto";
+    img.style.width = img.naturalWidth * scaleW + "px";
+  } else {
+    img.style.height = vh * 0.9 + "px";
+    img.style.width = "auto";
+  }
+
   imgW = img.getBoundingClientRect().width;
 
-  // 左右の移動限界
+  // 移動範囲
   maxOffset = 0;
   minOffset = vw - imgW;
 
-  // 「半分だけ見える」位置
-  leftOffset  = minOffset / 2; // 左半分
-  rightOffset = minOffset;     // 右半分
+  // 半分見切れ位置
+  leftOffset  = minOffset / 2;
+  rightOffset = minOffset;
 
   setInitialPosition();
 };
