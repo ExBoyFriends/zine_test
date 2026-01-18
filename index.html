@@ -34,16 +34,16 @@ html, body {
   left: 50%;
   transform: translate(-50%, -50%);
   box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-  transition: transform 0.4s ease;
+  transition: transform 0.4s ease, z-index 0s linear 0.4s;
 }
 
 .left-page {
-  transform: translate(-52%, -50%) scale(0.95); /* ほとんど見切れ */
+  transform: translate(-52%, -50%) scale(0.95);
   z-index: 1;
 }
 
 .right-page {
-  z-index: 2; /* 常に前面固定 */
+  z-index: 2;
 }
 </style>
 </head>
@@ -55,11 +55,12 @@ html, body {
 </div>
 
 <script>
+// 確実に表示される画像URLに変更
 const pages = [
-  'https://picsum.photos/300/400?random=1',
-  'https://picsum.photos/300/400?random=2',
-  'https://picsum.photos/300/400?random=3',
-  'https://picsum.photos/300/400?random=4'
+  'https://picsum.photos/id/1018/300/400',
+  'https://picsum.photos/id/1025/300/400',
+  'https://picsum.photos/id/1035/300/400',
+  'https://picsum.photos/id/1043/300/400'
 ];
 
 const leftPage = document.getElementById('leftPage');
@@ -67,32 +68,30 @@ const rightPage = document.getElementById('rightPage');
 
 let currentIndex = 0;
 
-// 初期画像設定
+// 初期表示
 leftPage.style.backgroundImage = `url("${pages[currentIndex]}")`;
-rightPage.style.backgroundImage = `url("${pages[(currentIndex + 1) % pages.length]}")`;
+rightPage.style.backgroundImage = `url("${pages[(currentIndex+1) % pages.length]}")`;
 
 let isDragging = false;
 let startX = 0;
 const dragThreshold = 50;
 
-// 左ページ浮き上がり
 function animateLeftPageForward() {
+  // 左ページを前面に浮かせる
   leftPage.style.transition = 'transform 0.4s ease';
-  leftPage.style.zIndex = 3; // 前面に浮かせる
+  leftPage.style.zIndex = 3;
   leftPage.style.transform = 'translate(-50%, -50%) scale(1.05) rotateY(0deg)';
 
+  // アニメーション終了後に元の見切れ位置に戻す
   setTimeout(() => {
-    // 左ページを元の見切れ位置に戻す
+    currentIndex = (currentIndex - 1 + pages.length) % pages.length;
+
     leftPage.style.transition = 'transform 0.4s ease';
     leftPage.style.transform = 'translate(-52%, -50%) scale(0.95)';
     leftPage.style.zIndex = 1;
 
-    // インデックス更新
-    currentIndex = (currentIndex - 1 + pages.length) % pages.length;
-
-    // 背景を更新
     leftPage.style.backgroundImage = `url("${pages[currentIndex]}")`;
-    rightPage.style.backgroundImage = `url("${pages[(currentIndex + 1) % pages.length]}")`;
+    rightPage.style.backgroundImage = `url("${pages[(currentIndex+1) % pages.length]}")`;
   }, 400);
 }
 
@@ -110,7 +109,7 @@ window.addEventListener('mouseup', e => {
   if (!isDragging) return;
   isDragging = false;
   const dx = e.clientX - startX;
-  if (dx > dragThreshold) { // 右ドラッグ
+  if (dx > dragThreshold) { // 右ドラッグで左ページ浮上
     animateLeftPageForward();
   }
 });
@@ -125,7 +124,7 @@ window.addEventListener('touchend', e => {
   if (!isDragging) return;
   isDragging = false;
   const dx = e.changedTouches[0].clientX - startX;
-  if (dx > dragThreshold) { // 右ドラッグ
+  if (dx > dragThreshold) {
     animateLeftPageForward();
   }
 });
