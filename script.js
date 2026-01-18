@@ -1,6 +1,6 @@
 const images = [
-  "img1.jpg",
-  "img2.jpg"
+  "image/king.of.spades.png",
+  "image/queen.of.clubs.png"
 ];
 
 let current = 0;
