@@ -1,0 +1,32 @@
+html, body {
+margin: 0;
+padding: 0;
+width: 100%;
+height: 100%;
+overflow: hidden;
+background: #fff;
+}
+
+#stage {
+position: relative;
+width: 100%;
+height: 100%;
+box-sizing: border-box;
+overflow: hidden;
+
+/* 余白設計 */
+padding:
+8vh /* 上 */
+0 /* 右：初期はゼロ */
+8vh /* 下 */
+8vw; /* 左：たっぷり */
+}
+
+#image {
+position: absolute;
+top: 50%;
+left: 0;
+transform: translate(0, -50%);
+touch-action: none;
+user-select: none;
+}
