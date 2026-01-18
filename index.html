@@ -3,107 +3,186 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ドラッグカルーセル</title>
+<title>左右ループページカルーセル</title>
 <style>
-  html, body {
+  body {
     margin: 0;
-    padding: 0;
-    overflow: hidden; /* 縦スクロール禁止 */
-    height: 100%;
     background: #111;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
   }
 
-  .carousel {
-    display: flex;
-    gap: 4px; /* 画像間の余白を微調整 */
-    overflow-x: hidden;
-    cursor: grab;
-    touch-action: pan-x;
-    user-select: none;
-    padding: 10px 0;
+  .carousel-container {
+    position: relative;
+    width: 90vw;
+    max-width: 500px;
+    height: 400px;
+    perspective: 1200px;
   }
 
-  .carousel img {
-    width: 92vw;  /* スマホ縦画面で1枚目が見え、2枚目が半分見切れる */
-    max-width: 480px; /* PC最大サイズ */
-    height: auto;
-    flex-shrink: 0;
+  .card {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     border-radius: 8px;
-    transition: transform 0.2s ease;
-  }
-
-  .dragging {
-    cursor: grabbing;
-  }
-
-  /* 画面幅が狭いスマホ向けに微調整 */
-  @media (max-width: 500px) {
-    .carousel img {
-      width: 88vw; /* さらに少し小さくして半分見切れる調整 */
-    }
+    background-size: cover;
+    background-position: center;
+    transform-origin: left center;
+    transition: transform 0.3s ease, z-index 0s 0.3s;
   }
 </style>
 </head>
 <body>
 
-<div class="carousel">
-  <img src="image/king.of.spades.png" alt="画像1">
-  <img src="image/king.of.spades_mirror.png" alt="画像2">
+<div class="carousel-container">
+  <div class="card" style="background-image:url('image/king.of.spades.png'); z-index:4;"></div>
+  <div class="card" style="background-image:url('image/king.of.spades_mirror.png'); z-index:3;"></div>
+  <div class="card" style="background-image:url('image/queen.of.club.png'); z-index:2;"></div>
+  <div class="card" style="background-image:url('image/queen.of.club_mirror.png'); z-index:1;"></div>
 </div>
 
 <script>
-const carousel = document.querySelector('.carousel');
-
+const cards = Array.from(document.querySelectorAll('.card'));
+let current = 0; // 前面カード
 let isDragging = false;
-let startX;
-let scrollLeft;
+let startX = 0;
+let currentRotation = 0;
+const container = document.querySelector('.carousel-container');
 
-carousel.addEventListener('mousedown', (e) => {
+function setCardTransform(card, rotation, origin='left') {
+  card.style.transformOrigin = `${origin} center`;
+  card.style.transform = `rotateY(${rotation}deg)`;
+}
+
+function rotateNext() {
+  const currentCard = cards[current];
+  const nextIndex = (current + 1) % cards.length;
+  const nextCard = cards[nextIndex];
+  const behindIndex = (current + 2) % cards.length;
+  const behindCard = cards[behindIndex];
+
+  // 現在カードを折りたたむ（裏へ）
+  currentCard.style.transition = 'transform 0.3s ease, z-index 0s 0.3s';
+  setCardTransform(currentCard, -180, 'left');
+  setTimeout(() => {
+    currentCard.style.zIndex = 1;
+    setCardTransform(currentCard, 0, 'left');
+  }, 300);
+
+  // 次カードを前面に
+  nextCard.style.zIndex = 4;
+
+  // 裏カードを初期位置待機
+  behindCard.style.zIndex = 2;
+
+  current = nextIndex;
+}
+
+function rotatePrev() {
+  const currentCard = cards[current];
+  const prevIndex = (current - 1 + cards.length) % cards.length;
+  const prevCard = cards[prevIndex];
+  const behindIndex = (current - 2 + cards.length) % cards.length;
+  const behindCard = cards[behindIndex];
+
+  // 左側カードを折りたたみ→前面に戻す
+  prevCard.style.transition = 'transform 0.3s ease, z-index 0s 0.3s';
+  setCardTransform(prevCard, 180, 'right');
+  setTimeout(() => {
+    prevCard.style.zIndex = 4;
+    setCardTransform(prevCard, 0, 'left');
+  }, 300);
+
+  // 現在カードを裏に
+  currentCard.style.zIndex = 1;
+
+  // 裏カードを初期位置待機
+  behindCard.style.zIndex = 2;
+
+  current = prevIndex;
+}
+
+// ドラッグ処理
+container.addEventListener('mousedown', e => {
   isDragging = true;
-  carousel.classList.add('dragging');
-  startX = e.pageX - carousel.offsetLeft;
-  scrollLeft = carousel.scrollLeft;
+  startX = e.clientX;
 });
 
-carousel.addEventListener('mouseleave', () => {
-  isDragging = false;
-  carousel.classList.remove('dragging');
-});
-
-carousel.addEventListener('mouseup', () => {
-  isDragging = false;
-  carousel.classList.remove('dragging');
-});
-
-carousel.addEventListener('mousemove', (e) => {
+container.addEventListener('mousemove', e => {
   if (!isDragging) return;
-  e.preventDefault();
-  const x = e.pageX - carousel.offsetLeft;
-  const walk = (startX - x);
-  carousel.scrollLeft = scrollLeft + walk;
+  const dx = e.clientX - startX;
+
+  const nextIndex = (current + 1) % cards.length;
+  const prevIndex = (current - 1 + cards.length) % cards.length;
+
+  if (dx < 0) {
+    // 右にページめくり
+    let rotation = Math.min(Math.abs(dx)/2, 180);
+    setCardTransform(cards[nextIndex], rotation, 'left');
+    cards[nextIndex].style.zIndex = 5;
+    currentRotation = rotation;
+  } else {
+    // 左にページめくり
+    let rotation = Math.min(dx/2, 180);
+    setCardTransform(cards[prevIndex], -rotation, 'right');
+    cards[prevIndex].style.zIndex = 5;
+    currentRotation = rotation;
+  }
 });
 
-// タッチ操作
-carousel.addEventListener('touchstart', (e) => {
+container.addEventListener('mouseup', e => {
+  if (!isDragging) return;
+  isDragging = false;
+  const dx = e.clientX - startX;
+  if (dx < -50) rotateNext();
+  else if (dx > 50) rotatePrev();
+  else {
+    // 少し動かしただけ → 元に戻す
+    const nextIndex = (current + 1) % cards.length;
+    const prevIndex = (current - 1 + cards.length) % cards.length;
+    setCardTransform(cards[nextIndex], 0, 'left');
+    setCardTransform(cards[prevIndex], 0, 'left');
+    cards[nextIndex].style.zIndex = 3;
+    cards[prevIndex].style.zIndex = 2;
+  }
+});
+
+container.addEventListener('mouseleave', () => { if(isDragging) container.dispatchEvent(new Event('mouseup')); });
+
+// タッチ対応
+container.addEventListener('touchstart', e => {
   isDragging = true;
-  startX = e.touches[0].pageX - carousel.offsetLeft;
-  scrollLeft = carousel.scrollLeft;
+  startX = e.touches[0].clientX;
 });
 
-carousel.addEventListener('touchend', () => {
-  isDragging = false;
-});
-
-carousel.addEventListener('touchmove', (e) => {
+container.addEventListener('touchmove', e => {
   if (!isDragging) return;
-  const x = e.touches[0].pageX - carousel.offsetLeft;
-  const walk = (startX - x);
-  carousel.scrollLeft = scrollLeft + walk;
-});
-</script>
+  const dx = e.touches[0].clientX - startX;
+  const nextIndex = (current + 1) % cards.length;
+  const prevIndex = (current - 1 + cards.length) % cards.length;
 
-</body>
-</html>
+  if (dx < 0) {
+    let rotation = Math.min(Math.abs(dx)/2, 180);
+    setCardTransform(cards[nextIndex], rotation, 'left');
+    cards[nextIndex].style.zIndex = 5;
+    currentRotation = rotation;
+  } else {
+    let rotation = Math.min(dx/2, 180);
+    setCardTransform(cards[prevIndex], -rotation, 'right');
+    cards[prevIndex].style.zIndex = 5;
+    currentRotation = rotation;
+  }
+});
+
+container.addEventListener('touchend', e => {
+  if (!isDragging) return;
+  isDragging = false;
+  const dx = e.changedTouches[0].clientX - startX;
+  if (dx < -50) rotateNext();
+  else if (dx > 50) rotatePrev();
+  else {
+    const nextIndex = (current + 1) % cards.length;
+    const prevIndex
