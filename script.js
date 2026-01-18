@@ -7,19 +7,17 @@ const images = [
   "image/jack.of.hearts.png"
 ];
 
-let current = 0;          // 現在表示中の画像
-let viewState = "left";   // left=左半分、right=右半分
+let current = 0;
+let viewState = "left";
 
 const viewer = document.getElementById("viewer");
 const img = document.getElementById("img");
 
-// 画像サイズ・スライド範囲
 let vw, imgW;
 let minOffset, maxOffset;
 let leftOffset, rightOffset;
 let offsetX = 0;
 
-// ドラッグ状態
 let startX = 0;
 let dragging = false;
 
@@ -40,12 +38,10 @@ img.onload = () => {
   const natW = img.naturalWidth;
   const natH = img.naturalHeight;
 
-  // 高さ基準で画面内に収まるスケール
   let scaleH = (vh * 0.9) / natH;
   let displayW = natW * scaleH;
   let displayH = natH * scaleH;
 
-  // 幅が画面の2倍未満なら横基準で拡大
   if(displayW < vw * 2){
     const scaleW = (vw * 2) / natW;
     displayW = natW * scaleW;
@@ -57,24 +53,22 @@ img.onload = () => {
 
   imgW = displayW;
 
-  // スライド範囲
-  maxOffset = 0;          // 左端
-  minOffset = vw - imgW;  // 右端
+  maxOffset = 0;
+  minOffset = vw - imgW;
 
-  leftOffset = minOffset / 2;  // 左半分表示
-  rightOffset = minOffset;     // 右半分表示
+  leftOffset = minOffset / 2;
+  rightOffset = minOffset;
 
-  // 初期位置
-  offsetX = leftOffset;
+  offsetX = (viewState === "left") ? leftOffset : rightOffset;
   img.style.transition = "none";
   img.style.transform = `translate(${offsetX}px, -50%)`;
   requestAnimationFrame(() => {
-    img.style.transition = "transform 0.25s ease";
+    img.style.transition = "transform 0.3s ease";
   });
 };
 
 // ============================
-// ドラッグ操作
+// ドラッグ
 // ============================
 viewer.addEventListener("touchstart", e => {
   dragging = true;
@@ -87,8 +81,6 @@ viewer.addEventListener("touchmove", e => {
   const dx = e.touches[0].clientX - startX;
   let next = offsetX + dx;
 
-  // スライド範囲内
-  next = Math.max(minOffset, Math.min(maxOffset, next));
   offsetX = next;
   img.style.transform = `translate(${offsetX}px, -50%)`;
 
@@ -97,40 +89,54 @@ viewer.addEventListener("touchmove", e => {
 
 viewer.addEventListener("touchend", e => {
   dragging = false;
-  img.style.transition = "transform 0.25s ease";
+  img.style.transition = "transform 0.3s ease";
 
-  const threshold = vw * 0.25;
-
-  // ページ送り判定
-  if(offsetX <= leftOffset - threshold){
-    goNext();
-  } else if(offsetX >= rightOffset + threshold){
-    goPrev();
+  // 折り返し判定
+  if(offsetX < rightOffset - vw * 0.1 && current < images.length -1){
+    // 右端を超えたら次の画像に折り返し
+    flipNext();
+  } else if(offsetX > leftOffset + vw * 0.1 && current > 0){
+    // 左端を超えたら前の画像に折り返し
+    flipPrev();
+  } else {
+    snap();
   }
-  // 指を離しても位置は戻らない
 });
 
 // ============================
-// ページ送り
+// スナップ
 // ============================
-function goNext(){
-  if(current >= images.length -1) return;
-  current++;
-  viewState = "left"; // 次の画像は左半分スタート
-  loadImage();
+function snap(){
+  offsetX = (viewState === "left") ? leftOffset : rightOffset;
+  img.style.transform = `translate(${offsetX}px, -50%)`;
 }
 
 // ============================
-// ページ戻り
-// ============================
-function goPrev(){
-  if(current <= 0) return;
-  current--;
-  viewState = "right"; // 戻るときは右半分スタート
-  loadImage();
+// ページめくり（折り返し）
+function flipNext(){
+  // アニメーションで右側から次の画像が出る
+  img.style.transition = "transform 0.3s ease";
+  img.style.transform = `translate(${minOffset - 50}px, -50%)`; // 少し押し出す演出
+
+  setTimeout(()=>{
+    current++;
+    viewState = "left";
+    loadImage();
+  }, 200); // 次の画像表示
+}
+
+function flipPrev(){
+  img.style.transition = "transform 0.3s ease";
+  img.style.transform = `translate(${50}px, -50%)`;
+
+  setTimeout(()=>{
+    current--;
+    viewState = "right";
+    loadImage();
+  }, 200);
 }
 
 // ============================
 // 初期ロード
 // ============================
-loadImage();
+loadImage()
