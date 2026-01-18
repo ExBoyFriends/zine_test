@@ -3,114 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2枚カルーセル</title>
+<title>ドラッグカルーセル</title>
 <style>
-body {
-display: flex;
-justify-content: center;
-align-items: center;
-height: 100vh;
-margin: 0;
-background: #111;
-color: #fff;
-font-family: sans-serif;
-}
+  body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #111;
+  }
 
-.carousel {
-position: relative;
-width: 300px; /* 画像サイズに合わせる */
-height: 400px;
-overflow: hidden;
-border-radius: 10px;
-box-shadow: 0 0 20px rgba(0,0,0,0.5);
-}
+  .carousel {
+    display: flex;
+    gap: 10px; /* 画像間の余白 */
+    overflow-x: hidden;
+    cursor: grab;
+    padding: 20px 0;
+    touch-action: pan-x;
+    user-select: none;
+  }
 
-.carousel-track {
-display: flex;
-transition: transform 0.5s ease;
-}
+  .carousel img {
+    width: 80vw;  /* 画面幅に応じて調整 */
+    max-width: 400px; /* PCでは大きくなりすぎないように */
+    height: auto;
+    flex-shrink: 0;
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+  }
 
-.carousel-track img {
-width: 300px;
-height: 400px;
-object-fit: cover;
-user-select: none;
-pointer-events: none;
-}
-
-/* ボタン */
-.carousel-button {
-position: absolute;
-top: 50%;
-transform: translateY(-50%);
-background: rgba(0,0,0,0.5);
-border: none;
-color: #fff;
-font-size: 2rem;
-padding: 0 10px;
-cursor: pointer;
-z-index: 10;
-}
-
-.carousel-button.left {
-left: 10px;
-}
-
-.carousel-button.right {
-right: 10px;
-}
+  /* ドラッグ中のカーソル */
+  .dragging {
+    cursor: grabbing;
+  }
 </style>
 </head>
 <body>
 
 <div class="carousel">
-<div class="carousel-track">
-<img src="image/king.of.spades.png" alt="画像1">
-<img src="image/queen.of.clubs.png" alt="画像2">
-</div>
-<button class="carousel-button left">&#10094;</button>
-<button class="carousel-button right">&#10095;</button>
+  <img src="image1.jpg" alt="画像1">
+  <img src="image2.jpg" alt="画像2">
 </div>
 
 <script>
-const track = document.querySelector('.carousel-track');
-const slides = Array.from(track.children);
-const leftBtn = document.querySelector('.carousel-button.left');
-const rightBtn = document.querySelector('.carousel-button.right');
+const carousel = document.querySelector('.carousel');
 
-let currentIndex = 0;
+let isDragging = false;
+let startX;
+let scrollLeft;
 
-function updateCarousel() {
-track.style.transform = `translateX(-${currentIndex * 300}px)`;
-}
-
-leftBtn.addEventListener('click', () => {
-currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-updateCarousel();
+carousel.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  carousel.classList.add('dragging');
+  startX = e.pageX - carousel.offsetLeft;
+  scrollLeft = carousel.scrollLeft;
 });
 
-rightBtn.addEventListener('click', () => {
-currentIndex = (currentIndex + 1) % slides.length;
-updateCarousel();
+carousel.addEventListener('mouseleave', () => {
+  isDragging = false;
+  carousel.classList.remove('dragging');
 });
 
-// タッチ操作（スマホ用）
-let startX = 0;
-track.addEventListener('touchstart', e => {
-startX = e.touches[0].clientX;
+carousel.addEventListener('mouseup', () => {
+  isDragging = false;
+  carousel.classList.remove('dragging');
 });
 
-track.addEventListener('touchend', e => {
-const endX = e.changedTouches[0].clientX;
-if (endX - startX > 50) {
-// 右スワイプ
-currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-updateCarousel();
-} else if (startX - endX > 50) {
-// 左スワイプ
-currentIndex = (currentIndex + 1) % slides.length;
-updateCarousel();
-}
+carousel.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  e.preventDefault();
+  const x = e.pageX - carousel.offsetLeft;
+  const walk = (startX - x); // 移動距離
+  carousel.scrollLeft = scrollLeft + walk;
+});
+
+// タッチ操作対応
+carousel.addEventListener('touchstart', (e) => {
+  isDragging = true;
+  startX = e.touches[0].pageX - carousel.offsetLeft;
+  scrollLeft = carousel.scrollLeft;
+});
+
+carousel.addEventListener('touchend', () => {
+  isDragging = false;
+});
+
+carousel.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
+  const x = e.touches[0].pageX - carousel.offsetLeft;
+  const walk = (startX - x);
+  carousel.scrollLeft = scrollLeft + walk;
 });
 </script>
 
