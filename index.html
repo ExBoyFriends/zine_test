@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ページめくりカルーセル</title>
+<title>立体ページカルーセル</title>
 <style>
 body {
   margin: 0;
@@ -32,7 +32,8 @@ body {
   background-position: center;
   left: 0;
   top: 0;
-  transition: transform 0.3s ease, left 0.3s ease, z-index 0s 0.3s;
+  transition: transform 0.3s ease, z-index 0s 0.3s;
+  transform-origin: left center;
   cursor: grab;
 }
 </style>
@@ -51,43 +52,62 @@ const cards = Array.from(document.querySelectorAll('.card'));
 let current = 0;
 let isDragging = false;
 let startX = 0;
-let dragThreshold = 50;
+let dragThreshold = 80; // ページめくり閾値
 const container = document.querySelector('.carousel-container');
+
+function setCardTransform(card, rotationDeg, offsetX) {
+  card.style.transform = `translateX(${offsetX}px) rotateY(${rotationDeg}deg)`;
+}
 
 function bringForward(index) {
   cards[index].style.zIndex = 4;
 }
 
-function rotateNext() {
+// ページめくり完了
+function completeNext() {
   const currentCard = cards[current];
   const nextIndex = (current + 1) % cards.length;
   const nextCard = cards[nextIndex];
+  const behindIndex = (current + 2) % cards.length;
+  const behindCard = cards[behindIndex];
+
+  // 現在カードを裏に回す
+  currentCard.style.transition = 'transform 0.3s ease, z-index 0s 0.3s';
+  setCardTransform(currentCard, -180, 0);
+  setTimeout(() => {
+    currentCard.style.zIndex = 1;
+    setCardTransform(currentCard, 0, behindCard.offsetLeft); 
+  }, 300);
 
   // 次カードを前面に
-  bringForward(nextIndex);
+  nextCard.style.transition = 'transform 0.3s ease';
+  setCardTransform(nextCard, 0, 0);
+  nextCard.style.zIndex = 4;
 
-  // 現在カードを裏に少し左にずらして待機
-  currentCard.style.left = '-50px';
-  currentCard.style.zIndex = 1;
-
-  // 次カードを初期位置に
-  nextCard.style.left = '0px';
+  // 裏カード初期位置
+  behindCard.style.zIndex = 2;
 
   current = nextIndex;
 }
 
-function rotatePrev() {
+function completePrev() {
+  const currentCard = cards[current];
   const prevIndex = (current - 1 + cards.length) % cards.length;
   const prevCard = cards[prevIndex];
-  const currentCard = cards[current];
+  const behindIndex = (current - 2 + cards.length) % cards.length;
+  const behindCard = cards[behindIndex];
 
-  // 前面に戻す
-  bringForward(prevIndex);
-  prevCard.style.left = '0px';
+  // 左側カードを前面に戻す
+  prevCard.style.transition = 'transform 0.3s ease';
+  setCardTransform(prevCard, 0, 0);
+  prevCard.style.zIndex = 4;
 
-  // 現在カードを少し右にずらして待機
-  currentCard.style.left = '50px';
+  // 現在カードを裏に回す
+  currentCard.style.transition = 'transform 0.3s ease';
+  setCardTransform(currentCard, 180, 50);
   currentCard.style.zIndex = 1;
+
+  behindCard.style.zIndex = 2;
 
   current = prevIndex;
 }
@@ -100,18 +120,40 @@ container.addEventListener('mousedown', e => {
 
 container.addEventListener('mousemove', e => {
   if (!isDragging) return;
-  // 今はシンプル: リアルタイム回転は未実装
+  const dx = e.clientX - startX;
+
+  const nextIndex = (current + 1) % cards.length;
+  const prevIndex = (current - 1 + cards.length) % cards.length;
+
+  if (dx < 0) {
+    // 右ドラッグ
+    const rotation = Math.min(Math.abs(dx)/2, 180);
+    setCardTransform(cards[nextIndex], rotation, dx/2);
+    cards[nextIndex].style.zIndex = 5;
+  } else {
+    // 左ドラッグ
+    const rotation = Math.min(dx/2, 180);
+    setCardTransform(cards[prevIndex], -rotation, dx/2);
+    cards[prevIndex].style.zIndex = 5;
+  }
 });
 
 container.addEventListener('mouseup', e => {
   if (!isDragging) return;
   isDragging = false;
   const dx = e.clientX - startX;
-  if (dx < -dragThreshold) rotateNext();
-  else if (dx > dragThreshold) rotatePrev();
+  if (dx < -dragThreshold) completeNext();
+  else if (dx > dragThreshold) completePrev();
+  else {
+    // 少し動かしただけ → 元に戻す
+    const nextIndex = (current + 1) % cards.length;
+    const prevIndex = (current - 1 + cards.length) % cards.length;
+    setCardTransform(cards[nextIndex], 0, cards[nextIndex].offsetLeft);
+    setCardTransform(cards[prevIndex], 0, cards[prevIndex].offsetLeft);
+    cards[nextIndex].style.zIndex = 3;
+    cards[prevIndex].style.zIndex = 2;
+  }
 });
-
-container.addEventListener('mouseleave', () => { if(isDragging) container.dispatchEvent(new Event('mouseup')); });
 
 // タッチ対応
 container.addEventListener('touchstart', e => {
@@ -119,12 +161,36 @@ container.addEventListener('touchstart', e => {
   startX = e.touches[0].clientX;
 });
 
+container.addEventListener('touchmove', e => {
+  if (!isDragging) return;
+  const dx = e.touches[0].clientX - startX;
+  const nextIndex = (current + 1) % cards.length;
+  const prevIndex = (current - 1 + cards.length) % cards.length;
+  if (dx < 0) {
+    const rotation = Math.min(Math.abs(dx)/2, 180);
+    setCardTransform(cards[nextIndex], rotation, dx/2);
+    cards[nextIndex].style.zIndex = 5;
+  } else {
+    const rotation = Math.min(dx/2, 180);
+    setCardTransform(cards[prevIndex], -rotation, dx/2);
+    cards[prevIndex].style.zIndex = 5;
+  }
+});
+
 container.addEventListener('touchend', e => {
   if (!isDragging) return;
   isDragging = false;
   const dx = e.changedTouches[0].clientX - startX;
-  if (dx < -dragThreshold) rotateNext();
-  else if (dx > dragThreshold) rotatePrev();
+  if (dx < -dragThreshold) completeNext();
+  else if (dx > dragThreshold) completePrev();
+  else {
+    const nextIndex = (current + 1) % cards.length;
+    const prevIndex = (current - 1 + cards.length) % cards.length;
+    setCardTransform(cards[nextIndex], 0, cards[nextIndex].offsetLeft);
+    setCardTransform(cards[prevIndex], 0, cards[prevIndex].offsetLeft);
+    cards[nextIndex].style.zIndex = 3;
+    cards[prevIndex].style.zIndex = 2;
+  }
 });
 </script>
 
