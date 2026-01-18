@@ -1,168 +1,120 @@
-const stage = document.getElementById("stage");
-const pages = document.getElementById("pages");
-const pageEls = document.querySelectorAll(".page");
-const imgs = document.querySelectorAll(".art");
+const images = ["img1.jpg", "img2.jpg"];
+let current = 0;
 
-let currentPage = 0;
+// 表示状態
+// "left" = 左半分見え
+// "right" = 右半分見え
+let viewState = "left";
 
-/* ページ送り用 */
-let pageStartX = 0;
-let pageTranslate = 0;
+const viewer = document.getElementById("viewer");
+const img = document.getElementById("img");
 
-/* 画像用 */
-let imgStartX = 0;
-let imgOffsetX = 0;
+let vw, imgW;
+let minOffset, maxOffset;
+let initialLeftOffset, initialRightOffset;
+let offsetX = 0;
 
-/* ページごとの画像位置を保存 */
-let imgOffsets = [];
-
-/* 状態 */
+let startX = 0;
 let dragging = false;
-let mode = "image"; // image → page に切り替わる
+let mode = "slide"; // slide or page
 
-/* 画像可動範囲 */
-let minImgOffset = 0;
-let maxImgOffset = 0;
+function setup() {
+  vw = window.innerWidth;
 
-/* 初期セットアップ */
-function setupImages(){
-  const vw = window.innerWidth;
+  img.onload = () => {
+    imgW = img.offsetWidth;
 
-  pageEls.forEach((page, index)=>{
-    const img = imgs[index];
+    // 画面には常に半分しか入らない前提
+    minOffset = vw - imgW; // 右端
+    maxOffset = 0;         // 左端
 
-    // 画像サイズ：スクエアで「半分見切れ」
-    const size = vw * 2 * 0.9;
-    img.style.width  = size + "px";
-    img.style.height = size + "px";
+    // 半分見えの位置
+    initialLeftOffset = minOffset / 2;
+    initialRightOffset = minOffset;
 
-    // 各ページの初期オフセット
-    imgOffsets[index] = 0;
-
-    // 画像の可動範囲
-    maxImgOffset = 0;
-    minImgOffset = vw - size;
-
-    img.style.transform = `translate(0, -50%)`;
-  });
-
-  pages.style.transform = `translateX(0)`;
+    applyInitialPosition();
+  };
 }
 
-/* タッチ開始 */
-stage.addEventListener("touchstart", e=>{
-  dragging = true;
-  mode = "image";
-
-  const x = e.touches[0].clientX;
-  pageStartX = x;
-  imgStartX = x;
-
-  // 現在ページの画像位置を復元
-  imgOffsetX = imgOffsets[currentPage] || 0;
-});
-
-/* タッチ移動 */
-stage.addEventListener("touchmove", e=>{
-  if(!dragging) return;
-  e.preventDefault();
-
-  const x = e.touches[0].clientX;
-  const dx = x - imgStartX;
-
-  const img = imgs[currentPage];
-
-if (mode === "image") {
-  let next = imgOffsetX + dx;
-
-  if (next >= minImgOffset && next <= maxImgOffset) {
-    img.style.transform = `translate(${next}px, -50%)`;
+function applyInitialPosition() {
+  if (viewState === "left") {
+    offsetX = initialLeftOffset;
   } else {
-    // 画像は端で止める
-    next = Math.max(minImgOffset, Math.min(maxImgOffset, next));
-    img.style.transform = `translate(${next}px, -50%)`;
+    offsetX = initialRightOffset;
+  }
+  img.style.transform = `translate(${offsetX}px, -50%)`;
+}
 
-    // ここで初めてページモードに移行
+viewer.addEventListener("touchstart", e => {
+  dragging = true;
+  startX = e.touches[0].clientX;
+  img.style.transition = "none";
+  mode = "slide";
+});
+
+viewer.addEventListener("touchmove", e => {
+  if (!dragging) return;
+
+  const x = e.touches[0].clientX;
+  const dx = x - startX;
+
+  let next = offsetX + dx;
+
+  // 右半分まで行ったら「ページモード」
+  if (viewState === "left" && next <= initialRightOffset) {
+    mode = "slide";
+  } else {
     mode = "page";
-    pageStartX = x;
-    pageTranslate = -currentPage * window.innerWidth;
-  }
-}
-
-if (mode === "page") {
-  const dx = e.changedTouches[0].clientX - pageStartX;
-  const threshold = 80;
-
-  let nextPage = currentPage;
-
-  if (dx < -threshold && currentPage < pageEls.length - 1) {
-    nextPage++;
-  }
-  if (dx > threshold && currentPage > 0) {
-    nextPage--;
   }
 
-  // ページを決定
-  currentPage = nextPage;
+  if (mode === "slide") {
+    next = Math.max(minOffset, Math.min(maxOffset, next));
+    img.style.transform = `translate(${next}px, -50%)`;
+  }
 
-  // ページ送りアニメーション（紙っぽく）
-  pages.style.transition =
-    "transform 0.5s cubic-bezier(.25,.8,.25,1)";
-  pages.style.transform =
-    `translateX(${-currentPage * window.innerWidth}px)`;
+  startX = x;
+  offsetX = next;
+});
 
-  // ここでは画像をリセットしない
-  // ページが切り替わり終わった後にだけ初期化する
-  pages.addEventListener("transitionend", () => {
-    const img = imgs[currentPage];
-    imgOffsets[currentPage] = 0;
-    img.style.transition = "transform 0.25s ease";
-    img.style.transform = `translate(0, -50%)`;
-  }, { once:true });
-}
-
-/* タッチ終了 */
-stage.addEventListener("touchend", e=>{
+viewer.addEventListener("touchend", () => {
   dragging = false;
+  img.style.transition = "transform 0.3s ease";
 
-  // 画像モードなら位置を保存
-  if(mode === "image"){
-    const img = imgs[currentPage];
-    const m = /translate\(([-\d.]+)px/.exec(img.style.transform);
-    if(m) imgOffsets[currentPage] = parseFloat(m[1]);
-  }
-
-  // ページ送りモードならページを確定
-  if(mode === "page"){
-    const dx = e.changedTouches[0].clientX - pageStartX;
-    const threshold = 80;
-
-    if(dx < -threshold && currentPage < pageEls.length - 1){
-      currentPage++;
-    }
-    if(dx > threshold && currentPage > 0){
-      currentPage--;
-    }
-
-    // ページ位置をスナップ
-    pages.style.transition = "transform 0.35s ease";
-    pages.style.transform =
-      `translateX(${-currentPage * window.innerWidth}px)`;
-
-    // 新しいページの画像は必ず初期位置へ
-    const img = imgs[currentPage];
-    imgOffsets[currentPage] = 0;
-    img.style.transition = "transform 0.25s ease";
-    img.style.transform = `translate(0, -50%)`;
+  // ページめくり判定
+  if (mode === "page") {
+    goNext();
+  } else {
+    snapBack();
   }
 });
 
-/* リサイズ対応 */
-window.addEventListener("resize", ()=>{
-  setupImages();
-});
+function snapBack() {
+  if (viewState === "left") {
+    offsetX = initialLeftOffset;
+  } else {
+    offsetX = initialRightOffset;
+  }
+  img.style.transform = `translate(${offsetX}px, -50%)`;
+}
 
-/* 初期化 */
-window.addEventListener("load", ()=>{
-  setupImages();
-});
+function goNext() {
+  if (current >= images.length - 1) {
+    snapBack();
+    return;
+  }
+
+  current++;
+  viewState = "left";
+  img.src = images[current];
+  setup();
+}
+
+function goPrev() {
+  if (current <= 0) return;
+  current--;
+  viewState = "right";
+  img.src = images[current];
+  setup();
+}
+
+setup();
