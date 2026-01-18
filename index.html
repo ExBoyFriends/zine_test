@@ -53,30 +53,33 @@ function setup(){
   let size;
 
   if (isPortrait()) {
-    // 縦型は常に“はみ出すサイズ”
-    size = vw * 1.6;
-  } else {
-    // 横型は常に“収まるサイズ”
-    size = Math.min(vw, vh);
-  }
+    // 縦型：必ずはみ出すサイズ
+    size = vw * 1.8;
 
-  img.style.width  = size + "px";
-  img.style.height = size + "px";
+    img.style.width  = size + "px";
+    img.style.height = size + "px";
 
-  if (isPortrait()){
     img.style.left = "0";
     img.style.top  = "50%";
 
-    // 縦型のたびに必ず再計算
-    minOffsetX = vw - size;   // 必ずマイナスになる
-    offsetX = Math.max(minOffsetX, Math.min(0, offsetX));
+    // 縦型に入るたび必ずリセット
+    offsetX = 0;
+    minOffsetX = vw - size;   // 必ずマイナス
+
     apply(offsetX);
 
   } else {
+    // 横型：必ず収まるサイズ
+    size = Math.min(vw, vh);
+
+    img.style.width  = size + "px";
+    img.style.height = size + "px";
+
     img.style.left = "50%";
     img.style.top  = "50%";
     img.style.transform = "translate(-50%, -50%)";
 
+    // 横型は完全リセット
     offsetX = 0;
     minOffsetX = 0;
   }
@@ -110,6 +113,24 @@ viewer.addEventListener("touchend", ()=>{
 
 window.addEventListener("resize", setup);
 img.onload = setup;
+
+let lastOrientation = null;
+
+function checkOrientation(){
+  const now = isPortrait() ? "portrait" : "landscape";
+  if(now !== lastOrientation){
+    lastOrientation = now;
+    setup();   // 向きが変わった瞬間だけ作り直す
+  }
+}
+
+window.addEventListener("resize", checkOrientation);
+img.onload = () => {
+  lastOrientation = isPortrait() ? "portrait" : "landscape";
+  setup();
+};
+
+
 </script>
 
 </body>
