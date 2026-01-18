@@ -24,9 +24,9 @@ html, body {
 }
 
 #container img {
-  width: 300px;       /* 任意サイズ */
-  height: 300px;      /* スクエア */
-  margin: 0 10px;     /* 左右余白 */
+  width: 250px;       /* 任意サイズ */
+  height: 250px;      /* スクエア */
+  margin: 0 15px;     /* 左右の余白 */
   object-fit: cover;
   user-select: none;
   -webkit-user-drag: none;
