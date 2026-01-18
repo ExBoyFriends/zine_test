@@ -2,156 +2,143 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
-<title>Digital ZINE Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZINE Image Viewer</title>
+
 <style>
 body {
   margin: 0;
-  background: #111;
+  background: #000;
   overflow: hidden;
 }
 
-#zine {
+#viewer {
   position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  touch-action: pan-y;
+  touch-action: none;
 }
 
-.page {
+/* 大きな一枚絵 */
+#image {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #000;
-}
-
-.page img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+  top: 50%;
+  left: 0;
+  transform: translate(0, -50%);
   user-select: none;
   -webkit-user-drag: none;
+  will-change: transform;
 }
 
-/* 左右 */
-#left { left: 0; }
-#right { right: 0; }
-
-/* 縦向き：左ページだけ */
-.portrait #right { display: none; }
-.portrait #left { width: 100%; }
+/* 横向きのときは全体が必ず収まる */
+.landscape #image {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  max-height: 100%;
+}
 </style>
 </head>
+
 <body>
 
-<div id="zine">
-<div id="left" class="page">
-<img id="leftImg" src="">
-</div>
-<div id="right" class="page">
-<img id="rightImg" src="">
-</div>
+<div id="viewer">
+  <!-- ここを自分の作品画像に差し替えて -->
+  <img id="image" src="https://picsum.photos/2000/1200">
 </div>
 
 <script>
-const pages = [
-  { left:"https://picsum.photos/800/1200?1", right:"https://picsum.photos/800/1200?2", spread:false },
-  { left:"https://picsum.photos/1600/1200?3", right:"https://picsum.photos/1600/1200?3", spread:true },
-  { left:"https://picsum.photos/800/1200?4", right:"https://picsum.photos/800/1200?5", spread:false }
-];
+const viewer = document.getElementById("viewer");
+const img = document.getElementById("image");
 
-let index = 0;
 let startX = 0;
 let currentX = 0;
+let offsetX = 0;   // 今の画像位置（固定される）
 let dragging = false;
 
-const zine = document.getElementById("zine");
-const left = document.getElementById("left");
-const right = document.getElementById("right");
-const leftImg = document.getElementById("leftImg");
-const rightImg = document.getElementById("rightImg");
-
-function isPortrait(){
+function isPortrait() {
   return window.innerHeight > window.innerWidth;
 }
 
-function render(){
-  const p = pages[index];
-  leftImg.src = p.left;
-  rightImg.src = p.right;
+function updateLayout() {
+  if (isPortrait()) {
+    document.body.classList.remove("landscape");
 
-  document.body.classList.toggle("portrait", isPortrait());
+    // 縦型では画像は「実寸」で置く
+    img.style.maxWidth = "none";
+    img.style.maxHeight = "none";
 
-  left.style.transform = "translateX(0)";
-  right.style.transform = "translateX(0)";
+    // 初期状態：左半分が画面に来る
+    // = 左端をぴったり合わせる
+    if (offsetX === null) offsetX = 0;
+    applyTransform(offsetX);
+
+  } else {
+    document.body.classList.add("landscape");
+
+    // 横型は全体をフィット表示
+    offsetX = 0;
+    img.style.transform = "";
+  }
 }
-window.addEventListener("resize", render);
-render();
 
-/* ===== タッチ ===== */
+function applyTransform(x) {
+  img.style.transform = `translate(${x}px, -50%)`;
+}
 
-zine.addEventListener("touchstart", e=>{
+// 画像サイズと画面サイズからドラッグ範囲を計算
+function clampOffset(x) {
+  const imgWidth = img.naturalWidth;
+  const viewWidth = viewer.clientWidth;
+
+  // 左端ストッパー：0
+  const maxX = 0;
+  // 右端ストッパー：画像の右端まで見える位置
+  const minX = viewWidth - imgWidth;
+
+  return Math.max(minX, Math.min(maxX, x));
+}
+
+/* 向き変更対応 */
+window.addEventListener("resize", updateLayout);
+img.onload = () => {
+  offsetX = 0;
+  updateLayout();
+};
+
+/* ===== タッチ操作（縦型のみ有効）===== */
+
+viewer.addEventListener("touchstart", e => {
+  if (!isPortrait()) return;
+  dragging = true;
   startX = e.touches[0].clientX;
   currentX = startX;
-  dragging = true;
 });
 
-zine.addEventListener("touchmove", e=>{
-  if(!dragging) return;
+viewer.addEventListener("touchmove", e => {
+  if (!dragging || !isPortrait()) return;
+  e.preventDefault();
+
   currentX = e.touches[0].clientX;
   const dx = currentX - startX;
-  const page = pages[index];
+  const nextX = clampOffset(offsetX + dx);
 
-  // 縦＋見開き1枚絵 → 画像ドラッグ
-  if(isPortrait() && page.spread){
-    e.preventDefault();
-    leftImg.style.transform = `translateX(${dx}px)`;
-    return;
-  }
-
-  // 通常：ページ全体を引っ張る
-  e.preventDefault();
-  left.style.transform = `translateX(${dx}px)`;
-  right.style.transform = `translateX(${dx}px)`;
+  applyTransform(nextX);
 });
 
-zine.addEventListener("touchend", ()=>{
+viewer.addEventListener("touchend", () => {
+  if (!isPortrait()) return;
   dragging = false;
-  const dx = currentX - startX;
-  const threshold = window.innerWidth * 0.25;
-  const page = pages[index];
 
-  // 縦＋見開き1枚絵 → 元に戻すだけ
-  if(isPortrait() && page.spread){
-    leftImg.style.transition = "transform .3s";
-    leftImg.style.transform = "translateX(0)";
-    setTimeout(()=> leftImg.style.transition="",300);
-    return;
+  // 今の位置をそのまま固定する（戻らない）
+  const transform = img.style.transform;
+  const match = /translate\(([-0-9.]+)px/.exec(transform);
+  if (match) {
+    offsetX = parseFloat(match[1]);
   }
-
-  // ページ確定判定
-  if(dx < -threshold && index < pages.length-1){
-    index++;
-  }
-  else if(dx > threshold && index > 0){
-    index--;
-  }
-
-  // 元に戻すアニメ
-  left.style.transition = "transform .3s ease";
-  right.style.transition = "transform .3s ease";
-  left.style.transform = "translateX(0)";
-  right.style.transform = "translateX(0)";
-  setTimeout(()=>{
-    left.style.transition="";
-    right.style.transition="";
-    render();
-  },300);
 });
 </script>
 
