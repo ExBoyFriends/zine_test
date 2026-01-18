@@ -22,12 +22,17 @@ html, body {
 }
 
 /* 余白を含んだキャンバス */
-#stage {
+#stage{
   position: relative;
-  width: 92vw;     /* かなりゆったり */
-  height: 92vh;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
   overflow: hidden;
-  background: #000;
+  padding:
+    8vh
+    0        /* 右余白は最初ゼロ */
+    8vh
+    8vw;     /* 左だけ余白を持つ */
 }
 
 /* 作品画像 */
@@ -59,35 +64,48 @@ let offsetX = 0;
 let startX = 0;
 let dragging = false;
 let minOffsetX = 0;
+let basePaddingLeft = 0;
 
 /*
   縦型専用：
   - スクエアの「半分だけ」が入る
   - ゆったり余白あり
 */
-function setupPortrait() {
+function setupPortrait(){
   const vw = stage.clientWidth;
-  const vh = stage.clientHeight;
 
-  // 「半分が見切れる」＋「余白たっぷり」
-  const marginScale = 0.9;      // 0.85〜0.95で調整
-  const size = vw * 2 * marginScale;
+  const size = vw * 2 * 0.9;
 
+  img.style.position = "absolute";
   img.style.width  = size + "px";
   img.style.height = size + "px";
-
-  img.style.left = "0";
   img.style.top  = "50%";
+  img.style.left = "0";
   img.style.transform = "translate(0, -50%)";
 
-  offsetX = 0;
-  minOffsetX = vw - size;   // 右半分まで動かせる限界
+  const style = getComputedStyle(stage);
+  basePaddingLeft = parseFloat(style.paddingLeft);
 
+  maxOffsetX = 0;
+  minOffsetX = vw - size;
+
+  offsetX = 0;
   apply(offsetX);
 }
 
-function apply(x) {
+function apply(x){
   x = Math.max(minOffsetX, Math.min(0, x));
+
+  // 進行度 0 → 左、1 → 右端
+  const progress = Math.abs(x / minOffsetX);
+
+  // 余白が左から右へ移動する
+  const leftPadding  = basePaddingLeft * (1 - progress);
+  const rightPadding = basePaddingLeft * progress;
+
+  stage.style.paddingLeft  = leftPadding  + "px";
+  stage.style.paddingRight = rightPadding + "px";
+
   img.style.transform = `translate(${x}px, -50%)`;
 }
 
