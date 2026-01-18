@@ -20,7 +20,7 @@ html, body {
   left: 0;
   width: auto;
   height: auto;
-  max-height: 90vh;
+  max-height: 90vh; /* 画面に収まる */
   max-width: none;
   transform: translateY(-50%);
   transition: transform 0.25s ease;
