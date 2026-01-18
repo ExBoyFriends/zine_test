@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZINE</title>
 <style>
 html,body{
   margin:0;
@@ -13,8 +12,8 @@ html,body{
 #viewer{
   width:100vw;
   height:100vh;
-  overflow:hidden;
   position:relative;
+  overflow:hidden;
   touch-action:none;
 }
 #image{
@@ -30,7 +29,8 @@ html,body{
 <body>
 
 <div id="viewer">
-  <img id="image" src="https://picsum.photos/2000" />
+  <!-- 正方形画像を指定 -->
+  <img id="image" src="https://picsum.photos/2000">
 </div>
 
 <script>
@@ -49,29 +49,35 @@ function isPortrait(){
 function setup(){
   const vw = viewer.clientWidth;
   const vh = viewer.clientHeight;
-  const iw = img.naturalWidth;
-  const ih = img.naturalHeight;
-  if(!iw || !ih) return;
 
-  // 横向きで必ず収まるサイズを先に作る（スクエア想定）
-  const scale = Math.min(vw, vh) / iw;
-  const size = iw * scale;
+  // ここが全て：短辺サイズ＝正方形の一辺
+  const size = Math.min(vw, vh);
 
-  img.style.width = size + "px";
+  img.style.width  = size + "px";
   img.style.height = size + "px";
 
   if(isPortrait()){
-    // 縦向き：左半分表示＋横スクロール
+    // 縦型：左寄せ、横スクロール
     img.style.left = "0";
-    img.style.top = "50%";
+    img.style.top  = "50%";
+
     offsetX = 0;
-    minOffsetX = vw - size; // マイナス値（スクロールできる距離）
+
+    // 画面より画像が大きい時だけドラッグ可能
+    if(size > vw){
+      minOffsetX = vw - size;   // マイナス値
+    }else{
+      minOffsetX = 0;           // 動かない
+    }
+
     apply(offsetX);
+
   }else{
-    // 横向き：中央に全体表示
+    // 横型：必ず中央に完全表示
     img.style.left = "50%";
-    img.style.top = "50%";
+    img.style.top  = "50%";
     img.style.transform = "translate(-50%, -50%)";
+
     offsetX = 0;
     minOffsetX = 0;
   }
@@ -84,26 +90,27 @@ function apply(x){
 
 viewer.addEventListener("touchstart", e=>{
   if(!isPortrait()) return;
+  if(minOffsetX === 0) return; // 動かせない時は無効
   dragging = true;
   startX = e.touches[0].clientX;
 });
 
 viewer.addEventListener("touchmove", e=>{
-  if(!dragging || !isPortrait()) return;
+  if(!dragging) return;
   e.preventDefault();
   const dx = e.touches[0].clientX - startX;
   apply(offsetX + dx);
 });
 
 viewer.addEventListener("touchend", ()=>{
-  if(!isPortrait()) return;
+  if(!dragging) return;
   dragging = false;
   const m = /translate\(([-\d.]+)px/.exec(img.style.transform);
   if(m) offsetX = parseFloat(m[1]);
 });
 
-img.onload = setup;
 window.addEventListener("resize", setup);
+img.onload = setup;
 </script>
 
 </body>
