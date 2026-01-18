@@ -5,35 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ドラッグカルーセル</title>
 <style>
-  body {
+  html, body {
     margin: 0;
+    padding: 0;
+    overflow: hidden; /* 縦スクロール禁止 */
+    height: 100%;
+    background: #111;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background: #111;
   }
 
   .carousel {
     display: flex;
-    gap: 10px; /* 画像間の余白 */
+    gap: 5px; /* 画像間の余白を狭める */
     overflow-x: hidden;
     cursor: grab;
-    padding: 20px 0;
     touch-action: pan-x;
     user-select: none;
+    padding: 10px 0;
   }
 
   .carousel img {
-    width: 80vw;  /* 画面幅に応じて調整 */
-    max-width: 400px; /* PCでは大きくなりすぎないように */
+    width: 90vw;  /* 画面幅の90%に拡大 */
+    max-width: 450px; /* PCでの最大サイズ */
     height: auto;
     flex-shrink: 0;
     border-radius: 8px;
     transition: transform 0.2s ease;
   }
 
-  /* ドラッグ中のカーソル */
   .dragging {
     cursor: grabbing;
   }
@@ -74,11 +75,11 @@ carousel.addEventListener('mousemove', (e) => {
   if (!isDragging) return;
   e.preventDefault();
   const x = e.pageX - carousel.offsetLeft;
-  const walk = (startX - x); // 移動距離
+  const walk = (startX - x);
   carousel.scrollLeft = scrollLeft + walk;
 });
 
-// タッチ操作対応
+// タッチ操作
 carousel.addEventListener('touchstart', (e) => {
   isDragging = true;
   startX = e.touches[0].pageX - carousel.offsetLeft;
