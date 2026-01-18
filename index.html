@@ -1,6 +1,118 @@
-<div id="viewer">
-  <div id="container">
-    <img src="image/king.of.spades.png">
-    <img src="image/queen.of.clubs.png">
-  </div>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2枚カルーセル</title>
+<style>
+body {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+margin: 0;
+background: #111;
+color: #fff;
+font-family: sans-serif;
+}
+
+.carousel {
+position: relative;
+width: 300px; /* 画像サイズに合わせる */
+height: 400px;
+overflow: hidden;
+border-radius: 10px;
+box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.carousel-track {
+display: flex;
+transition: transform 0.5s ease;
+}
+
+.carousel-track img {
+width: 300px;
+height: 400px;
+object-fit: cover;
+user-select: none;
+pointer-events: none;
+}
+
+/* ボタン */
+.carousel-button {
+position: absolute;
+top: 50%;
+transform: translateY(-50%);
+background: rgba(0,0,0,0.5);
+border: none;
+color: #fff;
+font-size: 2rem;
+padding: 0 10px;
+cursor: pointer;
+z-index: 10;
+}
+
+.carousel-button.left {
+left: 10px;
+}
+
+.carousel-button.right {
+right: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="carousel">
+<div class="carousel-track">
+<img src="image/king.of.spades.png" alt="画像1">
+<img src="image/queen.of.clubs.png" alt="画像2">
 </div>
+<button class="carousel-button left">&#10094;</button>
+<button class="carousel-button right">&#10095;</button>
+</div>
+
+<script>
+const track = document.querySelector('.carousel-track');
+const slides = Array.from(track.children);
+const leftBtn = document.querySelector('.carousel-button.left');
+const rightBtn = document.querySelector('.carousel-button.right');
+
+let currentIndex = 0;
+
+function updateCarousel() {
+track.style.transform = `translateX(-${currentIndex * 300}px)`;
+}
+
+leftBtn.addEventListener('click', () => {
+currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+updateCarousel();
+});
+
+rightBtn.addEventListener('click', () => {
+currentIndex = (currentIndex + 1) % slides.length;
+updateCarousel();
+});
+
+// タッチ操作（スマホ用）
+let startX = 0;
+track.addEventListener('touchstart', e => {
+startX = e.touches[0].clientX;
+});
+
+track.addEventListener('touchend', e => {
+const endX = e.changedTouches[0].clientX;
+if (endX - startX > 50) {
+// 右スワイプ
+currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+updateCarousel();
+} else if (startX - endX > 50) {
+// 左スワイプ
+currentIndex = (currentIndex + 1) % slides.length;
+updateCarousel();
+}
+});
+</script>
+
+</body>
+</html>
