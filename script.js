@@ -1,77 +1,127 @@
-const stage = document.getElementById("stage");
-const img = document.getElementById("image");
+const pages = document.getElementById("pages");
+const pageEls = document.querySelectorAll(".page");
+const imgs = document.querySelectorAll(".art");
 
-let offsetX = 0;
-let startX = 0;
+let currentPage = 0;
+
+/* ページ送り用 */
+let pageStartX = 0;
+let pageTranslate = 0;
+
+/* 画像用 */
+let imgStartX = 0;
+let imgOffsetX = 0;
+
+/* 状態 */
 let dragging = false;
+let mode = "image"; // image → page に切り替わる
 
-let minOffsetX = 0;
-let basePaddingLeft = 0;
+/* 画像可動範囲 */
+let minImgOffset = 0;
+let maxImgOffset = 0;
 
-function setupPortrait() {
-const vw = stage.clientWidth;
+function setupImages(){
+  pageEls.forEach((page, index)=>{
+    const img = imgs[index];
+    const vw = window.innerWidth;
 
-// 画像サイズ：
-// 画面幅の2倍 × 0.9 ＝ 少しゆったりした「半分見切れ」
-const size = vw * 2 * 0.9;
+    // 画像サイズ：半分見切れ
+    const size = vw * 2 * 0.9;
+    img.style.width  = size + "px";
+    img.style.height = size + "px";
 
-img.style.width = size + "px";
-img.style.height = size + "px";
+    imgOffsetX = 0;
 
-img.style.left = "0";
-img.style.top = "50%";
-img.style.transform = "translate(0, -50%)";
+    // 左余白取得
+    const style = getComputedStyle(page);
+    const leftPadding = parseFloat(style.paddingLeft);
 
-// 初期の左余白を取得
-const style = getComputedStyle(stage);
-basePaddingLeft = parseFloat(style.paddingLeft);
+    // 画像の可動範囲
+    maxImgOffset = 0;
+    minImgOffset = vw - size;
 
-// ドラッグ範囲
-minOffsetX = vw - size; // これ以上左に行かない
-offsetX = 0;
-
-apply(offsetX);
+    img.style.transform = `translate(${imgOffsetX}px, -50%)`;
+  });
 }
 
-function apply(x) {
-// 範囲制限
-x = Math.max(minOffsetX, Math.min(0, x));
-
-// 進行度：0 → 左寄り、1 → 右端
-const progress = Math.abs(x / minOffsetX);
-
-// 余白を左から右へ「移動」
-const leftPadding = basePaddingLeft * (1 - progress);
-const rightPadding = basePaddingLeft * progress;
-
-stage.style.paddingLeft = leftPadding + "px";
-stage.style.paddingRight = rightPadding + "px";
-
-img.style.transform = `translate(${x}px, -50%)`;
-}
-
-/* タッチ操作 */
-stage.addEventListener("touchstart", e => {
-dragging = true;
-startX = e.touches[0].clientX;
+/* タッチ開始 */
+stage.addEventListener("touchstart", e=>{
+  dragging = true;
+  mode = "image";
+  pageStartX = e.touches[0].clientX;
+  imgStartX  = pageStartX;
 });
 
-stage.addEventListener("touchmove", e => {
-if (!dragging) return;
-e.preventDefault();
+/* タッチ移動 */
+stage.addEventListener("touchmove", e=>{
+  if(!dragging) return;
+  e.preventDefault();
 
-const dx = e.touches[0].clientX - startX;
-apply(offsetX + dx);
+  const x = e.touches[0].clientX;
+  const dx = x - imgStartX;
+
+  const img = imgs[currentPage];
+  const page = pageEls[currentPage];
+
+  if(mode === "image"){
+    let next = imgOffsetX + dx;
+
+    if(next >= minImgOffset && next <= maxImgOffset){
+      // まだ画像の中で動いている
+      img.style.transform = `translate(${next}px, -50%)`;
+    }else{
+      // 画像が端に当たった
+      mode = "page";
+
+      // 端に固定
+      next = Math.max(minImgOffset, Math.min(maxImgOffset, next));
+      img.style.transform = `translate(${next}px, -50%)`;
+
+      // 余った力をページ送りに
+      pageStartX = x;
+      pageTranslate = -currentPage * window.innerWidth;
+    }
+  }
+
+  if(mode === "page"){
+    const dxPage = x - pageStartX;
+    pages.style.transition = "none";
+    pages.style.transform =
+      `translateX(${pageTranslate + dxPage}px)`;
+  }
 });
 
-stage.addEventListener("touchend", () => {
-dragging = false;
+/* タッチ終了 */
+stage.addEventListener("touchend", e=>{
+  dragging = false;
 
-// 現在位置を保存
-const m = /translate\(([-\d.]+)px/.exec(img.style.transform);
-if (m) offsetX = parseFloat(m[1]);
+  if(mode === "image"){
+    // 画像の位置を保存
+    const img = imgs[currentPage];
+    const m = /translate\(([-\d.]+)px/.exec(img.style.transform);
+    if(m) imgOffsetX = parseFloat(m[1]);
+  }
+
+  if(mode === "page"){
+    const dx = e.changedTouches[0].clientX - pageStartX;
+    const threshold = 80;
+
+    if(dx < -threshold && currentPage < pageEls.length-1){
+      currentPage++;
+    }
+    if(dx > threshold && currentPage > 0){
+      currentPage--;
+    }
+
+    // ページ位置を確定
+    pages.style.transition = "transform 0.35s ease";
+    pages.style.transform =
+      `translateX(${-currentPage * window.innerWidth}px)`;
+  }
 });
 
 /* 初期化 */
-img.onload = setupPortrait;
-window.addEventListener("resize", setupPortrait);
+window.addEventListener("load", ()=>{
+  setupImages();
+  pages.style.transform = "translateX(0)";
+});
