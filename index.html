@@ -1,145 +1,50 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>左右ドラッグ対応ページめくり</title>
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
-  background: #222;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.container {
-  perspective: 1500px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.page {
-  width: 300px;
-  height: 400px;
-  background-size: cover;
-  background-position: center;
-  border-radius: 6px;
-  transform-origin: left center;
-  cursor: grab;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-  transition: transform 0.3s ease;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本のページめくり画像ギャラリー</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-<div class="container">
-  <div class="page" id="page"></div>
-</div>
-
-<script>
-const pages = [
-  'https://picsum.photos/300/400?random=1',
-  'https://picsum.photos/300/400?random=2',
-  'https://picsum.photos/300/400?random=3',
-  'https://picsum.photos/300/400?random=4'
-];
-
-let currentIndex = 0;
-const page = document.getElementById('page');
-page.style.backgroundImage = `url("${pages[currentIndex]}")`;
-
-let isDragging = false;
-let startX = 0;
-const maxRotation = 120; // 左右の最大回転角度
-const maxScale = 1.05;   // 手前に出る感
-const dragThreshold = 50; // ドラッグ判定
-
-function updateDrag(dx) {
-  const ratio = Math.min(Math.abs(dx)/300, 1);
-  const rotation = dx < 0 ? -maxRotation * ratio : maxRotation * ratio;
-  const scale = 1 + (maxScale - 1) * ratio;
-  page.style.transform = `rotateY(${rotation}deg) scale(${scale})`;
-}
-
-function completeDrag() {
-  // 左ドラッグ → 次ページ
-  page.style.transition = 'transform 0.4s ease';
-  page.style.transform = `rotateY(${-maxRotation}deg) scale(${maxScale})`;
-  setTimeout(() => {
-    currentIndex = (currentIndex + 1) % pages.length;
-    page.style.transition = 'none';
-    page.style.transform = 'rotateY(0deg) scale(1)';
-    page.style.backgroundImage = `url("${pages[currentIndex]}")`;
-  }, 400);
-}
-
-function reverseDrag() {
-  // 右ドラッグ → 前ページ
-  page.style.transition = 'transform 0.4s ease';
-  page.style.transform = `rotateY(${maxRotation}deg) scale(${maxScale})`;
-  setTimeout(() => {
-    currentIndex = (currentIndex - 1 + pages.length) % pages.length;
-    page.style.transition = 'none';
-    page.style.transform = 'rotateY(0deg) scale(1)';
-    page.style.backgroundImage = `url("${pages[currentIndex]}")`;
-  }, 400);
-}
-
-function resetDrag() {
-  page.style.transition = 'transform 0.3s ease';
-  page.style.transform = 'rotateY(0deg) scale(1)';
-}
-
-// マウスイベント
-page.addEventListener('mousedown', e => {
-  isDragging = true;
-  startX = e.clientX;
-});
-
-window.addEventListener('mousemove', e => {
-  if (!isDragging) return;
-  const dx = e.clientX - startX;
-  updateDrag(dx);
-});
-
-window.addEventListener('mouseup', e => {
-  if (!isDragging) return;
-  isDragging = false;
-  const dx = e.clientX - startX;
-  if (dx < -dragThreshold) completeDrag();
-  else if (dx > dragThreshold) reverseDrag();
-  else resetDrag();
-});
-
-// タッチイベント
-page.addEventListener('touchstart', e => {
-  isDragging = true;
-  startX = e.touches[0].clientX;
-});
-
-window.addEventListener('touchmove', e => {
-  if (!isDragging) return;
-  const dx = e.touches[0].clientX - startX;
-  updateDrag(dx);
-});
-
-window.addEventListener('touchend', e => {
-  if (!isDragging) return;
-  isDragging = false;
-  const dx = e.changedTouches[0].clientX - startX;
-  if (dx < -dragThreshold) completeDrag();
-  else if (dx > dragThreshold) reverseDrag();
-  else resetDrag();
-});
-</script>
-
+    <div class="book-container">
+        <div class="book">
+            <!-- 左ページ -->
+            <div class="page left-page" id="leftPage">
+                <img class="page-image" id="leftImage" src="" alt="左ページ">
+            </div>
+            
+            <!-- 中央の本の背 -->
+            <div class="book-spine"></div>
+            
+            <!-- 右ページ -->
+            <div class="page right-page" id="rightPage">
+                <img class="page-image" id="rightImage" src="" alt="右ページ">
+            </div>
+        </div>
+        
+        <!-- ページめくり効果用の要素 -->
+        <div class="page-flip-overlay" id="flipOverlay"></div>
+        
+        <!-- コントロールボタン -->
+        <div class="controls">
+            <button class="nav-button prev-button" id="prevButton" title="前のページ">
+                <i class="arrow left"></i>
+            </button>
+            <button class="nav-button next-button" id="nextButton" title="次のページ">
+                <i class="arrow right"></i>
+            </button>
+        </div>
+        
+        <!-- ページインジケーター -->
+        <div class="page-indicator">
+            <span id="pageNumber">1 / 1</span>
+        </div>
+    </div>
+    
+    <!-- 画像読み込み用の非表示要素 -->
+    <div id="imagePreloader" style="display: none;"></div>
+    
+    <script src="js/script.js"></script>
 </body>
 </html>
