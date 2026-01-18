@@ -3,6 +3,7 @@ html, body {
   padding: 0;
   background: #111;
   overflow: hidden;
+  height: 100%;
 }
 
 #viewer {
@@ -17,9 +18,10 @@ html, body {
   position: absolute;
   top: 50%;
   left: 0;
-  height: 90vh;
   width: auto;
-  max-width: none;        /* 重要 */
+  height: auto;
+  max-height: 90vh;
+  max-width: none;
   transform: translateY(-50%);
   transition: transform 0.25s ease;
   user-select: none;
