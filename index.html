@@ -3,23 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ページめくりシンプル</title>
+<title>ページめくりテスト</title>
 <style>
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow: hidden;
-  background: #222;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: #222;
 }
 
 .page {
-  width: 60%;
-  max-width: 400px;
-  height: 300px; /* 固定 */
+  width: 300px;
+  height: 400px;
   background-size: cover;
   background-position: center;
   border-radius: 6px;
@@ -36,16 +35,14 @@ html, body {
 
 <script>
 const pages = [
-  'https://picsum.photos/id/1018/400/300',
-  'https://picsum.photos/id/1025/400/300',
-  'https://picsum.photos/id/1035/400/300',
-  'https://picsum.photos/id/1043/400/300'
+  'https://picsum.photos/300/400?random=1',
+  'https://picsum.photos/300/400?random=2',
+  'https://picsum.photos/300/400?random=3',
+  'https://picsum.photos/300/400?random=4'
 ];
 
 let currentIndex = 0;
 const page = document.getElementById('page');
-
-// 初期画像
 page.style.backgroundImage = `url("${pages[currentIndex]}")`;
 
 let isDragging = false;
@@ -55,7 +52,7 @@ const dragThreshold = 50;
 
 function updateDrag(dx) {
   if (dx > 0) return;
-  const ratio = Math.min(Math.abs(dx)/300,1);
+  const ratio = Math.min(Math.abs(dx)/300, 1);
   const rotation = -maxRotation * ratio;
   page.style.transform = `rotateY(${rotation}deg)`;
 }
@@ -82,13 +79,11 @@ page.addEventListener('mousedown', e => {
   isDragging = true;
   startX = e.clientX;
 });
-
 window.addEventListener('mousemove', e => {
   if (!isDragging) return;
   const dx = e.clientX - startX;
   updateDrag(dx);
 });
-
 window.addEventListener('mouseup', e => {
   if (!isDragging) return;
   isDragging = false;
@@ -102,13 +97,11 @@ page.addEventListener('touchstart', e => {
   isDragging = true;
   startX = e.touches[0].clientX;
 });
-
 window.addEventListener('touchmove', e => {
   if (!isDragging) return;
   const dx = e.touches[0].clientX - startX;
   updateDrag(dx);
 });
-
 window.addEventListener('touchend', e => {
   if (!isDragging) return;
   isDragging = false;
