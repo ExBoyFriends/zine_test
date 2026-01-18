@@ -70,15 +70,10 @@ cursor: grab;
 </div>
 
 <script>
-/*
-ページデータ
-spread:true のページは「見開き1枚絵」
-left と right に同じ画像を入れる
-*/
 const pages = [
-{ left: "https://picsum.photos/800/1200?1", right: "https://picsum.photos/800/1200?2", spread:false },
-{ left: "https://picsum.photos/1600/1200?3", right: "https://picsum.photos/1600/1200?3", spread:true },
-{ left: "https://picsum.photos/800/1200?4", right: "https://picsum.photos/800/1200?5", spread:false }
+  { left: "https://picsum.photos/800/1200?1", right: "https://picsum.photos/800/1200?2", spread:false },
+  { left: "https://picsum.photos/1600/1200?3", right: "https://picsum.photos/1600/1200?3", spread:true },
+  { left: "https://picsum.photos/800/1200?4", right: "https://picsum.photos/800/1200?5", spread:false }
 ];
 
 let index = 0;
@@ -91,65 +86,70 @@ const leftImg = document.getElementById("leftImg");
 const rightImg = document.getElementById("rightImg");
 
 function isPortrait() {
-return window.innerHeight > window.innerWidth;
+  return window.innerHeight > window.innerWidth;
 }
 
 function render() {
-const page = pages[index];
-leftImg.src = page.left;
-rightImg.src = page.right;
+  const page = pages[index];
+  leftImg.src = page.left;
+  rightImg.src = page.right;
 
-if (isPortrait()) {
-document.body.classList.add("portrait");
-} else {
-document.body.classList.remove("portrait");
-leftImg.style.transform = "";
-}
+  if (isPortrait()) {
+    document.body.classList.add("portrait");
+  } else {
+    document.body.classList.remove("portrait");
+    leftImg.style.transform = "translateX(0)";
+  }
 }
 
 window.addEventListener("resize", render);
 render();
 
-/* タッチ操作 */
+/* ==== タッチ操作 ==== */
+
 zine.addEventListener("touchstart", e => {
-startX = e.touches[0].clientX;
-currentX = startX;
-dragging = true;
+  startX = e.touches[0].clientX;
+  currentX = startX;
+  dragging = true;
 });
 
 zine.addEventListener("touchmove", e => {
-if (!dragging) return;
+  if (!dragging) return;
 
-const dx = e.touches[0].clientX - startX;
-const page = pages[index];
+  currentX = e.touches[0].clientX;
+  const dx = currentX - startX;
+  const page = pages[index];
 
-// 縦向き + 見開き1枚絵 → 画像ドラッグ
-if (isPortrait() && page.spread) {
-leftImg.style.transform = `translateX(${dx}px)`;
-}
+  // 縦向き + 見開き1枚絵 → 画像ドラッグ
+  if (isPortrait() && page.spread) {
+    e.preventDefault(); // これがないとドラッグできない
+    leftImg.style.transform = `translateX(${dx}px)`;
+  }
 });
 
 zine.addEventListener("touchend", e => {
-dragging = false;
-const dx = currentX - startX;
-const page = pages[index];
+  dragging = false;
+  const dx = currentX - startX;
+  const page = pages[index];
 
-// 縦向き + 見開き1枚絵 → ページ送りしない
-if (isPortrait() && page.spread) {
-leftImg.style.transition = "transform 0.3s";
-leftImg.style.transform = "translateX(0)";
-setTimeout(() => leftImg.style.transition = "", 300);
-return;
-}
+  // 縦向き + 見開き1枚絵 → ページめくらず元に戻す
+  if (isPortrait() && page.spread) {
+    leftImg.style.transition = "transform 0.3s ease";
+    leftImg.style.transform = "translateX(0)";
+    setTimeout(() => {
+      leftImg.style.transition = "";
+    }, 300);
+    return;
+  }
 
-// 通常ページめくり
-if (dx < -50 && index < pages.length - 1) {
-index++;
-} else if (dx > 50 && index > 0) {
-index--;
-}
+  // 通常のページめくり
+  if (dx < -50 && index < pages.length - 1) {
+    index++;
+  } else if (dx > 50 && index > 0) {
+    index--;
+  }
 
-render();
+  render();
 });
 </script>
 
