@@ -72,33 +72,54 @@ stage.addEventListener("touchmove", e=>{
 
   const img = imgs[currentPage];
 
-  if(mode === "image"){
-    let next = imgOffsetX + dx;
+if (mode === "image") {
+  let next = imgOffsetX + dx;
 
-    if(next >= minImgOffset && next <= maxImgOffset){
-      // まだ画像が動ける範囲
-      img.style.transform = `translate(${next}px, -50%)`;
-    }else{
-      // 画像が端に当たった → ページ送りへ
-      mode = "page";
+  if (next >= minImgOffset && next <= maxImgOffset) {
+    img.style.transform = `translate(${next}px, -50%)`;
+  } else {
+    // 画像は端で止める
+    next = Math.max(minImgOffset, Math.min(maxImgOffset, next));
+    img.style.transform = `translate(${next}px, -50%)`;
 
-      // 画像は端で固定
-      next = Math.max(minImgOffset, Math.min(maxImgOffset, next));
-      img.style.transform = `translate(${next}px, -50%)`;
+    // ここで初めてページモードに移行
+    mode = "page";
+    pageStartX = x;
+    pageTranslate = -currentPage * window.innerWidth;
+  }
+}
 
-      // ページ用ドラッグ開始点をリセット
-      pageStartX = x;
-      pageTranslate = -currentPage * window.innerWidth;
-    }
+if (mode === "page") {
+  const dx = e.changedTouches[0].clientX - pageStartX;
+  const threshold = 80;
+
+  let nextPage = currentPage;
+
+  if (dx < -threshold && currentPage < pageEls.length - 1) {
+    nextPage++;
+  }
+  if (dx > threshold && currentPage > 0) {
+    nextPage--;
   }
 
-  if(mode === "page"){
-    const dxPage = x - pageStartX;
-    pages.style.transition = "none";
-    pages.style.transform =
-      `translateX(${pageTranslate + dxPage}px)`;
-  }
-});
+  // ページを決定
+  currentPage = nextPage;
+
+  // ページ送りアニメーション（紙っぽく）
+  pages.style.transition =
+    "transform 0.5s cubic-bezier(.25,.8,.25,1)";
+  pages.style.transform =
+    `translateX(${-currentPage * window.innerWidth}px)`;
+
+  // ここでは画像をリセットしない
+  // ページが切り替わり終わった後にだけ初期化する
+  pages.addEventListener("transitionend", () => {
+    const img = imgs[currentPage];
+    imgOffsets[currentPage] = 0;
+    img.style.transition = "transform 0.25s ease";
+    img.style.transform = `translate(0, -50%)`;
+  }, { once:true });
+}
 
 /* タッチ終了 */
 stage.addEventListener("touchend", e=>{
