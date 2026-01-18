@@ -18,7 +18,7 @@
 
   .carousel {
     display: flex;
-    gap: 8px; /* 画像間の余白を微調整 */
+    gap: 4px; /* 画像間の余白を微調整 */
     overflow-x: hidden;
     cursor: grab;
     touch-action: pan-x;
@@ -27,8 +27,8 @@
   }
 
   .carousel img {
-    width: 85vw;  /* スマホ縦画面で1枚目が見え、2枚目が半分見切れる */
-    max-width: 450px; /* PC最大サイズ */
+    width: 92vw;  /* スマホ縦画面で1枚目が見え、2枚目が半分見切れる */
+    max-width: 480px; /* PC最大サイズ */
     height: auto;
     flex-shrink: 0;
     border-radius: 8px;
@@ -42,7 +42,7 @@
   /* 画面幅が狭いスマホ向けに微調整 */
   @media (max-width: 500px) {
     .carousel img {
-      width: 80vw; /* さらに少し小さくして半分見切れる調整 */
+      width: 88vw; /* さらに少し小さくして半分見切れる調整 */
     }
   }
 </style>
