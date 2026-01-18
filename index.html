@@ -48,3 +48,281 @@
     <script src="js/script.js"></script>
 </body>
 </html>
+/* リセットと基本スタイル */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* 本のコンテナ */
+.book-container {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    perspective: 1200px;
+}
+
+/* 本の本体 */
+.book {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ページの基本スタイル */
+.page {
+    position: absolute;
+    width: 350px;
+    height: 500px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 
+        0 0 20px rgba(0,0,0,0.3),
+        inset 0 0 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 左ページ */
+.left-page {
+    left: 0;
+    transform-origin: right center;
+    z-index: 2;
+}
+
+/* 右ページ */
+.right-page {
+    right: 0;
+    transform-origin: left center;
+    z-index: 1;
+}
+
+/* 本の背 */
+.book-spine {
+    position: absolute;
+    width: 20px;
+    height: 500px;
+    background: linear-gradient(to right, #8B4513, #A0522D);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    border-radius: 0 0 0 0;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* ページ内の画像 */
+.page-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* ページめくり効果のオーバーレイ */
+.page-flip-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* ページめくりアニメーション */
+.page-flipping-right {
+    animation: flipPageRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.page-flipping-left {
+    animation: flipPageLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes flipPageRight {
+    0% {
+        transform: rotateY(0deg);
+        z-index: 2;
+    }
+    50% {
+        transform: rotateY(-90deg) scale(0.95);
+        z-index: 5;
+    }
+    100% {
+        transform: rotateY(-180deg);
+        z-index: 1;
+    }
+}
+
+@keyframes flipPageLeft {
+    0% {
+        transform: rotateY(-180deg);
+        z-index: 1;
+    }
+    50% {
+        transform: rotateY(-90deg) scale(0.95);
+        z-index: 5;
+    }
+    100% {
+        transform: rotateY(0deg);
+        z-index: 2;
+    }
+}
+
+/* コントロールボタン */
+.controls {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.nav-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    pointer-events: all;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.nav-button:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.nav-button:active {
+    transform: scale(0.95);
+}
+
+.prev-button {
+    margin-left: -100px;
+}
+
+.next-button {
+    margin-right: -100px;
+}
+
+/* 矢印アイコン */
+.arrow {
+    border: solid #333;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 8px;
+}
+
+.left {
+    transform: rotate(135deg);
+}
+
+.right {
+    transform: rotate(-45deg);
+}
+
+/* ページインジケーター */
+.page-indicator {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 500;
+    color: #333;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* ページめくり中の効果 */
+.page-flipping {
+    transform-style: preserve-3d;
+}
+
+/* ページの影効果 */
+.page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(0,0,0,0.1) 2%, 
+        transparent 4%, 
+        transparent 96%, 
+        rgba(0,0,0,0.1) 98%, 
+        transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ホバー時の効果 */
+.page:hover {
+    box-shadow: 
+        0 0 30px rgba(0,0,0,0.4),
+        inset 0 0 30px rgba(0,0,0,0.1);
+}
+
+/* ボタンの無効化状態 */
+.nav-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.nav-button:disabled:hover {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* ローディング状態 */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* タッチデバイス用のスタイル */
+@media (hover: none) and (pointer: coarse) {
+    .nav-button {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .prev-button {
+        margin-left: -120px;
+    }
+    
+    .next-button {
+        margin-right: -120px;
+    }
+}
+
+
