@@ -1,5 +1,5 @@
 const stage = document.getElementById("stage");
-const img = document.getElementById("img");
+const img = document.getElementById("image");
 
 let offsetX = 0;
 let startX = 0;
