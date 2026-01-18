@@ -17,8 +17,9 @@ html, body {
   position: absolute;
   top: 50%;
   left: 0;
-  height: 80vh;
-  max-width: none;
+  height: 90vh;
+  width: auto;
+  max-width: none;        /* 重要 */
   transform: translateY(-50%);
   transition: transform 0.25s ease;
   user-select: none;
