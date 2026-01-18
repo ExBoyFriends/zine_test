@@ -12,18 +12,18 @@ html, body {
   overflow: hidden;
   position: relative;
   touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #viewer img {
-  position: absolute;
-  top: 50%;
-  left: 0;
   width: auto;
   height: auto;
-  max-height: 90vh;
-  max-width: none;
-  transform: translateY(-50%);
-  transition: transform 0.3s ease;
+  max-width: 90vw;   /* 横余白5％ずつ */
+  max-height: 90vh;  /* 上下余白5％ずつ */
+  transition: transform 0.2s ease;
   user-select: none;
   -webkit-user-drag: none;
+  position: absolute;
 }
