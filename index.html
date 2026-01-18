@@ -3,77 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZINE Viewer</title>
-
+<title>ZINE</title>
 <style>
-body {
-  margin: 0;
-  background: #000;
-  overflow: hidden;
+html,body{
+  margin:0;
+  background:#000;
+  overflow:hidden;
 }
-
-#viewer {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  touch-action: none;
+#viewer{
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  position:relative;
+  touch-action:none;
 }
-
-#image {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translate(0, -50%);
-  user-select: none;
-  -webkit-user-drag: none;
-  will-change: transform;
+#image{
+  position:absolute;
+  top:50%;
+  left:0;
+  transform:translate(0,-50%);
+  user-select:none;
+  -webkit-user-drag:none;
 }
 </style>
 </head>
-
 <body>
 
 <div id="viewer">
-  <!-- 自分の作品画像に変更 -->
-  <img id="image" src="https://picsum.photos/2000/1200">
+  <img id="image" src="https://picsum.photos/2000" />
 </div>
 
 <script>
-function setupLayout() {
+const viewer = document.getElementById("viewer");
+const img = document.getElementById("image");
+
+let offsetX = 0;
+let startX = 0;
+let dragging = false;
+let minOffsetX = 0;
+
+function isPortrait(){
+  return window.innerHeight > window.innerWidth;
+}
+
+function setup(){
   const vw = viewer.clientWidth;
   const vh = viewer.clientHeight;
   const iw = img.naturalWidth;
   const ih = img.naturalHeight;
-  if (!iw || !ih) return;
+  if(!iw || !ih) return;
 
-  /* ここが核心：横型サイズを常に基準にする */
-  const landscapeW = Math.max(vw, vh);
-  const landscapeH = Math.min(vw, vh);
-  const scale = Math.min(landscapeW / iw, landscapeH / ih);
+  // 横向きで必ず収まるサイズを先に作る（スクエア想定）
+  const scale = Math.min(vw, vh) / iw;
+  const size = iw * scale;
 
-  displayWidth  = iw * scale;
-  displayHeight = ih * scale;
+  img.style.width = size + "px";
+  img.style.height = size + "px";
 
-  img.style.width  = displayWidth + "px";
-  img.style.height = displayHeight + "px";
-
-  if (isPortrait()) {
-    // 縦型：左半分だけ見せる
+  if(isPortrait()){
+    // 縦向き：左半分表示＋横スクロール
     img.style.left = "0";
-    img.style.top  = "50%";
-    minOffsetX = vw - displayWidth; 
+    img.style.top = "50%";
     offsetX = 0;
-    applyTransform(offsetX);
-  } else {
-    // 横型：必ず全体が収まる
+    minOffsetX = vw - size; // マイナス値（スクロールできる距離）
+    apply(offsetX);
+  }else{
+    // 横向き：中央に全体表示
     img.style.left = "50%";
-    img.style.top  = "50%";
+    img.style.top = "50%";
     img.style.transform = "translate(-50%, -50%)";
     offsetX = 0;
     minOffsetX = 0;
   }
 }
+
+function apply(x){
+  x = Math.max(minOffsetX, Math.min(0, x));
+  img.style.transform = `translate(${x}px, -50%)`;
+}
+
+viewer.addEventListener("touchstart", e=>{
+  if(!isPortrait()) return;
+  dragging = true;
+  startX = e.touches[0].clientX;
+});
+
+viewer.addEventListener("touchmove", e=>{
+  if(!dragging || !isPortrait()) return;
+  e.preventDefault();
+  const dx = e.touches[0].clientX - startX;
+  apply(offsetX + dx);
+});
+
+viewer.addEventListener("touchend", ()=>{
+  if(!isPortrait()) return;
+  dragging = false;
+  const m = /translate\(([-\d.]+)px/.exec(img.style.transform);
+  if(m) offsetX = parseFloat(m[1]);
+});
+
+img.onload = setup;
+window.addEventListener("resize", setup);
 </script>
 
 </body>
