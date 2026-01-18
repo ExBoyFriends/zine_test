@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>手前に傾くページめくり</title>
+<title>左右ドラッグ対応ページめくり</title>
 <style>
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden; /* 縦スクロール禁止 */
+  overflow: hidden;
   background: #222;
   display: flex;
   justify-content: center;
@@ -17,7 +17,7 @@ html, body {
 }
 
 .container {
-  perspective: 1500px; /* 手前に傾く奥行き感 */
+  perspective: 1500px;
   width: 100%;
   height: 100%;
   display: flex;
@@ -58,24 +58,35 @@ page.style.backgroundImage = `url("${pages[currentIndex]}")`;
 
 let isDragging = false;
 let startX = 0;
-const maxRotation = 120; // 最大回転角度
+const maxRotation = 120; // 左右の最大回転角度
 const maxScale = 1.05;   // 手前に出る感
-const dragThreshold = 50;
+const dragThreshold = 50; // ドラッグ判定
 
 function updateDrag(dx) {
-  if (dx > 0) return; // 左ドラッグのみ
   const ratio = Math.min(Math.abs(dx)/300, 1);
-  const rotation = -maxRotation * ratio;
+  const rotation = dx < 0 ? -maxRotation * ratio : maxRotation * ratio;
   const scale = 1 + (maxScale - 1) * ratio;
   page.style.transform = `rotateY(${rotation}deg) scale(${scale})`;
 }
 
 function completeDrag() {
+  // 左ドラッグ → 次ページ
   page.style.transition = 'transform 0.4s ease';
   page.style.transform = `rotateY(${-maxRotation}deg) scale(${maxScale})`;
-
   setTimeout(() => {
     currentIndex = (currentIndex + 1) % pages.length;
+    page.style.transition = 'none';
+    page.style.transform = 'rotateY(0deg) scale(1)';
+    page.style.backgroundImage = `url("${pages[currentIndex]}")`;
+  }, 400);
+}
+
+function reverseDrag() {
+  // 右ドラッグ → 前ページ
+  page.style.transition = 'transform 0.4s ease';
+  page.style.transform = `rotateY(${maxRotation}deg) scale(${maxScale})`;
+  setTimeout(() => {
+    currentIndex = (currentIndex - 1 + pages.length) % pages.length;
     page.style.transition = 'none';
     page.style.transform = 'rotateY(0deg) scale(1)';
     page.style.backgroundImage = `url("${pages[currentIndex]}")`;
@@ -104,6 +115,7 @@ window.addEventListener('mouseup', e => {
   isDragging = false;
   const dx = e.clientX - startX;
   if (dx < -dragThreshold) completeDrag();
+  else if (dx > dragThreshold) reverseDrag();
   else resetDrag();
 });
 
@@ -124,6 +136,7 @@ window.addEventListener('touchend', e => {
   isDragging = false;
   const dx = e.changedTouches[0].clientX - startX;
   if (dx < -dragThreshold) completeDrag();
+  else if (dx > dragThreshold) reverseDrag();
   else resetDrag();
 });
 </script>
