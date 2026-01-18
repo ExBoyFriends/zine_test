@@ -13,20 +13,22 @@ html, body {
   position: relative;
   touch-action: none;
   display: flex;
-  align-items: center;
+  align-items: center;      /* 縦中央 */
   justify-content: center;
 }
 
 #container {
   display: flex;
+  flex-direction: row;      /* 横並び強制 */
+  flex-wrap: nowrap;        /* 折り返さない */
   align-items: center;
   transition: transform 0.2s ease;
 }
 
 #container img {
-  width: 250px;       /* 任意サイズ */
-  height: 250px;      /* スクエア */
-  margin: 0 15px;     /* 左右の余白 */
+  width: 250px;             /* スクエア画像の横幅 */
+  height: 250px;            /* スクエア画像の高さ */
+  margin: 0 15px;           /* 左右余白 */
   object-fit: cover;
   user-select: none;
   -webkit-user-drag: none;
