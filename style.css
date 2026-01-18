@@ -1,15 +1,29 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #111;
+  overflow: hidden;
+}
+
 #viewer {
   width: 100vw;
   height: 100vh;
-  background: #111;
   overflow: hidden;
   position: relative;
+  touch-action: none;
 }
+
 #viewer img {
   position: absolute;
   top: 50%;
   left: 0;
-  width: 200%;       /* とりあえず大きく */
+  width: auto;
   height: auto;
+  max-height: 90vh;
+  max-width: none;
   transform: translateY(-50%);
+  transition: transform 0.25s ease;
+  user-select: none;
+  -webkit-user-drag: none;
 }
