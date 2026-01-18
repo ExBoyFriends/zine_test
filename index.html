@@ -3,135 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-html, body {
-  margin: 0;
-  background: #000;
-  overflow: hidden;
-}
-
-/* ZINEの紙 */
-#viewer {
-  width: 100vw;
-  height: 100vh;
-  background: #111;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* 余白を含んだキャンバス */
-#stage{
-  position: relative;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  overflow: hidden;
-  padding:
-    8vh
-    0        /* 右余白は最初ゼロ */
-    8vh
-    8vw;     /* 左だけ余白を持つ */
-}
-
-/* 作品画像 */
-#image {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translate(0, -50%);
-  user-select: none;
-  -webkit-user-drag: none;
-}
-</style>
+<title>ZINE Portrait Viewer</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div id="viewer">
-  <div id="stage">
-    <!-- スクエア画像を指定 -->
-    <img id="image" src="https://picsum.photos/2000" />
-  </div>
+<div id="stage">
+<img id="image" src="image.jpg" alt="">
 </div>
 
-<script>
-const stage = document.getElementById("stage");
-const img = document.getElementById("image");
-
-let offsetX = 0;
-let startX = 0;
-let dragging = false;
-let minOffsetX = 0;
-let basePaddingLeft = 0;
-
-/*
-  縦型専用：
-  - スクエアの「半分だけ」が入る
-  - ゆったり余白あり
-*/
-function setupPortrait(){
-  const vw = stage.clientWidth;
-
-  const size = vw * 2 * 0.9;
-
-  img.style.position = "absolute";
-  img.style.width  = size + "px";
-  img.style.height = size + "px";
-  img.style.top  = "50%";
-  img.style.left = "0";
-  img.style.transform = "translate(0, -50%)";
-
-  const style = getComputedStyle(stage);
-  basePaddingLeft = parseFloat(style.paddingLeft);
-
-  maxOffsetX = 0;
-  minOffsetX = vw - size;
-
-  offsetX = 0;
-  apply(offsetX);
-}
-
-function apply(x){
-  x = Math.max(minOffsetX, Math.min(0, x));
-
-  // 進行度 0 → 左、1 → 右端
-  const progress = Math.abs(x / minOffsetX);
-
-  // 余白が左から右へ移動する
-  const leftPadding  = basePaddingLeft * (1 - progress);
-  const rightPadding = basePaddingLeft * progress;
-
-  stage.style.paddingLeft  = leftPadding  + "px";
-  stage.style.paddingRight = rightPadding + "px";
-
-  img.style.transform = `translate(${x}px, -50%)`;
-}
-
-/* タッチ操作 */
-stage.addEventListener("touchstart", e => {
-  dragging = true;
-  startX = e.touches[0].clientX;
-});
-
-stage.addEventListener("touchmove", e => {
-  if (!dragging) return;
-  e.preventDefault();
-  const dx = e.touches[0].clientX - startX;
-  apply(offsetX + dx);
-});
-
-stage.addEventListener("touchend", () => {
-  dragging = false;
-  const m = /translate\(([-\d.]+)px/.exec(img.style.transform);
-  if (m) offsetX = parseFloat(m[1]);
-});
-
-/* 初期化 */
-img.onload = setupPortrait;
-window.addEventListener("resize", setupPortrait);
-</script>
-
+<script src="script.js"></script>
 </body>
+</html>
+body>
 </html>
