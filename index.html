@@ -4,29 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>本のページめくり画像ギャラリー</title>
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* リセットと基本スタイル */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        /* 本のコンテナ */
+        .book-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            perspective: 1200px;
+        }
+        /* 本の本体 */
+        .book {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* ページの基本スタイル */
+        .page {
+            position: absolute;
+            width: 350px;
+            height: 500px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3), inset 0 0 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .left-page { left: 0; transform-origin: right center; z-index: 2; }
+        .right-page { right: 0; transform-origin: left center; z-index: 1; }
+        .book-spine {
+            position: absolute;
+            width: 20px;
+            height: 500px;
+            background: linear-gradient(to right, #8B4513, #A0522D);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .page-image { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+        .page-flip-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .page-flipping-right { animation: flipPageRight 0.8s cubic-bezier(0.25,0.46,0.45,0.94) forwards; }
+        .page-flipping-left { animation: flipPageLeft 0.8s cubic-bezier(0.25,0.46,0.45,0.94) forwards; }
+        @keyframes flipPageRight {
+            0% { transform: rotateY(0deg); z-index: 2; }
+            50% { transform: rotateY(-90deg) scale(0.95); z-index: 5; }
+            100% { transform: rotateY(-180deg); z-index: 1; }
+        }
+        @keyframes flipPageLeft {
+            0% { transform: rotateY(-180deg); z-index: 1; }
+            50% { transform: rotateY(-90deg) scale(0.95); z-index: 5; }
+            100% { transform: rotateY(0deg); z-index: 2; }
+        }
+        .controls {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%; display: flex; justify-content: space-between;
+            pointer-events: none; z-index: 20;
+        }
+        .nav-button {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: rgba(255,255,255,0.9); border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease; pointer-events: all;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .nav-button:hover {
+            background: rgba(255,255,255,1); transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+        .nav-button:active { transform: scale(0.95); }
+        .prev-button { margin-left: -100px; }
+        .next-button { margin-right: -100px; }
+        .arrow { border: solid #333; border-width: 0 3px 3px 0; display: inline-block; padding: 8px; }
+        .left { transform: rotate(135deg); }
+        .right { transform: rotate(-45deg); }
+        .page-indicator {
+            position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%);
+            background: rgba(255,255,255,0.9); padding: 10px 20px; border-radius: 25px;
+            font-weight: 500; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .page-flipping { transform-style: preserve-3d; }
+        .page::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 2%, transparent 4%, transparent 96%, rgba(0,0,0,0.1) 98%, transparent 100%);
+            pointer-events: none; z-index: 1;
+        }
+        .page:hover {
+            box-shadow: 0 0 30px rgba(0,0,0,0.4), inset 0 0 30px rgba(0,0,0,0.1);
+        }
+        .nav-button:disabled {
+            opacity: 0.5; cursor: not-allowed; transform: none !important;
+        }
+        .nav-button:disabled:hover {
+            background: rgba(255,255,255,0.9); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .loading { opacity: 0.7; pointer-events: none; }
+        @media (hover: none) and (pointer: coarse) {
+            .nav-button { width: 70px; height: 70px; }
+            .prev-button { margin-left: -120px; }
+            .next-button { margin-right: -120px; }
+        }
+    </style>
 </head>
 <body>
     <div class="book-container">
         <div class="book">
-            <!-- 左ページ -->
             <div class="page left-page" id="leftPage">
                 <img class="page-image" id="leftImage" src="" alt="左ページ">
             </div>
-            
-            <!-- 中央の本の背 -->
             <div class="book-spine"></div>
-            
-            <!-- 右ページ -->
             <div class="page right-page" id="rightPage">
                 <img class="page-image" id="rightImage" src="" alt="右ページ">
             </div>
         </div>
-        
-        <!-- ページめくり効果用の要素 -->
         <div class="page-flip-overlay" id="flipOverlay"></div>
-        
-        <!-- コントロールボタン -->
         <div class="controls">
             <button class="nav-button prev-button" id="prevButton" title="前のページ">
                 <i class="arrow left"></i>
@@ -35,524 +148,120 @@
                 <i class="arrow right"></i>
             </button>
         </div>
-        
-        <!-- ページインジケーター -->
         <div class="page-indicator">
             <span id="pageNumber">1 / 1</span>
         </div>
     </div>
-    
-    <!-- 画像読み込み用の非表示要素 -->
-    <div id="imagePreloader" style="display: none;"></div>
-    
-    <script src="js/script.js"></script>
-</body>
-</html>
-/* リセットと基本スタイル */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
-
-/* 本のコンテナ */
-.book-container {
-    position: relative;
-    width: 800px;
-    height: 600px;
-    perspective: 1200px;
-}
-
-/* 本の本体 */
-.book {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* ページの基本スタイル */
-.page {
-    position: absolute;
-    width: 350px;
-    height: 500px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 
-        0 0 20px rgba(0,0,0,0.3),
-        inset 0 0 30px rgba(0,0,0,0.1);
-    overflow: hidden;
-    transform-style: preserve-3d;
-    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* 左ページ */
-.left-page {
-    left: 0;
-    transform-origin: right center;
-    z-index: 2;
-}
-
-/* 右ページ */
-.right-page {
-    right: 0;
-    transform-origin: left center;
-    z-index: 1;
-}
-
-/* 本の背 */
-.book-spine {
-    position: absolute;
-    width: 20px;
-    height: 500px;
-    background: linear-gradient(to right, #8B4513, #A0522D);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 3;
-    border-radius: 0 0 0 0;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-}
-
-/* ページ内の画像 */
-.page-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-/* ページめくり効果のオーバーレイ */
-.page-flip-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 10;
-}
-
-/* ページめくりアニメーション */
-.page-flipping-right {
-    animation: flipPageRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-.page-flipping-left {
-    animation: flipPageLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-@keyframes flipPageRight {
-    0% {
-        transform: rotateY(0deg);
-        z-index: 2;
-    }
-    50% {
-        transform: rotateY(-90deg) scale(0.95);
-        z-index: 5;
-    }
-    100% {
-        transform: rotateY(-180deg);
-        z-index: 1;
-    }
-}
-
-@keyframes flipPageLeft {
-    0% {
-        transform: rotateY(-180deg);
-        z-index: 1;
-    }
-    50% {
-        transform: rotateY(-90deg) scale(0.95);
-        z-index: 5;
-    }
-    100% {
-        transform: rotateY(0deg);
-        z-index: 2;
-    }
-}
-
-/* コントロールボタン */
-.controls {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none;
-    z-index: 20;
-}
-
-.nav-button {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    pointer-events: all;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-.nav-button:hover {
-    background: rgba(255, 255, 255, 1);
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-}
-
-.nav-button:active {
-    transform: scale(0.95);
-}
-
-.prev-button {
-    margin-left: -100px;
-}
-
-.next-button {
-    margin-right: -100px;
-}
-
-/* 矢印アイコン */
-.arrow {
-    border: solid #333;
-    border-width: 0 3px 3px 0;
-    display: inline-block;
-    padding: 8px;
-}
-
-.left {
-    transform: rotate(135deg);
-}
-
-.right {
-    transform: rotate(-45deg);
-}
-
-/* ページインジケーター */
-.page-indicator {
-    position: absolute;
-    bottom: -60px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-weight: 500;
-    color: #333;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-/* ページめくり中の効果 */
-.page-flipping {
-    transform-style: preserve-3d;
-}
-
-/* ページの影効果 */
-.page::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(0,0,0,0.1) 2%, 
-        transparent 4%, 
-        transparent 96%, 
-        rgba(0,0,0,0.1) 98%, 
-        transparent 100%);
-    pointer-events: none;
-    z-index: 1;
-}
-
-/* ホバー時の効果 */
-.page:hover {
-    box-shadow: 
-        0 0 30px rgba(0,0,0,0.4),
-        inset 0 0 30px rgba(0,0,0,0.1);
-}
-
-/* ボタンの無効化状態 */
-.nav-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none !important;
-}
-
-.nav-button:disabled:hover {
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-/* ローディング状態 */
-.loading {
-    opacity: 0.7;
-    pointer-events: none;
-}
-
-/* タッチデバイス用のスタイル */
-@media (hover: none) and (pointer: coarse) {
-    .nav-button {
-        width: 70px;
-        height: 70px;
-    }
-    
-    .prev-button {
-        margin-left: -120px;
-    }
-    
-    .next-button {
-        margin-right: -120px;
-    }
-}
-
-// 画像ギャラリークラス
-class BookGallery {
-    constructor() {
-        // デモ用の画像URL（実際の使用時は置き換えてください）
-        this.images = [
-            'https://picsum.photos/400/500?random=1',
-            'https://picsum.photos/400/500?random=2',
-            'https://picsum.photos/400/500?random=3',
-            'https://picsum.photos/400/500?random=4',
-            'https://picsum.photos/400/500?random=5',
-            'https://picsum.photos/400/500?random=6'
-        ];
-        
-        this.currentIndex = 0;
-        this.isAnimating = false;
-        this.isForward = true;
-        
-        // DOM要素の取得
-        this.leftPage = document.getElementById('leftPage');
-        this.rightPage = document.getElementById('rightPage');
-        this.leftImage = document.getElementById('leftImage');
-        this.rightImage = document.getElementById('rightImage');
-        this.prevButton = document.getElementById('prevButton');
-        this.nextButton = document.getElementById('nextButton');
-        this.pageNumber = document.getElementById('pageNumber');
-        this.flipOverlay = document.getElementById('flipOverlay');
-        
-        this.init();
-    }
-    
-    init() {
-        this.updateImages();
-        this.bindEvents();
-        this.updateButtons();
-        this.preloadImages();
-    }
-    
-    // 画像のプリロード
-    preloadImages() {
-        const preloader = document.getElementById('imagePreloader');
-        this.images.forEach(src => {
-            const img = new Image();
-            img.src = src;
-            preloader.appendChild(img);
-        });
-    }
-    
-    // イベントのバインド
-    bindEvents() {
-        this.prevButton.addEventListener('click', () => this.previousPage());
-        this.nextButton.addEventListener('click', () => this.nextPage());
-        
-        // キーボード操作
-        document.addEventListener('keydown', (e) => {
-            if (this.isAnimating) return;
-            
-            switch(e.key) {
-                case 'ArrowLeft':
-                case 'ArrowUp':
-                    this.previousPage();
-                    break;
-                case 'ArrowRight':
-                case 'ArrowDown':
-                case ' ':
-                    this.nextPage();
-                    break;
+    <div id="imagePreloader" style="display:none;"></div>
+    <script>
+        class BookGallery {
+            constructor() {
+                this.images = [
+                    'https://picsum.photos/400/500?random=1',
+                    'https://picsum.photos/400/500?random=2',
+                    'https://picsum.photos/400/500?random=3',
+                    'https://picsum.photos/400/500?random=4',
+                    'https://picsum.photos/400/500?random=5',
+                    'https://picsum.photos/400/500?random=6'
+                ];
+                this.currentIndex = 0;
+                this.isAnimating = false;
+                this.isForward = true;
+                this.leftPage = document.getElementById('leftPage');
+                this.rightPage = document.getElementById('rightPage');
+                this.leftImage = document.getElementById('leftImage');
+                this.rightImage = document.getElementById('rightImage');
+                this.prevButton = document.getElementById('prevButton');
+                this.nextButton = document.getElementById('nextButton');
+                this.pageNumber = document.getElementById('pageNumber');
+                this.flipOverlay = document.getElementById('flipOverlay');
+                this.init();
             }
-        });
-        
-        // タッチ操作
-        let startX = 0;
-        let startY = 0;
-        
-        document.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-        });
-        
-        document.addEventListener('touchend', (e) => {
-            if (this.isAnimating) return;
-            
-            const endX = e.changedTouches[0].clientX;
-            const endY = e.changedTouches[0].clientY;
-            const diffX = startX - endX;
-            const diffY = startY - endY;
-            
-            // スワイプの最小距離
-            const minSwipeDistance = 50;
-            
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > minSwipeDistance) {
-                if (diffX > 0) {
-                    // 左スワイプ - 次のページ
-                    this.nextPage();
+            init() { this.updateImages(); this.bindEvents(); this.updateButtons(); this.preloadImages(); }
+            preloadImages() {
+                const preloader = document.getElementById('imagePreloader');
+                this.images.forEach(src => { const img = new Image(); img.src = src; preloader.appendChild(img); });
+            }
+            bindEvents() {
+                this.prevButton.addEventListener('click', () => this.previousPage());
+                this.nextButton.addEventListener('click', () => this.nextPage());
+                document.addEventListener('keydown', (e) => {
+                    if(this.isAnimating) return;
+                    switch(e.key){
+                        case 'ArrowLeft': case 'ArrowUp': this.previousPage(); break;
+                        case 'ArrowRight': case 'ArrowDown': case ' ': this.nextPage(); break;
+                    }
+                });
+                let startX=0, startY=0;
+                document.addEventListener('touchstart', e => { startX=e.touches[0].clientX; startY=e.touches[0].clientY; });
+                document.addEventListener('touchend', e => {
+                    if(this.isAnimating) return;
+                    const endX=e.changedTouches[0].clientX, endY=e.changedTouches[0].clientY;
+                    const diffX=startX-endX, diffY=startY-endY;
+                    const minSwipeDistance=50;
+                    if(Math.abs(diffX)>Math.abs(diffY) && Math.abs(diffX)>minSwipeDistance){
+                        if(diffX>0){ this.nextPage(); } else { this.previousPage(); }
+                    }
+                });
+                document.addEventListener('wheel', e => {
+                    if(this.isAnimating) return;
+                    e.preventDefault();
+                    if(e.deltaY>0){ this.nextPage(); } else { this.previousPage(); }
+                }, {passive:false});
+            }
+            nextPage() {
+                if(this.isAnimating||this.currentIndex>=this.images.length-2) return;
+                this.isForward=true; this.currentIndex+=2; this.performPageFlip();
+            }
+            previousPage() {
+                if(this.isAnimating||this.currentIndex<=0) return;
+                this.isForward=false; this.currentIndex-=2; this.performPageFlip();
+            }
+            performPageFlip() {
+                this.isAnimating=true; this.updateButtons();
+                if(this.isForward){
+                    this.rightPage.classList.add('page-flipping-right');
+                    setTimeout(()=>{
+                        this.updateImages();
+                        this.rightPage.classList.remove('page-flipping-right');
+                        this.isAnimating=false;
+                        this.updateButtons();
+                    },800);
                 } else {
-                    // 右スワイプ - 前のページ
-                    this.previousPage();
+                    this.leftPage.classList.add('page-flipping-left');
+                    setTimeout(()=>{
+                        this.updateImages();
+                        this.leftPage.classList.remove('page-flipping-left');
+                        this.isAnimating=false;
+                        this.updateButtons();
+                    },800);
                 }
             }
-        });
-        
-        // マウスホイール操作
-        document.addEventListener('wheel', (e) => {
-            if (this.isAnimating) return;
-            
-            e.preventDefault();
-            if (e.deltaY > 0) {
-                this.nextPage();
-            } else {
-                this.previousPage();
+            updateImages() {
+                const leftIndex=this.currentIndex, rightIndex=this.currentIndex+1;
+                if(leftIndex<this.images.length){ this.leftImage.src=this.images[leftIndex]; this.leftPage.style.display='block'; }
+                else{ this.leftPage.style.display='none'; }
+                if(rightIndex<this.images.length){ this.rightImage.src=this.images[rightIndex]; this.rightPage.style.display='block'; }
+                else{ this.rightPage.style.display='none'; }
+                this.updatePageNumber();
             }
+            updatePageNumber() {
+                const totalPages=Math.ceil(this.images.length/2);
+                const currentPage=Math.floor(this.currentIndex/2)+1;
+                this.pageNumber.textContent=`${currentPage} / ${totalPages}`;
+            }
+            updateButtons() {
+                this.prevButton.disabled=this.currentIndex<=0;
+                this.nextButton.disabled=this.currentIndex>=this.images.length-2;
+            }
+            addImage(src){ this.images.push(src); this.updateButtons(); this.updatePageNumber(); }
+            setImages(imageArray){ this.images=imageArray; this.currentIndex=0; this.updateImages(); this.updateButtons(); this.preloadImages(); }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const gallery=new BookGallery();
+            window.bookGallery=gallery;
+            console.log('📖 本のページめくり画像ギャラリーが初期化されました');
         });
-    }
-    
-    // 次のページへ
-    nextPage() {
-        if (this.isAnimating || this.currentIndex >= this.images.length - 2) return;
-        
-        this.isForward = true;
-        this.currentIndex += 2;
-        this.performPageFlip();
-    }
-    
-    // 前のページへ
-    previousPage() {
-        if (this.isAnimating || this.currentIndex <= 0) return;
-        
-        this.isForward = false;
-        this.currentIndex -= 2;
-        this.performPageFlip();
-    }
-    
-    // ページめくりアニメーション
-    performPageFlip() {
-        this.isAnimating = true;
-        this.updateButtons();
-        
-        if (this.isForward) {
-            // 右ページをめくる
-            this.rightPage.classList.add('page-flipping-right');
-            
-            setTimeout(() => {
-                this.updateImages();
-                this.rightPage.classList.remove('page-flipping-right');
-                this.isAnimating = false;
-                this.updateButtons();
-            }, 800);
-        } else {
-            // 左ページをめくる
-            this.leftPage.classList.add('page-flipping-left');
-            
-            setTimeout(() => {
-                this.updateImages();
-                this.leftPage.classList.remove('page-flipping-left');
-                this.isAnimating = false;
-                this.updateButtons();
-            }, 800);
-        }
-    }
-    
-    // 画像の更新
-    updateImages() {
-        const leftIndex = this.currentIndex;
-        const rightIndex = this.currentIndex + 1;
-        
-        // 左ページの画像
-        if (leftIndex < this.images.length) {
-            this.leftImage.src = this.images[leftIndex];
-            this.leftPage.style.display = 'block';
-        } else {
-            this.leftPage.style.display = 'none';
-        }
-        
-        // 右ページの画像
-        if (rightIndex < this.images.length) {
-            this.rightImage.src = this.images[rightIndex];
-            this.rightPage.style.display = 'block';
-        } else {
-            this.rightPage.style.display = 'none';
-        }
-        
-        // ページ番号の更新
-        this.updatePageNumber();
-    }
-    
-    // ページ番号の更新
-    updatePageNumber() {
-        const totalPages = Math.ceil(this.images.length / 2);
-        const currentPage = Math.floor(this.currentIndex / 2) + 1;
-        this.pageNumber.textContent = `${currentPage} / ${totalPages}`;
-    }
-    
-    // ボタンの状態更新
-    updateButtons() {
-        this.prevButton.disabled = this.currentIndex <= 0;
-        this.nextButton.disabled = this.currentIndex >= this.images.length - 2;
-    }
-    
-    // 画像の追加
-    addImage(src) {
-        this.images.push(src);
-        this.updateButtons();
-        this.updatePageNumber();
-    }
-    
-    // 画像の設定（外部から呼び出し可能）
-    setImages(imageArray) {
-        this.images = imageArray;
-        this.currentIndex = 0;
-        this.updateImages();
-        this.updateButtons();
-        this.preloadImages();
-    }
-}
-
-// ページ読み込み後に初期化
-document.addEventListener('DOMContentLoaded', () => {
-    const gallery = new BookGallery();
-    
-    // グローバルにアクセス可能にする（カスタマイズ用）
-    window.bookGallery = gallery;
-    
-    console.log('📖 本のページめくり画像ギャラリーが初期化されました');
-    console.log('使い方:');
-    console.log('- 矢印ボタンまたはキーボードの左右矢印でページめくり');
-    console.log('- スワイプ操作にも対応（スマートフォン・タブレット）');
-    console.log('- マウスホイールでも操作可能');
-    console.log('');
-    console.log('カスタマイズ例:');
-    console.log('window.bookGallery.setImages(["image1.jpg", "image2.jpg"])');
-});
-
+    </script>
+</body>
+</html>
