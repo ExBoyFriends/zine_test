@@ -1,32 +1,32 @@
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#fff;
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
 }
 
-#stage{
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  position:relative;
+#stage {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
-/* 横並びページ */
-#pages{
-  display:flex;
-  height:100%;
-  transform:translateX(0);
+/* 横に並ぶページ */
+#pages {
+  display: flex;
+  height: 100%;
+  transform: translateX(0);
 }
 
 /* 1ページ */
-.page{
-  min-width:100vw;
-  height:100%;
-  position:relative;
-  overflow:hidden;
-  box-sizing:border-box;
+.page {
+  min-width: 100vw;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
 
   /* ZINEの綴じ代 */
   padding:
@@ -37,11 +37,11 @@ html,body{
 }
 
 /* 画像 */
-.page img{
-  position:absolute;
-  top:50%;
-  left:0;
-  transform:translate(0,-50%);
-  touch-action:none;
-  user-select:none;
+.page img {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(0, -50%);
+  touch-action: none;
+  user-select: none;
 }
