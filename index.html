@@ -3,124 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ページめくりカルーセル</title>
+<title>順番にページめくり</title>
 <style>
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
-  background: #111;
+  overflow: hidden; /* 縦スクロール禁止 */
+  background: #222;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.carousel-container {
-  position: relative;
-  width: 90vw;
-  max-width: 500px;
-  height: 300px;
-  perspective: 1500px;
-}
-
-.card {
-  position: absolute;
-  width: 45%;
-  height: 100%;
-  border-radius: 8px;
+.page {
+  width: 60%;
+  max-width: 400px;
+  height: 70%;
   background-size: cover;
   background-position: center;
-  top: 0;
-  cursor: grab;
+  border-radius: 6px;
   transform-origin: left center;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
+  cursor: grab;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
-
-/* 初期横並び */
-#card1 { left: 0; z-index: 1; }
-#card2 { left: 50%; z-index: 2; }
-#card3 { left: 50%; z-index: 0; }
-#card4 { left: 100%; z-index: 0; }
-
 </style>
 </head>
 <body>
 
-<div class="carousel-container">
-  <div class="card" id="card1" style="background-image:url('image/king.of.spades.png');"></div>
-  <div class="card" id="card2" style="background-image:url('image/king.of.spades_mirror.png');"></div>
-  <div class="card" id="card3" style="background-image:url('image/queen.of.clubs.png');"></div>
-  <div class="card" id="card4" style="background-image:url('image/queen.of.clubs_mirror.png');"></div>
-</div>
+<div class="page" id="page"></div>
 
 <script>
-const card1 = document.getElementById('card1');
-const card2 = document.getElementById('card2'); // 前面カード
-const card3 = document.getElementById('card3'); // 連動カード
-const card4 = document.getElementById('card4');
+// 画像配列
+const pages = [
+  'image/king.of.spades.png',
+  'image/king.of.spades_mirror.png',
+  'image/queen.of.clubs.png',
+  'image/queen.of.clubs_mirror.png'
+];
+
+let currentIndex = 0;
+const page = document.getElementById('page');
+
+// 初期画像を設定
+page.style.backgroundImage = `url(${pages[currentIndex]})`;
 
 let isDragging = false;
 let startX = 0;
-const maxRotation = 90; // 最大回転角度
-const maxTranslate = -55; // 左移動量(%)
-const dragThreshold = 50; 
+const maxRotation = 120; // 左に回転する最大角度
+const dragThreshold = 50;
 
 function updateDrag(dx) {
   if (dx > 0) return; // 左ドラッグのみ
-  const ratio = Math.min(Math.abs(dx)/200,1);
-
-  // 前面カード（2枚目）を左に傾けてスライド、少し縮小して奥行き感
+  const ratio = Math.min(Math.abs(dx)/300,1);
   const rotation = -maxRotation * ratio;
-  const translate = maxTranslate * ratio;
-  const scale = 1 - 0.05 * ratio; 
-
-  card2.style.transform = `translateX(${translate}%) rotateY(${rotation}deg) scale(${scale})`;
-  card2.style.zIndex = 3;
-
-  // 裏面カード（3枚目）を少し遅れて連動
-  const behindTranslate = translate * 0.9;
-  const behindRotate = rotation * 0.9;
-  const behindScale = 1 - 0.05 * 0.9 * ratio;
-
-  card3.style.transform = `translateX(${behindTranslate}%) rotateY(${behindRotate}deg) scale(${behindScale})`;
-  card3.style.zIndex = 2;
-
-  card1.style.zIndex = 1; // 1枚目固定
-  card4.style.zIndex = 0; // 4枚目常に下
+  page.style.transform = `rotateY(${rotation}deg)`;
 }
 
 function completeDrag() {
-  card2.style.transition = 'transform 0.3s ease';
-  card3.style.transition = 'transform 0.3s ease';
+  page.style.transition = 'transform 0.4s ease';
+  page.style.transform = `rotateY(${-maxRotation}deg)`;
 
-  card2.style.transform = `translateX(${maxTranslate}%) rotateY(${-maxRotation}deg) scale(0.95)`;
-  card3.style.transform = `translateX(${maxTranslate*0.9}%) rotateY(${-maxRotation*0.9}deg) scale(0.955)`;
-
-  setTimeout(()=>{
-    card2.style.transition = '';
-    card3.style.transition = '';
-  },300);
+  setTimeout(() => {
+    // 次の画像に切り替え
+    currentIndex = (currentIndex + 1) % pages.length;
+    page.style.transition = 'none';
+    page.style.transform = 'rotateY(0deg)';
+    page.style.backgroundImage = `url(${pages[currentIndex]})`;
+  }, 400);
 }
 
 function resetDrag() {
-  card2.style.transition = 'transform 0.3s ease';
-  card3.style.transition = 'transform 0.3s ease';
-
-  card2.style.transform = 'translateX(0%) rotateY(0deg) scale(1)';
-  card3.style.transform = 'translateX(0%) rotateY(0deg) scale(1)';
-
-  card2.style.zIndex = 2;
-  card3.style.zIndex = 0;
-
-  setTimeout(()=>{
-    card2.style.transition = '';
-    card3.style.transition = '';
-  },300);
+  page.style.transition = 'transform 0.3s ease';
+  page.style.transform = 'rotateY(0deg)';
 }
 
-// マウスイベント
-card2.addEventListener('mousedown', e => {
+// マウス
+page.addEventListener('mousedown', e => {
   isDragging = true;
   startX = e.clientX;
 });
@@ -139,8 +99,8 @@ window.addEventListener('mouseup', e => {
   else resetDrag();
 });
 
-// タッチイベント
-card2.addEventListener('touchstart', e => {
+// タッチ
+page.addEventListener('touchstart', e => {
   isDragging = true;
   startX = e.touches[0].clientX;
 });
