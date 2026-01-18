@@ -50,30 +50,28 @@ function setup(){
   const vw = viewer.clientWidth;
   const vh = viewer.clientHeight;
 
-  // ここが全て：短辺サイズ＝正方形の一辺
-  const size = Math.min(vw, vh);
+  let size;
+
+  if (isPortrait()) {
+    // 縦型は意図的に拡大して「必ずはみ出させる」
+    size = vw * 1.4;
+  } else {
+    // 横型は必ず全体が収まる
+    size = Math.min(vw, vh);
+  }
 
   img.style.width  = size + "px";
   img.style.height = size + "px";
 
   if(isPortrait()){
-    // 縦型：左寄せ、横スクロール
     img.style.left = "0";
     img.style.top  = "50%";
 
     offsetX = 0;
-
-    // 画面より画像が大きい時だけドラッグ可能
-    if(size > vw){
-      minOffsetX = vw - size;   // マイナス値
-    }else{
-      minOffsetX = 0;           // 動かない
-    }
-
+    minOffsetX = vw - size;   // ここが必ずマイナスになる
     apply(offsetX);
 
   }else{
-    // 横型：必ず中央に完全表示
     img.style.left = "50%";
     img.style.top  = "50%";
     img.style.transform = "translate(-50%, -50%)";
