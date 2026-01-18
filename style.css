@@ -1,32 +1,43 @@
-html, body {
-margin: 0;
-padding: 0;
-width: 100%;
-height: 100%;
-overflow: hidden;
-background: #fff;
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#fff;
 }
 
-#stage {
-position: relative;
-width: 100%;
-height: 100%;
-box-sizing: border-box;
-overflow: hidden;
-
-/* 余白設計 */
-padding:
-8vh /* 上 */
-0 /* 右：初期はゼロ */
-8vh /* 下 */
-8vw; /* 左：たっぷり */
+/* 表示領域 */
+#stage{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  position:relative;
 }
 
-#image {
-position: absolute;
-top: 50%;
-left: 0;
-transform: translate(0, -50%);
-touch-action: none;
-user-select: none;
+/* 横に並ぶページ */
+#pages{
+  display:flex;
+  height:100%;
+  transform:translateX(0);
+}
+
+/* 1ページ */
+.page{
+  min-width:100vw;
+  height:100%;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  padding-left:8vw;   /* ZINEの綴じ代 */
+}
+
+/* 画像はスクエア前提 */
+.page img{
+  height:80vh;
+  aspect-ratio:1/1;
+  object-fit:contain;
+  user-select:none;
+  pointer-events:none;
 }
