@@ -6,56 +6,45 @@
 <title>Digital ZINE Demo</title>
 <style>
 body {
-margin: 0;
-background: #111;
-overflow: hidden;
-touch-action: none;
+  margin: 0;
+  background: #111;
+  overflow: hidden;
 }
 
 #zine {
-position: relative;
-width: 100vw;
-height: 100vh;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  touch-action: pan-y;
 }
 
 .page {
-position: absolute;
-top: 0;
-bottom: 0;
-width: 50%;
-overflow: hidden;
-display: flex;
-justify-content: center;
-align-items: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
 }
 
 .page img {
-max-height: 100%;
-user-select: none;
--webkit-user-drag: none;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-#left {
-left: 0;
-}
+/* 左右 */
+#left { left: 0; }
+#right { right: 0; }
 
-#right {
-right: 0;
-}
-
-/* 縦向き：左ページだけ表示 */
-.portrait #right {
-display: none;
-}
-
-.portrait #left {
-width: 100%;
-}
-
-/* 見開き1枚絵用 */
-.spread-image {
-cursor: grab;
-}
+/* 縦向き：左ページだけ */
+.portrait #right { display: none; }
+.portrait #left { width: 100%; }
 </style>
 </head>
 <body>
@@ -71,9 +60,9 @@ cursor: grab;
 
 <script>
 const pages = [
-  { left: "https://picsum.photos/800/1200?1", right: "https://picsum.photos/800/1200?2", spread:false },
-  { left: "https://picsum.photos/1600/1200?3", right: "https://picsum.photos/1600/1200?3", spread:true },
-  { left: "https://picsum.photos/800/1200?4", right: "https://picsum.photos/800/1200?5", spread:false }
+  { left:"https://picsum.photos/800/1200?1", right:"https://picsum.photos/800/1200?2", spread:false },
+  { left:"https://picsum.photos/1600/1200?3", right:"https://picsum.photos/1600/1200?3", spread:true },
+  { left:"https://picsum.photos/800/1200?4", right:"https://picsum.photos/800/1200?5", spread:false }
 ];
 
 let index = 0;
@@ -82,74 +71,87 @@ let currentX = 0;
 let dragging = false;
 
 const zine = document.getElementById("zine");
+const left = document.getElementById("left");
+const right = document.getElementById("right");
 const leftImg = document.getElementById("leftImg");
 const rightImg = document.getElementById("rightImg");
 
-function isPortrait() {
+function isPortrait(){
   return window.innerHeight > window.innerWidth;
 }
 
-function render() {
-  const page = pages[index];
-  leftImg.src = page.left;
-  rightImg.src = page.right;
+function render(){
+  const p = pages[index];
+  leftImg.src = p.left;
+  rightImg.src = p.right;
 
-  if (isPortrait()) {
-    document.body.classList.add("portrait");
-  } else {
-    document.body.classList.remove("portrait");
-    leftImg.style.transform = "translateX(0)";
-  }
+  document.body.classList.toggle("portrait", isPortrait());
+
+  left.style.transform = "translateX(0)";
+  right.style.transform = "translateX(0)";
 }
-
 window.addEventListener("resize", render);
 render();
 
-/* ==== タッチ操作 ==== */
+/* ===== タッチ ===== */
 
-zine.addEventListener("touchstart", e => {
+zine.addEventListener("touchstart", e=>{
   startX = e.touches[0].clientX;
   currentX = startX;
   dragging = true;
 });
 
-zine.addEventListener("touchmove", e => {
-  if (!dragging) return;
-
+zine.addEventListener("touchmove", e=>{
+  if(!dragging) return;
   currentX = e.touches[0].clientX;
   const dx = currentX - startX;
   const page = pages[index];
 
-  // 縦向き + 見開き1枚絵 → 画像ドラッグ
-  if (isPortrait() && page.spread) {
-    e.preventDefault(); // これがないとドラッグできない
+  // 縦＋見開き1枚絵 → 画像ドラッグ
+  if(isPortrait() && page.spread){
+    e.preventDefault();
     leftImg.style.transform = `translateX(${dx}px)`;
-  }
-});
-
-zine.addEventListener("touchend", e => {
-  dragging = false;
-  const dx = currentX - startX;
-  const page = pages[index];
-
-  // 縦向き + 見開き1枚絵 → ページめくらず元に戻す
-  if (isPortrait() && page.spread) {
-    leftImg.style.transition = "transform 0.3s ease";
-    leftImg.style.transform = "translateX(0)";
-    setTimeout(() => {
-      leftImg.style.transition = "";
-    }, 300);
     return;
   }
 
-  // 通常のページめくり
-  if (dx < -50 && index < pages.length - 1) {
+  // 通常：ページ全体を引っ張る
+  e.preventDefault();
+  left.style.transform = `translateX(${dx}px)`;
+  right.style.transform = `translateX(${dx}px)`;
+});
+
+zine.addEventListener("touchend", ()=>{
+  dragging = false;
+  const dx = currentX - startX;
+  const threshold = window.innerWidth * 0.25;
+  const page = pages[index];
+
+  // 縦＋見開き1枚絵 → 元に戻すだけ
+  if(isPortrait() && page.spread){
+    leftImg.style.transition = "transform .3s";
+    leftImg.style.transform = "translateX(0)";
+    setTimeout(()=> leftImg.style.transition="",300);
+    return;
+  }
+
+  // ページ確定判定
+  if(dx < -threshold && index < pages.length-1){
     index++;
-  } else if (dx > 50 && index > 0) {
+  }
+  else if(dx > threshold && index > 0){
     index--;
   }
 
-  render();
+  // 元に戻すアニメ
+  left.style.transition = "transform .3s ease";
+  right.style.transition = "transform .3s ease";
+  left.style.transform = "translateX(0)";
+  right.style.transform = "translateX(0)";
+  setTimeout(()=>{
+    left.style.transition="";
+    right.style.transition="";
+    render();
+  },300);
 });
 </script>
 
