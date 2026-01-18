@@ -1,69 +1,67 @@
 // ============================
-// 設定
+// 画像リスト
 // ============================
 const images = [
-  "img/img1.jpg",
-  "img/img2.jpg"
+  "image/king.of.spades.png",
+  "image/queen.of.clubs.png"
 ];
 
-// ============================
-// 状態
-// ============================
-let current = 0;
-
-// left  = 左半分が見える
-// right = 右半分が見える
-let viewState = "left";
+let current = 0;              // 現在表示している画像
+let viewState = "left";       // left = 左半分, right = 右半分
 
 const viewer = document.getElementById("viewer");
 const img = document.getElementById("img");
 
+// サイズと位置
 let vw, imgW;
 let minOffset, maxOffset;
 let leftOffset, rightOffset;
 let offsetX = 0;
 
+// ドラッグ状態
 let startX = 0;
 let dragging = false;
-let mode = "slide"; // slide / page
 
 // ============================
-// 初期ロード
+// 画像ロード
 // ============================
 function loadImage() {
   img.style.visibility = "hidden";
   img.src = images[current];
 }
 
-// 画像が読み込まれたら毎回ここに入る
 img.onload = () => {
   img.style.visibility = "visible";
 
   vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  // 高さ基準で一度サイズを決める
-  const scale = (vh * 0.9) / img.naturalHeight;
-  const displayWidth = img.naturalWidth * scale;
+  const naturalW = img.naturalWidth;
+  const naturalH = img.naturalHeight;
 
-  // もし横幅が画面より小さかったら、横基準で拡大し直す
-  if (displayWidth < vw * 2) {
-    const scaleW = (vw * 2) / img.naturalWidth;
-    img.style.height = "auto";
-    img.style.width = img.naturalWidth * scaleW + "px";
-  } else {
-    img.style.height = vh * 0.9 + "px";
-    img.style.width = "auto";
+  // 高さ基準でスケール
+  let scaleH = (vh * 0.9) / naturalH;
+  let displayW = naturalW * scaleH;
+  let displayH = naturalH * scaleH;
+
+  // 幅が画面幅の2倍未満なら横基準で拡大
+  if(displayW < vw * 2){
+    const scaleW = (vw * 2) / naturalW;
+    displayW = naturalW * scaleW;
+    displayH = naturalH * scaleW;
   }
 
-  imgW = img.getBoundingClientRect().width;
+  img.style.width = displayW + "px";
+  img.style.height = displayH + "px";
+
+  imgW = displayW;
 
   // 移動範囲
   maxOffset = 0;
   minOffset = vw - imgW;
 
   // 半分見切れ位置
-  leftOffset  = minOffset / 2;
+  leftOffset = minOffset / 2;
   rightOffset = minOffset;
 
   setInitialPosition();
@@ -76,7 +74,6 @@ function setInitialPosition() {
   offsetX = (viewState === "left") ? leftOffset : rightOffset;
   img.style.transition = "none";
   img.style.transform = `translate(${offsetX}px, -50%)`;
-
   requestAnimationFrame(() => {
     img.style.transition = "transform 0.25s ease";
   });
@@ -88,7 +85,6 @@ function setInitialPosition() {
 viewer.addEventListener("touchstart", e => {
   dragging = true;
   startX = e.touches[0].clientX;
-  mode = "slide";
   img.style.transition = "none";
 });
 
@@ -99,14 +95,10 @@ viewer.addEventListener("touchmove", e => {
   const dx = x - startX;
   let next = offsetX + dx;
 
-  // スライドできる範囲：左半分～右半分
-  if (next >= leftOffset && next <= rightOffset) {
-    mode = "slide";
-    next = Math.max(minOffset, Math.min(maxOffset, next));
-    img.style.transform = `translate(${next}px, -50%)`;
+  // スライドできる範囲
+  if(next >= leftOffset && next <= rightOffset){
     offsetX = next;
-  } else {
-    mode = "page";
+    img.style.transform = `translate(${offsetX}px, -50%)`;
   }
 
   startX = x;
@@ -116,22 +108,21 @@ viewer.addEventListener("touchend", () => {
   dragging = false;
   img.style.transition = "transform 0.3s ease";
 
-  if (mode === "page") {
-    // どちら側に寄っているかで進む／戻る
-    if (offsetX <= leftOffset) {
-      goPrev();
-    } else {
-      goNext();
-    }
+  // ページ送り判定
+  const midpoint = (leftOffset + rightOffset)/2;
+  if(offsetX > midpoint){
+    goPrev();
+  } else if(offsetX < midpoint){
+    goNext();
   } else {
     snap();
   }
 });
 
 // ============================
-// 位置を半分状態に戻す
+// スナップ
 // ============================
-function snap() {
+function snap(){
   offsetX = (viewState === "left") ? leftOffset : rightOffset;
   img.style.transform = `translate(${offsetX}px, -50%)`;
 }
@@ -139,30 +130,21 @@ function snap() {
 // ============================
 // ページ送り
 // ============================
-function goNext() {
-  if (current >= images.length - 1) {
+function goNext(){
+  if(current >= images.length - 1){
     snap();
     return;
   }
   current++;
-  viewState = "left";
+  viewState = "left";  // 次の画像は左半分スタート
   loadImage();
 }
 
 // ============================
 // ページ戻り
 // ============================
-function goPrev() {
-  if (current <= 0) {
+function goPrev(){
+  if(current <= 0){
     snap();
     return;
   }
-  current--;
-  viewState = "right";
-  loadImage();
-}
-
-// ============================
-// 開始
-// ============================
-loadImage();
