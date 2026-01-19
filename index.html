@@ -180,33 +180,69 @@ const sirenBg = document.querySelector(".background-siren");
 let currentPage = 0;
 let isAnimating = true;
 
-/* ===== 初回演出 ===== */
+// 初期状態
+pages.forEach((p, i) => {
+  if (i === 0) {
+    p.classList.add("active");
+  } else {
+    p.style.opacity = 0;
+  }
+});
+
+// ===== 初回演出 =====
 window.addEventListener("load", () => {
   const firstPage = pages[0];
-  firstPage.classList.add("first-load", "active");
 
-  // サイレンを 3.5秒流す
+  // 深いフェード用
+  firstPage.classList.add("first-load");
+  firstPage.style.opacity = 0;
+
+  // サイレン 3.5秒
   setTimeout(() => {
-    // サイレンをフェードアウト
+    // サイレンを消す
     sirenBg.style.transition = "opacity 2s ease";
     sirenBg.style.opacity = 0;
 
     // カルーセルの深いフェード開始
-    firstPage.style.opacity = 1;
+    requestAnimationFrame(() => {
+      firstPage.style.opacity = 1;
+    });
 
-    // フェード完了後
+    // 初回フェード完了後
     setTimeout(() => {
-      isAnimating = false;
-      dotsContainer.classList.add("visible");
-    }, 6000);
+      isAnimating = false;                  // ← 操作解放
+      dotsContainer.classList.add("visible"); // ← ドット表示
+      firstPage.classList.remove("first-load");
+    }, 5200); // 初回フェード時間と一致
 
-  }, 3500);
+  }, 3500); // サイレン時間
 });
 
-/* ===== ドット更新 ===== */
-function updateDots() {
-  dots.forEach((d,i)=>d.classList.toggle("active", i===currentPage));
+// ===== ページ切り替え（最低限版）=====
+function goToPage(index) {
+  if (isAnimating || index === currentPage || index < 0 || index >= pages.length) return;
+
+  isAnimating = true;
+
+  pages[currentPage].classList.remove("active");
+  pages[index].classList.add("active");
+
+  setTimeout(() => {
+    isAnimating = false;
+    currentPage = index;
+    updateDots();
+  }, 3800); // 通常フェード時間
 }
+
+// ドット更新
+function updateDots() {
+  dots.forEach((d, i) => d.classList.toggle("active", i === currentPage));
+}
+
+// テスト用：タップで次ページ（動作確認用）
+document.body.addEventListener("click", () => {
+  goToPage((currentPage + 1) % pages.length);
+});
 </script>
 
 </body>
