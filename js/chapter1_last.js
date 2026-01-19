@@ -33,6 +33,25 @@ function cancelLongPress() {
   clearTimeout(longpressTimer);
 }
 
+// 長押しスタート
+/*function startLongPress(e) {
+  e.preventDefault(); // タッチスクロールを止める
+  console.log('長押しスタート', e.type);
+  lastImg.classList.add('glow'); // 光アニメーション
+  longpressTimer = setTimeout(() => {
+    console.log('長押し成功 → フェード切替発動');
+    lastImg.classList.remove('glow');
+    activateFlip();
+  }, 3000);
+}*/
+
+// 長押しキャンセル
+function cancelLongPress(e) {
+  console.log('長押しキャンセル', e.type);
+  lastImg.classList.remove('glow');
+  clearTimeout(longpressTimer);
+}
+
 // マウス
 longpressLayer.addEventListener('mousedown', startLongPress);
 longpressLayer.addEventListener('mouseup', cancelLongPress);
