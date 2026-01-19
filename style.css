@@ -42,6 +42,10 @@ html, body {
   height: 100vh;
   z-index: 1;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  
 }
 
 /* ---------- アニメ ---------- */
@@ -125,13 +129,17 @@ html, body {
 }
 
 .dots {
-  position: absolute;
-  bottom: calc(80px + env(safe-area-inset-bottom));
+  position: fixed;  /* absolute → fixed */
+  left: 0;
+  right: 0;
+  bottom: calc(40px + env(safe-area-inset-bottom));
   width: 100%;
   text-align: center;
+
   opacity: 0;
-  transition: opacity 17.7s ease;
-  z-index: 5;
+  transition: opacity 1.5s ease;
+  z-index: 20;     /* loader(10)より上 */
+  pointer-events: auto;
 }
 
 .dots.visible { opacity:1; }
