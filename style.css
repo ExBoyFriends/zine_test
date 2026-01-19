@@ -143,7 +143,8 @@ html, body {
   z-index: 20;
 }
 
-.dots.visible { opacity:1; }
+.dots.visible { opacity:1; 
+}
 
 .dot {
   background: rgba(200,200,200,0.2);
