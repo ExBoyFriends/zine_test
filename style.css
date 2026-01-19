@@ -15,7 +15,7 @@ html, body {
 .background {
   position: fixed;
   inset: 0;
-  background: url('../image/background.jpg') center/cover no-repeat;
+  background: url('./image/background.jpg') center/cover no-repeat;
   z-index: -2;
   animation: slowFade 20s ease-in-out infinite alternate;
 }
@@ -31,7 +31,7 @@ html, body {
   position: fixed;
   inset: 0;
   z-index: 10;
-  background: url('../image/background.jpg') center/cover no-repeat;
+  background: url('./image/background.jpg') center/cover no-repeat;
   animation: siren 1.68s linear infinite;
 }
 
