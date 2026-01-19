@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>フェード＋ドラッグカルーセル</title>
+<title>フェードカルーセル＋ドット</title>
 <style>
 html, body {
   margin: 0;
@@ -36,7 +36,7 @@ html, body {
   align-items: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.5s ease;
+  transition: opacity 1.2s ease; /* フェードをゆっくり */
 }
 
 .carousel-page.active {
@@ -44,13 +44,13 @@ html, body {
   pointer-events: all;
 }
 
-/* ページ内の横カルーセル */
+/* ページ内カルーセル */
 .carousel-inner {
   display: flex;
   gap: 10px;
   cursor: grab;
   user-select: none;
-  overflow: hidden; /* ドラッグで動かすのでスクロールバー非表示 */
+  overflow: hidden;
 }
 
 .carousel-inner img {
@@ -61,9 +61,30 @@ html, body {
   transition: transform 0.2s ease;
 }
 
-/* ドラッグ中 */
 .dragging {
   cursor: grabbing;
+}
+
+/* ページドット */
+.dots {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #555;
+  border-radius: 50%;
+  margin: 0 5px;
+  transition: background 0.3s;
+}
+
+.dot.active {
+  background: #fff;
 }
 
 /* スマホ調整 */
@@ -94,8 +115,8 @@ html, body {
   <!-- ページ3 -->
   <div class="carousel-page">
     <div class="carousel-inner">
-      <img src="image/page3_1.png" alt="3">
-      <img src="image/page3_2.png" alt="3-2">
+      <img src="image/jack.of.hearts.png" alt="3">
+      <img src="image/jack.of.hearts_mirror.png" alt="3-2">
     </div>
   </div>
   <!-- ページ4 -->
@@ -105,13 +126,22 @@ html, body {
       <img src="image/page4_2.png" alt="4-2">
     </div>
   </div>
+
+  <!-- ページドット -->
+  <div class="dots">
+    <span class="dot active"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
 </div>
 
 <script>
 // =====================
-// ページ切替（フェード）
+// ページ切替（フェード＋ドット）
 // =====================
 const pages = document.querySelectorAll('.carousel-page');
+const dots = document.querySelectorAll('.dot');
 let currentPage = 0;
 
 let startX = 0;
@@ -143,14 +173,12 @@ wrapper.addEventListener('touchend', e => {
 
 function handlePageSwipe(diff) {
   const threshold = 50; // スワイプ距離
-  if(diff > threshold) {
-    // 右スワイプ → 前のページ
-    const prev = (currentPage - 1 + pages.length) % pages.length;
-    showPage(prev);
-  } else if(diff < -threshold) {
-    // 左スワイプ → 次のページ
-    const next = (currentPage + 1) % pages.length;
-    showPage(next);
+  if(diff > threshold && currentPage > 0) {
+    // 右スワイプ → 前のページ（最初で止める）
+    showPage(currentPage - 1);
+  } else if(diff < -threshold && currentPage < pages.length - 1) {
+    // 左スワイプ → 次のページ（最後で止める）
+    showPage(currentPage + 1);
   }
 }
 
@@ -159,6 +187,13 @@ function showPage(index) {
   pages[currentPage].classList.remove('active');
   pages[index].classList.add('active');
   currentPage = index;
+  updateDots();
+}
+
+function updateDots() {
+  dots.forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentPage);
+  });
 }
 
 // =====================
