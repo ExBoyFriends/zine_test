@@ -1,48 +1,71 @@
+const flipCard = document.getElementById('flip-card');
 const frontImg = document.getElementById('front-img');
 const rotImg = document.getElementById('rot-img');
-const flipCard = document.getElementById('flip-card');
 const back = document.getElementById('back');
-let pressTimer = null;
-let isRotated = false;
 
-// 長押し検知
-frontImg.addEventListener('mousedown', startPress);
-frontImg.addEventListener('touchstart', startPress);
-frontImg.addEventListener('mouseup', cancelPress);
-frontImg.addEventListener('mouseleave', cancelPress);
-frontImg.addEventListener('touchend', cancelPress);
-frontImg.addEventListener('touchcancel', cancelPress);
+let longPressTimer = null;
+let isRotatable = false;
+let isDragging = false;
+let startX, startY, currentRotX = 0, currentRotY = 0;
+
+// ---------- 長押しで画像切替 ----------
+flipCard.addEventListener('mousedown', startPress);
+flipCard.addEventListener('touchstart', startPress);
+
+flipCard.addEventListener('mouseup', cancelPress);
+flipCard.addEventListener('mouseleave', cancelPress);
+flipCard.addEventListener('touchend', cancelPress);
 
 function startPress(e){
-  if(isRotated) return;
-  e.preventDefault();
-  pressTimer = setTimeout(()=>{
-    // 画像切替
-    frontImg.style.opacity=0;
-    rotImg.style.display='block';
-    setTimeout(()=>{ frontImg.style.display='none'; rotImg.style.opacity=1; }, 200);
-    isRotated=true;
-    enableRotate(rotImg);
-  }, 600); // 0.6秒長押しで切替
+  if(isRotatable) return; // すでに切替済み
+  longPressTimer = setTimeout(()=>{
+    frontImg.style.display = 'none';
+    rotImg.style.display = 'block';
+    isRotatable = true;
+  }, 600); // 0.6秒で切替
 }
 
-function cancelPress(){
-  clearTimeout(pressTimer);
+function cancelPress(e){
+  clearTimeout(longPressTimer);
 }
 
 // ---------- ドラッグで回転 ----------
-function enableRotate(img){
-  let dragging=false, startX=0, rotY=0;
-  img.addEventListener('mousedown', e=>{ dragging=true; startX=e.pageX; });
-  img.addEventListener('mousemove', e=>{ if(!dragging) return; let dx=e.pageX-startX; img.style.transform=`rotateY(${rotY + dx}deg)`; });
-  img.addEventListener('mouseup', e=>{ if(dragging){ rotY += e.pageX - startX; dragging=false; }});
-  img.addEventListener('mouseleave', e=>{ if(dragging){ rotY += e.pageX - startX; dragging=false; }});
-  img.addEventListener('touchstart', e=>{ dragging=true; startX=e.touches[0].pageX; });
-  img.addEventListener('touchmove', e=>{ if(!dragging) return; let dx=e.touches[0].pageX-startX; img.style.transform=`rotateY(${rotY + dx}deg)`; });
-  img.addEventListener('touchend', e=>{ if(dragging){ rotY += e.changedTouches[0].pageX - startX; dragging=false; }});
+rotImg.addEventListener('mousedown', startDrag);
+rotImg.addEventListener('touchstart', startDrag);
+
+document.addEventListener('mousemove', drag);
+document.addEventListener('touchmove', drag);
+
+document.addEventListener('mouseup', endDrag);
+document.addEventListener('touchend', endDrag);
+
+function startDrag(e){
+  if(!isRotatable) return;
+  isDragging = true;
+  startX = e.touches ? e.touches[0].pageX : e.pageX;
+  startY = e.touches ? e.touches[0].pageY : e.pageY;
+  rotImg.classList.add('rotating');
 }
 
-// ---------- 次の章ボタン ----------
-document.getElementById('next-chapter-btn').addEventListener('click', ()=>{
-  window.location.href = 'HTML/chapter2.html'; // ここは次章のURLに合わせる
-});
+function drag(e){
+  if(!isDragging) return;
+  const x = e.touches ? e.touches[0].pageX : e.pageX;
+  const y = e.touches ? e.touches[0].pageY : e.pageY;
+
+  const deltaX = x - startX;
+  const deltaY = y - startY;
+
+  currentRotY += deltaX * 0.5;
+  currentRotX -= deltaY * 0.5;
+
+  rotImg.style.transform = `rotateY(${currentRotY}deg) rotateX(${currentRotX}deg)`;
+  back.style.transform = `rotateY(${180 + currentRotY}deg) rotateX(${currentRotX}deg)`;
+
+  startX = x;
+  startY = y;
+}
+
+function endDrag(e){
+  if(!isDragging) return;
+  isDragging = false;
+}
