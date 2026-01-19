@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ドラッグ＋フェードカルーセル 最終版</title>
+<title>スワイプ追従カルーセル</title>
 <style>
 html, body {
   margin: 0;
@@ -35,7 +35,7 @@ html, body {
   gap: 10px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.5s ease; /* 自動切替は速め */
+  transition: opacity 0.5s ease;
 }
 
 .carousel-page.active {
@@ -62,7 +62,6 @@ html, body {
   cursor: grabbing;
 }
 
-/* ドット */
 .dots {
   position: absolute;
   bottom: 20px;
@@ -110,7 +109,6 @@ html, body {
     </div>
   </div>
 
-  <!-- ドット -->
   <div class="dots">
     <span class="dot active"></span>
     <span class="dot"></span>
@@ -125,53 +123,76 @@ let currentPage = 0;
 let isDragging = false;
 let startX = 0;
 let dragX = 0;
+let lastTime = 0;
+let lastX = 0;
+let velocity = 0;
 
 const wrapper = document.querySelector('.carousel-wrapper');
-let pageWidth = wrapper.clientWidth;
+const pageWidth = wrapper.clientWidth;
 
 // ドラッグ開始
-wrapper.addEventListener('mousedown', e => { isDragging = true; startX = e.pageX; });
-wrapper.addEventListener('touchstart', e => { isDragging = true; startX = e.touches[0].pageX; });
+wrapper.addEventListener('mousedown', e => startDrag(e.pageX));
+wrapper.addEventListener('touchstart', e => startDrag(e.touches[0].pageX));
+
+function startDrag(x) {
+  isDragging = true;
+  startX = x;
+  lastX = x;
+  lastTime = Date.now();
+}
 
 // ドラッグ中
-wrapper.addEventListener('mousemove', e => { if(isDragging){ dragX = e.pageX - startX; updateDrag(); }});
-wrapper.addEventListener('touchmove', e => { if(isDragging){ dragX = e.touches[0].pageX - startX; updateDrag(); }});
+wrapper.addEventListener('mousemove', e => drag(e.pageX));
+wrapper.addEventListener('touchmove', e => drag(e.touches[0].pageX));
+
+function drag(x) {
+  if(!isDragging) return;
+  dragX = x - startX;
+
+  // 端で止める
+  if((currentPage === 0 && dragX > 0) || (currentPage === pages.length-1 && dragX < 0)) {
+    dragX = 0;
+  }
+
+  // 速度計算
+  const now = Date.now();
+  velocity = (x - lastX) / (now - lastTime);
+  lastX = x;
+  lastTime = now;
+
+  // ドラッグ追従（緩やか）
+  const ease = 0.4;
+  if(dragX < 0 && currentPage < pages.length-1) {
+    pages[currentPage+1].style.opacity = Math.min(Math.abs(dragX)/pageWidth, 1)*ease;
+    pages[currentPage].style.opacity = 1 - Math.min(Math.abs(dragX)/pageWidth, 1)*ease;
+  } else if(dragX > 0 && currentPage > 0) {
+    pages[currentPage-1].style.opacity = Math.min(Math.abs(dragX)/pageWidth, 1)*ease;
+    pages[currentPage].style.opacity = 1 - Math.min(Math.abs(dragX)/pageWidth, 1)*ease;
+  }
+}
 
 // ドラッグ終了
 wrapper.addEventListener('mouseup', endDrag);
 wrapper.addEventListener('mouseleave', endDrag);
 wrapper.addEventListener('touchend', endDrag);
 
-function updateDrag() {
-  let nextPage = null;
-  let ratio = 0;
-  const easeFactor = 0.4; // ドラッグ追従は遅めで自然
-
-  if (dragX < 0 && currentPage < pages.length - 1) {
-    nextPage = currentPage + 1;
-    ratio = Math.min(Math.abs(dragX)/pageWidth, 1) * easeFactor;
-    pages[nextPage].style.opacity = ratio;
-    pages[currentPage].style.opacity = 1 - ratio;
-  } else if (dragX > 0 && currentPage > 0) {
-    nextPage = currentPage - 1;
-    ratio = Math.min(Math.abs(dragX)/pageWidth, 1) * easeFactor;
-    pages[nextPage].style.opacity = ratio;
-    pages[currentPage].style.opacity = 1 - ratio;
-  }
-}
-
-// ドラッグ終了で自動切替
 function endDrag() {
-  if (!isDragging) return;
+  if(!isDragging) return;
   isDragging = false;
 
   let nextPage = null;
-  // ページ端50%以上で切替
-  if (dragX < -pageWidth * 0.38 && currentPage < pages.length - 1) nextPage = currentPage + 1;
-  else if (dragX > pageWidth * 0.38 && currentPage > 0) nextPage = currentPage - 1;
 
-  if (nextPage !== null) {
-    // 自動フェード切替
+  // スワイプ判定：速度またはドラッグ量
+  const threshold = pageWidth*0.3; // ドラッグ量閾値
+  const velocityThreshold = 0.3;   // スワイプ速度閾値
+
+  if((dragX < -threshold || velocity < -velocityThreshold) && currentPage < pages.length-1) {
+    nextPage = currentPage +1;
+  } else if((dragX > threshold || velocity > velocityThreshold) && currentPage >0) {
+    nextPage = currentPage -1;
+  }
+
+  if(nextPage !== null) {
     pages[currentPage].classList.remove('active');
     pages[nextPage].classList.add('active');
     pages[currentPage].style.opacity = '';
@@ -180,11 +201,12 @@ function endDrag() {
   } else {
     // 元に戻す
     pages[currentPage].style.opacity = 1;
-    if (dragX < 0 && currentPage < pages.length - 1) pages[currentPage+1].style.opacity = 0;
-    if (dragX > 0 && currentPage > 0) pages[currentPage-1].style.opacity = 0;
+    if(dragX < 0 && currentPage < pages.length-1) pages[currentPage+1].style.opacity = 0;
+    if(dragX > 0 && currentPage > 0) pages[currentPage-1].style.opacity = 0;
   }
 
   dragX = 0;
+  velocity = 0;
   updateDots();
 }
 
@@ -194,17 +216,14 @@ function updateDots() {
 
 // ページ内画像ドラッグ（従来通り）
 document.querySelectorAll('.carousel-inner').forEach(inner => {
-  let isDrag = false;
-  let start, scrollLeft;
-
-  inner.addEventListener('mousedown', e => { isDrag=true; inner.classList.add('dragging'); start=e.pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft; });
-  inner.addEventListener('mouseleave', () => { isDrag=false; inner.classList.remove('dragging'); });
-  inner.addEventListener('mouseup', () => { isDrag=false; inner.classList.remove('dragging'); });
-  inner.addEventListener('mousemove', e => { if(!isDrag) return; e.preventDefault(); inner.scrollLeft = scrollLeft + (start - (e.pageX-inner.offsetLeft)); });
-
-  inner.addEventListener('touchstart', e => { isDrag=true; start=e.touches[0].pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft; });
-  inner.addEventListener('touchend', () => { isDrag=false; });
-  inner.addEventListener('touchmove', e => { if(!isDrag) return; inner.scrollLeft = scrollLeft + (start - (e.touches[0].pageX-inner.offsetLeft)); });
+  let isDrag=false, start, scrollLeft;
+  inner.addEventListener('mousedown', e=>{ isDrag=true; inner.classList.add('dragging'); start=e.pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft;});
+  inner.addEventListener('mouseleave', ()=>{ isDrag=false; inner.classList.remove('dragging');});
+  inner.addEventListener('mouseup', ()=>{ isDrag=false; inner.classList.remove('dragging');});
+  inner.addEventListener('mousemove', e=>{ if(!isDrag) return; e.preventDefault(); inner.scrollLeft = scrollLeft + (start - (e.pageX-inner.offsetLeft)); });
+  inner.addEventListener('touchstart', e=>{ isDrag=true; start=e.touches[0].pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft;});
+  inner.addEventListener('touchend', ()=>{ isDrag=false;});
+  inner.addEventListener('touchmove', e=>{ if(!isDrag) return; inner.scrollLeft = scrollLeft + (start - (e.touches[0].pageX-inner.offsetLeft));});
 });
 </script>
 
