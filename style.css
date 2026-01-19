@@ -1,0 +1,116 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* ---------- 背景 ---------- */
+.background {
+  position: fixed;
+  inset: 0;
+  background: url('../image/background.jpg') center/cover no-repeat;
+  z-index: -2;
+  animation: slowFade 20s ease-in-out infinite alternate;
+}
+
+@keyframes slowFade {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
+}
+
+/* ---------- ローダー ---------- */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: url('../image/background.jpg') center/cover no-repeat;
+  animation: siren 1.68s linear infinite;
+}
+
+@keyframes siren {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
+}
+
+/* ---------- カルーセル ---------- */
+.carousel-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.carousel-page {
+  position: absolute;
+  inset: 0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  pointer-events:none;
+  opacity:0;
+  transition: opacity 3.65s ease;
+}
+
+.carousel-page.active {
+  opacity:1;
+  pointer-events:all;
+}
+
+.carousel-page.first-load {
+  opacity:0;
+  transition: opacity 7.25s ease;
+}
+
+.carousel-inner {
+  display:flex;
+  gap:10px;
+  cursor: grab;
+  overflow: hidden;
+  justify-content: center;
+}
+
+.carousel-inner.single {
+  justify-content:center;
+}
+
+.carousel-inner img {
+  width:80vw;
+  max-width:480px;
+  border-radius:8px;
+  flex-shrink:0;
+  -webkit-user-drag:none;
+}
+
+.dragging { cursor: grabbing; }
+
+/* ドット */
+.dots {
+  position: absolute;
+  bottom: 20px;
+  width:100%;
+  text-align:center;
+  opacity:0;
+  transition: opacity 17.7s ease;
+}
+
+.dots.visible { opacity:1; }
+
+.dot {
+  display:inline-block;
+  width:10px;
+  height:10px;
+  background:#555;
+  margin:0 5px;
+}
+
+.dot.active { background:#fff; }
