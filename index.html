@@ -37,7 +37,7 @@ html, body {
 
 @keyframes slowFade {
   0%   { filter: brightness(1); }
-  50%  { filter: brightness(0.5); }
+  50%  { filter: brightness(0.2); }
   100% { filter: brightness(1); }
 }
 
@@ -50,7 +50,7 @@ html, body {
   height:100vh;
   z-index: 10;
   background: url('image/background.jpg') center/cover no-repeat;
-  animation: siren 0.6s linear infinite;
+  animation: siren 0.8s linear infinite;
 }
 
 @keyframes siren {
@@ -92,7 +92,7 @@ html, body {
 
 .carousel-page.first-load {
   opacity:0;
-  transition: opacity 5.2s ease; /* 初回フェード */
+  transition: opacity 6.2s ease; /* 初回フェード */
 }
 
 .carousel-inner {
