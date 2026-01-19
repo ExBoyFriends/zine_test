@@ -1,1 +1,54 @@
+/* flip-card構造 */
+.flip-card {
+  position: relative;
+  width: 88vw;
+  max-width: 540px;
+  transform-style: preserve-3d;
+}
 
+.flip-card img, .flip-card .back {
+  width: 100%;
+  border-radius: 8px;
+  position: absolute;
+  top:0; left:0;
+  backface-visibility: hidden;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.front-image {
+  cursor: pointer;
+  z-index:1;
+}
+
+.front-image.floating {
+  transform: translateZ(60px) scale(1.05);
+  box-shadow:0 20px 40px rgba(0,0,0,0.6);
+}
+
+.rotatable-image {
+  cursor: grab;
+  display:block;
+  z-index:5;
+}
+
+.back {
+  transform: rotateY(180deg);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#111;
+  color:#fff;
+  opacity:0;
+  transition: opacity 0.5s ease;
+}
+
+.back.visible { opacity:1; }
+
+#next-chapter-btn {
+  padding:12px 24px;
+  font-size:18px;
+  border:none;
+  border-radius:6px;
+  background: rgba(240,240,240,0.9);
+  cursor:pointer;
+}
