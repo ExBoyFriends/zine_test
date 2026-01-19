@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>5ページカルーセル（フェード3.85秒/ドラッグ前倒し0.5秒）</title>
+<title>5ページカルーセル（初回深フェード対応）</title>
 <style>
 html, body {
   margin: 0;
@@ -35,12 +35,18 @@ html, body {
   gap: 10px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 3.85s ease; /* フェード3.85秒 */
+  transition: opacity 3.85s ease; /* 通常フェード */
 }
 
 .carousel-page.active {
   opacity: 1;
   pointer-events: all;
+}
+
+/* 初回ロード専用の深いフェードイン */
+.carousel-page.first-load {
+  opacity: 0;
+  transition: opacity 6s ease;
 }
 
 .carousel-inner {
@@ -79,7 +85,7 @@ html, body {
   width: 10px;
   height: 10px;
   background: #555;
-  border-radius: 0; /* 丸→四角に変更 */
+  border-radius: 0; /* 四角 */
   margin: 0 5px;
   transition: background 0.3s;
 }
@@ -99,7 +105,7 @@ html, body {
 
 <div class="carousel-wrapper">
   <!-- ページ1 -->
-  <div class="carousel-page active">
+  <div class="carousel-page">
     <div class="carousel-inner">
       <img src="image/queen.of.clubs.png" alt="Queen">
       <img src="image/queen.of.clubs_mirror.png" alt="Queen Mirror">
@@ -163,16 +169,27 @@ let isAnimating = false;
 const wrapper = document.querySelector('.carousel-wrapper');
 const pageWidth = wrapper.clientWidth;
 
-// ドラッグ開始
+// ---------- 初回深フェードイン ----------
+window.addEventListener('load', ()=>{
+  const firstPage = pages[0];
+  firstPage.classList.add('first-load', 'active');
+
+  // フェード終了後に first-load クラス削除して通常フェードに戻す
+  setTimeout(()=>{
+    firstPage.classList.remove('first-load');
+    firstPage.style.transition = 'opacity 3.85s ease';
+  }, 6000); // 6秒
+});
+
+// ---------- ドラッグ処理 ----------
 function startDrag(x){
-  if(isAnimating) return; // 切替中は無効
+  if(isAnimating) return;
   isDragging = true;
   startX = x;
   lastX = x;
   lastTime = Date.now();
 }
 
-// ドラッグ中
 function drag(x){
   if(!isDragging || isAnimating) return;
   dragX = x - startX;
@@ -197,7 +214,6 @@ function drag(x){
   }
 }
 
-// ドラッグ終了
 function endDrag(){
   if(!isDragging || isAnimating) return;
   isDragging=false;
@@ -216,10 +232,10 @@ function endDrag(){
     pages[currentPage].style.opacity='';
     pages[nextPage].style.opacity='';
 
-    // フェード3.85秒のうち、0.5秒早くドラッグ解除
+    // フェード3.85秒のうち、3秒でドラッグ解除
     setTimeout(()=>{
       isAnimating = false;
-    }, 3000); 
+    }, 3000);
 
     currentPage = nextPage;
   } else {
@@ -237,7 +253,7 @@ function updateDots(){
   dots.forEach((dot,i)=>dot.classList.toggle('active', i===currentPage));
 }
 
-// イベントリスナー
+// ---------- イベントリスナー ----------
 wrapper.addEventListener('mousedown', e=>startDrag(e.pageX));
 wrapper.addEventListener('touchstart', e=>startDrag(e.touches[0].pageX));
 wrapper.addEventListener('mousemove', e=>drag(e.pageX));
