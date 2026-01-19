@@ -139,7 +139,7 @@ html, body {
   text-align: center;
 
   opacity: 0;
-  transition: opacity 3.5s ease;
+  transition: opacity 5.5s ease;
   z-index: 20;
 }
 
