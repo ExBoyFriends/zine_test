@@ -146,11 +146,6 @@ html, body {
 .dots.visible { opacity:1; 
 }
 
-.dot {
-  background: rgba(200,200,200,0.2);
-  box-shadow: 0 0 4px rgba(255,255,255,0.3);
-}
-
 .dot.active {
   background: rgba(240,240,240,0.9);
   box-shadow: 0 0 8px rgba(255,255,255,0.6);
