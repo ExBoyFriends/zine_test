@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>5ページドラッグカルーセル</title>
+<title>5ページカルーセル（指定画像版）</title>
 <style>
 html, body {
   margin: 0;
@@ -35,7 +35,7 @@ html, body {
   gap: 10px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 3.45s ease; /* フェード5秒 */
+  transition: opacity 5s ease; /* フェード5秒 */
 }
 
 .carousel-page.active {
@@ -49,7 +49,7 @@ html, body {
   cursor: grab;
   user-select: none;
   overflow: hidden;
-  justify-content: center; /* 中央揃えデフォルト */
+  justify-content: center;
 }
 
 .carousel-inner.single {
@@ -117,23 +117,23 @@ html, body {
   <!-- ページ3 -->
   <div class="carousel-page">
     <div class="carousel-inner">
-      <img src="image/jack.of.hearts.png" alt="Page3-1">
-      <img src="image/jack.of.hearts_mirror.png" alt="Page3-2">
+      <img src="image/jack.of.hearts.png" alt="Jack">
+      <img src="image/jack.of.hearts_mirror.png" alt="Jack Mirror">
     </div>
   </div>
 
   <!-- ページ4 -->
   <div class="carousel-page">
     <div class="carousel-inner">
-      <img src="image/joker_a.png" alt="Page4-1">
-      <img src="image/joker_b.png" alt="Page4-2">
+      <img src="image/joker_a.png" alt="Joker A">
+      <img src="image/joker_b.png" alt="Joker B">
     </div>
   </div>
 
   <!-- ページ5（画像1枚） -->
   <div class="carousel-page">
     <div class="carousel-inner single">
-      <img src="image/zebra.png" alt="Page5">
+      <img src="image/zebra.png" alt="Zebra">
     </div>
   </div>
 
@@ -153,24 +153,28 @@ const dots = document.querySelectorAll('.dot');
 let currentPage = 0;
 
 let isDragging = false;
-let startX = 0;
 let dragX = 0;
-let lastTime = 0;
+let startX = 0;
 let lastX = 0;
+let lastTime = 0;
 let velocity = 0;
+let isAnimating = false;
 
 const wrapper = document.querySelector('.carousel-wrapper');
 const pageWidth = wrapper.clientWidth;
 
+// ドラッグ開始
 function startDrag(x){
+  if(isAnimating) return; // 切替中は無効
   isDragging = true;
   startX = x;
   lastX = x;
   lastTime = Date.now();
 }
 
+// ドラッグ中
 function drag(x){
-  if(!isDragging) return;
+  if(!isDragging || isAnimating) return;
   dragX = x - startX;
 
   // 端で止める
@@ -179,7 +183,7 @@ function drag(x){
   }
 
   const now = Date.now();
-  velocity = (x - lastX)/(now - lastTime);
+  velocity = (x-lastX)/(now-lastTime);
   lastX = x;
   lastTime = now;
 
@@ -193,11 +197,12 @@ function drag(x){
   }
 }
 
+// ドラッグ終了
 function endDrag(){
-  if(!isDragging) return;
+  if(!isDragging || isAnimating) return;
   isDragging=false;
 
-  let nextPage=null;
+  let nextPage = null;
   const threshold = pageWidth*0.3;
   const velocityThreshold = 0.3;
 
@@ -205,13 +210,19 @@ function endDrag(){
   else if((dragX>threshold || velocity>velocityThreshold) && currentPage>0) nextPage=currentPage-1;
 
   if(nextPage!==null){
+    isAnimating = true;
     pages[currentPage].classList.remove('active');
     pages[nextPage].classList.add('active');
     pages[currentPage].style.opacity='';
     pages[nextPage].style.opacity='';
-    currentPage=nextPage;
+
+    pages[nextPage].addEventListener('transitionend', function handler(){
+      isAnimating = false;
+      pages[nextPage].removeEventListener('transitionend', handler);
+    });
+
+    currentPage = nextPage;
   } else {
-    // 元に戻す
     pages[currentPage].style.opacity=1;
     if(dragX<0 && currentPage<pages.length-1) pages[currentPage+1].style.opacity=0;
     if(dragX>0 && currentPage>0) pages[currentPage-1].style.opacity=0;
