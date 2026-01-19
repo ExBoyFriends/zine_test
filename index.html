@@ -6,16 +6,9 @@
 <title>5ページカルーセル＋背景フェード</title>
 <style>
 html, body {
-  margin:0; 
-  padding:0; 
-  height:100%; 
-  overflow:hidden;
-  display:flex; 
-  justify-content:center; 
-  align-items:center;
-  -webkit-user-select:none; 
-  user-select:none; 
-  -webkit-touch-callout:none;
+  margin:0; padding:0; height:100%; overflow:hidden;
+  display:flex; justify-content:center; align-items:center;
+  -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
   /*background:#111;*/
 }
 
@@ -26,26 +19,25 @@ html, body {
   z-index:-2; opacity:1;
   animation: normalFade 20s ease-in-out infinite alternate;
 }
-
 @keyframes normalFade {
   0% { opacity:1; }
-  50% { opacity:0.7; }
-  100%{ opacity:1; }
+  50%{ opacity:0.7; } /* 明るくはしない */
+  100%{ opacity:0.7; }
 }
 
+/* サイレン（暗くなるだけ） */
 .background-siren {
   position:fixed; top:0; left:0; width:100vw; height:100vh;
   background:url('image/background.jpg') center/cover no-repeat;
   z-index:-1; opacity:1;
   animation: sirenFade 3.5s linear 1 forwards;
 }
-
 @keyframes sirenFade {
   0%   { opacity:1; }
   25%  { opacity:0.3; }
-  50%  { opacity:0.3; }
+  50%  { opacity:1; }
   75%  { opacity:0.3; }
-  100% { opacity:0.3; } /* 最後は暗いままカルーセルフェードに移行 */
+  100% { opacity:0.3; } /* 最後は暗い状態でカルーセルへ */
 }
 
 /* ---------- カルーセル ---------- */
@@ -78,47 +70,40 @@ html, body {
 </head>
 <body>
 
-<!-- 背景 -->
 <div class="background-normal"></div>
 <div class="background-siren"></div>
 
 <div class="carousel-wrapper">
-  <!-- ページ1 -->
   <div class="carousel-page">
     <div class="carousel-inner">
       <img src="image/queen.of.clubs.png" alt="Queen">
       <img src="image/queen.of.clubs_mirror.png" alt="Queen Mirror">
     </div>
   </div>
-  <!-- ページ2 -->
   <div class="carousel-page">
     <div class="carousel-inner">
       <img src="image/king.of.spades.png" alt="King">
       <img src="image/king.of.spades_mirror.png" alt="King Mirror">
     </div>
   </div>
-  <!-- ページ3 -->
   <div class="carousel-page">
     <div class="carousel-inner">
       <img src="image/jack.of.hearts.png" alt="Jack">
       <img src="image/jack.of.hearts_mirror.png" alt="Jack Mirror">
     </div>
   </div>
-  <!-- ページ4 -->
   <div class="carousel-page">
     <div class="carousel-inner">
       <img src="image/joker_a.png" alt="Joker A">
       <img src="image/joker_b.png" alt="Joker B">
     </div>
   </div>
-  <!-- ページ5 -->
   <div class="carousel-page">
     <div class="carousel-inner single">
       <img src="image/zebra.png" alt="Zebra">
     </div>
   </div>
 
-  <!-- ドット -->
   <div class="dots">
     <span class="dot active"></span>
     <span class="dot"></span>
@@ -144,17 +129,15 @@ window.addEventListener('load', ()=>{
   isAnimating=true;
   firstPage.classList.add('first-load','active');
 
-  // サイレン終了時
-  sirenBg.addEventListener('animationend',()=>{
+  // カルーセル非表示 + サイレンの点滅を残す
+  setTimeout(()=>{
     sirenBg.style.display='none';
-
-    // 初回フェード
     firstPage.style.opacity=1;
     setTimeout(()=>{
       isAnimating=false;
       dotsContainer.classList.add('visible');
     },5200);
-  });
+  },3500); // サイレン3.5秒
 });
 
 // ---------- ドラッグ ----------
@@ -166,7 +149,6 @@ function drag(x){
   const now=Date.now();
   velocity=(x-lastX)/(now-lastTime);
   lastX=x; lastTime=now;
-
   const ease=0.4;
   if(dragX<0 && currentPage<pages.length-1){
     pages[currentPage+1].style.opacity=Math.min(Math.abs(dragX)/pageWidth,1)*ease;
@@ -184,7 +166,6 @@ function endDrag(){
   const velocityThreshold=0.3;
   if((dragX<-threshold||velocity<-velocityThreshold)&&currentPage<pages.length-1) nextPage=currentPage+1;
   else if((dragX>threshold||velocity>velocityThreshold)&&currentPage>0) nextPage=currentPage-1;
-
   if(nextPage!==null){
     isAnimating=true;
     pages[currentPage].classList.remove('active');
