@@ -110,8 +110,8 @@ html, body {
 }
 
 .carousel-inner img {
-  width:80vw;
-  max-width:480px;
+  width:88vw;
+  max-width:540px;
   border-radius:8px;
   flex-shrink:0;
   -webkit-user-drag:none;
