@@ -1,37 +1,44 @@
-/* 長押し中の光アニメ */
+/* 長押し光アニメーション */
 .glow {
   animation: glowAnim 0.5s ease-in-out infinite alternate;
-  box-shadow: 0 0 20px rgba(255,255,255,0.6);
+  box-shadow: 0 0 30px rgba(255,255,255,0.8);
+  transform: scale(1.02);
 }
 
 @keyframes glowAnim {
-  0% { transform: scale(1); filter: brightness(1); }
-  50% { transform: scale(1.03); filter: brightness(1.4); }
-  100% { transform: scale(1); filter: brightness(1); }
+  0% { filter: brightness(1); transform: scale(1); }
+  50% { filter: brightness(1.4); transform: scale(1.05); }
+  100% { filter: brightness(1); transform: scale(1); }
 }
 
-/* 回転用画像 */
-.rotatable {
+/* 回転可能状態 */
+.rotatable-image {
+  position: relative;
   cursor: grab;
   transform-style: preserve-3d;
-  transition: transform 0.2s;
+  transition: transform 0.2s ease;
+}
+
+.rotating {
+  cursor: grabbing;
 }
 
 /* 裏面ボタン */
 .back {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%) rotateY(180deg);
-  backface-visibility: hidden;
+  top: 0; left: 0; right: 0; bottom: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
 }
 
-#next-chapter-btn {
+.back button {
   padding: 12px 24px;
-  font-size: 1.2rem;
+  font-size: 18px;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
 }
