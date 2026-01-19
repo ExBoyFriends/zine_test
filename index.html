@@ -172,7 +172,7 @@ wrapper.addEventListener('touchend', e => {
 });
 
 function handlePageSwipe(diff) {
-  const threshold = 220; // スワイプ距離
+  const threshold = 190; // スワイプ距離
   if(diff > threshold && currentPage > 0) {
     // 右スワイプ → 前のページ（最初で止める）
     showPage(currentPage - 1);
