@@ -25,7 +25,7 @@ window.addEventListener('load', ()=>{
     firstPage.style.transition='opacity 5.2s ease';
 
     // ドット遅延表示
-    setTimeout(()=>dotsContainer.classList.add('visible'), 2470);
+    setTimeout(()=>dotsContainer.classList.add('visible'), 3470);
 
     isAnimating = false;
   }, 7280); // サイレン期間
