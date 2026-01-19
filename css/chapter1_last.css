@@ -1,54 +1,40 @@
-/* flip-card構造 */
+/* ---------- 最後のページ：長押し＋3D回転 ---------- */
 .flip-card {
   position: relative;
+  perspective: 1000px;
+}
+
+.front-image, .rotatable-image {
   width: 88vw;
   max-width: 540px;
-  transform-style: preserve-3d;
-}
-
-.flip-card img, .flip-card .back {
-  width: 100%;
   border-radius: 8px;
-  position: absolute;
-  top:0; left:0;
   backface-visibility: hidden;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-}
-
-.front-image {
+  transition: transform 1s ease, opacity 0.5s ease;
   cursor: pointer;
-  z-index:1;
-}
-
-.front-image.floating {
-  transform: translateZ(60px) scale(1.05);
-  box-shadow:0 20px 40px rgba(0,0,0,0.6);
 }
 
 .rotatable-image {
-  cursor: grab;
-  display:block;
-  z-index:5;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   transform: rotateY(180deg);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#111;
-  color:#fff;
-  opacity:0;
-  transition: opacity 0.5s ease;
+  backface-visibility: hidden;
 }
 
-.back.visible { opacity:1; }
-
 #next-chapter-btn {
-  padding:12px 24px;
-  font-size:18px;
-  border:none;
-  border-radius:6px;
-  background: rgba(240,240,240,0.9);
-  cursor:pointer;
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(255,255,255,0.4);
 }
