@@ -3,13 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0, 
-user-scalable=no, viewport-fit=cover">
-<title>第一章カルーセル＋最後のページ</title>
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>5ページカルーセル＋背景＋初回サイレン</title>
 
-<!-- GitHub Pages 用絶対パス -->
-<link rel="stylesheet" href="/zine_test/css/chapter1.css">
-<link rel="stylesheet" href="/zine_test/css/chapter1_last.css">
+<link rel="stylesheet" href="../css/chapter1.css">
 </head>
 <body>
 
@@ -20,45 +17,39 @@ user-scalable=no, viewport-fit=cover">
   <!-- ページ1 -->
   <div class="carousel-page">
     <div class="carousel-inner">
-      <img src="/zine_test/image/queen.of.clubs.png">
-      <img src="/zine_test/image/queen.of.clubs_mirror.png">
+      <img src="../image/queen.of.clubs.png">
+      <img src="../image/queen.of.clubs_mirror.png">
     </div>
   </div>
 
   <!-- ページ2 -->
   <div class="carousel-page">
     <div class="carousel-inner">
-      <img src="/zine_test/image/king.of.spades.png">
-      <img src="/zine_test/image/king.of.spades_mirror.png">
+      <img src="../image/king.of.spades.png">
+      <img src="../image/king.of.spades_mirror.png">
     </div>
   </div>
 
   <!-- ページ3 -->
   <div class="carousel-page">
     <div class="carousel-inner">
-      <img src="/zine_test/image/jack.of.hearts.png">
-      <img src="/zine_test/image/jack.of.hearts_mirror.png">
+      <img src="../image/jack.of.hearts.png">
+      <img src="../image/jack.of.hearts_mirror.png">
     </div>
   </div>
 
   <!-- ページ4 -->
   <div class="carousel-page">
     <div class="carousel-inner">
-      <img src="/zine_test/image/joker_a.png">
-      <img src="/zine_test/image/joker_b.png">
+      <img src="../image/joker_a.png">
+      <img src="../image/joker_b.png">
     </div>
   </div>
 
-  <!-- ページ5：最後のページ -->
-  <div class="carousel-page" id="last-page">
+  <!-- ページ5（最後のページも単純表示） -->
+  <div class="carousel-page">
     <div class="carousel-inner single">
-      <div class="flip-card" id="flip-card">
-        <img src="/zine_test/image/zebra.png" class="front-image" id="front-img">
-        <img src="/zine_test/image/zebra_alt.png" class="rotatable-image" id="rot-img" style="display:none;">
-        <div class="back" id="back">
-          <button id="next-chapter-btn">▶ 次の章へ</button>
-        </div>
-      </div>
+      <img src="../image/zebra.png">
     </div>
   </div>
 
@@ -72,8 +63,6 @@ user-scalable=no, viewport-fit=cover">
   </div>
 </div>
 
-<!-- JS -->
-<script src="/zine_test/js/chapter1.js"></script>
-<script src="/zine_test/js/chapter1_last.js"></script>
+<script src="../js/chapter1.js"></script>
 </body>
 </html>
