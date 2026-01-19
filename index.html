@@ -6,109 +6,94 @@
 <title>Carousel + Siren Background</title>
 
 <style>
-html, body {
+html,body{
   margin:0;
   padding:0;
   width:100%;
   height:100%;
   overflow:hidden;
-  -webkit-user-select:none;
-  user-select:none;
+  background:#000;
 }
 
-/* ===============================
-   背景レイヤー
-   =============================== */
-
-/* 通常背景（基準の明るさ） */
-.background-normal {
-  position: fixed;
-  inset: 0;
-  background: url("image/background.jpg") center/cover no-repeat;
-  z-index: -3;
+/* ===== 背景 ===== */
+.background-normal{
+  position:fixed;
+  inset:0;
+  background:url("image/background.jpg") center/cover no-repeat;
+  z-index:-3;
 }
 
-/* サイレン用背景（暗くなるだけ） */
-.background-siren {
-  position: fixed;
-  inset: 0;
-  background: url("image/background.jpg") center/cover no-repeat;
-  z-index: -2;
-  filter: brightness(1);
-  opacity: 1;
-  animation: sirenBlink 1.6s ease-in-out infinite;
+.background-siren{
+  position:fixed;
+  inset:0;
+  background:url("image/background.jpg") center/cover no-repeat;
+  z-index:-2;
+  animation:sirenBlink 1.2s ease-in-out infinite;
 }
 
-/* 暗くなるだけのサイレン */
-@keyframes sirenBlink {
-  0%   { filter: brightness(1); }
-  50%  { filter: brightness(0.3); }
-  100% { filter: brightness(1); }
+/* 明るくならず、暗くなるだけ */
+@keyframes sirenBlink{
+  0%   { opacity:1; }
+  50%  { opacity:0.25; }
+  100% { opacity:1; }
 }
 
-
-/* ===============================
-   カルーセル
-   =============================== */
-
-.carousel-wrapper {
-  position: relative;
-  width:100vw;
-  height:100vh;
-  overflow:hidden;
-  z-index: 1;
+/* ===== カルーセル ===== */
+.carousel-wrapper{
+  position:relative;
+  width:100%;
+  height:100%;
 }
 
-.carousel-page {
+.carousel-page{
   position:absolute;
   inset:0;
   display:flex;
   justify-content:center;
   align-items:center;
+  gap:10px;
   opacity:0;
   pointer-events:none;
-  transition: opacity 3.8s ease;
+  transition:opacity 3.85s ease;
 }
 
-.carousel-page.active {
+.carousel-page.active{
   opacity:1;
   pointer-events:auto;
 }
 
-/* 初回用 深いフェード */
-.carousel-page.first-load {
-  opacity:0;
-  transition: opacity 6s ease;
+/* 初回深いフェード */
+.carousel-page.first-load{
+  transition:opacity 5.2s ease;
 }
 
-.carousel-inner {
+.carousel-inner{
   display:flex;
   gap:10px;
 }
 
-.carousel-inner img {
+.carousel-inner img{
   width:80vw;
   max-width:480px;
   border-radius:8px;
   -webkit-user-drag:none;
 }
 
-/* ===============================
-   ドット
-   =============================== */
-
-.dots {
+/* ===== ドット ===== */
+.dots{
   position:absolute;
   bottom:20px;
   width:100%;
   text-align:center;
   opacity:0;
-  transition: opacity 17.7s ease;
+  transition:opacity 17.7s ease;
 }
 
-.dots.visible { opacity:1; }
+.dots.visible{
+  opacity:1;
+}
 
-.dot {
+.dot{
   display:inline-block;
   width:10px;
   height:10px;
@@ -116,10 +101,12 @@ html, body {
   margin:0 5px;
 }
 
-.dot.active { background:#fff; }
-
+.dot.active{
+  background:#fff;
+}
 </style>
 </head>
+
 <body>
 
 <!-- 背景 -->
@@ -127,8 +114,7 @@ html, body {
 <div class="background-siren"></div>
 
 <div class="carousel-wrapper">
-
-  <div class="carousel-page">
+  <div class="carousel-page active first-load">
     <div class="carousel-inner">
       <img src="image/queen.of.clubs.png">
       <img src="image/queen.of.clubs_mirror.png">
@@ -180,69 +166,60 @@ const sirenBg = document.querySelector(".background-siren");
 let currentPage = 0;
 let isAnimating = true;
 
-// 初期状態
-pages.forEach((p, i) => {
-  if (i === 0) {
-    p.classList.add("active");
-  } else {
-    p.style.opacity = 0;
-  }
+/* 初期：他ページ非表示 */
+pages.forEach((p,i)=>{
+  if(i!==0) p.style.opacity = 0;
 });
 
-// ===== 初回演出 =====
-window.addEventListener("load", () => {
+/* ===== 初回演出 ===== */
+window.addEventListener("load",()=>{
   const firstPage = pages[0];
 
-  // 深いフェード用
-  firstPage.classList.add("first-load");
-  firstPage.style.opacity = 0;
-
-  // サイレン 3.5秒
-  setTimeout(() => {
-    // サイレンを消す
+  // サイレンを 5秒流す
+  setTimeout(()=>{
     sirenBg.style.transition = "opacity 2s ease";
     sirenBg.style.opacity = 0;
 
-    // カルーセルの深いフェード開始
-    requestAnimationFrame(() => {
+    // カルーセル初回フェード
+    requestAnimationFrame(()=>{
       firstPage.style.opacity = 1;
     });
 
     // 初回フェード完了後
-    setTimeout(() => {
-      isAnimating = false;                  // ← 操作解放
-      dotsContainer.classList.add("visible"); // ← ドット表示
+    setTimeout(()=>{
+      isAnimating = false;
+      dotsContainer.classList.add("visible");
       firstPage.classList.remove("first-load");
-    }, 5200); // 初回フェード時間と一致
+    },5200);
 
-  }, 3500); // サイレン時間
+  },5000);  // ← サイレン長さ（好きに変えられる）
 });
 
-// ===== ページ切り替え（最低限版）=====
-function goToPage(index) {
-  if (isAnimating || index === currentPage || index < 0 || index >= pages.length) return;
+/* ===== ページ切り替え（テスト用：クリック）===== */
+document.body.addEventListener("click",()=>{
+  if(isAnimating) return;
+  const next = (currentPage + 1) % pages.length;
+  changePage(next);
+});
 
+function changePage(next){
   isAnimating = true;
 
   pages[currentPage].classList.remove("active");
-  pages[index].classList.add("active");
+  pages[next].classList.add("active");
 
-  setTimeout(() => {
-    isAnimating = false;
-    currentPage = index;
+  setTimeout(()=>{
+    currentPage = next;
     updateDots();
-  }, 3800); // 通常フェード時間
+    isAnimating = false;
+  },3850);
 }
 
-// ドット更新
-function updateDots() {
-  dots.forEach((d, i) => d.classList.toggle("active", i === currentPage));
+function updateDots(){
+  dots.forEach((d,i)=>{
+    d.classList.toggle("active",i===currentPage);
+  });
 }
-
-// テスト用：タップで次ページ（動作確認用）
-document.body.addEventListener("click", () => {
-  goToPage((currentPage + 1) % pages.length);
-});
 </script>
 
 </body>
