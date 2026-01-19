@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>5ページカルーセル（初回ロードスクロール禁止＆ドット非表示）</title>
+<title>5ページカルーセル（初回ロード深フェード＋ドットフェードイン）</title>
 <style>
 html, body {
   margin: 0;
@@ -79,10 +79,12 @@ html, body {
   bottom: 20px;
   width: 100%;
   text-align: center;
+  opacity: 0;                /* 初期は透明 */
+  transition: opacity 1s ease; /* 1秒かけてフェードイン */
 }
 
-.dots.hidden {
-  display: none; /* 初回ロード中非表示 */
+.dots.visible {
+  opacity: 1;
 }
 
 .dot {
@@ -149,7 +151,7 @@ html, body {
   </div>
 
   <!-- ドット -->
-  <div class="dots hidden">
+  <div class="dots">
     <span class="dot active"></span>
     <span class="dot"></span>
     <span class="dot"></span>
@@ -175,19 +177,21 @@ let isAnimating = false;
 const wrapper = document.querySelector('.carousel-wrapper');
 const pageWidth = wrapper.clientWidth;
 
-// ---------- 初回ロード深フェード ----------
+// ---------- 初回ロード深フェード＋ドットフェード ----------
 window.addEventListener('load', ()=>{
   const firstPage = pages[0];
-  
-  isAnimating = true;           // 初回ロード中は操作禁止
-  dotsContainer.classList.add('hidden'); // ドット非表示
+
+  isAnimating = true; // フェード中は操作禁止
   firstPage.classList.add('first-load', 'active');
 
   setTimeout(()=>{
     firstPage.classList.remove('first-load');
     firstPage.style.transition = 'opacity 3.85s ease';
-    isAnimating = false;        // フェード終了でドラッグ可能
-    dotsContainer.classList.remove('hidden'); // ドット表示
+    isAnimating = false; // フェード終了でドラッグ可能
+
+    // ドットをフェードイン
+    dotsContainer.classList.add('visible');
+
   }, 6000); // 初回フェード6秒
 });
 
@@ -204,6 +208,7 @@ function drag(x){
   if(!isDragging || isAnimating) return;
   dragX = x - startX;
 
+  // 端で止める
   if((currentPage===0 && dragX>0) || (currentPage===pages.length-1 && dragX<0)){
     dragX=0;
   }
