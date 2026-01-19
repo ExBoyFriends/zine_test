@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>5ページカルーセル（初回ロード深フェード＋ドットフェードイン）</title>
+<title>5ページカルーセル（初回ロード4.8秒＋ドット遅延フェードイン）</title>
 <style>
 html, body {
   margin: 0;
@@ -46,7 +46,7 @@ html, body {
 /* 初回ロード専用の深いフェードイン */
 .carousel-page.first-load {
   opacity: 0;
-  transition: opacity 5.3s ease;
+  transition: opacity 4.8s ease;
 }
 
 .carousel-inner {
@@ -79,8 +79,8 @@ html, body {
   bottom: 20px;
   width: 100%;
   text-align: center;
-  opacity: 0;                /* 初期は透明 */
-  transition: opacity 1s ease; /* 1秒かけてフェードイン */
+  opacity: 0;                 /* 初期は透明 */
+  transition: opacity 1s ease; /* フェードイン1秒 */
 }
 
 .dots.visible {
@@ -177,11 +177,11 @@ let isAnimating = false;
 const wrapper = document.querySelector('.carousel-wrapper');
 const pageWidth = wrapper.clientWidth;
 
-// ---------- 初回ロード深フェード＋ドットフェード ----------
+// ---------- 初回ロード4.8秒深フェード＋ドット遅延フェード ----------
 window.addEventListener('load', ()=>{
   const firstPage = pages[0];
 
-  isAnimating = true; // フェード中は操作禁止
+  isAnimating = true; // 初回ロード中は操作禁止
   firstPage.classList.add('first-load', 'active');
 
   setTimeout(()=>{
@@ -189,10 +189,12 @@ window.addEventListener('load', ()=>{
     firstPage.style.transition = 'opacity 3.85s ease';
     isAnimating = false; // フェード終了でドラッグ可能
 
-    // ドットをフェードイン
-    dotsContainer.classList.add('visible');
+    // ドットを1秒遅らせてフェードイン
+    setTimeout(()=>{
+      dotsContainer.classList.add('visible');
+    }, 1000);
 
-  }, 6000); // 初回フェード6秒
+  }, 4800); // 初回フェード4.8秒
 });
 
 // ---------- ドラッグ処理 ----------
