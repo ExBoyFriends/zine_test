@@ -1,5 +1,4 @@
 /* ---------- 最後のページ用 ---------- */
-
 #last-page {
   position: absolute;
   inset: 0;
@@ -12,7 +11,6 @@
 .flip-card {
   width: 88vw;
   max-width: 540px;
-  height: auto;
   perspective: 1000px; /* 3D回転用 */
   cursor: pointer;
   position: relative;
@@ -24,15 +22,14 @@
   display: block;
   border-radius: 8px;
   backface-visibility: hidden;
-  transition: opacity 3s ease; /* 3秒フェード切替 */
+  transition: opacity 3s ease; /* フェード切替 */
 }
 
 .rotatable-image {
-  display: block;
-  opacity: 0;
   position: absolute;
   top: 0;
   left: 0;
+  opacity: 0;
 }
 
 .back {
