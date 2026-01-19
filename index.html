@@ -10,7 +10,7 @@ html, body {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  /*background: #111;*/
+  background: #111;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -48,12 +48,12 @@ html, body {
   background: url('image/background.jpg') center/cover no-repeat;
   filter: brightness(1);
   z-index: 9999;
-  animation: siren 0.7s linear infinite;
+  animation: siren 1.2s linear infinite; /* 点滅周期を遅く */
 }
 
 @keyframes siren {
   0%   { filter: brightness(1); }
-  50%  { filter: brightness(0.3); }
+  50%  { filter: brightness(0.2); } /* 暗めに */
   100% { filter: brightness(1); }
 }
 
@@ -86,7 +86,7 @@ html, body {
 
 .carousel-page.first-load {
   opacity:0;
-  transition: opacity 5.2s ease; /* 初回フェード長め */
+  transition: opacity 5.5s ease; /* 初回フェード少し深く長め */
 }
 
 .carousel-inner {
@@ -227,11 +227,11 @@ window.addEventListener('load', ()=>{
 
     setTimeout(()=>{
       firstPage.classList.remove('first-load');
-      firstPage.style.transition='opacity 5.2s ease';
+      firstPage.style.transition='opacity 5.5s ease';
       isAnimating=false;
       setTimeout(()=>dotsContainer.classList.add('visible'),1770);
-    }, 50); // 少し待ってからフェード開始
-  }, 3500); // サイレン3.5秒
+    }, 50);
+  }, 3500);
 });
 
 // ---------- ドラッグ ----------
