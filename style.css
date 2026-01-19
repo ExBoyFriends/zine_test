@@ -117,7 +117,7 @@ html, body {
 /* ドット */
 .dots {
   position: absolute;
-  bottom: calc(40px + env(safe-area-inset-bottom));
+  bottom: calc(80px + env(safe-area-inset-bottom));
   width:100%;
   text-align:center;
   opacity:0;
