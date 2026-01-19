@@ -1,76 +1,37 @@
-/* ---------- 最後のページ用 ---------- */
-#last-page {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  pointer-events: all;
-}
-
-.flip-card {
-  width: 88vw;
-  max-width: 540px;
-  perspective: 1000px; /* 3D回転用 */
-  cursor: pointer;
-  position: relative;
-}
-
-.front-image,
-.rotatable-image {
-  width: 100%;
-  display: block;
-  border-radius: 8px;
-  backface-visibility: hidden;
-  transition: opacity 3s ease; /* フェード切替 */
-}
-
-.rotatable-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-}
-
-.back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backface-visibility: hidden;
-  transform: rotateY(180deg);
-}
-
-#next-chapter-btn {
-  padding: 10px 20px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  border: none;
-  background: rgba(255,255,255,0.85);
-  border-radius: 6px;
-  transition: 0.3s;
-}
-
-#next-chapter-btn:hover {
-  background: rgba(255,255,255,1);
-}
-
-/* 光るアニメーション */
+/* 長押し中の光アニメ */
 .glow {
-  animation: glowAnim 1s linear infinite alternate;
+  animation: glowAnim 0.5s ease-in-out infinite alternate;
+  box-shadow: 0 0 20px rgba(255,255,255,0.6);
 }
 
 @keyframes glowAnim {
-  0% { filter: drop-shadow(0 0 2px #fff); }
-  50% { filter: drop-shadow(0 0 15px #fff); }
-  100% { filter: drop-shadow(0 0 2px #fff); }
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.03); filter: brightness(1.4); }
+  100% { transform: scale(1); filter: brightness(1); }
 }
 
-/* 回転中アニメーション */
-.rotating {
-  transition: transform 0.2s ease-out;
+/* 回転用画像 */
+.rotatable {
+  cursor: grab;
+  transform-style: preserve-3d;
+  transition: transform 0.2s;
+}
+
+/* 裏面ボタン */
+.back {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%) rotateY(180deg);
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+#next-chapter-btn {
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  cursor: pointer;
 }
