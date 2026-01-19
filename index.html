@@ -48,10 +48,19 @@ user-scalable=no, viewport-fit=cover">
     </div>
   </div>
 
-  <!-- ページ5 -->
-  <div class="carousel-page">
+  <!-- ページ5：最後のページ（長押しで切替→回転→裏面ボタン） -->
+  <div class="carousel-page" id="last-page">
     <div class="carousel-inner single">
-      <img src="image/zebra.png">
+      <div class="flip-card" id="flip-card">
+        <!-- 最初の画像 -->
+        <img src="image/zebra.png" class="front-image" id="front-img">
+        <!-- 長押しで切り替わる画像 -->
+        <img src="image/zebra_alt.png" class="rotatable-image" id="rot-img" style="display:none;">
+        <!-- 裏面ボタン -->
+        <div class="back" id="back">
+          <button id="next-chapter-btn">▶ 次の章へ</button>
+        </div>
+      </div>
     </div>
   </div>
 
