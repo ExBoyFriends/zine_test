@@ -42,10 +42,12 @@ html, body {
   height: 100vh;
   z-index: 1;
   overflow: hidden;
+
   display: flex;
   justify-content: center;
-  align-items: center; 
-  
+  align-items: center;
+
+  transform: translateY(-env(safe-area-inset-bottom) / 2);
 }
 
 /* ---------- アニメ ---------- */
@@ -120,26 +122,25 @@ html, body {
 /* ドット */
 .dot {
   display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin: 0 8px;
-  border-radius: 50%;
+  width: 22px;
+  height: 4px;
+  margin: 0 6px;
+  border-radius: 0;  /* ← 丸やめる */
   background: rgba(200,200,200,0.25);
   box-shadow: 0 0 4px rgba(255,255,255,0.3);
 }
 
 .dots {
-  position: fixed;  /* absolute → fixed */
+  position: fixed;
   left: 0;
   right: 0;
   bottom: calc(40px + env(safe-area-inset-bottom));
   width: 100%;
   text-align: center;
 
-  opacity: 0;
+  opacity: 1;
   transition: opacity 1.5s ease;
-  z-index: 20;     /* loader(10)より上 */
-  pointer-events: auto;
+  z-index: 20;
 }
 
 .dots.visible { opacity:1; }
@@ -150,10 +151,6 @@ html, body {
 }
 
 .dot.active {
-  background: rgb(235,235,235);
+  background: rgba(240,240,240,0.9);
   box-shadow: 0 0 8px rgba(255,255,255,0.6);
-}
-
-.dots {
-  opacity: 1 !important;
 }
