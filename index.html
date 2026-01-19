@@ -300,8 +300,13 @@ document.querySelectorAll('.carousel-inner').forEach(inner=>{
   inner.addEventListener('touchmove', e=>{ if(!isDrag) return; inner.scrollLeft=scrollLeft+(start-(e.touches[0].pageX-inner.offsetLeft)); });
 });
 
-// ---------- 長押しや右クリックメニュー無効 ----------
+// 右クリック・長押しメニュー無効
 document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 2本指以上のズーム無効化
+document.addEventListener('touchmove', function(e) {
+  if (e.touches.length > 1) e.preventDefault();
+}, { passive: false });
 </script>
 
 </body>
