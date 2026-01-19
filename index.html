@@ -2,7 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ピンチズーム禁止・初期スケール固定 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>5ページカルーセル（初回ロード4.8秒＋ドット遅延フェードイン）</title>
 <style>
 html, body {
@@ -14,6 +15,12 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  /* 選択・長押し禁止 */
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .carousel-wrapper {
@@ -21,6 +28,8 @@ html, body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .carousel-page {
@@ -43,23 +52,23 @@ html, body {
   pointer-events: all;
 }
 
-/* 初回ロード専用の深いフェードイン */
 .carousel-page.first-load {
   opacity: 0;
-  transition: opacity 5.2s ease;
+  transition: opacity 5.2s ease; /* 初回深いフェードイン */
 }
 
 .carousel-inner {
   display: flex;
   gap: 10px;
   cursor: grab;
-  user-select: none;
   overflow: hidden;
   justify-content: center;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .carousel-inner.single {
-  justify-content: center; /* 最後のページ1枚用 */
+  justify-content: center;
 }
 
 .carousel-inner img {
@@ -67,6 +76,8 @@ html, body {
   max-width: 480px;
   border-radius: 8px;
   flex-shrink: 0;
+  -webkit-user-drag: none; /* 画像ドラッグ禁止 */
+  -webkit-touch-callout: none;
 }
 
 .dragging {
@@ -79,8 +90,8 @@ html, body {
   bottom: 20px;
   width: 100%;
   text-align: center;
-  opacity: 0;                 /* 初期は透明 */
-  transition: opacity 17.7s ease; /* フェードイン1秒 */
+  opacity: 0;
+  transition: opacity 17.7s ease;
 }
 
 .dots.visible {
@@ -92,7 +103,7 @@ html, body {
   width: 10px;
   height: 10px;
   background: #555;
-  border-radius: 0; /* 四角 */
+  border-radius: 0;
   margin: 0 5px;
   transition: background 0.3s;
 }
@@ -288,6 +299,9 @@ document.querySelectorAll('.carousel-inner').forEach(inner=>{
   inner.addEventListener('touchend', ()=>{ isDrag=false; });
   inner.addEventListener('touchmove', e=>{ if(!isDrag) return; inner.scrollLeft=scrollLeft+(start-(e.touches[0].pageX-inner.offsetLeft)); });
 });
+
+// ---------- 長押しや右クリックメニュー無効 ----------
+document.addEventListener('contextmenu', e => e.preventDefault());
 </script>
 
 </body>
