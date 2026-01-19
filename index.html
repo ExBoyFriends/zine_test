@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>5ページカルーセル＋背景サイレン初回＋ゆっくりフェード</title>
+<title>5ページカルーセル＋初回ロードサイレン</title>
 <style>
 html, body {
   margin: 0;
@@ -14,43 +14,27 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-
-  /* 選択・長押し禁止 */
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
 }
 
-/* ---------- 背景 ---------- */
-.background {
+/* ---------- 初回ローディング画面 ---------- */
+#loader {
   position: fixed;
-  top:0;
-  left:0;
-  width:100vw;
-  height:100vh;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: url('image/background.jpg') center/cover no-repeat;
-  z-index: -1;
-  filter: brightness(1);
-  animation: bgSlowFade 20s ease-in-out infinite alternate;
+  z-index: 999;
+  animation: siren 1s linear infinite alternate;
 }
 
-@keyframes bgSlowFade {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.5); }
-  100% { filter: brightness(1); }
-}
-
-/* 初回ロード用サイレン風（背景だけ） */
-.bgFast {
-  animation: bgFastFlash 0.5s ease-in-out infinite alternate;
-}
-
-@keyframes bgFastFlash {
+@keyframes siren {
   0%   { filter: brightness(1); }
-  25%  { filter: brightness(0.3); }
-  50%  { filter: brightness(1); }
-  75%  { filter: brightness(0.3); }
+  50%  { filter: brightness(0.3); }
   100% { filter: brightness(1); }
 }
 
@@ -60,8 +44,7 @@ html, body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  -webkit-user-select: none;
-  user-select: none;
+  display: none; /* ローディング中は非表示 */
 }
 
 .carousel-page {
@@ -76,17 +59,12 @@ html, body {
   gap: 10px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 3.85s ease; /* 通常フェード */
+  transition: opacity 3.85s ease;
 }
 
 .carousel-page.active {
   opacity: 1;
   pointer-events: all;
-}
-
-.carousel-page.first-load {
-  opacity: 0;
-  transition: opacity 5.2s ease; /* 初回深いフェードイン */
 }
 
 .carousel-inner {
@@ -95,8 +73,6 @@ html, body {
   cursor: grab;
   overflow: hidden;
   justify-content: center;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 .carousel-inner.single {
@@ -104,7 +80,6 @@ html, body {
 }
 
 .carousel-inner img {
-  position: relative; /* 背景filterの影響を受けない */
   width: 80vw;
   max-width: 480px;
   border-radius: 8px;
@@ -136,7 +111,7 @@ html, body {
   width: 10px;
   height: 10px;
   background: #555;
-  border-radius: 0; /* 四角 */
+  border-radius: 0;
   margin: 0 5px;
   transition: background 0.3s;
 }
@@ -154,8 +129,8 @@ html, body {
 </head>
 <body>
 
-<!-- 背景 -->
-<div class="background"></div>
+<!-- 初回ローディング画面 -->
+<div id="loader"></div>
 
 <div class="carousel-wrapper">
   <!-- ページ1 -->
@@ -208,6 +183,8 @@ html, body {
 </div>
 
 <script>
+const loader = document.getElementById('loader');
+const carousel = document.querySelector('.carousel-wrapper');
 const pages = document.querySelectorAll('.carousel-page');
 const dots = document.querySelectorAll('.dot');
 const dotsContainer = document.querySelector('.dots');
@@ -220,35 +197,33 @@ let lastX = 0;
 let lastTime = 0;
 let velocity = 0;
 let isAnimating = false;
-
 const wrapper = document.querySelector('.carousel-wrapper');
 const pageWidth = wrapper.clientWidth;
-const background = document.querySelector('.background');
 
-// ---------- 初回ロード5.2秒深フェード＋背景サイレン＋ドット17.7秒 ----------
+// ---------- 初回ロード後にカルーセル表示 ----------
 window.addEventListener('load', ()=>{
-  const firstPage = pages[0];
-  isAnimating = true;
-
-  // 初回サイレン風点滅
-  background.classList.add('bgFast');
-
-  firstPage.classList.add('first-load', 'active');
-
-  setTimeout(()=>{
-    // 初回フェード終了
-    firstPage.classList.remove('first-load');
-    firstPage.style.transition = 'opacity 3.85s ease';
-    isAnimating = false;
-
-    // 背景を通常ゆっくりフェードに戻す
-    background.classList.remove('bgFast');
-
-    // ドットフェード
-    setTimeout(()=>{ dotsContainer.classList.add('visible'); }, 1770);
-
-  }, 5200); // 初回ロード5.2秒
+  // 画像の読み込みが完了してから
+  const images = document.querySelectorAll('.carousel-inner img');
+  let loaded = 0;
+  images.forEach(img => {
+    if(img.complete) loaded++;
+    else img.onload = ()=>{ loaded++; if(loaded===images.length) showCarousel(); }
+  });
+  if(loaded===images.length) showCarousel();
 });
+
+function showCarousel(){
+  // ローディング画面をフェードアウト
+  loader.style.transition = 'opacity 0.5s ease';
+  loader.style.opacity = 0;
+  setTimeout(()=>loader.style.display='none',500);
+
+  // カルーセル表示
+  carousel.style.display = 'flex';
+  pages[0].classList.add('active');
+  // ドットフェードイン遅延
+  setTimeout(()=>{ dotsContainer.classList.add('visible'); }, 1770);
+}
 
 // ---------- ドラッグ処理 ----------
 function startDrag(x){
@@ -263,9 +238,7 @@ function drag(x){
   if(!isDragging || isAnimating) return;
   dragX = x - startX;
 
-  if((currentPage===0 && dragX>0) || (currentPage===pages.length-1 && dragX<0)){
-    dragX=0;
-  }
+  if((currentPage===0 && dragX>0) || (currentPage===pages.length-1 && dragX<0)) dragX=0;
 
   const now = Date.now();
   velocity = (x-lastX)/(now-lastTime);
@@ -301,6 +274,7 @@ function endDrag(){
     pages[nextPage].style.opacity='';
 
     setTimeout(()=>{ isAnimating = false; }, 3000);
+
     currentPage = nextPage;
   } else {
     pages[currentPage].style.opacity=1;
@@ -329,4 +303,22 @@ wrapper.addEventListener('touchend', endDrag);
 // ページ内画像ドラッグ
 document.querySelectorAll('.carousel-inner').forEach(inner=>{
   let isDrag=false, start, scrollLeft;
-  inner.addEventListener('mousedown', e=>{ isDrag=true; inner.classList.add('dragging'); start=e.pageX-inner.offsetLeft; scrollLeft
+  inner.addEventListener('mousedown', e=>{ isDrag=true; inner.classList.add('dragging'); start=e.pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft; });
+  inner.addEventListener('mouseleave', ()=>{ isDrag=false; inner.classList.remove('dragging'); });
+  inner.addEventListener('mouseup', ()=>{ isDrag=false; inner.classList.remove('dragging'); });
+  inner.addEventListener('mousemove', e=>{ if(!isDrag) return; e.preventDefault(); inner.scrollLeft=scrollLeft+(start-(e.pageX-inner.offsetLeft)); });
+  inner.addEventListener('touchstart', e=>{ isDrag=true; start=e.touches[0].pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft; });
+  inner.addEventListener('touchend', ()=>{ isDrag=false; });
+  inner.addEventListener('touchmove', e=>{ if(!isDrag) return; inner.scrollLeft=scrollLeft+(start-(e.touches[0].pageX-inner.offsetLeft)); });
+});
+
+// 右クリック・長押しメニュー無効
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 2本指以上のズーム無効化
+document.addEventListener('touchmove', function(e) { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+document.addEventListener('gesturestart', function(e){ e.preventDefault(); });
+</script>
+
+</body>
+</html>
