@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>5ページカルーセル＋背景フェード</title>
+<title>5ページカルーセル＋サイレン風背景</title>
 <style>
 html, body {
   margin: 0;
@@ -15,13 +15,14 @@ html, body {
   justify-content: center;
   align-items: center;
 
+  /* 選択・長押し禁止 */
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
 }
 
-/* ---------- 背景フェード ---------- */
+/* ---------- 背景 ---------- */
 .background {
   position: fixed;
   top: 0;
@@ -31,20 +32,29 @@ html, body {
   background: url('image/background.jpg') center/cover no-repeat;
   z-index: -1;
   filter: brightness(1);
-  animation: bgFade 20s ease-in-out infinite alternate;
+  animation: bgSlowFade 20s ease-in-out infinite alternate;
 }
 
-@keyframes bgFade {
+@keyframes bgSlowFade {
   0%   { filter: brightness(1); }
   50%  { filter: brightness(0.5); }
   100% { filter: brightness(1); }
 }
 
-/* 初回フェード用高速化クラス */
+/* 初回ロード用：サイレン風点滅 */
 .bgFast {
-  animation-duration: 5.2s !important;
+  animation: bgFastFlash 0.5s ease-in-out infinite alternate !important;
 }
 
+@keyframes bgFastFlash {
+  0%   { filter: brightness(1); }
+  25%  { filter: brightness(0.3); }
+  50%  { filter: brightness(1); }
+  75%  { filter: brightness(0.3); }
+  100% { filter: brightness(1); }
+}
+
+/* ---------- カルーセル ---------- */
 .carousel-wrapper {
   position: relative;
   width: 100vw;
@@ -85,6 +95,8 @@ html, body {
   cursor: grab;
   overflow: hidden;
   justify-content: center;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .carousel-inner.single {
@@ -100,7 +112,9 @@ html, body {
   -webkit-touch-callout: none;
 }
 
-.dragging { cursor: grabbing; }
+.dragging {
+  cursor: grabbing;
+}
 
 /* ドット */
 .dots {
@@ -109,10 +123,12 @@ html, body {
   width: 100%;
   text-align: center;
   opacity: 0;
-  transition: opacity 17.7s ease; /* フェードイン */
+  transition: opacity 17.7s ease;
 }
 
-.dots.visible { opacity: 1; }
+.dots.visible {
+  opacity: 1;
+}
 
 .dot {
   display: inline-block;
@@ -124,10 +140,14 @@ html, body {
   transition: background 0.3s;
 }
 
-.dot.active { background: #fff; }
+.dot.active {
+  background: #fff;
+}
 
 @media (max-width: 500px) {
-  .carousel-inner img { width: 88vw; }
+  .carousel-inner img {
+    width: 88vw;
+  }
 }
 </style>
 </head>
@@ -204,14 +224,13 @@ let isAnimating = false;
 const wrapper = document.querySelector('.carousel-wrapper');
 const pageWidth = wrapper.clientWidth;
 
-// ---------- 初回ロード5.2秒深フェード＋ドット遅延フェード ----------
+// ---------- 初回ロード5.2秒深フェード＋ドット17.7秒フェード ----------
 window.addEventListener('load', ()=>{
   const firstPage = pages[0];
-
   isAnimating = true;
   firstPage.classList.add('first-load','active');
 
-  // 背景高速フェード
+  // 背景サイレン風
   background.classList.add('bgFast');
 
   setTimeout(()=>{
@@ -219,13 +238,12 @@ window.addEventListener('load', ()=>{
     firstPage.style.transition = 'opacity 3.85s ease';
     isAnimating = false;
 
-    // 背景をゆっくりループに戻す
+    // 背景を通常フェードに戻す
     background.classList.remove('bgFast');
 
-    // ドット遅延フェードイン
+    // ドットフェードイン
     setTimeout(()=>dotsContainer.classList.add('visible'), 17700);
-
-  }, 5200);
+  }, 5200); // 初回フェード5.2秒
 });
 
 // ---------- ドラッグ処理 ----------
@@ -274,59 +292,4 @@ function endDrag(){
   if(nextPage!==null){
     isAnimating = true;
     pages[currentPage].classList.remove('active');
-    pages[nextPage].classList.add('active');
-    pages[currentPage].style.opacity='';
-    pages[nextPage].style.opacity='';
-
-    setTimeout(()=>{ isAnimating=false; }, 3000);
-    currentPage = nextPage;
-  } else {
-    pages[currentPage].style.opacity=1;
-    if(dragX<0 && currentPage<pages.length-1) pages[currentPage+1].style.opacity=0;
-    if(dragX>0 && currentPage>0) pages[currentPage-1].style.opacity=0;
-  }
-
-  dragX=0;
-  velocity=0;
-  updateDots();
-}
-
-function updateDots(){
-  dots.forEach((dot,i)=>dot.classList.toggle('active', i===currentPage));
-}
-
-// ---------- イベント ----------
-wrapper.addEventListener('mousedown', e=>startDrag(e.pageX));
-wrapper.addEventListener('touchstart', e=>startDrag(e.touches[0].pageX));
-wrapper.addEventListener('mousemove', e=>drag(e.pageX));
-wrapper.addEventListener('touchmove', e=>drag(e.touches[0].pageX));
-wrapper.addEventListener('mouseup', endDrag);
-wrapper.addEventListener('mouseleave', endDrag);
-wrapper.addEventListener('touchend', endDrag);
-
-// ページ内画像ドラッグ
-document.querySelectorAll('.carousel-inner').forEach(inner=>{
-  let isDrag=false, start, scrollLeft;
-  inner.addEventListener('mousedown', e=>{ isDrag=true; inner.classList.add('dragging'); start=e.pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft; });
-  inner.addEventListener('mouseleave', ()=>{ isDrag=false; inner.classList.remove('dragging'); });
-  inner.addEventListener('mouseup', ()=>{ isDrag=false; inner.classList.remove('dragging'); });
-  inner.addEventListener('mousemove', e=>{ if(!isDrag) return; e.preventDefault(); inner.scrollLeft=scrollLeft+(start-(e.pageX-inner.offsetLeft)); });
-  inner.addEventListener('touchstart', e=>{ isDrag=true; start=e.touches[0].pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft; });
-  inner.addEventListener('touchend', ()=>{ isDrag=false; });
-  inner.addEventListener('touchmove', e=>{ if(!isDrag) return; inner.scrollLeft=scrollLeft+(start-(e.touches[0].pageX-inner.offsetLeft)); });
-});
-
-// 右クリック・長押しメニュー無効
-document.addEventListener('contextmenu', e => e.preventDefault());
-
-// 2本指以上のズーム無効化
-document.addEventListener('touchmove', function(e) {
-  if (e.touches.length > 1) e.preventDefault();
-}, { passive: false });
-
-// iOS Safari ピンチジェスチャー無効
-document.addEventListener('gesturestart', function(e){ e.preventDefault(); });
-</script>
-
-</body>
-</html>
+   
