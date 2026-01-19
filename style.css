@@ -3,9 +3,6 @@ html, body {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -18,6 +15,13 @@ html, body {
   background: url('image/background.jpg') center/cover no-repeat;
   z-index: -2;
   animation: slowFade 20s ease-in-out infinite alternate;
+
+#loader {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+　}
 }
 
 @keyframes slowFade {
@@ -43,9 +47,13 @@ html, body {
 
 /* ---------- カルーセル ---------- */
 .carousel-wrapper {
-  position: relative;
+  position: fixed;
+  inset: 0;
   width: 100vw;
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
 }
 
