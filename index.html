@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Carousel + Siren Sequence</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siren Carousel</title>
 
 <style>
 html,body{
@@ -12,204 +12,163 @@ html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  /*background:#000;*/
+  background:#000;
 }
 
-/* ===== 背景 ===== */
-.background-normal{
-  position:fixed;
-  inset:0;
-  background:url("image/background.jpg") center/cover no-repeat;
-  z-index:-3;
-  opacity:1;
-}
-
-.background-siren{
+/* 背景 */
+.bg-normal{
   position:fixed;
   inset:0;
   background:url("image/background.jpg") center/cover no-repeat;
   z-index:-2;
-  opacity:1;
-  animation:sirenBlink 1.6s ease-in-out infinite;
 }
 
-/* 暗くなるだけ */
-@keyframes sirenBlink{
-  0%   { opacity:1; }
-  50%  { opacity:0.2; }
-  100% { opacity:1; }
+.bg-siren{
+  position:fixed;
+  inset:0;
+  background:url("image/background.jpg") center/cover no-repeat;
+  z-index:-1;
+  animation:siren 1.8s ease-in-out infinite;
 }
 
-/* ===== カルーセル ===== */
-.carousel-wrapper{
-  position:relative;
-  width:100%;
-  height:100%;
+@keyframes siren{
+  0%{opacity:1;}
+  50%{opacity:0.25;}
+  100%{opacity:1;}
 }
 
-.carousel-page{
+/* カルーセル */
+.carousel{
   position:absolute;
   inset:0;
   display:flex;
   justify-content:center;
   align-items:center;
-  gap:10px;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 3.85s ease;
 }
 
-.carousel-page.active{
+.page{
+  position:absolute;
+  opacity:0;
+  transition:opacity 4s ease;
+  pointer-events:none;
+}
+
+.page.active{
   opacity:1;
   pointer-events:auto;
 }
 
-/* 初回だけ深い */
-.carousel-page.first-load{
-  transition:opacity 5.6s ease;
+.page.first{
+  transition:opacity 6s ease;
+}
+
+.carousel-inner{
+  display:flex;          /* ← これが無いと縦になる */
+  gap:16px;
 }
 
 .carousel-inner img{
-  width:80vw;
-  max-width:480px;
-  border-radius:8px;
+  width:40vw;
+  max-width:400px;
+  height:auto;
+  display:block;
 }
 
-/* ===== ドット ===== */
+/* ドット */
 .dots{
   position:absolute;
-  bottom:20px;
+  bottom:24px;
   width:100%;
   text-align:center;
   opacity:0;
-  transition:opacity 17.7s ease;
+  transition:opacity 2s ease;
 }
 
-.dots.visible{ opacity:1; }
+.dots.show{opacity:1;}
 
 .dot{
-  display:inline-block;
   width:10px;
   height:10px;
   background:#555;
+  display:inline-block;
   margin:0 6px;
 }
 
-.dot.active{ background:#fff; }
+.dot.active{background:#fff;}
 </style>
 </head>
 
 <body>
 
-<!-- 背景 -->
-<div class="background-normal"></div>
-<div class="background-siren"></div>
+<div class="bg-normal"></div>
+<div class="bg-siren"></div>
 
-<div class="carousel-wrapper">
-
-  <div class="carousel-page active first-load">
+<div class="carousel">
+  <div class="page active first">
     <div class="carousel-inner">
-      <img src="image/queen.of.clubs.png">
-      <img src="image/queen.of.clubs_mirror.png">
+      <img src="image/a.png">
+      <img src="image/b.png">
     </div>
   </div>
 
-  <div class="carousel-page">
+  <div class="page">
     <div class="carousel-inner">
-      <img src="image/king.of.spades.png">
-      <img src="image/king.of.spades_mirror.png">
-    </div>
-  </div>
-
-  <div class="carousel-page">
-    <div class="carousel-inner">
-      <img src="image/jack.of.hearts.png">
-      <img src="image/jack.of.hearts_mirror.png">
-    </div>
-  </div>
-
-  <div class="carousel-page">
-    <div class="carousel-inner">
-      <img src="image/joker_a.png">
-      <img src="image/joker_b.png">
-    </div>
-  </div>
-
-  <div class="carousel-page">
-    <div class="carousel-inner">
-      <img src="image/zebra.png">
+      <img src="image/c.png">
+      <img src="image/d.png">
     </div>
   </div>
 
   <div class="dots">
     <span class="dot active"></span>
     <span class="dot"></span>
-    <span class="dot"></span>
-    <span class="dot"></span>
-    <span class="dot"></span>
   </div>
-
 </div>
 
 <script>
-const pages = document.querySelectorAll(".carousel-page");
+const siren = document.querySelector(".bg-siren");
+const pages = document.querySelectorAll(".page");
 const dots = document.querySelectorAll(".dot");
-const dotsContainer = document.querySelector(".dots");
-const sirenBg = document.querySelector(".background-siren");
+const dotsWrap = document.querySelector(".dots");
 
-let currentPage = 0;
-let isAnimating = true;
+let index = 0;
+let locked = true;
 
 /* 初期：全部消す */
-pages.forEach((p,i)=>{
-  p.style.opacity = i===0 ? 0 : 0;
-});
+pages.forEach(p=>p.style.opacity=0);
 
-/* ===== 演出シーケンス ===== */
+/* シーケンス */
 window.onload = () => {
 
-  // 1. サイレンを 4 秒流す
+  // サイレン 3.5秒
   setTimeout(()=>{
-    // 2. サイレンをフェードアウト（暗黒へ）
-    sirenBg.style.transition = "opacity 1.5s ease";
-    sirenBg.style.opacity = 0;
+    siren.style.transition="opacity 1.2s ease";
+    siren.style.opacity=0;          // 暗くなるだけ
 
-    // 3. カルーセル初回フェード開始
+    // 初回フェード
     pages[0].classList.add("active");
-    pages[0].style.opacity = 1;
+    pages[0].style.opacity=1;
 
-    // 4. 初回フェード完了
     setTimeout(()=>{
-      pages[0].classList.remove("first-load");
-      isAnimating = false;
+      pages[0].classList.remove("first");
+      dotsWrap.classList.add("show");
+      locked = false;
+    },6000);
 
-      // 5. ドット表示
-      dotsContainer.classList.add("visible");
-
-    },5600);
-
-  },4000);
+  },3500);
 };
 
-/* 確認用：クリックでページ送り */
+/* ページ送り（確認用：画面タップ） */
 document.body.addEventListener("click",()=>{
-  if(isAnimating) return;
-  const next = (currentPage+1)%pages.length;
-  changePage(next);
+  if(locked) return;
+
+  pages[index].classList.remove("active");
+  dots[index].classList.remove("active");
+
+  index = (index+1)%pages.length;
+
+  pages[index].classList.add("active");
+  dots[index].classList.add("active");
 });
-
-function changePage(next){
-  isAnimating = true;
-
-  pages[currentPage].classList.remove("active");
-  pages[next].classList.add("active");
-
-  setTimeout(()=>{
-    currentPage = next;
-    dots.forEach((d,i)=>d.classList.toggle("active",i===currentPage));
-    isAnimating = false;
-  },3850);
-}
 </script>
 
 </body>
