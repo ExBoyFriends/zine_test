@@ -113,3 +113,6 @@ document.addEventListener('touchmove', e=>{ if(e.touches.length>1) e.preventDefa
 // iOS gesture無効
 document.addEventListener('gesturestart', e=>e.preventDefault());
 
+document.addEventListener("touchmove", e => {
+  e.preventDefault();
+}, { passive: false });
