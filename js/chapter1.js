@@ -11,27 +11,19 @@ const loader = document.getElementById('loader');
 window.addEventListener('load', ()=>{
   const firstPage = pages[0];
   isAnimating = true;
-
-  // 初回カルーセルフェード準備
   firstPage.classList.add('first-load', 'active');
-
-  // サイレン表示
   loader.style.display='block';
 
-  // 2秒サイレン後にカルーセル初回フェード開始
   setTimeout(()=>{
     loader.style.display='none';
     firstPage.classList.remove('first-load');
     firstPage.style.transition='opacity 5.2s ease';
-
-    // ドット遅延表示
     setTimeout(()=>dotsContainer.classList.add('visible'), 3470);
-
     isAnimating = false;
-  }, 7280); // サイレン期間
+  }, 7280);
 });
 
-// ---------- ドラッグ処理 ----------
+// ---------- ドラッグ ----------
 function startDrag(x){ if(isAnimating) return; isDragging=true; startX=x; lastX=x; lastTime=Date.now(); }
 function drag(x){
   if(!isDragging||isAnimating) return;
@@ -49,6 +41,7 @@ function drag(x){
     pages[currentPage].style.opacity=1-Math.min(Math.abs(dragX)/pageWidth,1)*ease;
   }
 }
+
 function endDrag(){
   if(!isDragging||isAnimating) return;
   isDragging=false;
@@ -58,23 +51,14 @@ function endDrag(){
   if((dragX<-threshold||velocity<-velocityThreshold)&&currentPage<pages.length-1) nextPage=currentPage+1;
   else if((dragX>threshold||velocity>velocityThreshold)&&currentPage>0) nextPage=currentPage-1;
 
-if(nextPage!==null){
-  isAnimating = true;
-
-  // すべてのページの opacity を一旦リセット
-  pages.forEach(p=>{
-    p.style.opacity = '';
-  });
-
-  pages[currentPage].classList.remove('active');
-  pages[nextPage].classList.add('active');
-
-  setTimeout(()=>{
-    isAnimating = false;
-  }, 3000);
-
-  currentPage = nextPage;
-} else {
+  if(nextPage!==null){
+    isAnimating = true;
+    pages.forEach(p=>{ p.style.opacity=''; });
+    pages[currentPage].classList.remove('active');
+    pages[nextPage].classList.add('active');
+    setTimeout(()=>{ isAnimating = false; }, 3000);
+    currentPage = nextPage;
+  } else {
     pages[currentPage].style.opacity=1;
     if(dragX<0&&currentPage<pages.length-1) pages[currentPage+1].style.opacity=0;
     if(dragX>0&&currentPage>0) pages[currentPage-1].style.opacity=0;
@@ -108,11 +92,5 @@ document.querySelectorAll('.carousel-inner').forEach(inner=>{
 
 // 右クリック・長押し無効
 document.addEventListener('contextmenu', e=>e.preventDefault());
-// 2本指ズーム無効
 document.addEventListener('touchmove', e=>{ if(e.touches.length>1) e.preventDefault(); }, {passive:false});
-// iOS gesture無効
 document.addEventListener('gesturestart', e=>e.preventDefault());
-
-document.addEventListener("touchmove", e => {
-  e.preventDefault();
-}, { passive: false });
