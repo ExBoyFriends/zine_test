@@ -75,12 +75,15 @@ html, body {
 }
 
 .dot {
-  width: 12px;
-  height: 12px;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
   background: #555;
-  border-radius: 0; /* 丸ではなく角丸なし */
+  border-radius: 0; /* 丸→四角に変更 */
   margin: 0 5px;
+  transition: background 0.3s;
 }
+
 .dot.active {
   background: #fff;
 }
