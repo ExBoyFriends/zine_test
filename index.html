@@ -24,21 +24,21 @@ user-select: none;
 
 /* ---------- 背景フェード ---------- */
 .background {
-position: fixed;
-top: 0;
-left: 0;
-width: 100vw;
-height: 100vh;
-background: url('image/bg.jpg') center/cover no-repeat;
-z-index: -1;
-opacity: 0;
-animation: bgFade 20s ease-in-out infinite alternate;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('image/bg.jpg') center/cover no-repeat;
+  z-index: -1;
+  filter: brightness(1); /* 通常の明るさ */
+  animation: bgDarkFade 20s ease-in-out infinite alternate;
 }
 
-@keyframes bgFade {
-0% { opacity: 1; }
-50% { opacity: 0.5; }
-100% { opacity: 1; }
+@keyframes bgDarkFade {
+  0%   { filter: brightness(1); }   /* 元の明るさ */
+  50%  { filter: brightness(0.5); } /* 暗くなる */
+  100% { filter: brightness(1); }   /* 元の明るさに戻る */
 }
 
 /* ---------- カルーセル ---------- */
