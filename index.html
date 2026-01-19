@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>5ページカルーセル＋背景＋初回サイレン</title>
+<title>5ページカルーセル＋サイレン初回フェード</title>
 <style>
 html, body {
   margin: 0;
@@ -14,34 +14,12 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-
-  /* 選択・長押し禁止 */
   -webkit-user-select: none;
-  -ms-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
 }
 
-/* ---------- 背景 ---------- */
-.background {
-  position: fixed;
-  top:0;
-  left:0;
-  width:100vw;
-  height:100vh;
-  background: url('image/background.jpg') center/cover no-repeat;
-  z-index: -2;
-  opacity:1;
-  animation: slowFade 20s ease-in-out infinite alternate;
-}
-
-@keyframes slowFade {
-  0%   { filter: brightness(1); }
-  50%  { filter: brightness(0.5); }
-  100% { filter: brightness(1); }
-}
-
-/* ---------- ローダー（初回サイレン） ---------- */
+/* ---------- サイレンローダー ---------- */
 #loader {
   position: fixed;
   top:0;
@@ -50,7 +28,7 @@ html, body {
   height:100vh;
   z-index: 10;
   background: url('image/background.jpg') center/cover no-repeat;
-  animation: siren 0.6s linear infinite;
+  animation: siren 1s linear infinite; /* 点滅を少しゆっくり */
 }
 
 @keyframes siren {
@@ -59,61 +37,79 @@ html, body {
   100% { filter: brightness(1); }
 }
 
+/* ---------- カルーセル背景 ---------- */
+.background {
+  position: fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  background: url('image/background.jpg') center/cover no-repeat;
+  z-index: -1;
+  opacity: 1;
+  animation: bgFade 20s ease-in-out infinite alternate;
+}
+
+@keyframes bgFade {
+  0% { filter: brightness(0.8); }
+  50% { filter: brightness(0.5); }
+  100% { filter: brightness(0.8); }
+}
+
 /* ---------- カルーセル ---------- */
 .carousel-wrapper {
   position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  -webkit-user-select: none;
-  user-select: none;
-  z-index: 0;
+  z-index: 1;
 }
 
 .carousel-page {
   position: absolute;
   top: 0;
   left: 0;
-  width:100%;
-  height:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:10px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   pointer-events: none;
-  opacity:0;
+  opacity: 0;
   transition: opacity 3.85s ease;
 }
 
 .carousel-page.active {
-  opacity:1;
+  opacity: 1;
   pointer-events: all;
 }
 
+/* 初回フェード用 */
 .carousel-page.first-load {
-  opacity:0;
-  transition: opacity 5.2s ease; /* 初回フェード */
+  opacity: 0;
+  transition: opacity 6s ease; /* 初回フェードを長め */
 }
 
 .carousel-inner {
-  display:flex;
-  gap:10px;
+  display: flex;
+  gap: 10px;
   cursor: grab;
   overflow: hidden;
   justify-content: center;
 }
 
 .carousel-inner.single {
-  justify-content:center;
+  justify-content: center;
 }
 
 .carousel-inner img {
-  width:80vw;
-  max-width:480px;
-  border-radius:8px;
-  flex-shrink:0;
-  -webkit-user-drag:none;
-  -webkit-touch-callout:none;
+  width: 80vw;
+  max-width: 480px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
 }
 
 .dragging { cursor: grabbing; }
@@ -122,35 +118,38 @@ html, body {
 .dots {
   position: absolute;
   bottom: 20px;
-  width:100%;
-  text-align:center;
-  opacity:0;
+  width: 100%;
+  text-align: center;
+  opacity: 0;
   transition: opacity 17.7s ease;
 }
 
-.dots.visible { opacity:1; }
+.dots.visible { opacity: 1; }
 
 .dot {
-  display:inline-block;
-  width:10px;
-  height:10px;
-  background:#555;
-  border-radius:0;
-  margin:0 5px;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #555;
+  border-radius: 0; /* 四角 */
+  margin: 0 5px;
   transition: background 0.3s;
 }
 
-.dot.active { background:#fff; }
+.dot.active { background: #fff; }
 
-@media (max-width:500px){
-  .carousel-inner img { width:88vw; }
+@media (max-width: 500px) {
+  .carousel-inner img { width: 88vw; }
 }
 </style>
 </head>
 <body>
 
-<div class="background"></div>
+<!-- サイレン用ローダー -->
 <div id="loader"></div>
+
+<!-- カルーセル背景 -->
+<div class="background"></div>
 
 <div class="carousel-wrapper">
   <!-- ページ1 -->
@@ -160,7 +159,6 @@ html, body {
       <img src="image/queen.of.clubs_mirror.png" alt="Queen Mirror">
     </div>
   </div>
-
   <!-- ページ2 -->
   <div class="carousel-page">
     <div class="carousel-inner">
@@ -168,7 +166,6 @@ html, body {
       <img src="image/king.of.spades_mirror.png" alt="King Mirror">
     </div>
   </div>
-
   <!-- ページ3 -->
   <div class="carousel-page">
     <div class="carousel-inner">
@@ -176,7 +173,6 @@ html, body {
       <img src="image/jack.of.hearts_mirror.png" alt="Jack Mirror">
     </div>
   </div>
-
   <!-- ページ4 -->
   <div class="carousel-page">
     <div class="carousel-inner">
@@ -184,7 +180,6 @@ html, body {
       <img src="image/joker_b.png" alt="Joker B">
     </div>
   </div>
-
   <!-- ページ5 -->
   <div class="carousel-page">
     <div class="carousel-inner single">
@@ -206,83 +201,63 @@ html, body {
 const pages = document.querySelectorAll('.carousel-page');
 const dots = document.querySelectorAll('.dot');
 const dotsContainer = document.querySelector('.dots');
+const loader = document.getElementById('loader');
 let currentPage = 0;
-let isDragging = false, dragX = 0, startX = 0, lastX = 0, lastTime = 0, velocity = 0, isAnimating = false;
+let isDragging = false, dragX=0, startX=0, lastX=0, lastTime=0, velocity=0, isAnimating=false;
 const wrapper = document.querySelector('.carousel-wrapper');
 const pageWidth = wrapper.clientWidth;
-const loader = document.getElementById('loader');
 
 // ---------- 初回ロード ----------
 window.addEventListener('load', ()=>{
   const firstPage = pages[0];
-  isAnimating = true;
+  isAnimating=true;
 
-  // 初回カルーセルフェード準備
-  firstPage.classList.add('first-load', 'active');
-
-  // サイレン表示
+  firstPage.classList.add('first-load','active');
   loader.style.display='block';
 
-  // 2秒サイレン後にカルーセル初回フェード開始
   setTimeout(()=>{
     loader.style.display='none';
     firstPage.classList.remove('first-load');
-    firstPage.style.transition='opacity 5.2s ease';
+    firstPage.style.transition='opacity 6s ease';
+    isAnimating=false;
 
-    // ドット遅延表示
     setTimeout(()=>dotsContainer.classList.add('visible'), 1770);
-
-    isAnimating = false;
-  }, 2000); // サイレン期間
+  }, 2000); // サイレン2秒
 });
 
-// ---------- ドラッグ処理 ----------
+// ---------- ドラッグ ----------
 function startDrag(x){ if(isAnimating) return; isDragging=true; startX=x; lastX=x; lastTime=Date.now(); }
 function drag(x){
   if(!isDragging||isAnimating) return;
   dragX=x-startX;
   if((currentPage===0&&dragX>0)||(currentPage===pages.length-1&&dragX<0)) dragX=0;
-  const now=Date.now();
-  velocity=(x-lastX)/(now-lastTime);
-  lastX=x; lastTime=now;
+  const now=Date.now(); velocity=(x-lastX)/(now-lastTime); lastX=x; lastTime=now;
   const ease=0.4;
-  if(dragX<0&&currentPage<pages.length-1){
-    pages[currentPage+1].style.opacity=Math.min(Math.abs(dragX)/pageWidth,1)*ease;
-    pages[currentPage].style.opacity=1-Math.min(Math.abs(dragX)/pageWidth,1)*ease;
-  } else if(dragX>0&&currentPage>0){
-    pages[currentPage-1].style.opacity=Math.min(Math.abs(dragX)/pageWidth,1)*ease;
-    pages[currentPage].style.opacity=1-Math.min(Math.abs(dragX)/pageWidth,1)*ease;
-  }
+  if(dragX<0&&currentPage<pages.length-1){ pages[currentPage+1].style.opacity=Math.min(Math.abs(dragX)/pageWidth,1)*ease; pages[currentPage].style.opacity=1-Math.min(Math.abs(dragX)/pageWidth,1)*ease;}
+  else if(dragX>0&&currentPage>0){ pages[currentPage-1].style.opacity=Math.min(Math.abs(dragX)/pageWidth,1)*ease; pages[currentPage].style.opacity=1-Math.min(Math.abs(dragX)/pageWidth,1)*ease;}
 }
 function endDrag(){
-  if(!isDragging||isAnimating) return;
-  isDragging=false;
-  let nextPage=null;
-  const threshold=pageWidth*0.3;
-  const velocityThreshold=0.3;
+  if(!isDragging||isAnimating) return; isDragging=false;
+  let nextPage=null, threshold=pageWidth*0.3, velocityThreshold=0.3;
   if((dragX<-threshold||velocity<-velocityThreshold)&&currentPage<pages.length-1) nextPage=currentPage+1;
   else if((dragX>threshold||velocity>velocityThreshold)&&currentPage>0) nextPage=currentPage-1;
-
   if(nextPage!==null){
     isAnimating=true;
     pages[currentPage].classList.remove('active');
     pages[nextPage].classList.add('active');
     pages[currentPage].style.opacity='';
     pages[nextPage].style.opacity='';
-    setTimeout(()=>{ isAnimating=false; }, 3000);
+    setTimeout(()=>{isAnimating=false;},3000);
     currentPage=nextPage;
   } else {
     pages[currentPage].style.opacity=1;
     if(dragX<0&&currentPage<pages.length-1) pages[currentPage+1].style.opacity=0;
     if(dragX>0&&currentPage>0) pages[currentPage-1].style.opacity=0;
   }
-  dragX=0; velocity=0;
-  updateDots();
+  dragX=0; velocity=0; updateDots();
 }
-
 function updateDots(){ dots.forEach((dot,i)=>dot.classList.toggle('active',i===currentPage)); }
 
-// ---------- イベント ----------
 wrapper.addEventListener('mousedown', e=>startDrag(e.pageX));
 wrapper.addEventListener('touchstart', e=>startDrag(e.touches[0].pageX));
 wrapper.addEventListener('mousemove', e=>drag(e.pageX));
@@ -293,21 +268,21 @@ wrapper.addEventListener('touchend', endDrag);
 
 // ページ内画像ドラッグ
 document.querySelectorAll('.carousel-inner').forEach(inner=>{
-  let isDrag=false, start, scrollLeft;
-  inner.addEventListener('mousedown', e=>{ isDrag=true; inner.classList.add('dragging'); start=e.pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft; });
-  inner.addEventListener('mouseleave', ()=>{ isDrag=false; inner.classList.remove('dragging'); });
-  inner.addEventListener('mouseup', ()=>{ isDrag=false; inner.classList.remove('dragging'); });
-  inner.addEventListener('mousemove', e=>{ if(!isDrag) return; e.preventDefault(); inner.scrollLeft=scrollLeft+(start-(e.pageX-inner.offsetLeft)); });
-  inner.addEventListener('touchstart', e=>{ isDrag=true; start=e.touches[0].pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft; });
-  inner.addEventListener('touchend', ()=>{ isDrag=false; });
-  inner.addEventListener('touchmove', e=>{ if(!isDrag) return; inner.scrollLeft=scrollLeft+(start-(e.touches[0].pageX-inner.offsetLeft)); });
+  let isDrag=false,start,scrollLeft;
+  inner.addEventListener('mousedown', e=>{isDrag=true; inner.classList.add('dragging'); start=e.pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft;});
+  inner.addEventListener('mouseleave', ()=>{isDrag=false; inner.classList.remove('dragging');});
+  inner.addEventListener('mouseup', ()=>{isDrag=false; inner.classList.remove('dragging');});
+  inner.addEventListener('mousemove', e=>{if(!isDrag) return; e.preventDefault(); inner.scrollLeft=scrollLeft+(start-(e.pageX-inner.offsetLeft));});
+  inner.addEventListener('touchstart', e=>{isDrag=true; start=e.touches[0].pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft;});
+  inner.addEventListener('touchend', ()=>{isDrag=false;});
+  inner.addEventListener('touchmove', e=>{if(!isDrag) return; inner.scrollLeft=scrollLeft+(start-(e.touches[0].pageX-inner.offsetLeft));});
 });
 
-// 右クリック・長押し無効
-document.addEventListener('contextmenu', e=>e.preventDefault());
-// 2本指ズーム無効
-document.addEventListener('touchmove', e=>{ if(e.touches.length>1) e.preventDefault(); }, {passive:false});
-// iOS gesture無効
+// 右クリック・長押しメニュー無効
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 2本指以上のズーム無効化
+document.addEventListener('touchmove', function(e){ if(e.touches.length>1)e.preventDefault(); }, { passive:false });
 document.addEventListener('gesturestart', e=>e.preventDefault());
 </script>
 
