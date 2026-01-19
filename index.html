@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>5ページカルーセル（初回深フェード対応）</title>
+<title>5ページカルーセル（初回ロードスクロール禁止＆ドット非表示）</title>
 <style>
 html, body {
   margin: 0;
@@ -73,11 +73,16 @@ html, body {
   cursor: grabbing;
 }
 
+/* ドット */
 .dots {
   position: absolute;
   bottom: 20px;
   width: 100%;
   text-align: center;
+}
+
+.dots.hidden {
+  display: none; /* 初回ロード中非表示 */
 }
 
 .dot {
@@ -144,7 +149,7 @@ html, body {
   </div>
 
   <!-- ドット -->
-  <div class="dots">
+  <div class="dots hidden">
     <span class="dot active"></span>
     <span class="dot"></span>
     <span class="dot"></span>
@@ -156,6 +161,7 @@ html, body {
 <script>
 const pages = document.querySelectorAll('.carousel-page');
 const dots = document.querySelectorAll('.dot');
+const dotsContainer = document.querySelector('.dots');
 let currentPage = 0;
 
 let isDragging = false;
@@ -169,16 +175,20 @@ let isAnimating = false;
 const wrapper = document.querySelector('.carousel-wrapper');
 const pageWidth = wrapper.clientWidth;
 
-// ---------- 初回深フェードイン ----------
+// ---------- 初回ロード深フェード ----------
 window.addEventListener('load', ()=>{
   const firstPage = pages[0];
+  
+  isAnimating = true;           // 初回ロード中は操作禁止
+  dotsContainer.classList.add('hidden'); // ドット非表示
   firstPage.classList.add('first-load', 'active');
 
-  // フェード終了後に first-load クラス削除して通常フェードに戻す
   setTimeout(()=>{
     firstPage.classList.remove('first-load');
     firstPage.style.transition = 'opacity 3.85s ease';
-  }, 6000); // 6秒
+    isAnimating = false;        // フェード終了でドラッグ可能
+    dotsContainer.classList.remove('hidden'); // ドット表示
+  }, 6000); // 初回フェード6秒
 });
 
 // ---------- ドラッグ処理 ----------
@@ -194,7 +204,6 @@ function drag(x){
   if(!isDragging || isAnimating) return;
   dragX = x - startX;
 
-  // 端で止める
   if((currentPage===0 && dragX>0) || (currentPage===pages.length-1 && dragX<0)){
     dragX=0;
   }
@@ -232,7 +241,6 @@ function endDrag(){
     pages[currentPage].style.opacity='';
     pages[nextPage].style.opacity='';
 
-    // フェード3.85秒のうち、3秒でドラッグ解除
     setTimeout(()=>{
       isAnimating = false;
     }, 3000);
@@ -253,7 +261,7 @@ function updateDots(){
   dots.forEach((dot,i)=>dot.classList.toggle('active', i===currentPage));
 }
 
-// ---------- イベントリスナー ----------
+// ---------- イベント ----------
 wrapper.addEventListener('mousedown', e=>startDrag(e.pageX));
 wrapper.addEventListener('touchstart', e=>startDrag(e.touches[0].pageX));
 wrapper.addEventListener('mousemove', e=>drag(e.pageX));
