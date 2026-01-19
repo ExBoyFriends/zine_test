@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ドラッグ＋フェードカルーセル（端ジャスト自動切替）</title>
+<title>ドラッグ＋フェードカルーセル 最終版</title>
 <style>
 html, body {
   margin: 0;
@@ -35,7 +35,7 @@ html, body {
   gap: 10px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 1s ease; /* ゆっくりフェード */
+  transition: opacity 0.5s ease; /* 自動切替は速め */
 }
 
 .carousel-page.active {
@@ -95,41 +95,24 @@ html, body {
 
 <div class="carousel-wrapper">
   <!-- ページ1 -->
-<!-- ページ1 -->
-<div class="carousel-page active">
-  <div class="carousel-inner">
-    <img src="image/queen.of.clubs.png" alt="Queen">
-    <img src="image/queen.of.clubs_mirror.png" alt="Queen Mirror">
-  </div>
-</div>
-
-<!-- ページ2 -->
-<div class="carousel-page">
-  <div class="carousel-inner">
-    <img src="image/king.of.spades.png" alt="King">
-    <img src="image/king.of.spades_mirror.png" alt="King Mirror">
-  </div>
-</div>
-  <!-- ページ3 -->
-  <div class="carousel-page">
+  <div class="carousel-page active">
     <div class="carousel-inner">
-      <img src="image/page3_1.png" alt="3">
-      <img src="image/page3_2.png" alt="3-2">
+      <img src="image/queen.of.clubs.png" alt="Queen">
+      <img src="image/queen.of.clubs_mirror.png" alt="Queen Mirror">
     </div>
   </div>
-  <!-- ページ4 -->
+
+  <!-- ページ2 -->
   <div class="carousel-page">
     <div class="carousel-inner">
-      <img src="image/page4_1.png" alt="4">
-      <img src="image/page4_2.png" alt="4-2">
+      <img src="image/king.of.spades.png" alt="King">
+      <img src="image/king.of.spades_mirror.png" alt="King Mirror">
     </div>
   </div>
 
   <!-- ドット -->
   <div class="dots">
     <span class="dot active"></span>
-    <span class="dot"></span>
-    <span class="dot"></span>
     <span class="dot"></span>
   </div>
 </div>
@@ -162,9 +145,7 @@ wrapper.addEventListener('touchend', endDrag);
 function updateDrag() {
   let nextPage = null;
   let ratio = 0;
-
-  // 緩やかに追従（0.5倍）で自然に
-  const easeFactor = 0.5;
+  const easeFactor = 0.4; // ドラッグ追従は遅めで自然
 
   if (dragX < 0 && currentPage < pages.length - 1) {
     nextPage = currentPage + 1;
@@ -185,15 +166,12 @@ function endDrag() {
   isDragging = false;
 
   let nextPage = null;
-  // 端ジャスト判定
-  if (dragX < -pageWidth * 0.5 && currentPage < pages.length - 1) {
-    nextPage = currentPage + 1;
-  } else if (dragX > pageWidth * 0.5 && currentPage > 0) {
-    nextPage = currentPage - 1;
-  }
+  // ページ端50%以上で切替
+  if (dragX < -pageWidth * 0.5 && currentPage < pages.length - 1) nextPage = currentPage + 1;
+  else if (dragX > pageWidth * 0.5 && currentPage > 0) nextPage = currentPage - 1;
 
   if (nextPage !== null) {
-    // フェードで切替
+    // 自動フェード切替
     pages[currentPage].classList.remove('active');
     pages[nextPage].classList.add('active');
     pages[currentPage].style.opacity = '';
