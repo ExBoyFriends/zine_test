@@ -3,106 +3,139 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ドラッグカルーセル</title>
+<title>フェード付きスワイプカルーセル</title>
 <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden; /* 縦スクロール禁止 */
-    height: 100%;
-    background: #111;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .carousel {
-    display: flex;
-    gap: 4px; /* 画像間の余白をさらに狭める */
-    overflow-x: hidden;
-    cursor: grab;
-    touch-action: pan-x;
-    user-select: none;
-    padding: 10px 0;
-  }
+.carousel-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
 
-  .carousel img {
-    width: 92vw;  /* 画像をさらに大きく */
-    max-width: 480px; /* PCでの最大サイズ */
-    height: auto;
-    flex-shrink: 0;
-    border-radius: 8px;
-    transition: transform 0.2s ease;
-  }
+.carousel-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
 
-  .dragging {
-    cursor: grabbing;
-  }
+.carousel-page.active {
+  opacity: 1;
+  pointer-events: all;
+}
 
-  /* 画面幅が狭いスマホ向け */
-  @media (max-width: 500px) {
-    .carousel img {
-      width: 88vw; /* 縦画面でも2枚目が半分見える */
-    }
+/* 画像スタイル */
+.carousel-page img {
+  width: 80vw;
+  max-width: 480px;
+  border-radius: 8px;
+}
+
+/* スマホ調整 */
+@media (max-width: 500px) {
+  .carousel-page img {
+    width: 88vw;
   }
+}
+
 </style>
 </head>
 <body>
 
-<div class="carousel">
-  <img src="image/king.of.spades.png" alt="画像1">
-  <img src="image/king.of.spades_mirror.png" alt="画像2">
+<div class="carousel-wrapper">
+  <!-- ページ1 -->
+  <div class="carousel-page active">
+    <img src="image/queen.of.clubs.png" alt="1">
+    <img src="image/queen.of.clubs_mirror.png" alt="1-2">
+  </div>
+  <!-- ページ2 -->
+  <div class="carousel-page">
+    <img src="image/king.of.spades.png" alt="2">
+    <img src="image/king.of.spades_mirror.png" alt="2-2">
+  </div>
+  <!-- ページ3 -->
+  <div class="carousel-page">
+    <img src="image/jack.of.hearts.png" alt="3">
+    <img src="image/jack.ofhearts_mirror.png" alt="3-2">
+  </div>
+  <!-- ページ4 -->
+  <div class="carousel-page">
+    <img src="image/joker" alt="4">
+    <img src="image/joker" alt="4-2">
+  </div>
 </div>
 
 <script>
-const carousel = document.querySelector('.carousel');
+const pages = document.querySelectorAll('.carousel-page');
+let current = 0;
 
+let startX = 0;
 let isDragging = false;
-let startX;
-let scrollLeft;
 
-carousel.addEventListener('mousedown', (e) => {
+// ページ切替関数
+function showPage(index) {
+  if(index === current) return;
+  pages[current].classList.remove('active');
+  pages[index].classList.add('active');
+  current = index;
+}
+
+// マウス・タッチ操作
+const wrapper = document.querySelector('.carousel-wrapper');
+
+wrapper.addEventListener('mousedown', (e) => {
   isDragging = true;
-  carousel.classList.add('dragging');
-  startX = e.pageX - carousel.offsetLeft;
-  scrollLeft = carousel.scrollLeft;
+  startX = e.pageX;
 });
 
-carousel.addEventListener('mouseleave', () => {
-  isDragging = false;
-  carousel.classList.remove('dragging');
-});
-
-carousel.addEventListener('mouseup', () => {
-  isDragging = false;
-  carousel.classList.remove('dragging');
-});
-
-carousel.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
-  e.preventDefault();
-  const x = e.pageX - carousel.offsetLeft;
-  const walk = (startX - x);
-  carousel.scrollLeft = scrollLeft + walk;
-});
-
-// タッチ操作
-carousel.addEventListener('touchstart', (e) => {
+wrapper.addEventListener('touchstart', (e) => {
   isDragging = true;
-  startX = e.touches[0].pageX - carousel.offsetLeft;
-  scrollLeft = carousel.scrollLeft;
+  startX = e.touches[0].pageX;
 });
 
-carousel.addEventListener('touchend', () => {
+wrapper.addEventListener('mouseup', (e) => {
+  if(!isDragging) return;
+  const diff = e.pageX - startX;
+  handleSwipe(diff);
   isDragging = false;
 });
 
-carousel.addEventListener('touchmove', (e) => {
-  if (!isDragging) return;
-  const x = e.touches[0].pageX - carousel.offsetLeft;
-  const walk = (startX - x);
-  carousel.scrollLeft = scrollLeft + walk;
+wrapper.addEventListener('touchend', (e) => {
+  if(!isDragging) return;
+  const diff = e.changedTouches[0].pageX - startX;
+  handleSwipe(diff);
+  isDragging = false;
 });
+
+function handleSwipe(diff) {
+  const threshold = 50; // スワイプ認識距離
+  if(diff > threshold) { // 右スワイプ → 前のページ
+    const prev = (current - 1 + pages.length) % pages.length;
+    showPage(prev);
+  } else if(diff < -threshold) { // 左スワイプ → 次のページ
+    const next = (current + 1) % pages.length;
+    showPage(next);
+  }
+}
 </script>
 
 </body>
