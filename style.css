@@ -17,7 +17,7 @@ html, body {
   right: -20px;
   bottom: -20px;
   background: url('image/background.jpg') center/cover no-repeat;
-  z-index: -2;
+  z-index: 0;
   animation: slowFade 20s ease-in-out infinite alternate;
 }
 
@@ -30,6 +30,11 @@ html, body {
   background: url('image/background.jpg') center/cover no-repeat;
   z-index: 10;
   animation: siren 1.68s linear infinite;
+}
+
+.carousel-wrapper {
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes slowFade {
