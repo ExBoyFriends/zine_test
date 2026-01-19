@@ -25,12 +25,12 @@ html, body {
   100% { opacity:0.7; }
 }
 
-/* サイレン背景 */
+/* サイレン背景（暗くなる方向のみ） */
 .background-siren {
   position:fixed; top:0; left:0; width:100vw; height:100vh;
   background:url('image/background.jpg') center/cover no-repeat;
   z-index:-1; opacity:1;
-  animation: sirenFade 0.5s linear infinite alternate;
+  animation: sirenFade 3.5s linear infinite alternate;
 }
 @keyframes sirenFade {
   0% { opacity:1; }
@@ -73,7 +73,6 @@ html, body {
 </head>
 <body>
 
-<!-- 背景 -->
 <div class="background-normal"></div>
 <div class="background-siren"></div>
 
@@ -108,7 +107,6 @@ html, body {
     </div>
   </div>
 
-  <!-- ドット -->
   <div class="dots">
     <span class="dot active"></span>
     <span class="dot"></span>
@@ -128,7 +126,7 @@ let isDragging=false, dragX=0, startX=0, lastX=0, lastTime=0, velocity=0, isAnim
 const wrapper=document.querySelector('.carousel-wrapper');
 const pageWidth = wrapper.clientWidth;
 
-// ---------- 初回サイレン＋フェード ----------
+// ---------- 初回サイレン＋初回フェード ----------
 window.addEventListener('load', ()=>{
   const firstPage = pages[0];
   isAnimating = true;
@@ -136,10 +134,9 @@ window.addEventListener('load', ()=>{
 
   // サイレン3.5秒
   setTimeout(()=>{
-    // サイレン停止
-    sirenBg.style.display='none';
+    sirenBg.style.display='none'; // サイレン終了
 
-    // 初回フェード
+    // 初回フェード 5.2秒
     firstPage.style.transition = 'opacity 5.2s ease';
     firstPage.style.opacity = 1;
 
@@ -223,6 +220,5 @@ document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('touchmove',function(e){if(e.touches.length>1) e.preventDefault();},{passive:false});
 document.addEventListener('gesturestart',function(e){e.preventDefault();});
 </script>
-
 </body>
 </html>
