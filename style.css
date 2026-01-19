@@ -122,9 +122,9 @@ html, body {
 /* ドット */
 .dot {
   display: inline-block;
-  width: 10px;
-  height: 2px;
-  margin: 0 3px;
+  width: 3px;
+  height: 5px;
+  margin: 0 5px;
   border-radius: 0;  /* ← 丸やめる */
   background: rgba(200,200,200,0.25);
   box-shadow: 0 0 4px rgba(255,255,255,0.3);
