@@ -122,8 +122,8 @@ html, body {
 /* ドット */
 .dot {
   display: inline-block;
-  width: 4px;
-  height: 6px;
+  width: 5px;
+  height: 8px;
   margin: 0 5px;
   border-radius: 0;  /* ← 丸やめる */
   background: rgba(200,200,200,0.25);
