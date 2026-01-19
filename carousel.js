@@ -112,4 +112,4 @@ document.addEventListener('contextmenu', e=>e.preventDefault());
 document.addEventListener('touchmove', e=>{ if(e.touches.length>1) e.preventDefault(); }, {passive:false});
 // iOS gesture無効
 document.addEventListener('gesturestart', e=>e.preventDefault());
-</script>
+
