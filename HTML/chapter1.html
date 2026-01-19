@@ -5,8 +5,9 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0, maximum-scale=1.0, 
 user-scalable=no, viewport-fit=cover">
-<title>5ページカルーセル＋背景＋初回サイレン</title>
+<title>第一章カルーセル＋最後のページ</title>
 
+<!-- CSS は 1階層上の css フォルダ -->
 <link rel="stylesheet" href="../css/chapter1.css">
 <link rel="stylesheet" href="../css/chapter1_last.css">
 </head>
@@ -48,15 +49,12 @@ user-scalable=no, viewport-fit=cover">
     </div>
   </div>
 
-  <!-- ページ5：最後のページ（長押しで切替→回転→裏面ボタン） -->
+  <!-- ページ5：最後のページ -->
   <div class="carousel-page" id="last-page">
     <div class="carousel-inner single">
       <div class="flip-card" id="flip-card">
-        <!-- 最初の画像 -->
         <img src="../image/zebra.png" class="front-image" id="front-img">
-        <!-- 長押しで切り替わる画像 -->
         <img src="../image/zebra_alt.png" class="rotatable-image" id="rot-img" style="display:none;">
-        <!-- 裏面ボタン -->
         <div class="back" id="back">
           <button id="next-chapter-btn">▶ 次の章へ</button>
         </div>
@@ -74,6 +72,7 @@ user-scalable=no, viewport-fit=cover">
   </div>
 </div>
 
+<!-- JS は 1階層上の js フォルダ -->
 <script src="../js/chapter1.js"></script>
 <script src="../js/chapter1_last.js"></script>
 </body>
