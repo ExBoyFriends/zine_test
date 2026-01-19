@@ -10,31 +10,25 @@ html, body {
   -webkit-touch-callout: none;
 }
 
-/* ---------- 背景 ---------- */
+/* 背景 */
 .background {
   position: fixed;
-  top: -40px;
-  left: -40px;
-  right: -40px;
-  bottom: -40px;
+  top: -40px; left: -40px; right: -40px; bottom: -40px;
   background: url('../image/background.jpg') center/cover no-repeat;
   z-index: 0;
   animation: slowFade 20s ease-in-out infinite alternate;
 }
 
-/* ---------- ローダー（サイレン幕） ---------- */
+/* ローダー */
 #loader {
   position: fixed;
-  top: -40px;
-  left: -40px;
-  right: -40px;
-  bottom: -40px;
+  top: -40px; left: -40px; right: -40px; bottom: -40px;
   background: url('../image/background.jpg') center/cover no-repeat;
   z-index: 10;
   animation: siren 1.68s linear infinite;
 }
 
-/* ---------- カルーセル ---------- */
+/* カルーセル */
 .carousel-wrapper {
   position: fixed;
   inset: 0;
@@ -42,37 +36,10 @@ html, body {
   height: 100vh;
   z-index: 1;
   overflow: hidden;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
-  transform: translateY(-env(safe-area-inset-bottom) / 2);
-}
-
-/* ---------- アニメ ---------- */
-@keyframes slowFade {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
-
-@keyframes siren {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
-
-/* ---------- カルーセル ---------- */
-.carousel-wrapper {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+  transform: translateY(-env(safe-area-inset-bottom)/2);
 }
 
 .carousel-page {
@@ -125,7 +92,7 @@ html, body {
   width: 5px;
   height: 8.09px;
   margin: 0 5px;
-  border-radius: 0;  /* ← 丸やめる */
+  border-radius: 0;
   background: rgba(200,200,200,0.25);
   box-shadow: 0 0 4px rgba(255,255,255,0.3);
 }
@@ -137,16 +104,27 @@ html, body {
   bottom: calc(40px + env(safe-area-inset-bottom));
   width: 100%;
   text-align: center;
-
   opacity: 0;
   transition: opacity 7.6s ease;
   z-index: 20;
 }
 
-.dots.visible { opacity:1;
-}
+.dots.visible { opacity:1; }
 
 .dot.active {
   background: rgba(240,240,240,0.9);
   box-shadow: 0 0 8px rgba(255,255,255,0.6);
+}
+
+/* アニメ */
+@keyframes slowFade {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes siren {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
 }
