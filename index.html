@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>5ページカルーセル（指定画像版）</title>
+<title>5ページカルーセル（フェード3.85秒/ドラッグ前倒し0.5秒）</title>
 <style>
 html, body {
   margin: 0;
@@ -35,7 +35,7 @@ html, body {
   gap: 10px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 3.85s ease; /* フェード5秒 */
+  transition: opacity 3.85s ease; /* フェード3.85秒 */
 }
 
 .carousel-page.active {
@@ -216,10 +216,10 @@ function endDrag(){
     pages[currentPage].style.opacity='';
     pages[nextPage].style.opacity='';
 
-    pages[nextPage].addEventListener('transitionend', function handler(){
+    // フェード3.85秒のうち、0.5秒早くドラッグ解除
+    setTimeout(()=>{
       isAnimating = false;
-      pages[nextPage].removeEventListener('transitionend', handler);
-    });
+    }, 3350); // 3.85秒 - 0.5秒 = 3.35秒
 
     currentPage = nextPage;
   } else {
