@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>5ページカルーセル＋サイレン風背景</title>
+<title>5ページカルーセル＋背景サイレン初回＋ゆっくりフェード</title>
 <style>
 html, body {
   margin: 0;
@@ -25,10 +25,10 @@ html, body {
 /* ---------- 背景 ---------- */
 .background {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
   background: url('image/background.jpg') center/cover no-repeat;
   z-index: -1;
   filter: brightness(1);
@@ -36,14 +36,14 @@ html, body {
 }
 
 @keyframes bgSlowFade {
-  0%   { filter: brightness(1); }
-  50%  { filter: brightness(0.5); }
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.5); }
   100% { filter: brightness(1); }
 }
 
-/* 初回ロード用：サイレン風点滅 */
+/* 初回ロード用サイレン風（背景だけ） */
 .bgFast {
-  animation: bgFastFlash 0.5s ease-in-out infinite alternate !important;
+  animation: bgFastFlash 0.5s ease-in-out infinite alternate;
 }
 
 @keyframes bgFastFlash {
@@ -76,7 +76,7 @@ html, body {
   gap: 10px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 3.85s ease;
+  transition: opacity 3.85s ease; /* 通常フェード */
 }
 
 .carousel-page.active {
@@ -86,7 +86,7 @@ html, body {
 
 .carousel-page.first-load {
   opacity: 0;
-  transition: opacity 5.2s ease;
+  transition: opacity 5.2s ease; /* 初回深いフェードイン */
 }
 
 .carousel-inner {
@@ -104,6 +104,7 @@ html, body {
 }
 
 .carousel-inner img {
+  position: relative; /* 背景filterの影響を受けない */
   width: 80vw;
   max-width: 480px;
   border-radius: 8px;
@@ -123,7 +124,7 @@ html, body {
   width: 100%;
   text-align: center;
   opacity: 0;
-  transition: opacity 17.7s ease;
+  transition: opacity 17.7s ease; /* ドットフェード */
 }
 
 .dots.visible {
@@ -135,7 +136,7 @@ html, body {
   width: 10px;
   height: 10px;
   background: #555;
-  border-radius: 0;
+  border-radius: 0; /* 四角 */
   margin: 0 5px;
   transition: background 0.3s;
 }
@@ -210,7 +211,6 @@ html, body {
 const pages = document.querySelectorAll('.carousel-page');
 const dots = document.querySelectorAll('.dot');
 const dotsContainer = document.querySelector('.dots');
-const background = document.querySelector('.background');
 let currentPage = 0;
 
 let isDragging = false;
@@ -223,27 +223,31 @@ let isAnimating = false;
 
 const wrapper = document.querySelector('.carousel-wrapper');
 const pageWidth = wrapper.clientWidth;
+const background = document.querySelector('.background');
 
-// ---------- 初回ロード5.2秒深フェード＋ドット17.7秒フェード ----------
+// ---------- 初回ロード5.2秒深フェード＋背景サイレン＋ドット17.7秒 ----------
 window.addEventListener('load', ()=>{
   const firstPage = pages[0];
   isAnimating = true;
-  firstPage.classList.add('first-load','active');
 
-  // 背景サイレン風
+  // 初回サイレン風点滅
   background.classList.add('bgFast');
 
+  firstPage.classList.add('first-load', 'active');
+
   setTimeout(()=>{
+    // 初回フェード終了
     firstPage.classList.remove('first-load');
     firstPage.style.transition = 'opacity 3.85s ease';
     isAnimating = false;
 
-    // 背景を通常フェードに戻す
+    // 背景を通常ゆっくりフェードに戻す
     background.classList.remove('bgFast');
 
-    // ドットフェードイン
-    setTimeout(()=>dotsContainer.classList.add('visible'), 17700);
-  }, 5200); // 初回フェード5.2秒
+    // ドットフェード
+    setTimeout(()=>{ dotsContainer.classList.add('visible'); }, 1770);
+
+  }, 5200); // 初回ロード5.2秒
 });
 
 // ---------- ドラッグ処理 ----------
@@ -292,4 +296,37 @@ function endDrag(){
   if(nextPage!==null){
     isAnimating = true;
     pages[currentPage].classList.remove('active');
-   
+    pages[nextPage].classList.add('active');
+    pages[currentPage].style.opacity='';
+    pages[nextPage].style.opacity='';
+
+    setTimeout(()=>{ isAnimating = false; }, 3000);
+    currentPage = nextPage;
+  } else {
+    pages[currentPage].style.opacity=1;
+    if(dragX<0 && currentPage<pages.length-1) pages[currentPage+1].style.opacity=0;
+    if(dragX>0 && currentPage>0) pages[currentPage-1].style.opacity=0;
+  }
+
+  dragX=0;
+  velocity=0;
+  updateDots();
+}
+
+function updateDots(){
+  dots.forEach((dot,i)=>dot.classList.toggle('active', i===currentPage));
+}
+
+// ---------- イベント ----------
+wrapper.addEventListener('mousedown', e=>startDrag(e.pageX));
+wrapper.addEventListener('touchstart', e=>startDrag(e.touches[0].pageX));
+wrapper.addEventListener('mousemove', e=>drag(e.pageX));
+wrapper.addEventListener('touchmove', e=>drag(e.touches[0].pageX));
+wrapper.addEventListener('mouseup', endDrag);
+wrapper.addEventListener('mouseleave', endDrag);
+wrapper.addEventListener('touchend', endDrag);
+
+// ページ内画像ドラッグ
+document.querySelectorAll('.carousel-inner').forEach(inner=>{
+  let isDrag=false, start, scrollLeft;
+  inner.addEventListener('mousedown', e=>{ isDrag=true; inner.classList.add('dragging'); start=e.pageX-inner.offsetLeft; scrollLeft
