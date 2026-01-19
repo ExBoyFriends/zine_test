@@ -1,86 +1,74 @@
 const lastPage = document.getElementById('last-page');
-const flipCard = document.getElementById('flip-card');
-const frontImg = document.getElementById('front-img');
-const rotImg = document.getElementById('rot-img');
-const back = document.getElementById('back');
+const lastImg = document.getElementById('front-img');
+let isLastRotatable = false; // 切替後にカルーセル横スライドを無効化
+let longpressTimer = null;
 
-let longPressTimer = null;
-let isRotatable = false; // 切替後のみ回転可
-let isDragging = false;
-let startX = 0, startY = 0;
-let currentRotX = 0, currentRotY = 0;
+// 長押し用レイヤー
+const longpressLayer = document.createElement('div');
+longpressLayer.style.position = 'absolute';
+longpressLayer.style.inset = '0';
+longpressLayer.style.zIndex = '10';
+longpressLayer.style.background = 'transparent';
+lastPage.querySelector('.carousel-inner').appendChild(longpressLayer);
 
-// ---------- 長押し開始 ----------
-function startPress(e){
-  if(isRotatable) return;
-  e.stopPropagation(); // これ重要: 他のカルーセルイベントに届かないように
-
-  frontImg.classList.add('glow');
-
-  longPressTimer = setTimeout(()=>{
-    // フェード切替
-    frontImg.style.opacity = 0;
-    rotImg.style.opacity = 1;
-
-    setTimeout(()=>{
-      frontImg.style.display = 'none';
-      frontImg.classList.remove('glow');
-      isRotatable = true;
-    }, 3000); // CSSのフェードと同期
-  }, 3000);
+// ---------------- 長押しイベント ----------------
+function startLongPress() {
+  lastImg.classList.add('glow'); // 光アニメーション
+  longpressTimer = setTimeout(() => {
+    lastImg.classList.remove('glow');
+    activateFlip();
+  }, 3000); // 3秒長押し
 }
 
-function cancelPress(e){
-  e.stopPropagation();
-  clearTimeout(longPressTimer);
-  frontImg.classList.remove('glow');
+function cancelLongPress() {
+  lastImg.classList.remove('glow');
+  clearTimeout(longpressTimer);
 }
 
-lastPage.addEventListener('mousedown', startPress);
-lastPage.addEventListener('touchstart', startPress);
+longpressLayer.addEventListener('mousedown', startLongPress);
+longpressLayer.addEventListener('touchstart', startLongPress);
 
-lastPage.addEventListener('mouseup', cancelPress);
-lastPage.addEventListener('mouseleave', cancelPress);
-lastPage.addEventListener('touchend', cancelPress);
+longpressLayer.addEventListener('mouseup', cancelLongPress);
+longpressLayer.addEventListener('mouseleave', cancelLongPress);
+longpressLayer.addEventListener('touchend', cancelLongPress);
+longpressLayer.addEventListener('touchcancel', cancelLongPress);
 
-// ---------- ドラッグで3D回転 ----------
-rotImg.addEventListener('mousedown', startDrag);
-rotImg.addEventListener('touchstart', startDrag);
+// ---------------- フェード切替＆回転可能 ----------------
+function activateFlip() {
+  isLastRotatable = true; // これで横スライド無効化
 
-document.addEventListener('mousemove', drag);
-document.addEventListener('touchmove', drag, {passive:false});
+  const rotImg = document.getElementById('rot-img');
+  rotImg.style.display = 'block';
+  rotImg.style.opacity = 0;
+  rotImg.style.transition = 'opacity 3s';
+  
+  setTimeout(() => { rotImg.style.opacity = 1; lastImg.style.display = 'none'; }, 50);
 
-document.addEventListener('mouseup', endDrag);
-document.addEventListener('touchend', endDrag);
-
-function startDrag(e){
-  if(!isRotatable) return;
-  isDragging = true;
-  startX = e.touches ? e.touches[0].pageX : e.pageX;
-  startY = e.touches ? e.touches[0].pageY : e.pageY;
-  rotImg.classList.add('rotating');
+  enable3DRotation(rotImg);
 }
 
-function drag(e){
-  if(!isDragging) return;
-  e.preventDefault();
-  const x = e.touches ? e.touches[0].pageX : e.pageX;
-  const y = e.touches ? e.touches[0].pageY : e.pageY;
+// ---------------- 3D回転 ----------------
+function enable3DRotation(img) {
+  let isRotating = false;
+  let startX = 0;
+  let rotY = 0;
 
-  const deltaX = x - startX;
-  const deltaY = y - startY;
+  img.addEventListener('mousedown', e => { isRotating = true; startX = e.pageX; img.style.cursor='grabbing'; });
+  img.addEventListener('mousemove', e => {
+    if (!isRotating) return;
+    rotY += (e.pageX - startX)/2;
+    img.style.transform = `rotateY(${rotY}deg)`;
+    startX = e.pageX;
+  });
+  img.addEventListener('mouseup', e => { isRotating = false; img.style.cursor='grab'; });
+  img.addEventListener('mouseleave', e => { isRotating = false; img.style.cursor='grab'; });
 
-  currentRotY += deltaX * 0.5;
-  currentRotX -= deltaY * 0.5;
-
-  rotImg.style.transform = `rotateY(${currentRotY}deg) rotateX(${currentRotX}deg)`;
-  back.style.transform = `rotateY(${180 + currentRotY}deg) rotateX(${currentRotX}deg)`;
-
-  startX = x;
-  startY = y;
-}
-
-function endDrag(){
-  if(!isDragging) return;
-  isDragging = false;
+  img.addEventListener('touchstart', e => { isRotating = true; startX = e.touches[0].pageX; });
+  img.addEventListener('touchmove', e => {
+    if (!isRotating) return;
+    rotY += (e.touches[0].pageX - startX)/2;
+    img.style.transform = `rotateY(${rotY}deg)`;
+    startX = e.touches[0].pageX;
+  });
+  img.addEventListener('touchend', e => { isRotating = false; });
 }
