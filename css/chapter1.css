@@ -42,7 +42,7 @@ body { min-height:100svh; }
   opacity:0; transition: opacity 1.4s ease;
 }
 .carousel-page.active { opacity:1; pointer-events:all; }
-.carousel-page.first-load { opacity:0; transition: opacity 7.28s ease; }
+.carousel-page.first-load { opacity:0; transition: opacity 5.28s ease; }
 
 .carousel-inner { display:flex; gap:10px; cursor:grab; overflow:hidden; justify-content:center; }
 .carousel-inner.single { justify-content:center; }
