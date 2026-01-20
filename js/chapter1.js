@@ -143,12 +143,20 @@ document.addEventListener('gesturestart', e => e.preventDefault());
 /* =========================
    最後ページタップ操作（半分スライド／初期位置復帰）
 ========================= */
-const maxShift = lastImg.clientWidth / 2;
+let maxShift = 0;
 let lastImgOffset = 0;
 let isLastImgShifted = false;
 
+const lastImg = document.querySelector('.last-img.top');
+const nextBtnWrapper = document.querySelector('.next-btn-wrapper');
+const nextBtn = document.getElementById('next-chapter-btn');
+
+lastImg.addEventListener('load', () => {
+  maxShift = lastImg.clientWidth / 2;
+});
+
 lastImg.addEventListener('click', () => {
-  if (currentPage !== pages.length -1) return;
+  if (currentPage !== pages.length - 1) return;
 
   lastImg.style.transition = 'transform 0.3s ease-out';
 
@@ -156,21 +164,16 @@ lastImg.addEventListener('click', () => {
     lastImgOffset = maxShift;
     lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
     isLastImgShifted = true;
-
-    document.querySelector('.next-btn-wrapper').classList.add('show');
+    nextBtnWrapper.classList.add('show');
   } else {
     lastImgOffset = 0;
     lastImg.style.transform = `translateX(0px)`;
     isLastImgShifted = false;
-
-    document.querySelector('.next-btn-wrapper').classList.remove('show');
+    nextBtnWrapper.classList.remove('show');
   }
 });
 
-/* =========================
-   次章ボタン
-========================= */
-nextBtn.addEventListener('click', () => { window.location.href = 'chapter2.html'; });
-
-
-
+// ボタンが画像のクリックを貫通しないようにする
+nextBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+});
