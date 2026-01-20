@@ -5,10 +5,9 @@ export function initCarousel(wrapper, pages, dots){
   function showPage(index){
     if(index<0||index>=pages.length) return;
     pages[currentPage].classList.remove('active');
-    dots[currentPage].classList.remove('active');
     pages[index].classList.add('active');
-    dots[index].classList.add('active');
     currentPage=index;
+    updateDots();
   }
 
   function startDrag(x){ if(isAnimating) return; isDragging=true; startX=x; lastX=x; lastTime=Date.now();}
@@ -19,7 +18,7 @@ export function initCarousel(wrapper, pages, dots){
     velocity=(x-lastX)/(now-lastTime);
     lastX=x; lastTime=now;
 
-    if(currentPage===pages.length-1) return; // 最後ページドラッグ無効
+    if(currentPage===pages.length-1) return; // 最後ページでは横スワイプ無効
 
     const ease=0.4;
     if(dragX<0 && currentPage<pages.length-1){
@@ -64,6 +63,15 @@ export function initCarousel(wrapper, pages, dots){
   wrapper.addEventListener('mouseup',endDrag);
   wrapper.addEventListener('mouseleave',endDrag);
   wrapper.addEventListener('touchend',endDrag);
+
+  function updateDots(){
+    dots.forEach((dot,i)=>{
+      if(i===0||i===dots.length-1) return;
+      dot.classList.toggle('active', i===currentPage+1);
+    });
+    dots[0].style.opacity=(currentPage===0)?0:1;
+    dots[dots.length-1].style.opacity=(currentPage===pages.length-1)?0:1;
+  }
 
   return { getCurrentPage:()=>currentPage };
 }
