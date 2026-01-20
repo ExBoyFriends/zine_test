@@ -35,11 +35,11 @@ window.addEventListener('load', () => {
     dotsContainer.classList.add('visible');
     updateDots();
     isAnimating = false;
-  }, 7280); // サイレン表示時間
+  }, 7280);
 });
 
 /* =========================
-   ドラッグ操作（カルーセル切替）
+   通常カルーセルドラッグ操作
 ========================= */
 function startDrag(x) {
   if (isAnimating) return;
@@ -100,17 +100,15 @@ function endDrag() {
 ========================= */
 function updateDots() {
   dots.forEach((dot, i) => {
-    if (i === 0) return; // 左端ドットは◀︎
-    if (i === dots.length - 1) return; // 右端ドットは▶︎
-    dot.classList.toggle('active', i === currentPage + 1); // ハイライトを1ずらす
+    if (i === 0 || i === dots.length - 1) return; 
+    dot.classList.toggle('active', i === currentPage + 1);
   });
-
   dots[0].style.opacity = (currentPage === 0) ? 0 : 1;
   dots[dots.length - 1].style.opacity = (currentPage === pages.length - 1) ? 0 : 1;
 }
 
 /* =========================
-   カルーセル用イベント
+   カルーセルイベント
 ========================= */
 wrapper.addEventListener('mousedown', e => startDrag(e.pageX));
 wrapper.addEventListener('touchstart', e => startDrag(e.touches[0].pageX));
@@ -142,53 +140,64 @@ document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preven
 document.addEventListener('gesturestart', e => e.preventDefault());
 
 /* =========================
-   最後ページ画像ドラッグ（ボタン露出仕様）
+   最後ページ左ドラッグ＋自動スライド
 ========================= */
-/* =========================
-   最後ページ画像ドラッグ（カルーセルと同期）
-========================= */
-const lastImg = document.querySelector('.last-img');
-const maxShift = 140; // 左にスライドできる最大量（ボタン幅に合わせる）
+const maxShift = lastImg.clientWidth / 2;
 let lastImgOffset = 0;
 let isDragLast = false;
 let startXLast = 0;
+let animationFrameId = null;
 
 function clamp(val, min, max) { return Math.min(Math.max(val, min), max); }
 
 // ドラッグ開始
-lastImg.addEventListener('mousedown', e => {
-  if (currentPage !== pages.length -1) return; // 最後ページ以外は無効
-  isDragLast = true;
-  startXLast = e.pageX - lastImgOffset;
-  lastImg.classList.add('dragging');
-});
-lastImg.addEventListener('touchstart', e => {
+function startDragLast(e) {
   if (currentPage !== pages.length -1) return;
   isDragLast = true;
-  startXLast = e.touches[0].pageX - lastImgOffset;
+  const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
+  startXLast = pageX - lastImgOffset;
   lastImg.classList.add('dragging');
-});
-
-// ドラッグ中
-function dragLastImg(x) {
-  if (!isDragLast) return;
-  let delta = x - startXLast;
-  lastImgOffset = clamp(delta, 0, maxShift);
-  lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
+  if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
 }
 
-lastImg.addEventListener('mousemove', e => dragLastImg(e.pageX));
-lastImg.addEventListener('touchmove', e => dragLastImg(e.touches[0].pageX));
+lastImg.addEventListener('mousedown', startDragLast);
+lastImg.addEventListener('touchstart', startDragLast);
 
-// ドラッグ終了
+// ドラッグ中
+function dragLastImg(e) {
+  if (!isDragLast) return;
+  const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
+  let delta = pageX - startXLast;
+  if (delta < 0) {
+    lastImgOffset = clamp(-delta, 0, maxShift);
+    lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
+  }
+}
+
+lastImg.addEventListener('mousemove', dragLastImg);
+lastImg.addEventListener('touchmove', dragLastImg);
+
+// ドラッグ終了 → 自動スライド
 function endDragLast() {
+  if (!isDragLast) return;
   isDragLast = false;
   lastImg.classList.remove('dragging');
+
+  if (lastImgOffset < maxShift) {
+    const step = () => {
+      lastImgOffset += 8; // スピード調整
+      if (lastImgOffset >= maxShift) lastImgOffset = maxShift;
+      lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
+      if (lastImgOffset < maxShift) animationFrameId = requestAnimationFrame(step);
+    };
+    step();
+  }
 }
 
 lastImg.addEventListener('mouseup', endDragLast);
 lastImg.addEventListener('mouseleave', endDragLast);
 lastImg.addEventListener('touchend', endDragLast);
+
 /* =========================
    次章ボタン
 ========================= */
