@@ -4,13 +4,16 @@
 html, body {
   margin:0; padding:0;
   width:100%; height:100%;
-  overflow:hidden;
+  overflow:hidden; /* 縦スクロール防止 */
   background:#000;
   -webkit-user-select:none; user-select:none;
   -webkit-touch-callout:none;
 }
 
-body { min-height:100vh; }
+body {
+  min-height:100svh;   /* Safari/iOS UI変動対策 */
+  overflow:hidden;
+}
 
 /* 背景 */
 .background {
@@ -82,14 +85,21 @@ body { min-height:100vh; }
    最後のページ
 ========================= */
 #last-page .carousel-inner.single {
+  position: relative;      /* 画像とボタンを重ねる基準 */
+  display: flex;
   justify-content: center;
   align-items: center;
-  position: relative; /* 画像とボタンを重ねる */
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* 画像とボタンを重ねるラッパー */
 .last-img-stack {
-  position: relative;
+  position: absolute;      /* wrapper内で絶対配置 */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 完全中央固定 */
   display: flex;
   justify-content: center;
   align-items: center;
