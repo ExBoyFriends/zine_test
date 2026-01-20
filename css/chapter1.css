@@ -70,43 +70,54 @@ body { min-height:100svh; overflow:hidden;
 .dots.visible { opacity:1; }
 
 /* 最後ページ */
+/* 最後ページ */
 #last-page .carousel-inner.single {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
   display: flex;
   justify-content: center;
-  align-items: center; /* ← 親要素内で縦中央 */
+  align-items: center;
+  overflow: hidden; /* はみ出し防止 */
 }
 
 .last-img-stack {
-  position: relative; /* absolute 内部の基準を親にする */
-  display: flex;
-  justify-content: center;
-  align-items: center; /* 縦中央 */
+  position: relative; /* 親基準で絶対配置可能に */
   width: 88vw;
   max-width: 540px;
-  height: 100%; /* 高さを親に合わせる */
+  height: auto;
 }
 
 .last-img.under,
 .last-img.top {
-  position: absolute;
-  top: 50%; /* 親要素中央 */
+  position: absolute;   /* 親基準で重ねる */
+  top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); /* 中央揃え */
   width: 100%;
   height: auto;
   display: block;
+  cursor: grab;
 }
 
+/* スライドアニメーションはJSで制御 */
+.last-img.top {
+  z-index: 2;
+}
+
+.last-img.under {
+  z-index: 1;
+}
+
+/* 次章ボタン */
 .next-btn-wrapper {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  pointer-events: none;
+  width: 120px;
+  height: 40px;
+  pointer-events: none; /* 初期操作不可 */
   z-index: 3;
 }
 
