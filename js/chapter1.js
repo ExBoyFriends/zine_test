@@ -147,9 +147,7 @@ let maxShift = 0;
 let lastImgOffset = 0;
 let isLastImgShifted = false;
 
-const lastImg = document.querySelector('.last-img.top');
 const nextBtnWrapper = document.querySelector('.next-btn-wrapper');
-const nextBtn = document.getElementById('next-chapter-btn');
 
 lastImg.addEventListener('load', () => {
   maxShift = lastImg.clientWidth / 2;
