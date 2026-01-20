@@ -1,9 +1,16 @@
 html, body {
-  margin: 0; padding: 0;
-  width: 100%; height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: #000;
-  -webkit-user-select: none; user-select: none;
+
+  position: fixed;
+  inset: 0;
+
+  -webkit-user-select: none;
+  user-select: none;
   -webkit-touch-callout: none;
 }
 
@@ -13,7 +20,11 @@ body {
 
 /* 背景 */
 .background {
-  position: fixed; top: -40px; left: -40px; right: -40px; bottom: -40px;
+  position: fixed;
+  top: -40px;
+  left: -40px;
+  right: -40px;
+  bottom: -40px;
   background: url('../image/background.jpg') center/cover no-repeat;
   z-index: 0;
   animation: slowFade 20s ease-in-out infinite alternate;
@@ -21,7 +32,11 @@ body {
 
 /* ローダー（サイレン） */
 #loader {
-  position: fixed; top: -40px; left: -40px; right: -40px; bottom: -40px;
+  position: fixed;
+  top: -40px;
+  left: -40px;
+  right: -40px;
+  bottom: -40px;
   background: url('../image/background.jpg') center/cover no-repeat;
   z-index: 10;
   animation: siren 1.68s linear infinite;
@@ -29,76 +44,150 @@ body {
 
 /* カルーセル */
 .carousel-wrapper {
-  position: fixed; inset:0;
-  width: 100vw; height: 100vh;
-  z-index:1; overflow:hidden;
-  display:flex; justify-content:center; align-items:center;
-  transform: translateY(-env(safe-area-inset-bottom)/2);
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100svh;   /* ← vhではなくsvh */
+  z-index: 1;
+  overflow: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* 各ページ */
 .carousel-page {
-  position:absolute; inset:0;
-  display:flex; justify-content:center; align-items:center;
-  gap:10px; pointer-events:none;
-  opacity:0; transition: opacity 1.4s ease;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+  background: #000; /* 下が透けないように */
 }
 
 .carousel-page.active {
-  opacity:1; pointer-events:all;
+  opacity: 1;
+  pointer-events: all;
 }
 
 .carousel-page.first-load {
-  opacity:0; transition: opacity 7.25s ease;
+  opacity: 0;
+  transition: opacity 7.25s ease;
 }
 
-.carousel-inner { display:flex; gap:10px; cursor:grab; overflow:hidden; justify-content:center; }
-.carousel-inner.single { justify-content:center; }
-.carousel-inner img { width:88vw; max-width:540px; border-radius:8px; flex-shrink:0; -webkit-user-drag:none; }
-.dragging { cursor:grabbing; }
+/* 中身 */
+.carousel-inner {
+  display: flex;
+  gap: 10px;
+  cursor: grab;
+  overflow: hidden;
+  justify-content: center;
+}
+
+.carousel-inner.single {
+  justify-content: center;
+}
+
+.carousel-inner img {
+  width: 88vw;
+  max-width: 540px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  -webkit-user-drag: none;
+}
+
+.dragging {
+  cursor: grabbing;
+}
 
 /* ドット */
 .dots {
-  position: fixed; left:0; right:0;
-  bottom:calc(40px + env(safe-area-inset-bottom));
-  width:100%; text-align:center; z-index:20;
-  opacity:0; transition:opacity 0.8s ease;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(40px + env(safe-area-inset-bottom));
+  width: 100%;
+  text-align: center;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.dots.visible {
+  opacity: 1;
 }
 
 .dot {
-  display:inline-block; width:5px; height:8px;
-  margin:0 5px; border-radius:0;
+  display: inline-block;
+  width: 5px;
+  height: 8px;
+  margin: 0 5px;
   background: rgba(200,200,200,0.25);
   box-shadow: 0 0 4px rgba(255,255,255,0.3);
-  transition:opacity 0.5s ease, background 0.3s ease;
-  opacity:1;
+  transition: opacity 0.5s ease, background 0.3s ease;
 }
 
-.dot.active { background: rgba(240,240,240,0.9); box-shadow:0 0 8px rgba(255,255,255,0.6); }
-.left-dot { width:12px; height:12px; clip-path: polygon(100% 0%,0% 50%,100% 100%); }
-.right-dot { width:12px; height:12px; clip-path: polygon(0% 0%,100% 50%,0% 100%); }
+.dot.active {
+  background: rgba(240,240,240,0.9);
+  box-shadow: 0 0 8px rgba(255,255,255,0.6);
+}
 
-.dots.visible { opacity:1; }
+.left-dot {
+  width: 12px;
+  height: 12px;
+  clip-path: polygon(100% 0%,0% 50%,100% 100%);
+}
 
-//* 最後ページ */
+.right-dot {
+  width: 12px;
+  height: 12px;
+  clip-path: polygon(0% 0%,100% 50%,0% 100%);
+}
+
+/* 最後ページ */
 #last-page .carousel-inner {
-  display:flex; align-items:center; gap:20px; position:relative;
-  overflow: hidden; /* 横スライドを可能に */
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
 }
 
 .last-img {
-  width:88vw; max-width:540px;
-  border-radius:8px; flex-shrink:0;
-  cursor:grab;
-  transition: transform 0.2s ease-out; /* 自動スライド時のアニメーション */
+  width: 88vw;
+  max-width: 540px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  cursor: grab;
+  transition: transform 0.2s ease-out;
 }
 
 .next-btn-wrapper {
-  position:absolute; bottom:20px; left:50%;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
   transform: translateX(-50%);
-  width:120px; display:flex; justify-content:center; align-items:center;
-  pointer-events:none; /* 初期は操作不可 */
+  width: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
 }
 
 /* アニメーション */
-@keyframes slowFade { 0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);} }
-@keyframes siren { 0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);} }
+@keyframes slowFade {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes siren {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
+}
