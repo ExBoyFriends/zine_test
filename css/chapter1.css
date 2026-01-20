@@ -1,79 +1,58 @@
 html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #000;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
+  margin:0; padding:0;
+  width:100%; height:100%;
+  overflow:hidden;
+  background:#000;
+  -webkit-user-select:none;
+  user-select:none;
 }
 
-/* 背景 */
 .background {
-  position: fixed;
-  top: -40px; left: -40px; right: -40px; bottom: -40px;
+  position: fixed; top:-40px; left:-40px; right:-40px; bottom:-40px;
   background: url('../image/background.jpg') center/cover no-repeat;
-  z-index: 0;
+  z-index:0;
   animation: slowFade 20s ease-in-out infinite alternate;
 }
 
-/* ローダー */
 #loader {
-  position: fixed;
-  top: -40px; left: -40px; right: -40px; bottom: -40px;
+  position: fixed; top:-40px; left:-40px; right:-40px; bottom:-40px;
   background: url('../image/background.jpg') center/cover no-repeat;
-  z-index: 10;
+  z-index:10;
   animation: siren 1.68s linear infinite;
 }
 
 /* カルーセル */
 .carousel-wrapper {
   position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transform: translateY(-env(safe-area-inset-bottom)/2);
+  inset:0;
+  width:100vw; height:100vh;
+  display:flex; justify-content:center; align-items:center;
+  overflow:hidden;
+  z-index:1;
 }
 
 .carousel-page {
-  position: absolute;
-  inset: 0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  position:absolute; inset:0;
+  display:flex; justify-content:center; align-items:center;
   gap:10px;
   pointer-events:none;
   opacity:0;
   transition: opacity 3.65s ease;
 }
 
-.carousel-page.active {
-  opacity:1;
-  pointer-events:all;
-}
+.carousel-page.active { opacity:1; pointer-events:all; }
 
-.carousel-inner {
-  display:flex;
-  gap:10px;
-  cursor: grab;
-  overflow: hidden;
-  justify-content: center;
-}
+.carousel-page.first-load { opacity:0; transition: opacity 7.25s ease; }
 
+.carousel-inner { display:flex; gap:10px; overflow:hidden; cursor:grab; justify-content:center; }
+.carousel-inner.single { justify-content:center; }
 .carousel-inner img {
-  width:88vw;
-  max-width:540px;
+  width:88vw; max-width:540px;
   border-radius:8px;
   flex-shrink:0;
   -webkit-user-drag:none;
 }
+.dragging { cursor:grabbing; }
 
 /* ドット */
 .dots {
@@ -83,6 +62,7 @@ html, body {
   opacity:0;
   transition: opacity 0.8s ease;
 }
+.dots.visible { opacity:1; }
 
 .dot {
   display:inline-block;
@@ -91,36 +71,22 @@ html, body {
   border-radius:0;
   background: rgba(200,200,200,0.25);
   box-shadow:0 0 4px rgba(255,255,255,0.3);
-  opacity:0; /* 初期透明 */
   transition: opacity 0.5s ease, background 0.3s ease;
+  opacity:0; /* 初期透明 */
 }
+.dot.active { background: rgba(240,240,240,0.9); box-shadow:0 0 8px rgba(255,255,255,0.6); }
 
-.dot.active {
-  background: rgba(240,240,240,0.9);
-  box-shadow:0 0 8px rgba(255,255,255,0.6);
-}
+/* 最後のドット▶形 */
+.dot.last-dot { width:12px; height:12px; clip-path: polygon(0% 0%,100% 50%,0% 100%); }
 
-/* 最後のドットだけ▶形 */
-.dot.last-dot {
-  width:12px;
-  height:12px;
-  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
-}
+/* 次章ボタン */
+.next-btn-wrapper { flex-shrink:0; width:120px; display:flex; justify-content:center; align-items:center; margin-left:20px; }
+#next-chapter-btn { padding:12px 24px; font-size:18px; border:none; border-radius:6px; cursor:pointer; background:rgba(255,255,255,0.9); }
 
-/* ドット一斉表示 */
-.dots.visible .dot {
-  opacity:1;
-}
+/* 最後ページ */
+#last-page .carousel-inner { display:flex; align-items:center; gap:20px; position:relative; }
+.last-img { width:88vw; max-width:540px; border-radius:8px; flex-shrink:0; }
 
 /* アニメ */
-@keyframes slowFade {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
-
-@keyframes siren {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
+@keyframes slowFade { 0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);} }
+@keyframes siren { 0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);} }
