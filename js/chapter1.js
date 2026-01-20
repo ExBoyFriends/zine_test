@@ -7,82 +7,94 @@ const lastPageInner = document.querySelector('#last-page .carousel-inner');
 const nextBtn = document.getElementById('next-chapter-btn');
 
 let currentPage = 0;
-let isDragging=false, dragX=0, startX=0, lastX=0, lastTime=0, velocity=0, isAnimating=false;
+let isDragging = false, dragX = 0, startX = 0, lastX = 0, lastTime = 0, velocity = 0, isAnimating = false;
 
-// 初回ロード：サイレン＋フェード＋ドット遅延表示
-window.addEventListener('load',()=>{
+// ---------- 初回ロード（サイレン＋ドット遅延表示） ----------
+window.addEventListener('load', () => {
   const firstPage = pages[0];
-  isAnimating=true;
-  firstPage.classList.add('first-load','active');
-  loader.style.display='block';
+  isAnimating = true;
 
-  setTimeout(()=>{
-    loader.style.display='none';
+  firstPage.classList.add('first-load', 'active');
+  loader.style.display = 'block';
+
+  setTimeout(() => {
+    loader.style.display = 'none';
     firstPage.classList.remove('first-load');
-    firstPage.style.transition='opacity 5.2s ease';
+    firstPage.style.transition = 'opacity 5.2s ease';
+
+    // ドットフェードイン
     dotsContainer.classList.add('visible');
-    isAnimating=false;
+    isAnimating = false;
     updateDots();
-  },7280);
+  }, 7280); // サイレン表示時間
 });
 
-// ドラッグ
+// ---------- ドラッグ操作 ----------
 const pageWidth = wrapper.clientWidth;
-function startDrag(x){ if(isAnimating) return; isDragging=true; startX=x; lastX=x; lastTime=Date.now(); }
-function drag(x){
-  if(!isDragging||isAnimating) return;
-  dragX=x-startX;
-  const now=Date.now();
-  velocity=(x-lastX)/(now-lastTime);
-  lastX=x; lastTime=now;
 
-  const ease=0.4;
-  if(dragX<0&&currentPage<pages.length-1){
-    pages[currentPage+1].style.opacity=Math.min(Math.abs(dragX)/pageWidth,1)*ease;
-    pages[currentPage].style.opacity=1-Math.min(Math.abs(dragX)/pageWidth,1)*ease;
-  } else if(dragX>0&&currentPage>0){
-    pages[currentPage-1].style.opacity=Math.min(Math.abs(dragX)/pageWidth,1)*ease;
-    pages[currentPage].style.opacity=1-Math.min(Math.abs(dragX)/pageWidth,1)*ease;
+function startDrag(x){ if(isAnimating) return; isDragging=true; startX=x; lastX=x; lastTime=Date.now(); }
+
+function drag(x){
+  if(!isDragging || isAnimating) return;
+  dragX = x - startX;
+  const now = Date.now();
+  velocity = (x - lastX)/(now-lastTime);
+  lastX = x; lastTime = now;
+
+  const ease = 0.4;
+  if(dragX<0 && currentPage<pages.length-1){
+    pages[currentPage+1].style.opacity = Math.min(Math.abs(dragX)/pageWidth,1)*ease;
+    pages[currentPage].style.opacity = 1-Math.min(Math.abs(dragX)/pageWidth,1)*ease;
+  } else if(dragX>0 && currentPage>0){
+    pages[currentPage-1].style.opacity = Math.min(Math.abs(dragX)/pageWidth,1)*ease;
+    pages[currentPage].style.opacity = 1-Math.min(Math.abs(dragX)/pageWidth,1)*ease;
   }
 }
 
 function endDrag(){
-  if(!isDragging||isAnimating) return;
-  isDragging=false;
-  let nextPage=null;
-  const threshold=pageWidth*0.3;
-  const velocityThreshold=0.3;
-  if((dragX<-threshold||velocity<-velocityThreshold)&&currentPage<pages.length-1) nextPage=currentPage+1;
-  else if((dragX>threshold||velocity>velocityThreshold)&&currentPage>0) nextPage=currentPage-1;
+  if(!isDragging || isAnimating) return;
+  isDragging = false;
+
+  let nextPage = null;
+  const threshold = pageWidth*0.3;
+  const velocityThreshold = 0.3;
+
+  if((dragX<-threshold || velocity<-velocityThreshold) && currentPage<pages.length-1) nextPage=currentPage+1;
+  else if((dragX>threshold || velocity>velocityThreshold) && currentPage>0) nextPage=currentPage-1;
 
   if(nextPage!==null){
     isAnimating=true;
-    pages.forEach(p=>{p.style.opacity='';});
+    pages.forEach(p=>p.style.opacity='');
     pages[currentPage].classList.remove('active');
     pages[nextPage].classList.add('active');
     setTimeout(()=>{ isAnimating=false; },3000);
     currentPage=nextPage;
   } else {
     pages[currentPage].style.opacity=1;
-    if(dragX<0&&currentPage<pages.length-1) pages[currentPage+1].style.opacity=0;
-    if(dragX>0&&currentPage>0) pages[currentPage-1].style.opacity=0;
+    if(dragX<0 && currentPage<pages.length-1) pages[currentPage+1].style.opacity=0;
+    if(dragX>0 && currentPage>0) pages[currentPage-1].style.opacity=0;
   }
+
   dragX=0; velocity=0;
   updateDots();
 }
 
-// ドット更新
+// ---------- ドット更新 ----------
 function updateDots(){
-  dots.forEach((dot,i)=>dot.classList.toggle('active',i===currentPage+1));
-  // 左端◀︎
-  if(currentPage===0) dots[0].style.opacity=0;
-  else dots[0].style.opacity=1;
-  // 右端▶
-  if(currentPage===pages.length-1) dots[dots.length-1].style.opacity=0;
-  else dots[dots.length-1].style.opacity=1;
+  // ハイライト（左端◀︎はdots[0]、右端▶はdots[last]）
+  dots.forEach((dot,i)=>{
+    if(i===currentPage+1) dot.classList.add('active');
+    else dot.classList.remove('active');
+  });
+
+  // 左端◀︎表示制御
+  dots[0].style.opacity = (currentPage>0)? '1':'0';
+
+  // 右端▶表示制御
+  dots[dots.length-1].style.opacity = (currentPage === pages.length-1)? '0':'1';
 }
 
-// イベント
+// ---------- イベント ----------
 wrapper.addEventListener('mousedown', e=>startDrag(e.pageX));
 wrapper.addEventListener('touchstart', e=>startDrag(e.touches[0].pageX));
 wrapper.addEventListener('mousemove', e=>drag(e.pageX));
@@ -91,22 +103,17 @@ wrapper.addEventListener('mouseup', endDrag);
 wrapper.addEventListener('mouseleave', endDrag);
 wrapper.addEventListener('touchend', endDrag);
 
-// ページ内画像ドラッグ
+// ページ内ドラッグ（スクロール）
 document.querySelectorAll('.carousel-inner').forEach(inner=>{
-  let isDrag=false,start,scrollLeft;
-  inner.addEventListener('mousedown',e=>{isDrag=true; inner.classList.add('dragging'); start=e.pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft;});
-  inner.addEventListener('mouseleave',()=>{isDrag=false; inner.classList.remove('dragging');});
-  inner.addEventListener('mouseup',()=>{isDrag=false; inner.classList.remove('dragging');});
-  inner.addEventListener('mousemove',e=>{if(!isDrag) return; e.preventDefault(); inner.scrollLeft=scrollLeft+(start-(e.pageX-inner.offsetLeft));});
-  inner.addEventListener('touchstart',e=>{isDrag=true; start=e.touches[0].pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft;});
-  inner.addEventListener('touchend',()=>{isDrag=false;});
-  inner.addEventListener('touchmove',e=>{if(!isDrag) return; inner.scrollLeft=scrollLeft+(start-(e.touches[0].pageX-inner.offsetLeft));});
+  let isDrag=false, start, scrollLeft;
+  inner.addEventListener('mousedown', e=>{ isDrag=true; inner.classList.add('dragging'); start=e.pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft; });
+  inner.addEventListener('mouseleave', ()=>{ isDrag=false; inner.classList.remove('dragging'); });
+  inner.addEventListener('mouseup', ()=>{ isDrag=false; inner.classList.remove('dragging'); });
+  inner.addEventListener('mousemove', e=>{ if(!isDrag) return; e.preventDefault(); inner.scrollLeft=scrollLeft+(start-(e.pageX-inner.offsetLeft)); });
+  inner.addEventListener('touchstart', e=>{ isDrag=true; start=e.touches[0].pageX-inner.offsetLeft; scrollLeft=inner.scrollLeft; });
+  inner.addEventListener('touchend', ()=>{ isDrag=false; });
+  inner.addEventListener('touchmove', e=>{ if(!isDrag) return; inner.scrollLeft=scrollLeft+(start-(e.touches[0].pageX-inner.offsetLeft)); });
 });
 
-// 右クリック・長押し無効
-document.addEventListener('contextmenu', e=>e.preventDefault());
-document.addEventListener('touchmove', e=>{if(e.touches.length>1) e.preventDefault();},{passive:false});
-document.addEventListener('gesturestart', e=>e.preventDefault());
-
-// 最後ページボタン
-nextBtn.addEventListener('click',()=>{window.location.href='chapter2.html';});
+// 最後ページの次章ボタン
+nextBtn.addEventListener('click', ()=>window.location.href='chapter2.html');
