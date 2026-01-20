@@ -10,7 +10,7 @@ export function initLoader(pages, loader, dotsContainer) {
 
     // loader フェードアウト開始（2秒後）
     setTimeout(() => {
-      loader.style.transition = 'opacity 0.5s ease';
+      loader.style.transition = 'opacity 1.5s ease';
       loader.style.opacity = '0';
 
       // loader 完全非表示
