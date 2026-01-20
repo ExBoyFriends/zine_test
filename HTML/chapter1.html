@@ -8,48 +8,59 @@
 </head>
 <body>
 
-<!-- 背景 -->
 <div class="background"></div>
+<div id="loader"></div>
 
-<!-- ローダー -->
-<div id="loader">Loading...</div>
-
-<!-- カルーセル -->
 <div class="carousel-wrapper">
-
-  <div class="carousel-page active">
-    <img src="../image/page1.png" alt="Page 1">
+  <!-- ページ1〜4 -->
+  <div class="carousel-page">
+    <div class="carousel-inner">
+      <img src="../image/queen.of.clubs.png">
+      <img src="../image/queen.of.clubs_mirror.png">
+    </div>
   </div>
   <div class="carousel-page">
-    <img src="../image/page2.png" alt="Page 2">
+    <div class="carousel-inner">
+      <img src="../image/king.of.spades.png">
+      <img src="../image/king.of.spades_mirror.png">
+    </div>
   </div>
   <div class="carousel-page">
-    <img src="../image/page3.png" alt="Page 3">
+    <div class="carousel-inner">
+      <img src="../image/jack.of.hearts.png">
+      <img src="../image/jack.of.hearts_mirror.png">
+    </div>
   </div>
   <div class="carousel-page">
-    <img src="../image/page4.png" alt="Page 4">
+    <div class="carousel-inner">
+      <img src="../image/joker_a.png">
+      <img src="../image/joker_b.png">
+    </div>
   </div>
 
   <!-- 最後ページ -->
   <div class="carousel-page" id="last-page">
-    <div class="last-img-stack">
-      <img src="../image/zebra_under.png" class="last-img under">
-      <img src="../image/zebra.png" class="last-img top">
-      <div class="next-btn-wrapper">
-        <a href="chapter2.html" id="next-chapter-btn">Next Chapter</a>
+    <div class="carousel-inner single">
+      <div class="last-img-stack">
+        <img src="../image/zebra_under.png" class="last-img under">
+        <img src="../image/zebra.png" class="last-img top">
+        <div class="next-btn-wrapper">
+          <a href="chapter2.html" id="next-chapter-btn"></a>
+        </div>
       </div>
     </div>
   </div>
 
-</div>
-
-<!-- ドットナビ -->
-<div class="dots">
-  <span class="dot active"></span>
-  <span class="dot"></span>
-  <span class="dot"></span>
-  <span class="dot"></span>
-  <span class="dot"></span>
+  <!-- ドット -->
+  <div class="dots">
+    <span class="dot left-dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot right-dot"></span>
+  </div>
 </div>
 
 <script type="module" src="../js/chapter1/main.js"></script>
