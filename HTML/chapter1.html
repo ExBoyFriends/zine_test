@@ -3,31 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chapter 1 Carousel</title>
-<link rel="stylesheet" href="css/chapter1.css">
+<title>第一章カルーセル</title>
+<link rel="stylesheet" href="../css/chapter1.css">
 </head>
 <body>
 
+<!-- 背景 -->
+<div class="background"></div>
+
 <!-- ローダー -->
-<div id="loader" class="loader">Loading...</div>
+<div id="loader">Loading...</div>
 
 <!-- カルーセル -->
 <div class="carousel-wrapper">
+
   <div class="carousel-page active">
-    <img src="images/page1.jpg" alt="Page 1">
+    <img src="../image/page1.png" alt="Page 1">
   </div>
   <div class="carousel-page">
-    <img src="images/page2.jpg" alt="Page 2">
+    <img src="../image/page2.png" alt="Page 2">
   </div>
-  <div class="carousel-page last-img top">
-    <img src="images/page3.jpg" alt="Last Page">
+  <div class="carousel-page">
+    <img src="../image/page3.png" alt="Page 3">
+  </div>
+  <div class="carousel-page">
+    <img src="../image/page4.png" alt="Page 4">
   </div>
 
-  <!-- 右端ボタン（背面に隠す） -->
-  <button class="carousel-button-right">→</button>
+  <!-- 最後ページ -->
+  <div class="carousel-page" id="last-page">
+    <div class="last-img-stack">
+      <img src="../image/zebra_under.png" class="last-img under">
+      <img src="../image/zebra.png" class="last-img top">
+      <div class="next-btn-wrapper">
+        <a href="chapter2.html" id="next-chapter-btn">Next Chapter</a>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- JS -->
-<script type="module" src="js/chapter1/main.js"></script>
+<!-- ドットナビ -->
+<div class="dots">
+  <span class="dot active"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
+</div>
+
+<script type="module" src="../js/chapter1/main.js"></script>
 </body>
 </html>
