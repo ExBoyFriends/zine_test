@@ -26,6 +26,6 @@ export function initLoader(pages, loader, dotsContainer){
         firstPage.classList.remove('first-load'); // 初回 7.28 秒フェード開始
       });
 
-    }, 2000); // loader 表示時間を調整したい場合はこの数値を変更
+    }, 4600); // loader 表示時間を調整したい場合はこの数値を変更
   });
 }
