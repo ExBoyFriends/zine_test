@@ -70,7 +70,6 @@ body { min-height:100svh; overflow:hidden;
 .dots.visible { opacity:1; }
 
 /* 最後ページ */
-/* 最後ページ */
 #last-page .carousel-inner.single {
   position: relative;
   width: 100%;
@@ -88,12 +87,11 @@ body { min-height:100svh; overflow:hidden;
   height: auto;
 }
 
-.last-img.under,
-.last-img.top {
+.last-img.under {
   position: absolute;   /* 親基準で重ねる */
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* 中央揃え */
+/* transform: translate(-50%, -50%);  */
   width: 100%;
   height: auto;
   display: block;
@@ -105,9 +103,9 @@ body { min-height:100svh; overflow:hidden;
   z-index: 2;
 }
 
-.last-img.under {
+/*.last-img.under {
   z-index: 1;
-}
+}:/
 
 /* 次章ボタン */
 .next-btn-wrapper {
