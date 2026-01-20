@@ -8,19 +8,20 @@
 </head>
 <body>
 
+<!-- 背景 -->
 <div class="background"></div>
 <div id="loader"></div>
 
 <div class="carousel-wrapper">
-
-  <!-- ページ1〜4は省略せずそのまま使ってOK -->
-  <div class="carousel-page active">
+  <!-- ページ1 -->
+  <div class="carousel-page">
     <div class="carousel-inner">
       <img src="../image/queen.of.clubs.png">
       <img src="../image/queen.of.clubs_mirror.png">
     </div>
   </div>
 
+  <!-- ページ2 -->
   <div class="carousel-page">
     <div class="carousel-inner">
       <img src="../image/king.of.spades.png">
@@ -28,6 +29,7 @@
     </div>
   </div>
 
+  <!-- ページ3 -->
   <div class="carousel-page">
     <div class="carousel-inner">
       <img src="../image/jack.of.hearts.png">
@@ -35,6 +37,7 @@
     </div>
   </div>
 
+  <!-- ページ4 -->
   <div class="carousel-page">
     <div class="carousel-inner">
       <img src="../image/joker_a.png">
@@ -42,21 +45,25 @@
     </div>
   </div>
 
-  <!-- 最後ページ -->
-  <div class="carousel-page" id="last-page">
-    <div class="carousel-inner single">
-      <div class="last-img-stack">
+<!-- ページ5（最後ページ） -->
+<div class="carousel-page" id="last-page">
+  <div class="carousel-inner single">
+    <div class="last-img-stack">
 
-        <img src="../image/zebra_under.png" class="last-img under">
-        <img src="../image/zebra.png" class="last-img top">
+      <!-- 下の固定画像 -->
+      <img src="../image/zebra_under.png" class="last-img under">
 
-        <div class="next-btn-wrapper">
-          <a href="chapter2.html" id="next-chapter-btn">NEXT</a>
-        </div>
+      <!-- 上のスライド画像 -->
+      <img src="../image/zebra.png" class="last-img top">
 
+      <!-- ボタン -->
+      <div class="next-btn-wrapper">
+        <a href="chapter2.html" id="next-chapter-btn"></a>
       </div>
+
     </div>
   </div>
+</div>
 
   <!-- ドット -->
   <div class="dots">
@@ -65,11 +72,14 @@
     <span class="dot"></span>
     <span class="dot"></span>
     <span class="dot"></span>
+    <span class="dot"></span>
     <span class="dot right-dot"></span>
   </div>
-
 </div>
 
 <script src="../js/chapter1.js"></script>
 </body>
 </html>
+
+
+合ってる？
