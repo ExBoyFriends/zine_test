@@ -1,14 +1,18 @@
-export function initLastPage(topImg, btn) {
-  let shifted = false;
+export function initLastPage(topImg, nextBtn, getCurrentPage, pages){
+  const maxShift = topImg.clientWidth/2;
+  let isShifted=false;
 
-  topImg.addEventListener("click", ()=>{
-    shifted = !shifted;
-    if(shifted){
-      topImg.style.transform = "translate(-75%, -50%)"; // 半分見切れ
-      btn.style.opacity = 1;
+  topImg.style.transform = 'translateX(0)'; // 初期中央
+  topImg.addEventListener('click',()=>{
+    if(getCurrentPage() !== pages.length-1) return;
+    topImg.style.transition='transform 0.3s ease-out';
+    if(!isShifted){
+      topImg.style.transform = `translateX(${-maxShift}px)`;
+      nextBtn.style.pointerEvents='auto';
     }else{
-      topImg.style.transform = "translate(-50%, -50%)"; // 中央
-      btn.style.opacity = 0;
+      topImg.style.transform='translateX(0)';
+      nextBtn.style.pointerEvents='none';
     }
+    isShifted=!isShifted;
   });
 }
