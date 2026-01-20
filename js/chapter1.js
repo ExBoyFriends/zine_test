@@ -6,7 +6,6 @@ const dots = document.querySelectorAll('.dot');
 const dotsContainer = document.querySelector('.dots');
 const loader = document.getElementById('loader');
 const wrapper = document.querySelector('.carousel-wrapper');
-const lastPageInner = document.querySelector('#last-page .carousel-inner');
 const lastImg = document.querySelector('.last-img');
 const nextBtn = document.getElementById('next-chapter-btn');
 
@@ -31,7 +30,6 @@ window.addEventListener('load', () => {
     firstPage.classList.remove('first-load');
     firstPage.style.transition = 'opacity 5.2s ease';
 
-    // ドットを遅延表示
     dotsContainer.classList.add('visible');
     updateDots();
     isAnimating = false;
@@ -56,6 +54,9 @@ function drag(x) {
   velocity = (x - lastX) / (now - lastTime);
   lastX = x; lastTime = now;
 
+  // 最後ページ左スライド中は通常カルーセル無効
+  if (currentPage === pages.length - 1 && lastImgOffset > 0 && dragX > 0) return;
+
   const ease = 0.4;
   if (dragX < 0 && currentPage < pages.length - 1) {
     pages[currentPage + 1].style.opacity = Math.min(Math.abs(dragX) / pageWidth, 1) * ease;
@@ -69,6 +70,12 @@ function drag(x) {
 function endDrag() {
   if (!isDragging || isAnimating) return;
   isDragging = false;
+
+  // 最後ページで左ドラッグ済みの場合、右ドラッグで初期位置復帰
+  if (currentPage === pages.length - 1 && lastImgOffset > 0) {
+    slideLastImgToInitial();
+    return;
+  }
 
   let nextPage = null;
   const threshold = pageWidth * 0.3;
@@ -96,7 +103,7 @@ function endDrag() {
 }
 
 /* =========================
-   ドット更新＆左右端表示制御
+   ドット更新
 ========================= */
 function updateDots() {
   dots.forEach((dot, i) => {
@@ -197,6 +204,17 @@ function endDragLast() {
 lastImg.addEventListener('mouseup', endDragLast);
 lastImg.addEventListener('mouseleave', endDragLast);
 lastImg.addEventListener('touchend', endDragLast);
+
+// 右ドラッグで初期位置復帰
+function slideLastImgToInitial() {
+  const step = () => {
+    lastImgOffset -= 12; // 戻る速度
+    if (lastImgOffset <= 0) lastImgOffset = 0;
+    lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
+    if (lastImgOffset > 0) animationFrameId = requestAnimationFrame(step);
+  };
+  step();
+}
 
 /* =========================
    次章ボタン
