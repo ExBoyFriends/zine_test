@@ -1,14 +1,14 @@
-// lastPage.js
-export function initLastPage(lastImg, getCurrentPage, totalPages) {
+export function initLastPage(topImg, btn) {
   let shifted = false;
-  lastImg.style.transition = "transform 0.4s ease";
 
-  lastImg.addEventListener("click", () => {
-    if (getCurrentPage() !== totalPages - 1) return;
-
+  topImg.addEventListener("click", ()=>{
     shifted = !shifted;
-    lastImg.style.transform = shifted
-      ? "translateX(-50%)"
-      : "translateX(0)";
+    if(shifted){
+      topImg.style.transform = "translate(-75%, -50%)"; // 半分見切れ
+      btn.style.opacity = 1;
+    }else{
+      topImg.style.transform = "translate(-50%, -50%)"; // 中央
+      btn.style.opacity = 0;
+    }
   });
 }
