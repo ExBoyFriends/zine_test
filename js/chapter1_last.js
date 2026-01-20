@@ -1,32 +1,43 @@
-const lastPage = document.getElementById('last-page');
-const lastImg = document.getElementById('last-img');
+// 最後ページ：ボタンを隣に置いてドラッグで見える
+const lastPageInner = document.querySelector('#last-page .carousel-inner');
 const nextBtn = document.getElementById('next-chapter-btn');
 
+let isDrag = false;
 let startX = 0;
-let dragX = 0;
+let scrollLeft = 0;
 
-// ドラッグ開始
-lastImg.addEventListener('mousedown', e => { startX = e.pageX; });
-lastImg.addEventListener('touchstart', e => { startX = e.touches[0].pageX; });
-
-// ドラッグ中
-lastImg.addEventListener('mousemove', e => {
-  if(!startX) return;
-  dragX = e.pageX - startX;
-  if(dragX < -50) lastPage.classList.add('show-btn');
+// PC/タッチ兼用
+lastPageInner.addEventListener('mousedown', e => {
+  isDrag = true;
+  startX = e.pageX - lastPageInner.offsetLeft;
+  scrollLeft = lastPageInner.scrollLeft;
 });
-lastImg.addEventListener('touchmove', e => {
-  if(!startX) return;
-  dragX = e.touches[0].pageX - startX;
-  if(dragX < -50) lastPage.classList.add('show-btn');
+lastPageInner.addEventListener('touchstart', e => {
+  isDrag = true;
+  startX = e.touches[0].pageX - lastPageInner.offsetLeft;
+  scrollLeft = lastPageInner.scrollLeft;
 });
 
-// ドラッグ終了
-lastImg.addEventListener('mouseup', () => startX = dragX = 0);
-lastImg.addEventListener('mouseleave', () => startX = dragX = 0);
-lastImg.addEventListener('touchend', () => startX = dragX = 0);
+lastPageInner.addEventListener('mousemove', e => {
+  if(!isDrag) return;
+  e.preventDefault();
+  const x = e.pageX - lastPageInner.offsetLeft;
+  const walk = (startX - x);
+  lastPageInner.scrollLeft = scrollLeft + walk;
+});
 
-// ボタン押下でページ遷移
+lastPageInner.addEventListener('touchmove', e => {
+  if(!isDrag) return;
+  const x = e.touches[0].pageX - lastPageInner.offsetLeft;
+  const walk = (startX - x);
+  lastPageInner.scrollLeft = scrollLeft + walk;
+});
+
+lastPageInner.addEventListener('mouseup', () => isDrag = false);
+lastPageInner.addEventListener('mouseleave', () => isDrag = false);
+lastPageInner.addEventListener('touchend', () => isDrag = false);
+
+// ボタン押下で次章へ
 nextBtn.addEventListener('click', () => {
   window.location.href = 'chapter2.html';
 });
