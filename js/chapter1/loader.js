@@ -5,16 +5,14 @@ export function initLoader(pages, loader, dotsContainer){
 
     loader.style.display='block';
     loader.style.opacity='1';
-    loader.style.animationPlayState='running';
 
+    // 古い挙動通り 2秒後に loader をフェードアウト
     setTimeout(()=>{
       loader.style.transition='opacity 0.5s ease';
       loader.style.opacity='0';
-      loader.style.animationPlayState='paused';
-
       setTimeout(()=>loader.style.display='none', 500);
 
       dotsContainer.classList.add('visible');
-    },7280);
+    },2000);
   });
 }
