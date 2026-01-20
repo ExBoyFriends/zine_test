@@ -68,25 +68,35 @@ body { min-height:100svh; overflow:hidden; }
 
 /* 最後ページ */
 #last-page .carousel-inner.single {
-  position: relative; width:100%; height:100%; overflow:hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow:hidden;
   display:flex; justify-content:center; align-items:center;
 }
 .last-img-stack {
-  position:absolute; top:50%; left:50%;
+  position:absolute;
+  top:50%; left:50%;
   transform: translate(-50%, -50%);
-  display:flex; justify-content:center; align-items:center;
+  display:block; /* 横並びを防ぐ */
+  width:88vw; max-width:540px;
+  text-align:center;
 }
-.last-img.under { z-index:1; }
+.last-img.under {
+  z-index:1;
+  width:100%;
+}
 .last-img.top {
   z-index:2;
-  transform: translateX(0);
-  cursor: grab;
+  width:100%;
+  transform: translateX(0); /* 初期中央 */
+  cursor:grab;
   transition: transform 0.3s ease-out;
 }
 .next-btn-wrapper {
   position:absolute;
   top:50%; left:50%;
-  transform: translate(-50%, -50%);
+  transform:translate(-50%, -50%);
   width:120px; height:40px;
   pointer-events:none;
   z-index:3;
