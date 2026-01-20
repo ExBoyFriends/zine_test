@@ -91,7 +91,7 @@ body { min-height:100svh; overflow:hidden;
   position: absolute;   /* 親基準で重ねる */
   top: 50%;
   left: 50%;
-/* transform: translate(-50%, -50%);  */
+  transform: translate(-50%, -50%); 
   width: 100%;
   height: auto;
   display: block;
@@ -103,9 +103,9 @@ body { min-height:100svh; overflow:hidden;
   z-index: 2;
 }
 
-/*.last-img.under {
+.last-img.under {
   z-index: 1;
-}:/
+}
 
 /* 次章ボタン */
 .next-btn-wrapper {
