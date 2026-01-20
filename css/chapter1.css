@@ -87,8 +87,13 @@ body { min-height:100svh; overflow:hidden;
   height: auto;
 }
 
+.last-img.top {
+  position: absolute;
+  z-index: 2;
+}
+
 .last-img.under {
-  position: absolute;   /* 親基準で重ねる */
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%); 
@@ -99,9 +104,7 @@ body { min-height:100svh; overflow:hidden;
   z-index: 1;
 }
 
-.last-img.top {
-  z-index: 2;
-}: 
+ 
 
 /* アニメーション */
 @keyframes slowFade {0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);}}
