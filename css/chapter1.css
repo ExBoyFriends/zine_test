@@ -88,15 +88,7 @@ html, body {
 
 /* ---------- ドット（カルーセルページ下） ---------- */
 
-/* ドット */
-.dots {
-  position: fixed; left:0; right:0; bottom:calc(40px + env(safe-area-inset-bottom));
-  width:100%; text-align:center;
-  opacity:0; /* 初期透明 */
-  transition: opacity 0.8s ease;
-  z-index:20;
-}
-
+/* ドット共通 */
 .dot {
   display:inline-block;
   width:5px; height:8px;
@@ -104,24 +96,35 @@ html, body {
   border-radius:0; /* 四角 */
   background: rgba(200,200,200,0.25);
   box-shadow: 0 0 4px rgba(255,255,255,0.3);
-  transition: background 0.3s ease;
+  opacity:0; /* 初期透明 */
+  transition: opacity 0.5s ease, background 0.3s ease;
 }
+
 .dot.active {
   background: rgba(240,240,240,0.9);
-  box-shadow: 0 0 8px rgba(255,255,255,0.6);
+  box-shadow:0 0 8px rgba(255,255,255,0.6);
 }
 
-/* 最後のドットだけ形を▶ */
-.dots span:last-child {
-  width: 12px; height: 12px;
-  background: rgba(255,255,255,0.9);
-  clip-path: polygon(0% 0%,100% 50%,0% 100%);
-  box-shadow:0 0 6px rgba(255,255,255,0.6);
-  margin-left:8px;
+/* 最後のドットだけ▶形 */
+.dot.last-dot {
+  width:12px;
+  height:12px;
+  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
 }
 
-/* .visible が付いたら一斉フェードイン */
-.dots.visible { opacity:1; }
+/* ドット全体 */
+.dots {
+  position: fixed; left:0; right:0; bottom:calc(40px + env(safe-area-inset-bottom));
+  width:100%; text-align:center;
+  z-index:20;
+  opacity:0;
+  transition: opacity 0.8s ease;
+}
+
+/* .visibleで一斉フェードイン */
+.dots.visible .dot {
+  opacity:1;
+}
 
 /* 次章ボタン */
 .next-btn-wrapper { display:flex; align-items:center; margin-left:20px; }
