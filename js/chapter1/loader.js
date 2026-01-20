@@ -11,7 +11,8 @@ export function initLoader(pages, loader, dotsContainer){
       loader.style.transition='opacity 0.5s ease';
       loader.style.opacity='0';
       loader.style.animationPlayState='paused';
-      setTimeout(()=>loader.style.display='none',500);
+
+      setTimeout(()=>loader.style.display='none', 500);
 
       dotsContainer.classList.add('visible');
     },7280);
