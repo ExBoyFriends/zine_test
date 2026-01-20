@@ -144,36 +144,43 @@ document.addEventListener('gesturestart', e => e.preventDefault());
 /* =========================
    最後ページ画像ドラッグ（ボタン露出仕様）
 ========================= */
+/* =========================
+   最後ページ画像ドラッグ（カルーセルと同期）
+========================= */
+const lastImg = document.querySelector('.last-img');
+const maxShift = 140; // 左にスライドできる最大量（ボタン幅に合わせる）
+let lastImgOffset = 0;
 let isDragLast = false;
 let startXLast = 0;
-let currentXLast = 0;
-const maxShift = 140; // 画像を左にスライドできる最大量
 
-function clamp(val, min, max) {
-  return Math.min(Math.max(val, min), max);
-}
+function clamp(val, min, max) { return Math.min(Math.max(val, min), max); }
 
+// ドラッグ開始
 lastImg.addEventListener('mousedown', e => {
+  if (currentPage !== pages.length -1) return; // 最後ページ以外は無効
   isDragLast = true;
-  startXLast = e.pageX - currentXLast;
+  startXLast = e.pageX - lastImgOffset;
   lastImg.classList.add('dragging');
 });
 lastImg.addEventListener('touchstart', e => {
+  if (currentPage !== pages.length -1) return;
   isDragLast = true;
-  startXLast = e.touches[0].pageX - currentXLast;
+  startXLast = e.touches[0].pageX - lastImgOffset;
   lastImg.classList.add('dragging');
 });
 
+// ドラッグ中
 function dragLastImg(x) {
   if (!isDragLast) return;
   let delta = x - startXLast;
-  currentXLast = clamp(delta, 0, maxShift);
-  lastImg.style.transform = `translateX(${-currentXLast}px)`;
+  lastImgOffset = clamp(delta, 0, maxShift);
+  lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
 }
 
 lastImg.addEventListener('mousemove', e => dragLastImg(e.pageX));
 lastImg.addEventListener('touchmove', e => dragLastImg(e.touches[0].pageX));
 
+// ドラッグ終了
 function endDragLast() {
   isDragLast = false;
   lastImg.classList.remove('dragging');
@@ -182,7 +189,6 @@ function endDragLast() {
 lastImg.addEventListener('mouseup', endDragLast);
 lastImg.addEventListener('mouseleave', endDragLast);
 lastImg.addEventListener('touchend', endDragLast);
-
 /* =========================
    次章ボタン
 ========================= */
