@@ -99,9 +99,9 @@ body { min-height:100svh; overflow:hidden;
 }
 
 /* スライドアニメーションはJSで制御 */
-.last-img.top {
+/*.last-img.top {
   z-index: 2;
-}
+}:/
 
 .last-img.under {
   z-index: 1;
