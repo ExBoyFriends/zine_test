@@ -54,8 +54,8 @@ function drag(x) {
   velocity = (x - lastX) / (now - lastTime);
   lastX = x; lastTime = now;
 
-  // 最後ページ左スライド中は通常カルーセル無効
-  if (currentPage === pages.length - 1 && lastImgOffset > 0 && dragX > 0) return;
+  // 最後ページで画像半分移動中なら通常カルーセルは無効
+  if (currentPage === pages.length - 1 && isLastImgShifted && dragX > 0) return;
 
   const ease = 0.4;
   if (dragX < 0 && currentPage < pages.length - 1) {
@@ -70,12 +70,6 @@ function drag(x) {
 function endDrag() {
   if (!isDragging || isAnimating) return;
   isDragging = false;
-
-  // 最後ページで左ドラッグ済みの場合、右ドラッグで初期位置復帰
-  if (currentPage === pages.length - 1 && lastImgOffset > 0) {
-    slideLastImgToInitial();
-    return;
-  }
 
   let nextPage = null;
   const threshold = pageWidth * 0.3;
@@ -147,74 +141,29 @@ document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preven
 document.addEventListener('gesturestart', e => e.preventDefault());
 
 /* =========================
-   最後ページ左ドラッグ＋自動スライド
+   最後ページタップ操作（半分スライド／初期位置復帰）
 ========================= */
 const maxShift = lastImg.clientWidth / 2;
 let lastImgOffset = 0;
-let isDragLast = false;
-let startXLast = 0;
-let animationFrameId = null;
+let isLastImgShifted = false;
 
-function clamp(val, min, max) { return Math.min(Math.max(val, min), max); }
-
-// ドラッグ開始
-function startDragLast(e) {
+lastImg.addEventListener('click', () => {
   if (currentPage !== pages.length -1) return;
-  isDragLast = true;
-  const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
-  startXLast = pageX - lastImgOffset;
-  lastImg.classList.add('dragging');
-  if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
-}
 
-lastImg.addEventListener('mousedown', startDragLast);
-lastImg.addEventListener('touchstart', startDragLast);
+  lastImg.style.transition = 'transform 0.3s ease-out';
 
-// ドラッグ中
-function dragLastImg(e) {
-  if (!isDragLast) return;
-  const pageX = e.type.includes('touch') ? e.touches[0].pageX : e.pageX;
-  let delta = pageX - startXLast;
-  if (delta < 0) {
-    lastImgOffset = clamp(-delta, 0, maxShift);
+  if (!isLastImgShifted) {
+    // 半分スライド
+    lastImgOffset = maxShift;
     lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
+    isLastImgShifted = true;
+  } else {
+    // 初期位置に戻す
+    lastImgOffset = 0;
+    lastImg.style.transform = `translateX(0px)`;
+    isLastImgShifted = false;
   }
-}
-
-lastImg.addEventListener('mousemove', dragLastImg);
-lastImg.addEventListener('touchmove', dragLastImg);
-
-// ドラッグ終了 → 自動スライド
-function endDragLast() {
-  if (!isDragLast) return;
-  isDragLast = false;
-  lastImg.classList.remove('dragging');
-
-  if (lastImgOffset < maxShift) {
-    const step = () => {
-      lastImgOffset += 8; // スピード調整
-      if (lastImgOffset >= maxShift) lastImgOffset = maxShift;
-      lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
-      if (lastImgOffset < maxShift) animationFrameId = requestAnimationFrame(step);
-    };
-    step();
-  }
-}
-
-lastImg.addEventListener('mouseup', endDragLast);
-lastImg.addEventListener('mouseleave', endDragLast);
-lastImg.addEventListener('touchend', endDragLast);
-
-// 右ドラッグで初期位置復帰
-function slideLastImgToInitial() {
-  const step = () => {
-    lastImgOffset -= 12; // 戻る速度
-    if (lastImgOffset <= 0) lastImgOffset = 0;
-    lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
-    if (lastImgOffset > 0) animationFrameId = requestAnimationFrame(step);
-  };
-  step();
-}
+});
 
 /* =========================
    次章ボタン
