@@ -75,12 +75,12 @@ body { min-height:100vh; }
 #last-page .carousel-inner { display:flex; align-items:center; gap:20px; position:relative; overflow:hidden; }
 .last-img { width:88vw; max-width:540px; border-radius:8px; flex-shrink:0; cursor:grab; transition: transform 0.3s ease-out; }
 .last-img.under { z-index:1; }
-.last-img.top { z-index:2; transform: translateX(0); }
+.last-img.top { z-index:2; transform: translateX(0); } /* 初期中央 */
 
 .next-btn-wrapper {
   position:absolute; bottom:20px; left:50%;
   transform:translateX(-50%);
-  width:120px; pointer-events:none;
+  width:120px; pointer-events:none; /* 初期非操作 */
 }
 
 /* アニメーション */
