@@ -76,11 +76,50 @@ html, body {
 .dots.visible { opacity:1; }
 
 /* 最後ページ */
-#last-page .carousel-inner { display:flex; align-items:center; gap:20px; position:relative; }
-.last-img { width:88vw; max-width:540px; border-radius:8px; flex-shrink:0; }
-.next-btn-wrapper { flex-shrink:0; width:120px; display:flex; justify-content:center; align-items:center; }
-#next-chapter-btn { padding:12px 24px; font-size:18px; background: rgba(255,255,255,0.9); border:none; border-radius:6px; cursor:pointer; }
+#last-page .carousel-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden; /* 横スクロールはJSで制御 */
+  width: 100%;
+}
 
+.last-img {
+  width: 88vw;
+  max-width: 540px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  cursor: grab;
+  position: relative; /* ボタンの上に重なる */
+  transition: transform 0.2s ease; /* ドラッグ中は無効 */
+}
+
+.last-img.dragging {
+  cursor: grabbing;
+  transition: none;
+}
+
+.next-btn-wrapper {
+  position: absolute;
+  right: 20px; /* 画像の右端あたりに配置 */
+  bottom: 20px;
+  width: 120px; /* ボタン幅 */
+  height: 50px; /* ボタン高さ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1; /* 画像の下に隠れている */
+}
+
+#next-chapter-btn {
+  width: 100%;
+  height: 100%;
+  background: url('../image/next-btn.png') no-repeat center/contain;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
 /* アニメーション */
 @keyframes slowFade { 0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);} }
 @keyframes siren { 0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);} }
