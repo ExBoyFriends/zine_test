@@ -34,7 +34,7 @@ window.addEventListener('load', () => {
     dotsContainer.classList.add('visible');
     updateDots();
     isAnimating = false;
-  }, 9280); // サイレン表示時間
+  }, 10280); // サイレン表示時間
 });
 
 /* =========================
