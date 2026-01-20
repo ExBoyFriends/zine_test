@@ -83,7 +83,7 @@ function endDrag() {
     pages.forEach(p => { p.style.opacity = ''; });
     pages[currentPage].classList.remove('active');
     pages[nextPage].classList.add('active');
-    setTimeout(() => { isAnimating = false; }, 3000);
+    setTimeout(() => { isAnimating = false; }, 1400);
     currentPage = nextPage;
   } else {
     pages[currentPage].style.opacity = 1;
