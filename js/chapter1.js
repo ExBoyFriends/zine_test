@@ -72,8 +72,8 @@ function endDrag() {
   isDragging = false;
 
   let nextPage = null;
-  const threshold = pageWidth * 0.3;
-  const velocityThreshold = 0.3;
+  const threshold = pageWidth * 0.25;
+  const velocityThreshold = 0.25;
 
   if ((dragX < -threshold || velocity < -velocityThreshold) && currentPage < pages.length - 1) nextPage = currentPage + 1;
   else if ((dragX > threshold || velocity > velocityThreshold) && currentPage > 0) nextPage = currentPage - 1;
