@@ -1,31 +1,32 @@
-/* 第一章ラスト専用 */
+/* 最後ページ専用 */
+
 #last-page .carousel-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
   position: relative;
-  justify-content: center;
-  overflow: visible;
 }
 
-#last-img {
+.last-img {
   width: 88vw;
   max-width: 540px;
   border-radius: 8px;
-  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.next-btn-wrapper {
+  flex-shrink: 0;
+  width: 120px;          /* ボタン分の幅 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #next-chapter-btn {
-  position: absolute;
-  right: -100px; /* 最初は画面外 */
-  top: 50%;
-  transform: translateY(-50%);
   padding: 12px 24px;
   font-size: 18px;
   background: rgba(255,255,255,0.9);
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: right 0.5s ease;
-}
-
-#last-page.show-btn #next-chapter-btn {
-  right: 20px; /* 左ドラッグで表示 */
 }
