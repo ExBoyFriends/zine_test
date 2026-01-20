@@ -1,19 +1,12 @@
-/* =========================
-   基本リセット・背景
-========================= */
 html, body {
   margin:0; padding:0;
   width:100%; height:100%;
-  overflow:hidden; /* 縦スクロール防止 */
+  overflow:hidden;
   background:#000;
   -webkit-user-select:none; user-select:none;
   -webkit-touch-callout:none;
 }
-
-body {
-  min-height:100svh;   /* Safari/iOS UI変動対策 */
-  overflow:hidden;
-}
+body { min-height:100svh; overflow:hidden; }
 
 /* 背景 */
 .background {
@@ -31,23 +24,19 @@ body {
   animation: siren 1.68s linear infinite;
 }
 
-/* =========================
-   カルーセル
-========================= */
+/* カルーセル */
 .carousel-wrapper {
   position:fixed; top:0; left:0; width:100%; height:100%;
   z-index:1;
   display:flex; justify-content:center; align-items:center;
   overflow:hidden;
 }
-
 .carousel-page {
   position:absolute; inset:0;
   display:flex; justify-content:center; align-items:center;
   gap:10px; pointer-events:none;
   opacity:0; transition: opacity 1.4s ease;
 }
-
 .carousel-page.active { opacity:1; pointer-events:all; }
 .carousel-page.first-load { opacity:0; transition: opacity 7.28s ease; }
 
@@ -59,15 +48,12 @@ body {
 }
 .dragging { cursor:grabbing; }
 
-/* =========================
-   ドット
-========================= */
+/* ドット */
 .dots {
   position:fixed; bottom:calc(40px + env(safe-area-inset-bottom));
   width:100%; text-align:center; z-index:20;
   opacity:0; transition:opacity 0.8s ease;
 }
-
 .dot {
   display:inline-block; width:5px; height:8px;
   margin:0 5px; background: rgba(200,200,200,0.25);
@@ -75,72 +61,37 @@ body {
   transition:opacity 0.5s ease, background 0.3s ease;
   opacity:1;
 }
-
 .dot.active { background: rgba(240,240,240,0.9); box-shadow:0 0 8px rgba(255,255,255,0.6);}
 .left-dot { width:12px; height:12px; clip-path: polygon(100% 0%,0% 50%,100% 100%); }
 .right-dot { width:12px; height:12px; clip-path: polygon(0% 0%,100% 50%,0% 100%); }
 .dots.visible { opacity:1; }
 
-/* =========================
-   最後のページ
-========================= */
+/* 最後ページ */
 #last-page .carousel-inner.single {
-  position: relative;      /* 画像とボタンを重ねる基準 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+  position: relative; width:100%; height:100%; overflow:hidden;
+  display:flex; justify-content:center; align-items:center;
 }
-
-/* 画像とボタンを重ねるラッパー */
 .last-img-stack {
-  position: absolute;      /* wrapper内で絶対配置 */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* 完全中央固定 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position:absolute; top:50%; left:50%;
+  transform: translate(-50%, -50%);
+  display:flex; justify-content:center; align-items:center;
 }
-
-/* 下の固定画像 */
-.last-img.under {
-  z-index: 1;
-}
-
-/* 上のスライド画像 */
+.last-img.under { z-index:1; }
 .last-img.top {
-  z-index: 2;
-  transform: translateX(0); /* 初期中央 */
+  z-index:2;
+  transform: translateX(0);
   cursor: grab;
   transition: transform 0.3s ease-out;
 }
-
-/* ボタンを中央に重ねる */
 .next-btn-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  position:absolute;
+  top:50%; left:50%;
   transform: translate(-50%, -50%);
-  width: 120px;  /* 必要に応じて変更 */
-  height: 40px;  /* 必要に応じて変更 */
-  pointer-events: none; /* 初期は操作不可 */
-  z-index: 3; /* 上に表示 */
+  width:120px; height:40px;
+  pointer-events:none;
+  z-index:3;
 }
 
-/* =========================
-   アニメーション
-========================= */
-@keyframes slowFade {
-  0%   { filter: brightness(1); }
-  50%  { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
-
-@keyframes siren {
-  0%   { filter: brightness(1); }
-  50%  { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
+/* アニメーション */
+@keyframes slowFade {0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);}}
+@keyframes siren {0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);}}
