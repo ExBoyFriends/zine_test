@@ -65,7 +65,7 @@ body {
 }
 
 .dot {
-  display:inline-block; width:5px; height:8px;
+  display:inline-block; width:5px; height:8.09px;
   margin:0 5px; border-radius:0;
   background: rgba(200,200,200,0.25);
   box-shadow: 0 0 4px rgba(255,255,255,0.3);
@@ -74,8 +74,8 @@ body {
 }
 
 .dot.active { background: rgba(240,240,240,0.9); box-shadow:0 0 8px rgba(255,255,255,0.6); }
-.left-dot { width:12px; height:12px; clip-path: polygon(100% 0%,0% 50%,100% 100%); }
-.right-dot { width:12px; height:12px; clip-path: polygon(0% 0%,100% 50%,0% 100%); }
+.left-dot { width:10px; height:8.09px; clip-path: polygon(100% 0%,0% 50%,100% 100%); }
+.right-dot { width:5.88px; height:8.09px; clip-path: polygon(0% 0%,100% 50%,0% 100%); }
 
 .dots.visible { opacity:1; }
 
