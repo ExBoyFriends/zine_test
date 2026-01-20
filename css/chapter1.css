@@ -77,37 +77,38 @@ body { min-height:100svh; overflow:hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* はみ出し防止 */
+  overflow: hidden;
 }
 
+/* 画像スタック */
 .last-img-stack {
-  position: relative; /* 親基準で絶対配置可能に */
+  position: relative;
   width: 88vw;
   max-width: 540px;
-  height: auto;
 }
 
-.last-img.top {
-  position: relative;
+/* 上下共通 */
+.last-img.top,
+.last-img.under {
+  position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); 
   width: 100%;
   height: auto;
+  transform: translate(-50%, -50%);
   display: block;
-  cursor: grab;
-  z-index: 2;
+  -webkit-user-drag: none;
 }
 
-.last-img.under {
-  position: relative;
-  /* top: 50%; */
-  /* left: 50%; */
-  transform: translate(-50%, -50%); 
-  width: 100%;
-  height: auto;
-  display: block;
+/* 上の画像 */
+.last-img.top {
+  z-index: 2;
   cursor: grab;
+  touch-action: none; /* ← 超重要（ドラッグ有効化） */
+}
+
+/* 下の画像 */
+.last-img.under {
   z-index: 1;
 }
 
