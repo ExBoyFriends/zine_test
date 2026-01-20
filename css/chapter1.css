@@ -80,69 +80,59 @@ body {
 .dots.visible { opacity:1; }
 
 //* 最後ページ */
+/* 最後ページの画像スタック */
 .last-img-stack {
   position: relative;
   width: 88vw;
   max-width: 540px;
-  aspect-ratio: 3 / 4;   /* 画像比率に合わせて調整していい */
+  aspect-ratio: 3 / 4; /* 必要なら調整 */
 }
 
+/* 共通の画像 */
 .last-img {
   width: 100%;
   border-radius: 8px;
-  flex-shrink: 0;
   display: block;
 }
 
+/* 下の固定画像 */
 .last-img.under {
-  pointer-events: none;
   position: relative;
   z-index: 1;
+  pointer-events: none;
 }
 
+/* 上のスライド画像 */
 .last-img.top {
-  pointer-events: auto;
   position: absolute;
-  top: 0;
-  left: 0;
-  transition: transform 0.3s ease-out;
-  cursor: grab;
+  inset: 0;
   z-index: 2;
+  cursor: grab;
+  transition: transform 0.3s ease-out;
+  pointer-events: auto;
 }
 
-#last-page .carousel-inner {
-  display:flex; 
-  align-items:center; 
-  gap:20px; 
-  position:relative;
-  overflow: hidden; /* 横スライドを可能に */
-}
-
-.last-img {
-  width:88vw; max-width:540px;
-  border-radius:8px; flex-shrink:0;
-  cursor:grab;
-  transition: transform 0.2s ease-out; /* 自動スライド時のアニメーション */
-}
-
+/* ボタン */
 .next-btn-wrapper {
-  position:absolute; 
-  bottom:20px; 
-  left:50%;
+  position: absolute;
+  bottom: -56px;   /* 画像の“下”に出したいならマイナス */
+  left: 50%;
   transform: translateX(-50%);
-  width:120px; 
-  display:flex; 
-  justify-content:center; 
-  align-items:center;
-  pointer-events:none; /* 初期は操作不可 */
+  width: 120px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.3s ease;
   z-index: 3;
 }
 
 .next-btn-wrapper.show {
-  pointer-events: auto;
   opacity: 1;
+  pointer-events: auto;
 }
 
 /* アニメーション */
