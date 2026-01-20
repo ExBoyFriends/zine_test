@@ -7,6 +7,7 @@ const dotsContainer = document.querySelector('.dots');
 const loader = document.getElementById('loader');
 const wrapper = document.querySelector('.carousel-wrapper');
 const lastPageInner = document.querySelector('#last-page .carousel-inner');
+const lastImg = document.querySelector('.last-img');
 const nextBtn = document.getElementById('next-chapter-btn');
 
 let currentPage = 0;
@@ -104,15 +105,12 @@ function updateDots() {
     dot.classList.toggle('active', i === currentPage + 1); // ハイライトを1ずらす
   });
 
-  // 左端◀︎表示制御
   dots[0].style.opacity = (currentPage === 0) ? 0 : 1;
-
-  // 右端▶︎表示制御（最後ページで非表示）
   dots[dots.length - 1].style.opacity = (currentPage === pages.length - 1) ? 0 : 1;
 }
 
 /* =========================
-   イベントリスナー
+   カルーセル用イベント
 ========================= */
 wrapper.addEventListener('mousedown', e => startDrag(e.pageX));
 wrapper.addEventListener('touchstart', e => startDrag(e.touches[0].pageX));
@@ -122,7 +120,9 @@ wrapper.addEventListener('mouseup', endDrag);
 wrapper.addEventListener('mouseleave', endDrag);
 wrapper.addEventListener('touchend', endDrag);
 
-/* ページ内画像ドラッグ */
+/* =========================
+   ページ内画像ドラッグ（通常ページ）
+========================= */
 document.querySelectorAll('.carousel-inner').forEach(inner => {
   let isDrag = false, start, scrollLeft;
   inner.addEventListener('mousedown', e => { isDrag = true; inner.classList.add('dragging'); start = e.pageX - inner.offsetLeft; scrollLeft = inner.scrollLeft; });
@@ -134,20 +134,56 @@ document.querySelectorAll('.carousel-inner').forEach(inner => {
   inner.addEventListener('touchmove', e => { if (!isDrag) return; inner.scrollLeft = scrollLeft + (start - (e.touches[0].pageX - inner.offsetLeft)); });
 });
 
-/* 右クリック・長押し無効 */
+/* =========================
+   右クリック・長押し無効
+========================= */
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 document.addEventListener('gesturestart', e => e.preventDefault());
 
-/* 最後ページ横スクロール */
-let isDragLast = false, startXLast = 0, scrollLeftLast = 0;
-lastPageInner.addEventListener('mousedown', e => { isDragLast = true; startXLast = e.pageX - lastPageInner.offsetLeft; scrollLeftLast = lastPageInner.scrollLeft; });
-lastPageInner.addEventListener('touchstart', e => { isDragLast = true; startXLast = e.touches[0].pageX - lastPageInner.offsetLeft; scrollLeftLast = lastPageInner.scrollLeft; });
-lastPageInner.addEventListener('mousemove', e => { if (!isDragLast) return; e.preventDefault(); const x = e.pageX - lastPageInner.offsetLeft; lastPageInner.scrollLeft = scrollLeftLast + (startXLast - x); });
-lastPageInner.addEventListener('touchmove', e => { if (!isDragLast) return; const x = e.touches[0].pageX - lastPageInner.offsetLeft; lastPageInner.scrollLeft = scrollLeftLast + (startXLast - x); });
-lastPageInner.addEventListener('mouseup', () => isDragLast = false);
-lastPageInner.addEventListener('mouseleave', () => isDragLast = false);
-lastPageInner.addEventListener('touchend', () => isDragLast = false);
+/* =========================
+   最後ページ画像ドラッグ（ボタン露出仕様）
+========================= */
+let isDragLast = false;
+let startXLast = 0;
+let currentXLast = 0;
+const maxShift = 140; // 画像を左にスライドできる最大量
 
-/* 次章ボタン */
+function clamp(val, min, max) {
+  return Math.min(Math.max(val, min), max);
+}
+
+lastImg.addEventListener('mousedown', e => {
+  isDragLast = true;
+  startXLast = e.pageX - currentXLast;
+  lastImg.classList.add('dragging');
+});
+lastImg.addEventListener('touchstart', e => {
+  isDragLast = true;
+  startXLast = e.touches[0].pageX - currentXLast;
+  lastImg.classList.add('dragging');
+});
+
+function dragLastImg(x) {
+  if (!isDragLast) return;
+  let delta = x - startXLast;
+  currentXLast = clamp(delta, 0, maxShift);
+  lastImg.style.transform = `translateX(${-currentXLast}px)`;
+}
+
+lastImg.addEventListener('mousemove', e => dragLastImg(e.pageX));
+lastImg.addEventListener('touchmove', e => dragLastImg(e.touches[0].pageX));
+
+function endDragLast() {
+  isDragLast = false;
+  lastImg.classList.remove('dragging');
+}
+
+lastImg.addEventListener('mouseup', endDragLast);
+lastImg.addEventListener('mouseleave', endDragLast);
+lastImg.addEventListener('touchend', endDragLast);
+
+/* =========================
+   次章ボタン
+========================= */
 nextBtn.addEventListener('click', () => { window.location.href = 'chapter2.html'; });
