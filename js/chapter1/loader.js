@@ -5,14 +5,15 @@ export function initLoader(pages, loader, dotsContainer){
 
     loader.style.display='block';
     loader.style.opacity='1';
+    loader.style.animationPlayState='running';
 
     setTimeout(()=>{
       loader.style.transition='opacity 0.5s ease';
       loader.style.opacity='0';
-
-      setTimeout(()=>loader.style.display='none', 500);
+      loader.style.animationPlayState='paused';
+      setTimeout(()=>loader.style.display='none',500);
 
       dotsContainer.classList.add('visible');
-    }, 7280);
+    },7280);
   });
 }
