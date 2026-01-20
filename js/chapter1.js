@@ -1,190 +1,71 @@
-/* =========================
-   初期設定
-========================= */
 const pages = document.querySelectorAll('.carousel-page');
 const dots = document.querySelectorAll('.dot');
-const dotsContainer = document.querySelector('.dots');
 const loader = document.getElementById('loader');
 const wrapper = document.querySelector('.carousel-wrapper');
-const lastImg = document.querySelector('.last-img.top');
-const nextBtn = document.getElementById('next-chapter-btn');
-
-let currentPage = 0;
-let isDragging = false;
-let dragX = 0, startX = 0, lastX = 0, lastTime = 0, velocity = 0;
-let isAnimating = false;
-const pageWidth = wrapper.clientWidth;
-
-/* =========================
-   初回ロード：サイレン＋ドット遅延表示
-========================= */
-window.addEventListener('load', () => {
-  const firstPage = pages[0];
-  isAnimating = true;
-
-  firstPage.classList.add('first-load', 'active');
-  loader.style.display = 'block';
-
-  setTimeout(() => {
-    loader.style.display = 'none';
-    firstPage.classList.remove('first-load');
-    firstPage.style.transition = 'opacity 5.2s ease';
-
-    dotsContainer.classList.add('visible');
-    updateDots();
-    isAnimating = false;
-  }, 7280);
-});
-
-/* =========================
-   通常カルーセルドラッグ操作
-========================= */
-function startDrag(x) {
-  if (isAnimating) return;
-  isDragging = true;
-  startX = x;
-  lastX = x;
-  lastTime = Date.now();
-}
-
-function drag(x) {
-  if (!isDragging || isAnimating) return;
-  dragX = x - startX;
-  const now = Date.now();
-  velocity = (x - lastX) / (now - lastTime);
-  lastX = x; lastTime = now;
-
-  // 最後ページで画像半分移動中なら通常カルーセルは無効
-  if (currentPage === pages.length - 1 && isLastImgShifted && dragX > 0) return;
-
-  const ease = 0.4;
-  if (dragX < 0 && currentPage < pages.length - 1) {
-    pages[currentPage + 1].style.opacity = Math.min(Math.abs(dragX) / pageWidth, 1) * ease;
-    pages[currentPage].style.opacity = 1 - Math.min(Math.abs(dragX) / pageWidth, 1) * ease;
-  } else if (dragX > 0 && currentPage > 0) {
-    pages[currentPage - 1].style.opacity = Math.min(Math.abs(dragX) / pageWidth, 1) * ease;
-    pages[currentPage].style.opacity = 1 - Math.min(Math.abs(dragX) / pageWidth, 1) * ease;
-  }
-}
-
-function endDrag() {
-  if (!isDragging || isAnimating) return;
-  isDragging = false;
-
-  let nextPage = null;
-  const threshold = pageWidth * 0.25;
-  const velocityThreshold = 0.25;
-
-  if ((dragX < -threshold || velocity < -velocityThreshold) && currentPage < pages.length - 1) nextPage = currentPage + 1;
-  else if ((dragX > threshold || velocity > velocityThreshold) && currentPage > 0) nextPage = currentPage - 1;
-
-  if (nextPage !== null) {
-    isAnimating = true;
-    pages.forEach(p => { p.style.opacity = ''; });
-    pages[currentPage].classList.remove('active');
-    pages[nextPage].classList.add('active');
-    setTimeout(() => { isAnimating = false; }, 1400);
-    currentPage = nextPage;
-  } else {
-    pages[currentPage].style.opacity = 1;
-    if (dragX < 0 && currentPage < pages.length - 1) pages[currentPage + 1].style.opacity = 0;
-    if (dragX > 0 && currentPage > 0) pages[currentPage - 1].style.opacity = 0;
-  }
-
-  dragX = 0;
-  velocity = 0;
-  updateDots();
-}
-
-/* =========================
-   ドット更新
-========================= */
-function updateDots() {
-  dots.forEach((dot, i) => {
-    if (i === 0 || i === dots.length - 1) return; 
-    dot.classList.toggle('active', i === currentPage + 1);
-  });
-  dots[0].style.opacity = (currentPage === 0) ? 0 : 1;
-  dots[dots.length - 1].style.opacity = (currentPage === pages.length - 1) ? 0 : 1;
-}
-
-/* =========================
-   カルーセルイベント
-========================= */
-wrapper.addEventListener('mousedown', e => startDrag(e.pageX));
-wrapper.addEventListener('touchstart', e => startDrag(e.touches[0].pageX));
-wrapper.addEventListener('mousemove', e => drag(e.pageX));
-wrapper.addEventListener('touchmove', e => drag(e.touches[0].pageX));
-wrapper.addEventListener('mouseup', endDrag);
-wrapper.addEventListener('mouseleave', endDrag);
-wrapper.addEventListener('touchend', endDrag);
-
-/* =========================
-   ページ内画像ドラッグ（通常ページ）
-========================= */
-document.querySelectorAll('.carousel-inner').forEach(inner => {
-  let isDrag = false, start, scrollLeft;
-  inner.addEventListener('mousedown', e => { isDrag = true; inner.classList.add('dragging'); start = e.pageX - inner.offsetLeft; scrollLeft = inner.scrollLeft; });
-  inner.addEventListener('mouseleave', () => { isDrag = false; inner.classList.remove('dragging'); });
-  inner.addEventListener('mouseup', () => { isDrag = false; inner.classList.remove('dragging'); });
-  inner.addEventListener('mousemove', e => { if (!isDrag) return; e.preventDefault(); inner.scrollLeft = scrollLeft + (start - (e.pageX - inner.offsetLeft)); });
-  inner.addEventListener('touchstart', e => { isDrag = true; start = e.touches[0].pageX - inner.offsetLeft; scrollLeft = inner.scrollLeft; });
-  inner.addEventListener('touchend', () => { isDrag = false; });
-  inner.addEventListener('touchmove', e => { if (!isDrag) return; inner.scrollLeft = scrollLeft + (start - (e.touches[0].pageX - inner.offsetLeft)); });
-});
-
-/* =========================
-   右クリック・長押し無効
-========================= */
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-document.addEventListener('gesturestart', e => e.preventDefault());
-
-/* =========================
-   最後ページタップ操作（半分スライド／初期位置復帰）
-========================= */
-let maxShift = 0;
-let lastImgOffset = 0;
-let isLastImgShifted = false;
 
 const lastImg = document.querySelector('.last-img.top');
 const nextBtnWrapper = document.querySelector('.next-btn-wrapper');
-const nextBtn = document.getElementById('next-chapter-btn');
 
-if (lastImg && nextBtnWrapper) {
+let currentPage = 0;
+let isAnimating = false;
 
-  // 画像サイズが確定してから半分幅を計算
-  if (lastImg.complete) {
+/* 初期表示 */
+window.addEventListener('load', () => {
+  pages[0].classList.add('active');
+  setTimeout(() => {
+    loader.style.display = 'none';
+    updateDots();
+  }, 1500);
+});
+
+/* ドット */
+function updateDots() {
+  dots.forEach((d,i)=>{
+    d.classList.toggle('active', i === currentPage+1);
+  });
+}
+
+/* ページ切り替え */
+function goPage(index) {
+  if (index < 0 || index >= pages.length) return;
+  pages[currentPage].classList.remove('active');
+  pages[index].classList.add('active');
+  currentPage = index;
+  updateDots();
+}
+
+/* 簡易左右タップ */
+wrapper.addEventListener('click', e => {
+  if (currentPage === pages.length - 1) return;
+  const w = window.innerWidth;
+  if (e.clientX < w/2) goPage(currentPage-1);
+  else goPage(currentPage+1);
+});
+
+/* ---------- LAST IMAGE TAP ---------- */
+
+let isShifted = false;
+let maxShift = 0;
+
+if (lastImg.complete) {
+  maxShift = lastImg.clientWidth / 2;
+} else {
+  lastImg.onload = () => {
     maxShift = lastImg.clientWidth / 2;
+  };
+}
+
+lastImg.addEventListener('click', e => {
+  e.stopPropagation();
+  if (currentPage !== pages.length - 1) return;
+
+  if (!isShifted) {
+    lastImg.style.transform = `translateX(${-maxShift}px)`;
+    nextBtnWrapper.classList.add('show');
+    isShifted = true;
   } else {
-    lastImg.addEventListener('load', () => {
-      maxShift = lastImg.clientWidth / 2;
-    });
+    lastImg.style.transform = `translateX(0px)`;
+    nextBtnWrapper.classList.remove('show');
+    isShifted = false;
   }
-
-  lastImg.addEventListener('click', () => {
-    if (currentPage !== pages.length - 1) return;
-
-    lastImg.style.transition = 'transform 0.3s ease-out';
-
-    if (!isLastImgShifted) {
-      lastImgOffset = maxShift;
-      lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
-      isLastImgShifted = true;
-      nextBtnWrapper.classList.add('show');
-    } else {
-      lastImgOffset = 0;
-      lastImg.style.transform = `translateX(0px)`;
-      isLastImgShifted = false;
-      nextBtnWrapper.classList.remove('show');
-    }
-  });
-}
-
-// ボタン側
-if (nextBtn) {
-  nextBtn.addEventListener('click', (e) => {
-    e.stopPropagation();  // 画像クリックに伝播させない
-    // window.location.href = 'chapter2.html'; ← aタグなら不要
-  });
-}
+});
