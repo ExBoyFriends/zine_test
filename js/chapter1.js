@@ -85,58 +85,11 @@ function endDrag() {
     pages[nextPage].classList.add('active');
     setTimeout(() => { isAnimating = false; }, 1400);
     currentPage = nextPage;
-} else {
-  const pull = Math.abs(dragX);
-  const nearEdge = pull > threshold * 0.9; // ほぼ境界まで来てたか
-
-  // 隣のページ取得
-  let neighbor = null;
-  if (dragX < 0 && currentPage < pages.length - 1) neighbor = pages[currentPage + 1];
-  if (dragX > 0 && currentPage > 0) neighbor = pages[currentPage - 1];
-
-  if (nearEdge) {
-    // 端で一瞬止まって、ほんの少し戻る
-    isAnimating = true;
-
-    const holdTime = 60;       // 端で止まる時間(ms)
-    const bounceBack = 0.04;   // 戻る量（4%）
-    const duration = 140;     // 戻る速さ
-
-    setTimeout(() => {
-      const start = performance.now();
-
-      function softReturn(t) {
-        const progress = Math.min((t - start) / duration, 1);
-        const ease = 1 - Math.pow(1 - progress, 2);
-
-        // ほんの少し戻す
-        pages[currentPage].style.opacity = 1 - bounceBack * ease;
-        if (neighbor) {
-          neighbor.style.opacity = bounceBack * (1 - ease);
-        }
-
-        if (progress < 1) {
-          requestAnimationFrame(softReturn);
-        } else {
-          // 最終位置で固定
-          pages[currentPage].style.opacity = 1;
-          if (neighbor) neighbor.style.opacity = 0;
-          isAnimating = false;
-        }
-      }
-
-      requestAnimationFrame(softReturn);
-    }, holdTime);
-
   } else {
-    // 普通に戻る（今まで通り）
     pages[currentPage].style.opacity = 1;
-    if (dragX < 0 && currentPage < pages.length - 1)
-      pages[currentPage + 1].style.opacity = 0;
-    if (dragX > 0 && currentPage > 0)
-      pages[currentPage - 1].style.opacity = 0;
+    if (dragX < 0 && currentPage < pages.length - 1) pages[currentPage + 1].style.opacity = 0;
+    if (dragX > 0 && currentPage > 0) pages[currentPage - 1].style.opacity = 0;
   }
-}
 
   dragX = 0;
   velocity = 0;
@@ -216,3 +169,6 @@ lastImg.addEventListener('click', () => {
    次章ボタン
 ========================= */
 nextBtn.addEventListener('click', () => { window.location.href = 'chapter2.html'; });
+
+
+
