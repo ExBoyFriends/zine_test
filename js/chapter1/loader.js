@@ -24,6 +24,6 @@ export function initLoader(pages, loader, dotsContainer) {
         firstPage.classList.remove('first-load'); // 7.28秒フェード開始
       });
 
-    }, 2000); // loader 表示時間
+    }, 4600); // loader 表示時間
   });
 }
