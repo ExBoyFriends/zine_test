@@ -147,31 +147,44 @@ let maxShift = 0;
 let lastImgOffset = 0;
 let isLastImgShifted = false;
 
+const lastImg = document.querySelector('.last-img.top');
 const nextBtnWrapper = document.querySelector('.next-btn-wrapper');
+const nextBtn = document.getElementById('next-chapter-btn');
 
-lastImg.addEventListener('load', () => {
-  maxShift = lastImg.clientWidth / 2;
-});
+if (lastImg && nextBtnWrapper) {
 
-lastImg.addEventListener('click', () => {
-  if (currentPage !== pages.length - 1) return;
-
-  lastImg.style.transition = 'transform 0.3s ease-out';
-
-  if (!isLastImgShifted) {
-    lastImgOffset = maxShift;
-    lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
-    isLastImgShifted = true;
-    nextBtnWrapper.classList.add('show');
+  // 画像サイズが確定してから半分幅を計算
+  if (lastImg.complete) {
+    maxShift = lastImg.clientWidth / 2;
   } else {
-    lastImgOffset = 0;
-    lastImg.style.transform = `translateX(0px)`;
-    isLastImgShifted = false;
-    nextBtnWrapper.classList.remove('show');
+    lastImg.addEventListener('load', () => {
+      maxShift = lastImg.clientWidth / 2;
+    });
   }
-});
 
-// ボタンが画像のクリックを貫通しないようにする
-nextBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-});
+  lastImg.addEventListener('click', () => {
+    if (currentPage !== pages.length - 1) return;
+
+    lastImg.style.transition = 'transform 0.3s ease-out';
+
+    if (!isLastImgShifted) {
+      lastImgOffset = maxShift;
+      lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
+      isLastImgShifted = true;
+      nextBtnWrapper.classList.add('show');
+    } else {
+      lastImgOffset = 0;
+      lastImg.style.transform = `translateX(0px)`;
+      isLastImgShifted = false;
+      nextBtnWrapper.classList.remove('show');
+    }
+  });
+}
+
+// ボタン側
+if (nextBtn) {
+  nextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();  // 画像クリックに伝播させない
+    // window.location.href = 'chapter2.html'; ← aタグなら不要
+  });
+}
