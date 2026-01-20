@@ -99,17 +99,17 @@ body {
 .last-img.under {
   position: relative;
   z-index: 1;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 /* 上のスライド画像 */
 .last-img.top {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   z-index: 2;
   cursor: grab;
   transition: transform 0.3s ease-out;
-  pointer-events: auto;
 }
 
 /* ボタン */
