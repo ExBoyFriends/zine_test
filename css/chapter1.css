@@ -1,139 +1,86 @@
 html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
+  margin: 0; padding: 0;
+  width: 100%; height: 100%;
   overflow: hidden;
-  background: #111;
-  font-family: sans-serif;
+  background: #000;
+  user-select: none;
+  touch-action: pan-y;
 }
 
-/* 背景 */
+body { min-height: 100svh; }
+
 .background {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg,#222,#444);
-  z-index: 0;
+  position: fixed; inset: -40px;
+  background: url('../image/background.jpg') center/cover no-repeat;
+  z-index:0;
+  animation: slowFade 20s ease-in-out infinite alternate;
 }
 
-/* ローダー */
 #loader {
-  position: fixed;
-  top:0; left:0;
-  width:100%;
-  height:100%;
-  background:#111;
-  color:#fff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:1.5rem;
-  z-index:10;
-  transition: opacity 1s ease;
+  position: fixed; inset: -40px;
+  background: url('../image/background.jpg') center/cover no-repeat;
+  z-index: 10;
+  animation: siren 1.68s linear infinite;
 }
 
 /* カルーセル */
 .carousel-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  touch-action: pan-y;
+  position: fixed; inset:0;
+  display:flex; justify-content:center; align-items:center;
+  overflow:hidden; z-index:1;
 }
 
-/* ページ */
 .carousel-page {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  z-index: 1;
+  position:absolute; inset:0;
+  display:flex; justify-content:center; align-items:center;
+  gap:10px; pointer-events:none;
+  opacity:0; transition: opacity 1.4s ease;
 }
 
-.carousel-page.active {
-  opacity: 1;
-  z-index: 2;
+.carousel-page.active { opacity:1; pointer-events:all; }
+
+.carousel-inner { display:flex; gap:10px; cursor:grab; overflow:hidden; justify-content:center; }
+.carousel-inner.single { justify-content:center; }
+
+.carousel-inner img {
+  width:88vw; max-width:540px;
+  border-radius:8px; flex-shrink:0;
+  -webkit-user-drag:none;
 }
 
-/* 画像 */
-.carousel-page img {
-  max-width: 90%;
-  max-height: 90%;
-  object-fit: contain;
-  user-select: none;
-  pointer-events: none;
-}
-
-/* 最後ページ */
-.last-img-stack {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.last-img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transition: transform 0.5s ease;
-  cursor: pointer;
-}
-
-.last-img.under {
-  z-index: 1;
-}
-
-.last-img.top {
-  z-index: 2;
-}
-
-.next-btn-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-}
-
-#next-chapter-btn {
-  display: block;
-  width: 120px;
-  height: 50px;
-  background: #fff;
-  text-align: center;
-  line-height: 50px;
-  color: #000;
-  text-decoration: none;
-  border-radius: 5px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
+.dragging { cursor:grabbing; }
 
 /* ドット */
 .dots {
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-  z-index: 5;
+  position: fixed; bottom: calc(40px + env(safe-area-inset-bottom));
+  width:100%; text-align:center; z-index:20;
+  opacity:0; transition: opacity 0.8s ease;
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
-  background: #888;
-  border-radius: 50%;
-  transition: background 0.3s;
+  display:inline-block; width:5px; height:8px;
+  margin:0 5px; background: rgba(200,200,200,0.25);
+  box-shadow:0 0 4px rgba(255,255,255,0.3);
+  transition:opacity 0.5s ease, background 0.3s ease;
+  opacity:1;
 }
 
-.dot.active {
-  background: #fff;
+.dot.active { background: rgba(240,240,240,0.9); box-shadow:0 0 8px rgba(255,255,255,0.6);}
+.left-dot { width:12px; height:12px; clip-path: polygon(100% 0%,0% 50%,100% 100%); }
+.right-dot { width:12px; height:12px; clip-path: polygon(0% 0%,100% 50%,0% 100%); }
+.dots.visible { opacity:1; }
+
+/* 最後ページ */
+#last-page .carousel-inner { display:flex; align-items:center; gap:20px; position:relative; overflow:hidden; }
+.last-img { width:88vw; max-width:540px; border-radius:8px; flex-shrink:0; cursor:grab; transition: transform 0.3s ease-out; }
+.last-img.under { z-index:1; }
+.last-img.top { z-index:2; transform: translateX(0); } /* 初期中央 */
+
+.next-btn-wrapper {
+  position:absolute; bottom:20px; left:50%;
+  transform:translateX(-50%);
+  width:120px; pointer-events:none; /* 初期は非操作 */
 }
+
+@keyframes slowFade {0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);}}
+@keyframes siren {0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);}}
