@@ -74,8 +74,8 @@ body {
 }
 
 .dot.active { background: rgba(240,240,240,0.9); box-shadow:0 0 8px rgba(255,255,255,0.6); }
-.left-dot { width:10px; height:8.09px; clip-path: polygon(100% 0%,0% 50%,100% 100%); }
-.right-dot { width:5.88px; height:8.09px; clip-path: polygon(0% 0%,100% 50%,0% 100%); }
+.left-dot { width:9.51px; height:8.09px; clip-path: polygon(100% 0%,0% 50%,100% 100%); }
+.right-dot { width:9.51px; height:8.09px; clip-path: polygon(0% 0%,100% 50%,0% 100%); }
 
 .dots.visible { opacity:1; }
 
