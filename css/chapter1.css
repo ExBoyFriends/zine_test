@@ -1,16 +1,20 @@
+/* =========================
+   基本リセット・背景
+========================= */
 html, body {
   margin:0; padding:0;
-  width:100%; height:100svh;
+  width:100%; height:100%;
   overflow:hidden;
   background:#000;
   -webkit-user-select:none; user-select:none;
   -webkit-touch-callout:none;
 }
-body { min-height:100svh; }
+
+body { min-height:100vh; }
 
 /* 背景 */
 .background {
-  position:fixed; top:0; left:0; width:100%; height:100svh;
+  position:fixed; top:0; left:0; width:100%; height:100%;
   background:url('../image/background.jpg') center/cover no-repeat;
   z-index:0;
   animation: slowFade 20s ease-in-out infinite alternate;
@@ -18,21 +22,20 @@ body { min-height:100svh; }
 
 /* ローダー */
 #loader {
-  position:fixed; top:0; left:0; width:100%; height:100svh;
+  position:fixed; top:0; left:0; width:100%; height:100%;
   background:url('../image/background.jpg') center/cover no-repeat;
-  z-index:20;
+  z-index:10;
   animation: siren 1.68s linear infinite;
-  pointer-events:all;
-  opacity:1;
 }
 
-/* カルーセル */
+/* =========================
+   カルーセル
+========================= */
 .carousel-wrapper {
-  position:fixed; top:0; left:0; width:100%; height:100svh;
+  position:fixed; top:0; left:0; width:100%; height:100%;
   z-index:1;
   display:flex; justify-content:center; align-items:center;
   overflow:hidden;
-  transform: translateY(-env(safe-area-inset-bottom)/2);
 }
 
 .carousel-page {
@@ -41,42 +44,93 @@ body { min-height:100svh; }
   gap:10px; pointer-events:none;
   opacity:0; transition: opacity 1.4s ease;
 }
+
 .carousel-page.active { opacity:1; pointer-events:all; }
-.carousel-page.first-load { opacity:0; transition: opacity 5.28s ease; }
+.carousel-page.first-load { opacity:0; transition: opacity 7.28s ease; }
 
 .carousel-inner { display:flex; gap:10px; cursor:grab; overflow:hidden; justify-content:center; }
 .carousel-inner.single { justify-content:center; }
-.carousel-inner img { width:88vw; max-width:540px; border-radius:8px; flex-shrink:0; -webkit-user-drag:none; }
+.carousel-inner img {
+  width:88vw; max-width:540px; border-radius:8px; flex-shrink:0;
+  -webkit-user-drag:none;
+}
 .dragging { cursor:grabbing; }
 
-/* ドット */
+/* =========================
+   ドット
+========================= */
 .dots {
   position:fixed; bottom:calc(40px + env(safe-area-inset-bottom));
   width:100%; text-align:center; z-index:20;
   opacity:0; transition:opacity 0.8s ease;
 }
+
 .dot {
-  display:inline-block; width:5px; height:8px; margin:0 5px;
-  background: rgba(200,200,200,0.25); box-shadow:0 0 4px rgba(255,255,255,0.3);
+  display:inline-block; width:5px; height:8px;
+  margin:0 5px; background: rgba(200,200,200,0.25);
+  box-shadow:0 0 4px rgba(255,255,255,0.3);
   transition:opacity 0.5s ease, background 0.3s ease;
   opacity:1;
 }
-.dot.active { background: rgba(240,240,240,0.9); box-shadow:0 0 8px rgba(255,255,255,0.6); }
+
+.dot.active { background: rgba(240,240,240,0.9); box-shadow:0 0 8px rgba(255,255,255,0.6);}
 .left-dot { width:12px; height:12px; clip-path: polygon(100% 0%,0% 50%,100% 100%); }
 .right-dot { width:12px; height:12px; clip-path: polygon(0% 0%,100% 50%,0% 100%); }
 .dots.visible { opacity:1; }
 
-/* 最後ページ */
-#last-page .carousel-inner { display:flex; align-items:center; gap:20px; position:relative; overflow:hidden; }
-.last-img { width:88vw; max-width:540px; border-radius:8px; flex-shrink:0; cursor:grab; transition: transform 0.3s ease-out; }
-.last-img.under { z-index:1; }
-.last-img.top { z-index:2; transform: translateX(0); }
-.next-btn-wrapper {
-  position:absolute; bottom:20px; left:50%;
-  transform:translateX(-50%);
-  width:120px; pointer-events:none;
+/* =========================
+   最後のページ
+========================= */
+#last-page .carousel-inner.single {
+  justify-content: center;
+  align-items: center;
+  position: relative; /* 画像とボタンを重ねる */
 }
 
-/* アニメーション */
-@keyframes slowFade {0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);}}
-@keyframes siren {0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);}}
+/* 画像とボタンを重ねるラッパー */
+.last-img-stack {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 下の固定画像 */
+.last-img.under {
+  z-index: 1;
+}
+
+/* 上のスライド画像 */
+.last-img.top {
+  z-index: 2;
+  transform: translateX(0); /* 初期中央 */
+  cursor: grab;
+  transition: transform 0.3s ease-out;
+}
+
+/* ボタンを中央に重ねる */
+.next-btn-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;  /* 必要に応じて変更 */
+  height: 40px;  /* 必要に応じて変更 */
+  pointer-events: none; /* 初期は操作不可 */
+  z-index: 3; /* 上に表示 */
+}
+
+/* =========================
+   アニメーション
+========================= */
+@keyframes slowFade {
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes siren {
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
+}
