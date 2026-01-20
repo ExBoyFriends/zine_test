@@ -11,4 +11,8 @@ const dotsContainer = document.querySelector('.dots');
 
 initLoader(pages, loader, dotsContainer);
 const carousel = initCarousel(wrapper, pages);
-initLastPage(lastImg, nextBtn, carousel.getCurrentPage, pages.length);
+initLastPage(
+  lastImg,
+  () => carousel.getCurrentPage(),
+  pages.length
+);
