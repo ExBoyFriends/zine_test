@@ -1,31 +1,27 @@
-export function initLastPage(lastImg, nextBtn, getCurrentPage, totalPages) {
+export function initLastPage(lastImg, getCurrentPage, totalPages) {
   const maxShift = lastImg.clientWidth / 2;
   let isShifted = false;
 
-  // 初期状態で中央に表示
   lastImg.style.transform = 'translateX(0)';
   lastImg.style.display = 'block';
-  nextBtn.style.pointerEvents = 'none';
 
+  // 上の画像でクリックやドラッグが下に届かないようにする
+  lastImg.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); });
+  lastImg.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); });
+  lastImg.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); }, { passive:false });
+
+  // 上の画像をクリックしたら左に半分スライド
   lastImg.addEventListener('click', () => {
     if (getCurrentPage() !== totalPages - 1) return;
 
     lastImg.style.transition = 'transform 0.3s ease-out';
 
     if (!isShifted) {
-      // 左に半分スライド
-      lastImg.style.transform = `translateX(${-maxShift}px)`;
+      lastImg.style.transform = `translateX(${-maxShift}px)`; // 左に半分
       isShifted = true;
-      nextBtn.style.pointerEvents = 'all';
     } else {
-      // 中央に戻す
-      lastImg.style.transform = 'translateX(0)';
+      lastImg.style.transform = 'translateX(0)'; // 中央に戻す
       isShifted = false;
-      nextBtn.style.pointerEvents = 'none';
     }
-  });
-
-  nextBtn.addEventListener('click', () => {
-    window.location.href = 'chapter2.html';
   });
 }
