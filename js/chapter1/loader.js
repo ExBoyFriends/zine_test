@@ -1,18 +1,13 @@
-// loader.js
-export function initLoader(pages, loader) {
-  window.addEventListener("load", () => {
-    const firstPage = pages[0];
-    loader.style.display = "block";
-    firstPage.classList.add("active");
+export function initLoader(pages, loader){
+  window.addEventListener("load", ()=>{
+    pages[0].classList.add("active");
+    loader.style.opacity = 1;
 
-    setTimeout(() => {
+    setTimeout(()=>{
       loader.style.opacity = 0;
       loader.style.pointerEvents = "none";
-      firstPage.style.transition = "opacity 5s ease";
     }, 2000);
 
-    setTimeout(() => {
-      loader.remove();
-    }, 3500);
+    setTimeout(()=>loader.remove(), 3500);
   });
 }
