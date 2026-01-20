@@ -77,38 +77,28 @@ body { min-height:100svh; overflow:hidden;
   overflow: hidden;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; /* ← 親要素内で縦中央 */
 }
 
 .last-img-stack {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative; /* absolute 内部の基準を親にする */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* 縦中央 */
   width: 88vw;
   max-width: 540px;
-  text-align: center;
+  height: 100%; /* 高さを親に合わせる */
 }
 
-.last-img.under {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: auto;
-  z-index: 1;
-}
-
+.last-img.under,
 .last-img.top {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 50%; /* 親要素中央 */
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 100%;
   height: auto;
-  z-index: 2;
-  cursor: grab;
-  transition: transform 0.3s ease-out;
-  display: block; /* 念のため */
+  display: block;
 }
 
 .next-btn-wrapper {
@@ -116,9 +106,7 @@ body { min-height:100svh; overflow:hidden;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 120px;
-  height: 40px;
-  pointer-events: none; /* 初期は無効 */
+  pointer-events: none;
   z-index: 3;
 }
 
