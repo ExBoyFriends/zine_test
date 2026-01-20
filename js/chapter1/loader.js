@@ -23,6 +23,6 @@ export function initLoader(pages, loader, dotsContainer){
       // Safari 等で transition を確実に発火させる
       firstPage.getBoundingClientRect(); // 強制再描画
       firstPage.classList.remove('first-load'); // 7.28 秒の CSS フェード開始
-    }, 2000);
+    }, 5600);
   });
 }
