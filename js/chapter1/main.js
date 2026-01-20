@@ -1,21 +1,18 @@
-// モジュール構成を想定
-import { initLoader } from "./loader.js";
-import { initCarousel } from "./carousel.js";
-import { initLastPage } from "./lastPage.js";
+import { initLoader } from './loader.js';
+import { initCarousel } from './carousel.js';
+import { initLastPage } from './lastPage.js';
 
-// DOM取得
-const pages = document.querySelectorAll(".carousel-page");
-const loader = document.getElementById("loader");
-const wrapper = document.querySelector(".carousel-wrapper");
-const lastTop = document.querySelector(".last-img.top");
-const nextBtn = document.getElementById("next-chapter-btn");
-const dots = document.querySelectorAll(".dot");
+const pages = document.querySelectorAll('.carousel-page');
+const dots = document.querySelectorAll('.dot');
+const wrapper = document.querySelector('.carousel-wrapper');
+const loader = document.getElementById('loader');
+const lastImg = document.querySelector('.last-img.top');
+const nextBtn = document.getElementById('next-chapter-btn');
+const dotsContainer = document.querySelector('.dots');
 
-// ローダー初期化
-initLoader(pages, loader);
-
-// カルーセル初期化（ドラッグ対応）
+initLoader(pages, loader, dotsContainer);
 const carousel = initCarousel(wrapper, pages, dots);
+initLastPage(lastImg, nextBtn, carousel.getCurrentPage, pages);
 
-// 最後ページ初期化
-initLastPage(lastTop, nextBtn);
+// 次章ボタン
+nextBtn.addEventListener('click',()=>{ window.location.href='chapter2.html'; });
