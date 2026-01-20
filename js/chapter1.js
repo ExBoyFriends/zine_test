@@ -75,15 +75,26 @@ function endDrag(){
 
 /* ---------- ドット更新＆◀▶制御 ---------- */
 function updateDots(){
-  dots.forEach((dot,i)=>dot.classList.toggle('active',i===currentPage));
+  dots.forEach((dot,i)=>{
+    // active クラスで色変更
+    if(i===currentPage){
+      dot.classList.add('active');
+    } else {
+      dot.classList.remove('active');
+    }
 
-  // 左端◀表示
-  if(currentPage>=1) dots[0].style.opacity=1;
-  else dots[0].style.opacity=0.25;
+    // 左端◀︎表示（2枚目以降）
+    if(i===0){
+      if(currentPage >= 1) dot.style.opacity = 1;   // ◀︎表示
+      else dot.style.opacity = 0.25;              // 1枚目は半透明
+    }
 
-  // 右端▶非表示（最後ページで）
-  if(currentPage===pages.length-1) dots[dots.length-1].style.opacity=0.25;
-  else dots[dots.length-1].style.opacity=1;
+    // 右端▶非表示（最後ページで）
+    if(i===dots.length-1){
+      if(currentPage === pages.length-1) dot.style.opacity = 0.25;
+      else dot.style.opacity = 1;
+    }
+  });
 }
 
 /* ---------- イベント ---------- */
