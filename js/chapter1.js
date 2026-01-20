@@ -10,18 +10,15 @@ const lastPageInner = document.querySelector('#last-page .carousel-inner');
 const nextBtn = document.getElementById('next-chapter-btn');
 
 let currentPage = 0;
-let isDragging = false;
-let dragX = 0, startX = 0, lastX = 0, lastTime = 0, velocity = 0;
-let isAnimating = false;
+let isDragging = false, dragX = 0, startX = 0, lastX = 0, lastTime = 0, velocity = 0, isAnimating = false;
 const pageWidth = wrapper.clientWidth;
 
 /* =========================
-   初回ロード：サイレン＋ドット遅延表示
+   初回ロード（サイレン＋ドット遅延表示）
 ========================= */
 window.addEventListener('load', () => {
   const firstPage = pages[0];
   isAnimating = true;
-
   firstPage.classList.add('first-load', 'active');
   loader.style.display = 'block';
 
@@ -29,23 +26,24 @@ window.addEventListener('load', () => {
     loader.style.display = 'none';
     firstPage.classList.remove('first-load');
     firstPage.style.transition = 'opacity 5.2s ease';
-
-    // ドットを遅延表示
-    dotsContainer.classList.add('visible');
+    dotsContainer.classList.add('visible'); // ドット遅延表示
     updateDots();
     isAnimating = false;
-  }, 10280); // サイレン表示時間
+
+    // 最後ページ初期位置セット
+    initLastPage();
+  }, 7280);
 });
 
 /* =========================
    ドラッグ操作（カルーセル切替）
 ========================= */
-function startDrag(x) {
-  if (isAnimating) return;
-  isDragging = true;
-  startX = x;
-  lastX = x;
-  lastTime = Date.now();
+function startDrag(x) { 
+  if (isAnimating) return; 
+  isDragging = true; 
+  startX = x; 
+  lastX = x; 
+  lastTime = Date.now(); 
 }
 
 function drag(x) {
@@ -89,30 +87,28 @@ function endDrag() {
     if (dragX > 0 && currentPage > 0) pages[currentPage - 1].style.opacity = 0;
   }
 
-  dragX = 0;
-  velocity = 0;
+  dragX = 0; velocity = 0;
   updateDots();
 }
 
 /* =========================
-   ドット更新＆左右端表示制御
+   ドット更新＆左右制御
 ========================= */
 function updateDots() {
   dots.forEach((dot, i) => {
-    if (i === 0) return; // 左端ドットは◀︎
-    if (i === dots.length - 1) return; // 右端ドットは▶︎
-    dot.classList.toggle('active', i === currentPage + 1); // ハイライトを1ずらす
+    // 左端ドットは◀︎なのでハイライトずらす
+    dot.classList.toggle('active', i === currentPage + 1);
   });
 
-  // 左端◀︎表示制御
-  dots[0].style.opacity = (currentPage === 0) ? 0 : 1;
+  // 左端◀︎表示
+  dots[0].style.opacity = currentPage === 0 ? 0 : 1;
 
-  // 右端▶︎表示制御（最後ページで非表示）
-  dots[dots.length - 1].style.opacity = (currentPage === pages.length - 1) ? 0 : 1;
+  // 右端▶︎表示（最後ページでスクロールして非表示）
+  if (currentPage < pages.length - 1) dots[dots.length - 1].style.opacity = 1;
 }
 
 /* =========================
-   イベントリスナー
+   イベント（カルーセル）
 ========================= */
 wrapper.addEventListener('mousedown', e => startDrag(e.pageX));
 wrapper.addEventListener('touchstart', e => startDrag(e.touches[0].pageX));
@@ -122,7 +118,9 @@ wrapper.addEventListener('mouseup', endDrag);
 wrapper.addEventListener('mouseleave', endDrag);
 wrapper.addEventListener('touchend', endDrag);
 
-/* ページ内画像ドラッグ */
+/* =========================
+   ページ内画像ドラッグ
+========================= */
 document.querySelectorAll('.carousel-inner').forEach(inner => {
   let isDrag = false, start, scrollLeft;
   inner.addEventListener('mousedown', e => { isDrag = true; inner.classList.add('dragging'); start = e.pageX - inner.offsetLeft; scrollLeft = inner.scrollLeft; });
@@ -134,13 +132,42 @@ document.querySelectorAll('.carousel-inner').forEach(inner => {
   inner.addEventListener('touchmove', e => { if (!isDrag) return; inner.scrollLeft = scrollLeft + (start - (e.touches[0].pageX - inner.offsetLeft)); });
 });
 
-/* 右クリック・長押し無効 */
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-document.addEventListener('gesturestart', e => e.preventDefault());
+/* =========================
+   最後ページ初期化
+========================= */
+function initLastPage() {
+  const img = lastPageInner.querySelector('.last-img');
+  const btnWrapper = lastPageInner.querySelector('.next-btn-wrapper');
 
-/* 最後ページ横スクロール */
-let isDragLast = false, startXLast = 0, scrollLeftLast = 0;
+  // ボタンを画面外右に
+  btnWrapper.style.transform = `translateX(${lastPageInner.clientWidth}px)`;
+
+  // 画像を中央に配置
+  const initialScroll = (img.offsetLeft + img.offsetWidth / 2) - lastPageInner.clientWidth / 2;
+  lastPageInner.scrollLeft = initialScroll;
+
+  updateEdgeDots();
+}
+
+/* =========================
+   最後ページ横スクロール
+========================= */
+function updateEdgeDots() {
+  const scrollLeft = lastPageInner.scrollLeft;
+  const maxScroll = lastPageInner.scrollWidth - lastPageInner.clientWidth;
+
+  // 左端
+  dots[0].style.opacity = scrollLeft <= 0 ? 0 : 1;
+
+  // 右端
+  dots[dots.length - 1].style.opacity = scrollLeft >= maxScroll ? 0 : 1;
+
+  // ボタン表示
+  const btnWrapper = lastPageInner.querySelector('.next-btn-wrapper');
+  btnWrapper.style.transform = `translateX(${Math.min(scrollLeft, maxScroll)}px)`;
+}
+
+lastPageInner.addEventListener('scroll', updateEdgeDots);
 lastPageInner.addEventListener('mousedown', e => { isDragLast = true; startXLast = e.pageX - lastPageInner.offsetLeft; scrollLeftLast = lastPageInner.scrollLeft; });
 lastPageInner.addEventListener('touchstart', e => { isDragLast = true; startXLast = e.touches[0].pageX - lastPageInner.offsetLeft; scrollLeftLast = lastPageInner.scrollLeft; });
 lastPageInner.addEventListener('mousemove', e => { if (!isDragLast) return; e.preventDefault(); const x = e.pageX - lastPageInner.offsetLeft; lastPageInner.scrollLeft = scrollLeftLast + (startXLast - x); });
@@ -149,5 +176,7 @@ lastPageInner.addEventListener('mouseup', () => isDragLast = false);
 lastPageInner.addEventListener('mouseleave', () => isDragLast = false);
 lastPageInner.addEventListener('touchend', () => isDragLast = false);
 
-/* 次章ボタン */
+/* =========================
+   次章ボタン
+========================= */
 nextBtn.addEventListener('click', () => { window.location.href = 'chapter2.html'; });
