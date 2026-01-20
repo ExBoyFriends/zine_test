@@ -9,18 +9,12 @@ const loader = document.getElementById('loader');
 
 // ---------- 初回ロード ----------
 window.addEventListener('load', ()=>{
-  const firstPage = pages[0];
-  isAnimating = true;
-  firstPage.classList.add('first-load', 'active');
-  loader.style.display='block';
-
+  pages[0].classList.add('first-load', 'active');
   setTimeout(()=>{
-    loader.style.display='none';
-    firstPage.classList.remove('first-load');
-    firstPage.style.transition='opacity 5.2s ease';
-    setTimeout(()=>dotsContainer.classList.add('visible'), 3470);
+    pages[0].classList.remove('first-load');
+    dotsContainer.classList.add('visible'); // 遅延フェードイン
     isAnimating = false;
-  }, 7280);
+  }, 3500);
 });
 
 // ドット更新
@@ -29,7 +23,7 @@ function updateDots(){
     dot.classList.toggle('active', i === currentPage);
   });
 
-// 2ページ目以降で左端◀︎表示
+  // 2ページ目以降で左端◀︎表示
   if(currentPage >= 1){
     dots[0].style.opacity = 1; // 左端ドット◀︎
   } else {
@@ -42,7 +36,7 @@ function updateDots(){
   } else {
     dots[dots.length-1].style.opacity = 1;
   }
-}
+
 
 
 // ---------- ドラッグ ----------
