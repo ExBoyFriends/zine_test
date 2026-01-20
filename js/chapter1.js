@@ -36,7 +36,7 @@ function updateDots(){
   } else {
     dots[dots.length-1].style.opacity = 1;
   }
-
+}
 
 
 // ---------- ドラッグ ----------
