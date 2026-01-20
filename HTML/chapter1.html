@@ -45,12 +45,20 @@
     </div>
   </div>
 
-  <!-- ページ5（最後ページ） -->
+<!-- ページ5（最後ページ） -->
 <div class="carousel-page" id="last-page">
   <div class="carousel-inner single">
-    <img src="../image/zebra.png" class="last-img">
+
+    <div class="last-img-stack">
+      <!-- 下に固定される画像 -->
+      <img src="../image/under.png" class="last-img under">
+
+      <!-- スライドする画像（今の zebra） -->
+      <img src="../image/zebra.png" class="last-img top">
+    </div>
+
     <div class="next-btn-wrapper">
-      <button id="next-chapter-btn"></button> <!-- ボタンは画像化 -->
+      <button id="next-chapter-btn"></button>
     </div>
   </div>
 </div>
