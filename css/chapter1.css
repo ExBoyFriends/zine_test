@@ -96,28 +96,35 @@ body { min-height:100svh; overflow:hidden;
   height: auto;
   display: block;
   cursor: grab;
-}
-
-/* スライドアニメーションはJSで制御 */
-.last-img.under {
   z-index: 1;
 }
 
-.last-img.top {
-  z-index: 2;
-}: 
+/* 下の画像に被せる透明リンク */
+.under-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;          /* .top より低ければ OK、でも上に置く方が操作優先 */
+  display: block;
+  background: transparent;
+  pointer-events: auto; /* リンク操作可能 */
+}
 
-/* 次章ボタン */
-.next-btn-wrapper {
+/* 上のスライド画像 */
+.last-img.top {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 120px;
-  height: 40px;
-  pointer-events: none; /* 初期操作不可 */
-  z-index: 3;
+  width: 100%;
+  height: auto;
+  z-index: 3;           /* 最前面でスライド操作可能 */
+  cursor: grab;
+  transition: transform 0.3s ease-out;
 }
+
 
 /* アニメーション */
 @keyframes slowFade {0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);}}
