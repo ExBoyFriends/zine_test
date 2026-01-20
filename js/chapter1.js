@@ -1,21 +1,17 @@
-/* =========================
-   初期設定
-========================= */
 const pages = document.querySelectorAll('.carousel-page');
 const dots = document.querySelectorAll('.dot');
 const dotsContainer = document.querySelector('.dots');
 const loader = document.getElementById('loader');
 const wrapper = document.querySelector('.carousel-wrapper');
 const lastPageInner = document.querySelector('#last-page .carousel-inner');
+const btnWrapper = document.querySelector('#last-page .next-btn-wrapper');
 const nextBtn = document.getElementById('next-chapter-btn');
 
 let currentPage = 0;
 let isDragging = false, dragX = 0, startX = 0, lastX = 0, lastTime = 0, velocity = 0, isAnimating = false;
 const pageWidth = wrapper.clientWidth;
 
-/* =========================
-   初回ロード（サイレン＋ドット遅延表示）
-========================= */
+// ---------- 初回ロード ----------
 window.addEventListener('load', () => {
   const firstPage = pages[0];
   isAnimating = true;
@@ -26,26 +22,15 @@ window.addEventListener('load', () => {
     loader.style.display = 'none';
     firstPage.classList.remove('first-load');
     firstPage.style.transition = 'opacity 5.2s ease';
-    dotsContainer.classList.add('visible'); // ドット遅延表示
+    dotsContainer.classList.add('visible');
     updateDots();
-    isAnimating = false;
-
-    // 最後ページ初期位置セット
     initLastPage();
+    isAnimating = false;
   }, 7280);
 });
 
-/* =========================
-   ドラッグ操作（カルーセル切替）
-========================= */
-function startDrag(x) { 
-  if (isAnimating) return; 
-  isDragging = true; 
-  startX = x; 
-  lastX = x; 
-  lastTime = Date.now(); 
-}
-
+// ---------- ドラッグ操作 ----------
+function startDrag(x) { if (isAnimating) return; isDragging = true; startX = x; lastX = x; lastTime = Date.now(); }
 function drag(x) {
   if (!isDragging || isAnimating) return;
   dragX = x - startX;
@@ -91,25 +76,17 @@ function endDrag() {
   updateDots();
 }
 
-/* =========================
-   ドット更新＆左右制御
-========================= */
+// ---------- ドット更新 ----------
 function updateDots() {
   dots.forEach((dot, i) => {
-    // 左端ドットは◀︎なのでハイライトずらす
     dot.classList.toggle('active', i === currentPage + 1);
   });
-
-  // 左端◀︎表示
+  // 左右端ドット表示
   dots[0].style.opacity = currentPage === 0 ? 0 : 1;
-
-  // 右端▶︎表示（最後ページでスクロールして非表示）
-  if (currentPage < pages.length - 1) dots[dots.length - 1].style.opacity = 1;
+  dots[dots.length - 1].style.opacity = currentPage === pages.length - 1 ? 0 : 1;
 }
 
-/* =========================
-   イベント（カルーセル）
-========================= */
+// ---------- カルーセルイベント ----------
 wrapper.addEventListener('mousedown', e => startDrag(e.pageX));
 wrapper.addEventListener('touchstart', e => startDrag(e.touches[0].pageX));
 wrapper.addEventListener('mousemove', e => drag(e.pageX));
@@ -118,9 +95,7 @@ wrapper.addEventListener('mouseup', endDrag);
 wrapper.addEventListener('mouseleave', endDrag);
 wrapper.addEventListener('touchend', endDrag);
 
-/* =========================
-   ページ内画像ドラッグ
-========================= */
+// ---------- ページ内画像ドラッグ ----------
 document.querySelectorAll('.carousel-inner').forEach(inner => {
   let isDrag = false, start, scrollLeft;
   inner.addEventListener('mousedown', e => { isDrag = true; inner.classList.add('dragging'); start = e.pageX - inner.offsetLeft; scrollLeft = inner.scrollLeft; });
@@ -132,51 +107,29 @@ document.querySelectorAll('.carousel-inner').forEach(inner => {
   inner.addEventListener('touchmove', e => { if (!isDrag) return; inner.scrollLeft = scrollLeft + (start - (e.touches[0].pageX - inner.offsetLeft)); });
 });
 
-/* =========================
-   最後ページ初期化
-========================= */
+// ---------- 最後ページ初期化 ----------
 function initLastPage() {
   const img = lastPageInner.querySelector('.last-img');
-  const btnWrapper = lastPageInner.querySelector('.next-btn-wrapper');
-
-  // ボタンを画面外右に
-  btnWrapper.style.transform = `translateX(${lastPageInner.clientWidth}px)`;
-
-  // 画像を中央に配置
   const initialScroll = (img.offsetLeft + img.offsetWidth / 2) - lastPageInner.clientWidth / 2;
   lastPageInner.scrollLeft = initialScroll;
-
-  updateEdgeDots();
+  btnWrapper.style.transform = `translateX(${lastPageInner.clientWidth}px)`; // 初期画面外
 }
 
-/* =========================
-   最後ページ横スクロール
-========================= */
-function updateEdgeDots() {
-  const scrollLeft = lastPageInner.scrollLeft;
+// ---------- 最後ページスクロールでボタン表示 ----------
+lastPageInner.addEventListener('scroll', () => {
   const maxScroll = lastPageInner.scrollWidth - lastPageInner.clientWidth;
+  const scrollLeft = lastPageInner.scrollLeft;
 
-  // 左端
+  // ボタンを右端に追従
+  const btnX = Math.max(0, maxScroll - scrollLeft);
+  btnWrapper.style.transform = `translateX(${btnX}px)`;
+
+  // 左右ドット
   dots[0].style.opacity = scrollLeft <= 0 ? 0 : 1;
-
-  // 右端
   dots[dots.length - 1].style.opacity = scrollLeft >= maxScroll ? 0 : 1;
+});
 
-  // ボタン表示
-  const btnWrapper = lastPageInner.querySelector('.next-btn-wrapper');
-  btnWrapper.style.transform = `translateX(${Math.min(scrollLeft, maxScroll)}px)`;
-}
-
-lastPageInner.addEventListener('scroll', updateEdgeDots);
-lastPageInner.addEventListener('mousedown', e => { isDragLast = true; startXLast = e.pageX - lastPageInner.offsetLeft; scrollLeftLast = lastPageInner.scrollLeft; });
-lastPageInner.addEventListener('touchstart', e => { isDragLast = true; startXLast = e.touches[0].pageX - lastPageInner.offsetLeft; scrollLeftLast = lastPageInner.scrollLeft; });
-lastPageInner.addEventListener('mousemove', e => { if (!isDragLast) return; e.preventDefault(); const x = e.pageX - lastPageInner.offsetLeft; lastPageInner.scrollLeft = scrollLeftLast + (startXLast - x); });
-lastPageInner.addEventListener('touchmove', e => { if (!isDragLast) return; const x = e.touches[0].pageX - lastPageInner.offsetLeft; lastPageInner.scrollLeft = scrollLeftLast + (startXLast - x); });
-lastPageInner.addEventListener('mouseup', () => isDragLast = false);
-lastPageInner.addEventListener('mouseleave', () => isDragLast = false);
-lastPageInner.addEventListener('touchend', () => isDragLast = false);
-
-/* =========================
-   次章ボタン
-========================= */
-nextBtn.addEventListener('click', () => { window.location.href = 'chapter2.html'; });
+// ---------- 次章ボタン ----------
+nextBtn.addEventListener('click', () => {
+  window.location.href = 'chapter2.html';
+});
