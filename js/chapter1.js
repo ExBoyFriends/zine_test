@@ -23,6 +23,28 @@ window.addEventListener('load', ()=>{
   }, 7280);
 });
 
+// ドット更新
+function updateDots(){
+  dots.forEach((dot,i)=>{
+    dot.classList.toggle('active', i === currentPage);
+  });
+
+// 2ページ目以降で左端◀︎表示
+  if(currentPage >= 1){
+    dots[0].style.opacity = 1; // 左端ドット◀︎
+  } else {
+    dots[0].style.opacity = 0.25;
+  }
+
+  // 最後ページの右端ボタンに達したら右端の▶を消す
+  if(currentPage === pages.length-1){
+    dots[dots.length-1].style.opacity = 0.25;
+  } else {
+    dots[dots.length-1].style.opacity = 1;
+  }
+}
+
+
 // ---------- ドラッグ ----------
 function startDrag(x){ if(isAnimating) return; isDragging=true; startX=x; lastX=x; lastTime=Date.now(); }
 function drag(x){
