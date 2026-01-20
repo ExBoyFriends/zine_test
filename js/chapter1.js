@@ -10,10 +10,16 @@ const lastPageInner = document.querySelector('#last-page .carousel-inner');
 const nextBtn = document.getElementById('next-chapter-btn');
 
 let currentPage = 0;
-let isDragging = false, dragX = 0, startX = 0, lastX = 0, lastTime = 0, velocity = 0, isAnimating = false;
+let isDragging = false,
+    dragX = 0,
+    startX = 0,
+    lastX = 0,
+    lastTime = 0,
+    velocity = 0,
+    isAnimating = false;
 
 /* ------------------------
-   初回ロード（サイレン＋画像フェード＋ドット遅延表示）
+   初回ロード（サイレン＋画像フェード＋ドット遅延）
 ------------------------ */
 window.addEventListener('load', () => {
   const firstPage = pages[0];
@@ -22,19 +28,18 @@ window.addEventListener('load', () => {
   firstPage.classList.add('first-load', 'active');
   loader.style.display = 'block';
 
-  // サイレン表示終了
   setTimeout(() => {
     loader.style.display = 'none';
     firstPage.classList.remove('first-load');
     firstPage.style.transition = 'opacity 5.2s ease';
 
-    // 画像フェード完了後にドット遅延表示
+    // ドットをフェードイン
     setTimeout(() => {
       dotsContainer.classList.add('visible');
-      updateDots();
-      isAnimating = false;
-    }, 5200); // 画像フェード時間
-  }, 7280); // サイレン表示時間
+    }, 500); // 遅延表示（1枚目フェード後）
+
+    isAnimating = false;
+  }, 7280); // サイレン表示時間に合わせる
 });
 
 /* ------------------------
@@ -55,7 +60,8 @@ function drag(x) {
   dragX = x - startX;
   const now = Date.now();
   velocity = (x - lastX) / (now - lastTime);
-  lastX = x; lastTime = now;
+  lastX = x;
+  lastTime = now;
 
   const ease = 0.4;
   if (dragX < 0 && currentPage < pages.length - 1) {
@@ -75,8 +81,10 @@ function endDrag() {
   const threshold = pageWidth * 0.3;
   const velocityThreshold = 0.3;
 
-  if ((dragX < -threshold || velocity < -velocityThreshold) && currentPage < pages.length - 1) nextPage = currentPage + 1;
-  else if ((dragX > threshold || velocity > velocityThreshold) && currentPage > 0) nextPage = currentPage - 1;
+  if ((dragX < -threshold || velocity < -velocityThreshold) && currentPage < pages.length - 1)
+    nextPage = currentPage + 1;
+  else if ((dragX > threshold || velocity > velocityThreshold) && currentPage > 0)
+    nextPage = currentPage - 1;
 
   if (nextPage !== null) {
     isAnimating = true;
@@ -103,11 +111,11 @@ function updateDots() {
     dot.classList.toggle('active', i === currentPage);
   });
 
-  // 左端◀︎表示（2枚目以降）
+  // 左端◀︎表示：2枚目以降で出す
   if (currentPage >= 1) dots[0].style.opacity = 1;
   else dots[0].style.opacity = 0.25;
 
-  // 右端▶︎表示（最後ページで非表示）
+  // 右端▶︎表示：最後ページで半透明
   if (currentPage === pages.length - 1) dots[dots.length - 1].style.opacity = 0.25;
   else dots[dots.length - 1].style.opacity = 1;
 }
@@ -129,20 +137,29 @@ wrapper.addEventListener('touchend', endDrag);
 document.querySelectorAll('.carousel-inner').forEach(inner => {
   let isDrag = false, start, scrollLeft;
 
-  inner.addEventListener('mousedown', e => {
-    isDrag = true;
-    inner.classList.add('dragging');
-    start = e.pageX - inner.offsetLeft;
-    scrollLeft = inner.scrollLeft;
+  inner.addEventListener('mousedown', e => { 
+    isDrag = true; inner.classList.add('dragging'); 
+    start = e.pageX - inner.offsetLeft; 
+    scrollLeft = inner.scrollLeft; 
   });
-
   inner.addEventListener('mouseleave', () => { isDrag = false; inner.classList.remove('dragging'); });
   inner.addEventListener('mouseup', () => { isDrag = false; inner.classList.remove('dragging'); });
-  inner.addEventListener('mousemove', e => { if (!isDrag) return; e.preventDefault(); inner.scrollLeft = scrollLeft + (start - (e.pageX - inner.offsetLeft)); });
+  inner.addEventListener('mousemove', e => { 
+    if (!isDrag) return; 
+    e.preventDefault(); 
+    inner.scrollLeft = scrollLeft + (start - (e.pageX - inner.offsetLeft)); 
+  });
 
-  inner.addEventListener('touchstart', e => { isDrag = true; start = e.touches[0].pageX - inner.offsetLeft; scrollLeft = inner.scrollLeft; });
+  inner.addEventListener('touchstart', e => { 
+    isDrag = true; 
+    start = e.touches[0].pageX - inner.offsetLeft; 
+    scrollLeft = inner.scrollLeft; 
+  });
   inner.addEventListener('touchend', () => { isDrag = false; });
-  inner.addEventListener('touchmove', e => { if (!isDrag) return; inner.scrollLeft = scrollLeft + (start - (e.touches[0].pageX - inner.offsetLeft)); });
+  inner.addEventListener('touchmove', e => { 
+    if (!isDrag) return; 
+    inner.scrollLeft = scrollLeft + (start - (e.touches[0].pageX - inner.offsetLeft)); 
+  });
 });
 
 /* ------------------------
