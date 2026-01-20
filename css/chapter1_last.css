@@ -1,5 +1,3 @@
-/* 最後ページ専用 */
-
 #last-page .carousel-inner {
   display: flex;
   align-items: center;
@@ -8,25 +6,25 @@
 }
 
 .last-img {
-  width: 88vw;
-  max-width: 540px;
-  border-radius: 8px;
-  flex-shrink: 0;
+  width:88vw;
+  max-width:540px;
+  border-radius:8px;
+  flex-shrink:0;
 }
 
 .next-btn-wrapper {
-  flex-shrink: 0;
-  width: 120px;          /* ボタン分の幅 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-shrink:0;
+  width:120px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 #next-chapter-btn {
-  padding: 12px 24px;
-  font-size: 18px;
+  padding:12px 24px;
+  font-size:18px;
   background: rgba(255,255,255,0.9);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
 }
