@@ -1,6 +1,6 @@
-/* ------------------------
+/* =========================
    全体リセット
------------------------- */
+========================= */
 html, body {
   margin: 0;
   padding: 0;
@@ -13,9 +13,9 @@ html, body {
   -webkit-touch-callout: none;
 }
 
-/* ------------------------
+/* =========================
    背景
------------------------- */
+========================= */
 .background {
   position: fixed;
   top: -40px; left: -40px; right: -40px; bottom: -40px;
@@ -24,9 +24,9 @@ html, body {
   animation: slowFade 20s ease-in-out infinite alternate;
 }
 
-/* ------------------------
-   ローダー（初回サイレン）
------------------------- */
+/* =========================
+   ローダー（サイレン）
+========================= */
 #loader {
   position: fixed;
   top: -40px; left: -40px; right: -40px; bottom: -40px;
@@ -35,9 +35,9 @@ html, body {
   animation: siren 1.68s linear infinite;
 }
 
-/* ------------------------
-   カルーセル
------------------------- */
+/* =========================
+   カルーセル全体
+========================= */
 .carousel-wrapper {
   position: fixed;
   inset: 0;
@@ -95,9 +95,9 @@ html, body {
 
 .dragging { cursor: grabbing; }
 
-/* ------------------------
+/* =========================
    ドット
------------------------- */
+========================= */
 .dots {
   position: fixed;
   left: 0;
@@ -112,12 +112,13 @@ html, body {
 
 .dot {
   display: inline-block;
-  width: 5px; height: 8px;
+  width: 5px;
+  height: 8px;
   margin: 0 5px;
   border-radius: 0;
   background: rgba(200,200,200,0.25);
   box-shadow: 0 0 4px rgba(255,255,255,0.3);
-  opacity: 0;
+  opacity: 0; /* 初期透明 */
   transition: opacity 0.5s ease, background 0.3s ease;
 }
 
@@ -133,16 +134,15 @@ html, body {
 /* .visible が付いたら全ドットフェードイン */
 .dots.visible .dot { opacity: 1; }
 
-/* ------------------------
-   最後ページ＆次章ボタン
------------------------- */
+/* =========================
+   最後ページ＋次章ボタン
+========================= */
 #last-page .carousel-inner {
   display: flex;
   align-items: center;
   gap: 20px;
   position: relative;
-  overflow-x: scroll;
-  scroll-behavior: smooth;
+  justify-content: center; /* 初期は中央 */
 }
 
 .last-img {
@@ -159,6 +159,8 @@ html, body {
   justify-content: center;
   align-items: center;
   position: relative;
+  left: 100vw; /* 初期は画面外右 */
+  transition: transform 0.3s ease;
 }
 
 #next-chapter-btn {
@@ -168,12 +170,11 @@ html, body {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  white-space: nowrap;
 }
 
-/* ------------------------
+/* =========================
    アニメーション
------------------------- */
+========================= */
 @keyframes slowFade {
   0% { filter: brightness(1); }
   50% { filter: brightness(0.2); }
