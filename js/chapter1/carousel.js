@@ -14,30 +14,29 @@ export function initCarousel(wrapper, pages, dots){
   function startDrag(x){ if(isAnimating) return; isDragging=true; startX=x; lastX=x; lastTime=Date.now();}
   function drag(x){
     if(!isDragging||isAnimating) return;
-    dragX = x - startX;
+    dragX=x-startX;
     const now=Date.now();
-    velocity = (x - lastX)/(now-lastTime);
-    lastX = x; lastTime = now;
+    velocity=(x-lastX)/(now-lastTime);
+    lastX=x; lastTime=now;
 
-    // 最後ページドラッグ無効
-    if(currentPage===pages.length-1) return;
+    if(currentPage===pages.length-1) return; // 最後ページドラッグ無効
 
-    const ease = 0.4;
+    const ease=0.4;
     if(dragX<0 && currentPage<pages.length-1){
-      pages[currentPage+1].style.opacity = Math.min(Math.abs(dragX)/pageWidth,1)*ease;
-      pages[currentPage].style.opacity = 1 - Math.min(Math.abs(dragX)/pageWidth,1)*ease;
-    } else if(dragX>0 && currentPage>0){
-      pages[currentPage-1].style.opacity = Math.min(Math.abs(dragX)/pageWidth,1)*ease;
-      pages[currentPage].style.opacity = 1 - Math.min(Math.abs(dragX)/pageWidth,1)*ease;
+      pages[currentPage+1].style.opacity=Math.min(Math.abs(dragX)/pageWidth,1)*ease;
+      pages[currentPage].style.opacity=1-Math.min(Math.abs(dragX)/pageWidth,1)*ease;
+    }else if(dragX>0 && currentPage>0){
+      pages[currentPage-1].style.opacity=Math.min(Math.abs(dragX)/pageWidth,1)*ease;
+      pages[currentPage].style.opacity=1-Math.min(Math.abs(dragX)/pageWidth,1)*ease;
     }
   }
 
   function endDrag(){
     if(!isDragging||isAnimating) return;
     isDragging=false;
-    let nextPage = null;
-    const threshold = pageWidth*0.25;
-    const velocityThreshold = 0.25;
+    let nextPage=null;
+    const threshold=pageWidth*0.25;
+    const velocityThreshold=0.25;
 
     if((dragX<-threshold||velocity<-velocityThreshold)&&currentPage<pages.length-1) nextPage=currentPage+1;
     else if((dragX>threshold||velocity>velocityThreshold)&&currentPage>0) nextPage=currentPage-1;
