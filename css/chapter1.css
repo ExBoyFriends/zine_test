@@ -99,13 +99,13 @@ body { min-height:100svh; overflow:hidden;
 }
 
 /* スライドアニメーションはJSで制御 */
-.last-img.top {
-  z-index: 1;
-}: 
-
 .last-img.under {
-  z-index: 2;
+  z-index: 1;
 }
+
+.last-img.top {
+  z-index: 2;
+}: 
 
 /* 次章ボタン */
 .next-btn-wrapper {
