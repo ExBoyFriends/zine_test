@@ -6,7 +6,7 @@ const dots = document.querySelectorAll('.dot');
 const dotsContainer = document.querySelector('.dots');
 const loader = document.getElementById('loader');
 const wrapper = document.querySelector('.carousel-wrapper');
-const lastImg = document.querySelector('.last-img');
+const lastImg = document.querySelector('.last-img.top');
 const nextBtn = document.getElementById('next-chapter-btn');
 
 let currentPage = 0;
@@ -153,15 +153,17 @@ lastImg.addEventListener('click', () => {
   lastImg.style.transition = 'transform 0.3s ease-out';
 
   if (!isLastImgShifted) {
-    // 半分スライド
     lastImgOffset = maxShift;
     lastImg.style.transform = `translateX(${-lastImgOffset}px)`;
     isLastImgShifted = true;
+
+    document.querySelector('.next-btn-wrapper').classList.add('show');
   } else {
-    // 初期位置に戻す
     lastImgOffset = 0;
     lastImg.style.transform = `translateX(0px)`;
     isLastImgShifted = false;
+
+    document.querySelector('.next-btn-wrapper').classList.remove('show');
   }
 });
 
