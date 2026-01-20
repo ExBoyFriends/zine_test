@@ -36,7 +36,7 @@ html, body {
   position:absolute; inset:0;
   display:flex; justify-content:center; align-items:center;
   gap:10px; pointer-events:none;
-  opacity:0; transition: opacity 3.65s ease;
+  opacity:0; transition: opacity 1.4s ease;
 }
 
 .carousel-page.active {
