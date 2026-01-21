@@ -39,10 +39,9 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
   lastImg.addEventListener('pointermove', e => {
     const dx = e.clientX - startX;
 
-    // 🔒 画像は一切ドラッグさせない
-    // 右ドラッグはカルーセルに任せる
+    // 🔒 右ドラッグは完全に無視（返さない）
     if (dx > 0) {
-      lastImg.releasePointerCapture(e.pointerId);
+      e.stopPropagation();
       return;
     }
 
@@ -54,15 +53,13 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
   lastImg.addEventListener('pointerup', e => {
     const dx = e.clientX - startX;
 
-    // 👆 タップのみ判定
+    // タップのみ有効
     if (Math.abs(dx) < TAP_THRESHOLD) {
       opened ? close() : open();
     }
   });
 
   /* ===== cancel ===== */
-  lastImg.addEventListener('pointercancel', () => {
-    // 何もしない（状態保持）
-  });
+  lastImg.addEventListener('pointercancel', () => {});
 }
 
