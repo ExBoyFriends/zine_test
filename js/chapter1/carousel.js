@@ -5,6 +5,10 @@ export function initCarousel(wrapper, pages) {
   let isDragging = false;
   let isAnimating = false;
 
+  function getActivePage() {
+    return pages[currentPage];
+  }
+
   function updateDots() {
     const dots = document.querySelectorAll('.dot');
     dots.forEach((dot, i) => {
@@ -14,48 +18,68 @@ export function initCarousel(wrapper, pages) {
     dots[0].style.opacity = currentPage === 0 ? 0 : 1;
   }
 
+  pages[0].classList.add('active');
   updateDots();
 
-  function goTo(index) {
-    if (index === currentPage || isAnimating) return;
-    if (index < 0 || index >= pages.length) return;
+  function goTo(next) {
+    if (isAnimating) return;
+    if (next < 0 || next >= pages.length) return;
 
     isAnimating = true;
-    pages[currentPage].classList.remove('active');
-    pages[index].classList.add('active');
-    currentPage = index;
 
-    setTimeout(() => isAnimating = false, 1400);
+    pages[currentPage].classList.remove('active');
+    pages[next].classList.add('active');
+    currentPage = next;
+
     updateDots();
+
+    setTimeout(() => {
+      isAnimating = false;
+    }, 1400);
   }
 
-  wrapper.addEventListener('pointerdown', e => {
-    if (wrapper.dataset.lock === 'true') return;
-    isDragging = true;
-    startX = e.clientX;
-    wrapper.setPointerCapture(e.pointerId);
-  });
+  /* ===== ドラッグ開始 ===== */
+  pages.forEach(page => {
+    page.addEventListener('pointerdown', e => {
+      if (!page.classList.contains('active')) return;
+      if (wrapper.dataset.lock === 'true') return;
 
-  wrapper.addEventListener('pointermove', e => {
-    if (!isDragging || isAnimating) return;
-    dragX = e.clientX - startX;
-  });
+      isDragging = true;
+      startX = e.clientX;
+      dragX = 0;
 
-  wrapper.addEventListener('pointerup', () => {
-    if (!isDragging) return;
-    isDragging = false;
+      page.setPointerCapture(e.pointerId);
+    });
 
-    const threshold = wrapper.clientWidth * 0.25;
+    page.addEventListener('pointermove', e => {
+      if (!isDragging || isAnimating) return;
+      dragX = e.clientX - startX;
+    });
 
-    if (dragX < -threshold) goTo(currentPage + 1);
-    if (dragX > threshold) goTo(currentPage - 1);
+    page.addEventListener('pointerup', () => {
+      if (!isDragging) return;
+      isDragging = false;
 
-    dragX = 0;
+      const threshold = wrapper.clientWidth * 0.25;
+
+      if (dragX < -threshold) goTo(currentPage + 1);
+      else if (dragX > threshold) goTo(currentPage - 1);
+
+      dragX = 0;
+    });
+
+    page.addEventListener('pointercancel', () => {
+      isDragging = false;
+      dragX = 0;
+    });
   });
 
   return {
     getCurrentPage: () => currentPage,
     lock: v => wrapper.dataset.lock = v ? 'true' : 'false'
+  };
+}
+
   };
 }
 
