@@ -26,7 +26,6 @@ export function initCarousel(wrapper, pages) {
     dots[0].style.opacity = currentPage === 0 ? 0 : 1;
   }
 
-  // ⭐ 初期状態を反映
   updateDots();
 
   // ===== ページ切替ドラッグ =====
@@ -41,6 +40,7 @@ export function initCarousel(wrapper, pages) {
   function drag(x) {
     if (!isDragging || isAnimating) return;
     dragX = x - startX;
+
     const now = Date.now();
     velocity = (x - lastX) / (now - lastTime);
     lastX = x;
@@ -50,7 +50,8 @@ export function initCarousel(wrapper, pages) {
       const ratio = Math.min(Math.abs(dragX) / pageWidth, 1);
       pages[currentPage + 1].style.opacity = ratio;
       pages[currentPage].style.opacity = 1 - ratio;
-    } else if (dragX > 0 && currentPage > 0) {
+    } 
+    else if (dragX > 0 && currentPage > 0) {
       const ratio = Math.min(Math.abs(dragX) / pageWidth, 1);
       pages[currentPage - 1].style.opacity = ratio;
       pages[currentPage].style.opacity = 1 - ratio;
@@ -65,18 +66,20 @@ export function initCarousel(wrapper, pages) {
     const threshold = pageWidth * 0.25;
     const velocityThreshold = 0.25;
 
-    if ((dragX < -threshold || velocity < -velocityThreshold) && currentPage < pages.length - 1)
+    if ((dragX < -threshold || velocity < -velocityThreshold) && currentPage < pages.length - 1) {
       nextPage = currentPage + 1;
-    else if ((dragX > threshold || velocity > velocityThreshold) && currentPage > 0)
+    } 
+    else if ((dragX > threshold || velocity > velocityThreshold) && currentPage > 0) {
       nextPage = currentPage - 1;
+    }
 
     if (nextPage !== null) {
       isAnimating = true;
       pages[currentPage].classList.remove('active');
       pages[nextPage].classList.add('active');
-      pages.forEach(p => (p.style.opacity = ''));
-      setTimeout(() => (isAnimating = false), 1400);
+      pages.forEach(p => p.style.opacity = '');
       currentPage = nextPage;
+      setTimeout(() => isAnimating = false, 1400);
     } else {
       pages.forEach((p, i) => {
         p.style.opacity = i === currentPage ? 1 : 0;
@@ -90,56 +93,17 @@ export function initCarousel(wrapper, pages) {
 
   // ===== イベント =====
   wrapper.addEventListener('mousedown', e => startDrag(e.pageX));
-  wrapper.addEventListener('touchstart', e => startDrag(e.touches[0].pageX));
   wrapper.addEventListener('mousemove', e => drag(e.pageX));
-  wrapper.addEventListener('touchmove', e => drag(e.touches[0].pageX));
   wrapper.addEventListener('mouseup', endDrag);
   wrapper.addEventListener('mouseleave', endDrag);
+
+  wrapper.addEventListener('touchstart', e => startDrag(e.touches[0].pageX));
+  wrapper.addEventListener('touchmove', e => drag(e.touches[0].pageX));
   wrapper.addEventListener('touchend', endDrag);
 
-  // ===== ページ内スクロール用ドラッグ =====
-  document.querySelectorAll('.carousel-inner').forEach(inner => {
-    let isInnerDrag = false, start, scrollLeft;
-
-    inner.addEventListener('mousedown', e => {
-      isInnerDrag = true;
-      inner.classList.add('dragging');
-      start = e.pageX - inner.offsetLeft;
-      scrollLeft = inner.scrollLeft;
-    });
-
-    inner.addEventListener('mousemove', e => {
-      if (!isInnerDrag) return;
-      e.preventDefault();
-      inner.scrollLeft = scrollLeft + (start - (e.pageX - inner.offsetLeft));
-    });
-
-    inner.addEventListener('mouseup', () => {
-      isInnerDrag = false;
-      inner.classList.remove('dragging');
-    });
-    inner.addEventListener('mouseleave', () => {
-      isInnerDrag = false;
-      inner.classList.remove('dragging');
-    });
-
-    inner.addEventListener('touchstart', e => {
-      isInnerDrag = true;
-      start = e.touches[0].pageX - inner.offsetLeft;
-      scrollLeft = inner.scrollLeft;
-    });
-    inner.addEventListener('touchmove', e => {
-      if (!isInnerDrag) return;
-      inner.scrollLeft = scrollLeft + (start - (e.touches[0].pageX - inner.offsetLeft));
-    });
-    inner.addEventListener('touchend', () => {
-      isInnerDrag = false;
-    });
-  });
-
-  // ✅ return は1回だけ
   return {
     getCurrentPage: () => currentPage
   };
 }
+
 
