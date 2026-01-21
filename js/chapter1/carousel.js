@@ -24,7 +24,7 @@ export function initCarousel(wrapper, pages) {
       dot.classList.toggle('active', i === currentPage + 1);
     });
     dots[0].style.opacity = currentPage === 0 ? 0 : 1;
-    dots[dots.length - 1].style.opacity = currentPage === pages.length - 1 ? 0 : 1;
+//  dots[dots.length - 1].style.opacity = currentPage === pages.length - 1 ? 0 : 1;
   }
 
   // ===== ページ切替ドラッグ =====
