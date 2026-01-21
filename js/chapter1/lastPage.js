@@ -1,62 +1,38 @@
-export function initLastPage(lastImg, getCurrentPage, totalPages) {
-  let isDragging = false;
+export function initLastPage(lastImg, getCurrentPage, total) {
   let startX = 0;
   let currentX = 0;
 
-  const rightDot = document.querySelector('.dot.right-dot'); // ← 追加
+  const half = () => lastImg.clientWidth / 2;
 
-  const getHalf = () => lastImg.clientWidth / 2;
+  const move = x => {
+    lastImg.style.transform =
+      `translate(-50%, -50%) translateX(${x}px)`;
+  };
 
-  const setTransform = x =>
-    lastImg.style.transform = `translate(-50%, -50%) translateX(${x}px)`;
-
-  setTransform(0);
+  move(0);
 
   lastImg.addEventListener('pointerdown', e => {
-    if (getCurrentPage() !== totalPages - 1) return;
+    if (getCurrentPage() !== total - 1) return;
+    e.stopPropagation();
 
-    isDragging = true;
     startX = e.clientX;
-    lastImg.style.transition = 'none';
-    lastImg.classList.add('dragging');
-
-    // ✅ ここ！！！ドラッグ開始で右ドットのハイライトを消す
-    rightDot?.classList.remove('active');
-
     lastImg.setPointerCapture(e.pointerId);
   });
 
   lastImg.addEventListener('pointermove', e => {
-    if (!isDragging) return;
-
+    e.stopPropagation();
     const dx = e.clientX - startX;
-    currentX = Math.max(-getHalf(), Math.min(0, dx));
-    setTransform(currentX);
+    currentX = Math.max(-half(), Math.min(0, dx));
+    move(currentX);
   });
 
-  lastImg.addEventListener('pointerup', () => {
-    if (!isDragging) return;
-
-    isDragging = false;
-    lastImg.classList.remove('dragging');
-    lastImg.style.transition = 'transform 0.3s ease-out';
-
-    if (Math.abs(currentX) > getHalf() / 2) {
-      setTransform(-getHalf());
-      currentX = -getHalf();
-      // 👉 固定したまま（ドットは消えたまま）
-    } else {
-      setTransform(0);
+  lastImg.addEventListener('pointerup', e => {
+    e.stopPropagation();
+    if (Math.abs(currentX) < half() / 2) {
+      move(0);
       currentX = 0;
-
-      // 🔁 中央に戻ったらハイライト復活（不要なら消してOK）
-      rightDot?.classList.add('active');
+    } else {
+      move(-half());
     }
   });
-
-  lastImg.addEventListener('pointercancel', () => {
-    isDragging = false;
-    setTransform(0);
-    rightDot?.classList.add('active');
-  });
-}    
+}
