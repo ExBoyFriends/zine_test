@@ -111,3 +111,4 @@ export function initCarousel(wrapper, pages) {
 
     wrapper.releasePointerCapture(e.pointerId);
   }
+}
