@@ -70,7 +70,9 @@ body { min-height:100svh; overflow:hidden;
 .dots.visible { opacity:1; }
 
 .dot.right-dot:not(.active) {
-  opacity: 0.2;
+  opacity: 1; /* ← 透明度は使わない */
+  background: rgba(200,200,200,0.25);
+  box-shadow: 0 0 4px rgba(255,255,255,0.3);
 }
 
 /* 最後ページ */
