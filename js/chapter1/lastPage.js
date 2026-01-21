@@ -3,77 +3,75 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
   let startX = 0;
   let startOffset = 0;
   let currentX = 0;
-  let allowCarousel = false;
 
   const rightDot = document.querySelector('.dot.right-dot');
-
   const half = () => lastImg.clientWidth / 2;
 
   const setX = x => {
     currentX = x;
     lastImg.style.transform =
       `translate(-50%, -50%) translateX(${x}px)`;
-  };
 
-  const updateDot = () => {
-    rightDot?.classList.toggle('active', currentX < 0);
+    if (x === -half()) {
+      rightDot?.classList.add('active');
+    } else {
+      rightDot?.classList.remove('active');
+    }
   };
 
   setX(0);
-  updateDot();
 
   lastImg.addEventListener('pointerdown', e => {
     if (getCurrentPage() !== totalPages - 1) return;
 
+    isDragging = true;
     startX = e.clientX;
     startOffset = currentX;
 
-    // 🔑 初期位置 ＆ 右ドラッグ → 最初から親に任せる
-    allowCarousel = currentX === 0;
-
-    if (!allowCarousel) {
-      e.stopPropagation();
-      isDragging = true;
-      lastImg.style.transition = 'none';
-      lastImg.setPointerCapture(e.pointerId);
-    }
+    lastImg.style.transition = 'none';
+    lastImg.setPointerCapture(e.pointerId);
   });
 
   lastImg.addEventListener('pointermove', e => {
     if (!isDragging) return;
 
-    e.stopPropagation();
-
     const dx = e.clientX - startX;
-    const nextX = startOffset + dx;
+    let nextX = startOffset + dx;
 
-    setX(Math.max(-half(), Math.min(0, nextX)));
-    updateDot();
+    /* 🔴 右ドラッグの扱いが最重要 */
+    if (nextX > 0) {
+      // 画像が中央にある時だけカルーセルへ返す
+      if (startOffset === 0) {
+        isDragging = false;
+        lastImg.releasePointerCapture(e.pointerId);
+        return;
+      }
+      nextX = 0;
+    }
+
+    if (nextX < -half()) nextX = -half();
+
+    e.stopPropagation();
+    setX(nextX);
   });
 
   lastImg.addEventListener('pointerup', e => {
     if (!isDragging) return;
-
     e.stopPropagation();
-    isDragging = false;
 
+    isDragging = false;
     lastImg.style.transition = 'transform 0.3s ease-out';
 
-    // 🔥 必ずスナップ
     if (Math.abs(currentX) > half() / 2) {
       setX(-half());
     } else {
       setX(0);
     }
-
-    updateDot();
-    lastImg.releasePointerCapture(e.pointerId);
   });
 
   lastImg.addEventListener('pointercancel', () => {
     isDragging = false;
     lastImg.style.transition = 'transform 0.3s ease-out';
     setX(0);
-    updateDot();
   });
 }
