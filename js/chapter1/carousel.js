@@ -29,11 +29,13 @@ export function initCarousel(wrapper, pages) {
 
   function onPointerDown(e) {
     if (isAnimating || isLocked) return;
+
     isDragging = true;
     startX = e.clientX;
     dragX = 0;
     lastX = e.clientX;
     lastTime = performance.now();
+
     wrapper.setPointerCapture(e.pointerId);
   }
 
@@ -48,12 +50,14 @@ export function initCarousel(wrapper, pages) {
     lastX = x;
     lastTime = now;
 
+    // 次へ（左）
     if (dragX < 0 && currentPage < pages.length - 1) {
       const r = Math.min(Math.abs(dragX) / pageWidth(), 1);
       pages[currentPage + 1].style.opacity = r;
       pages[currentPage].style.opacity = 1 - r;
     }
 
+    // 前へ（右）
     if (dragX > 0 && currentPage > 0) {
       const r = Math.min(dragX / pageWidth(), 1);
       pages[currentPage - 1].style.opacity = r;
@@ -67,14 +71,21 @@ export function initCarousel(wrapper, pages) {
 
     let next = null;
     const threshold = pageWidth() * 0.25;
+    const velocityThreshold = 0.3;
 
-    if (dragX < -threshold && currentPage < pages.length - 1)
-      next = currentPage + 1;
-    if (dragX > threshold && currentPage > 0)
-      next = currentPage - 1;
+    if (
+      (dragX < -threshold || velocity < -velocityThreshold) &&
+      currentPage < pages.length - 1
+    ) next = currentPage + 1;
+
+    if (
+      (dragX > threshold || velocity > velocityThreshold) &&
+      currentPage > 0
+    ) next = currentPage - 1;
 
     if (next !== null) {
       isAnimating = true;
+
       pages[currentPage].classList.remove('active');
       pages[next].classList.add('active');
       currentPage = next;
@@ -104,5 +115,3 @@ export function initCarousel(wrapper, pages) {
     lock: v => (isLocked = v)
   };
 }
-
-
