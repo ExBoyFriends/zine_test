@@ -10,11 +10,9 @@ export function initLoader(pages, loader, dots) {
         loader.style.display = 'none';
         dots.classList.add('visible');
       }, 500);
-
     }, 1200);
   };
 
   if (document.readyState === 'complete') start();
   else window.addEventListener('load', start, { once: true });
 }
-
