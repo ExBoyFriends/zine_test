@@ -32,6 +32,7 @@ export function initCarousel(wrapper, pages) {
   function startDrag(x) {
     if (isAnimating) return;
     isDragging = true;
+    dragX = 0;
     startX = x;
     lastX = x;
     lastTime = Date.now();
