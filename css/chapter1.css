@@ -91,20 +91,15 @@ html, body {
   display: flex;
   gap: 10px;
   justify-content: center;
-
-  width: 88vw;
-  max-width: 540px;
-
   cursor: grab;
 
   touch-action: none;      /* ← ここだけ完全制御 */
 }
 
 .carousel-inner img {
-  width: 48%;
-  max-width: 260px;
+  width: 88vw;
+  max-width: 540px;
   height: auto;
-
   flex-shrink: 0;
 
   -webkit-user-drag: none;
