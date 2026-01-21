@@ -1,3 +1,6 @@
+/* ===============================
+   基本リセット・全体制御
+================================ */
 html, body {
   margin: 0;
   padding: 0;
@@ -5,56 +8,70 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #000;
+
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
+
+  /* ブラウザ標準に戻す */
+  touch-action: auto;
 }
 
 body {
   overscroll-behavior: none;
 }
 
-.carousel-page.active {
-  touch-action: pan-y;
-}
-
-
-/* 背景 */
+/* ===============================
+   背景
+================================ */
 .background {
   position: fixed;
   inset: 0;
-  background: url('../image/background.jpg') center/cover no-repeat;
+  background: url('../image/background.jpg') center / cover no-repeat;
   z-index: 0;
   animation: slowFade 20s ease-in-out infinite alternate;
 }
 
-/* ローダー */
+/* ===============================
+   ローダー
+================================ */
 #loader {
   position: fixed;
   inset: 0;
-  background: url('../image/background.jpg') center/cover no-repeat;
+  background: url('../image/background.jpg') center / cover no-repeat;
   z-index: 10;
   animation: siren 1.68s linear infinite;
 }
 
-/* カルーセル */
+/* ===============================
+   カルーセル全体
+================================ */
 .carousel-wrapper {
   position: fixed;
   inset: 0;
+  z-index: 1;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   overflow: hidden;
-  z-index: 1;
+
+  /* 縦方向だけブラウザに許可 */
+  touch-action: pan-y;
 }
 
-/* ページ */
+/* ===============================
+   ページ
+================================ */
 .carousel-page {
   position: absolute;
   inset: 0;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   opacity: 0;
   pointer-events: none;
   transition: opacity 1.4s ease;
@@ -65,11 +82,22 @@ body {
   pointer-events: all;
 }
 
-/* 中身 */
+/* ===============================
+   カルーセル中身
+================================ */
 .carousel-inner {
   display: flex;
   gap: 10px;
   justify-content: center;
+
+  cursor: grab;
+
+  /* ★ 横ドラッグはJSが完全制御 */
+  touch-action: none;
+}
+
+.carousel-inner.dragging {
+  cursor: grabbing;
 }
 
 .carousel-inner img {
@@ -77,13 +105,18 @@ body {
   max-width: 540px;
   border-radius: 8px;
   flex-shrink: 0;
+
   -webkit-user-drag: none;
 }
 
-/* 最終ページ */
+/* ===============================
+   最終ページ
+================================ */
 .carousel-inner.single {
   width: 100%;
   height: 100%;
+  justify-content: center;
+  align-items: center;
 }
 
 .last-img-stack {
@@ -92,6 +125,7 @@ body {
   max-width: 540px;
 }
 
+/* 上下共通 */
 .last-img {
   position: absolute;
   top: 50%;
@@ -101,22 +135,34 @@ body {
   -webkit-user-drag: none;
 }
 
+/* 上のドラッグ画像 */
 .last-img.top {
   z-index: 2;
   cursor: grab;
+
+  /* ★ ここが最重要 */
+  touch-action: none;
 }
 
+.last-img.top.dragging {
+  cursor: grabbing;
+}
+
+/* 下の固定画像 */
 .last-img.under {
   z-index: 1;
 }
 
-/* ドット */
+/* ===============================
+   ドット
+================================ */
 .dots {
   position: fixed;
   bottom: calc(40px + env(safe-area-inset-bottom));
   width: 100%;
   text-align: center;
   z-index: 20;
+
   opacity: 0;
   transition: opacity 0.8s ease;
 }
@@ -130,6 +176,7 @@ body {
   width: 5px;
   height: 8px;
   margin: 0 5px;
+
   background: rgba(200,200,200,0.25);
   box-shadow: 0 0 4px rgba(255,255,255,0.3);
 }
@@ -142,27 +189,28 @@ body {
 .left-dot {
   width: 12px;
   height: 12px;
-  clip-path: polygon(100% 0%,0% 50%,100% 100%);
+  clip-path: polygon(100% 0%, 0% 50%, 100% 100%);
 }
 
 .right-dot {
   width: 12px;
   height: 12px;
-  clip-path: polygon(0% 0%,100% 50%,0% 100%);
+  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
 }
 
-/* アニメーション */
+/* ===============================
+   アニメーション
+================================ */
 @keyframes slowFade {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(0.2); }
   100% { filter: brightness(1); }
 }
 
 @keyframes siren {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(0.2); }
   100% { filter: brightness(1); }
 }
-
 
 
