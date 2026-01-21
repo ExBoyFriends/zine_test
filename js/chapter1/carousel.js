@@ -92,14 +92,23 @@ export function initCarousel(wrapper, pages) {
   }
 
   // ===== イベント =====
-  wrapper.addEventListener('mousedown', e => startDrag(e.pageX));
-  wrapper.addEventListener('mousemove', e => drag(e.pageX));
-  wrapper.addEventListener('mouseup', endDrag);
-  wrapper.addEventListener('mouseleave', endDrag);
+ wrapper.addEventListener('pointerdown', e => {
+  wrapper.setPointerCapture(e.pointerId);
+  startDrag(e.clientX);
+});
 
-  wrapper.addEventListener('touchstart', e => startDrag(e.touches[0].pageX));
-  wrapper.addEventListener('touchmove', e => drag(e.touches[0].pageX));
-  wrapper.addEventListener('touchend', endDrag);
+wrapper.addEventListener('pointermove', e => {
+  drag(e.clientX);
+});
+
+wrapper.addEventListener('pointerup', () => {
+  endDrag();
+});
+
+wrapper.addEventListener('pointercancel', () => {
+  endDrag();
+});
+
 
   return {
     getCurrentPage: () => currentPage
