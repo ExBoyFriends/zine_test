@@ -1,116 +1,115 @@
-export function initCarousel(pages) {
+export function initCarousel(wrapper, pages) {
   let currentPage = 0;
+  let isDragging = false;
+  let startX = 0;
+  let currentX = 0;
   let isAnimating = false;
 
-  const inners = [...pages].map(p => p.querySelector('.carousel-inner'));
+  const threshold = () => wrapper.clientWidth * 0.25;
 
   /* ===== 初期表示 ===== */
-  pages.forEach((p, i) => {
-    p.classList.toggle('active', i === 0);
-  });
+  pages[0].classList.add('active');
   updateDots();
-
-  /* ===== 各ページにドラッグ付与 ===== */
-  inners.forEach((inner, index) => {
-    setupDrag(inner, index);
-  });
-
-  /* ===== ドラッグロジック ===== */
-  function setupDrag(inner, pageIndex) {
-    let isDragging = false;
-    let startX = 0;
-    let currentX = 0;
-
-    const width = () => inner.clientWidth;
-
-    const setX = x => {
-      inner.style.transform = `translateX(${x}px)`;
-    };
-
-    inner.addEventListener('pointerdown', e => {
-      if (isAnimating) return;
-      if (pageIndex !== currentPage) return;
-
-      isDragging = true;
-      startX = e.clientX;
-      currentX = 0;
-
-      inner.style.transition = 'none';
-      inner.setPointerCapture(e.pointerId);
-    });
-
-    inner.addEventListener('pointermove', e => {
-      if (!isDragging) return;
-
-      const dx = e.clientX - startX;
-
-      // 最終ページは「次へ」禁止
-      if (pageIndex === pages.length - 1 && dx < 0) return;
-
-      currentX = dx;
-      setX(dx);
-    });
-
-    inner.addEventListener('pointerup', () => {
-      if (!isDragging) return;
-      isDragging = false;
-
-      inner.style.transition = 'transform 0.35s ease';
-
-      const threshold = width() * 0.25;
-
-      if (currentX < -threshold && currentPage < pages.length - 1) {
-        goTo(currentPage + 1);
-      } else if (currentX > threshold && currentPage > 0) {
-        goTo(currentPage - 1);
-      } else {
-        setX(0);
-      }
-
-      currentX = 0;
-    });
-
-    inner.addEventListener('pointercancel', () => {
-      isDragging = false;
-      setX(0);
-    });
-  }
-
-  /* ===== ページ切替 ===== */
-  function goTo(next) {
-    if (next === currentPage) return;
-
-    isAnimating = true;
-
-    const currentInner = inners[currentPage];
-    const nextInner = inners[next];
-
-    currentInner.style.transform = '';
-    nextInner.style.transform = '';
-
-    pages[currentPage].classList.remove('active');
-    pages[next].classList.add('active');
-
-    currentPage = next;
-    updateDots();
-
-    setTimeout(() => {
-      isAnimating = false;
-    }, 350);
-  }
 
   /* ===== ドット ===== */
   function updateDots() {
     const dots = document.querySelectorAll('.dot');
-
     dots.forEach((dot, i) => {
       if (i === 0 || i === dots.length - 1) return;
       dot.classList.toggle('active', i === currentPage + 1);
     });
+    dots[0].style.opacity = currentPage === 0 ? 0 : 1;
+  }
 
-    if (dots[0]) {
-      dots[0].style.opacity = currentPage === 0 ? 0 : 1;
+  /* ===== 対象 inner ===== */
+  function getInner(page) {
+    return page.querySelector('.carousel-inner');
+  }
+
+  /* ===== Pointer ===== */
+  wrapper.addEventListener('pointerdown', e => {
+    if (isAnimating) return;
+
+    const page = pages[currentPage];
+    const inner = getInner(page);
+    if (!inner) return;
+
+    isDragging = true;
+    startX = e.clientX;
+    currentX = 0;
+
+    inner.style.transition = 'none';
+    inner.classList.add('dragging');
+
+    wrapper.setPointerCapture(e.pointerId);
+  });
+
+  wrapper.addEventListener('pointermove', e => {
+    if (!isDragging || isAnimating) return;
+
+    const dx = e.clientX - startX;
+    currentX = dx;
+
+    const page = pages[currentPage];
+    const inner = getInner(page);
+
+    // 最終ページで「次へ」無効
+    if (currentPage === pages.length - 1 && dx < 0) return;
+
+    inner.style.transform = `translateX(${dx}px)`;
+
+    /* フェード演出（今までと同じ印象） */
+    const r = Math.min(Math.abs(dx) / wrapper.clientWidth, 1);
+
+    if (dx < 0 && pages[currentPage + 1]) {
+      pages[currentPage + 1].style.opacity = r;
+      page.style.opacity = 1 - r;
     }
+
+    if (dx > 0 && pages[currentPage - 1]) {
+      pages[currentPage - 1].style.opacity = r;
+      page.style.opacity = 1 - r;
+    }
+  });
+
+  wrapper.addEventListener('pointerup', finish);
+  wrapper.addEventListener('pointercancel', finish);
+
+  function finish(e) {
+    if (!isDragging || isAnimating) return;
+    isDragging = false;
+
+    const dx = currentX;
+    const page = pages[currentPage];
+    const inner = getInner(page);
+
+    inner.classList.remove('dragging');
+    inner.style.transition = 'transform 0.35s ease-out';
+    inner.style.transform = 'translateX(0)';
+
+    let next = null;
+    if (dx < -threshold() && currentPage < pages.length - 1) {
+      next = currentPage + 1;
+    }
+    if (dx > threshold() && currentPage > 0) {
+      next = currentPage - 1;
+    }
+
+    pages.forEach(p => (p.style.opacity = ''));
+
+    if (next !== null) {
+      isAnimating = true;
+      pages[currentPage].classList.remove('active');
+      pages[next].classList.add('active');
+      currentPage = next;
+      updateDots();
+
+      setTimeout(() => {
+        isAnimating = false;
+      }, 1400);
+    }
+
+    wrapper.releasePointerCapture(e.pointerId);
   }
 
   return {
