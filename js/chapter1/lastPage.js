@@ -48,19 +48,24 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
 
     let dx = e.clientX - startX;
 
-    // 閉じている & 右ドラッグ → カルーセルへ
+    // 🔒 閉じている時の右ドラッグは「完全無反応」
     if (!opened && dx > 0) {
-      isDragging = false;
-      lastImg.releasePointerCapture(e.pointerId);
-      return;
+      dx = 0;
     }
 
-    // 抵抗感（左右共通）
-    dx *= RESISTANCE;
+    // 🟡 開いている時の右ドラッグは「抵抗感」
+    if (opened && dx > 0) {
+      dx *= RESISTANCE;
+    }
+
+    // 🟡 左ドラッグも抵抗（もう使わない操作）
+    if (dx < 0) {
+      dx *= RESISTANCE;
+    }
 
     e.stopPropagation();
 
-    const nextX = baseX + dx;
+    const nextX = Math.max(-half(), Math.min(0, baseX + dx));
     applyX(nextX);
   });
 
@@ -72,22 +77,23 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
     const dx = e.clientX - startX;
     isDragging = false;
 
-    // タップでのみ開閉
+    // タップで開閉
     if (Math.abs(dx) < TAP_THRESHOLD) {
       opened ? close() : open();
       return;
     }
 
-    // ドラッグ後は必ず元の位置へ
-    lastImg.style.transition = 'transform 0.4s ease-out';
+    // 状態を必ず正規位置に戻す
+    lastImg.style.transition =
+      'transform 0.4s ease-out';
     applyX(baseX);
   });
 
   /* ===== cancel ===== */
   lastImg.addEventListener('pointercancel', () => {
     isDragging = false;
-    lastImg.style.transition = 'transform 0.4s ease-out';
+    lastImg.style.transition =
+      'transform 0.4s ease-out';
     applyX(baseX);
   });
 }
-
