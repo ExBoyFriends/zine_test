@@ -1,11 +1,12 @@
 export function initCarousel(wrapper, pages) {
   let currentPage = 0;
   let isDragging = false;
-  let startX = 0;
-  let currentX = 0;
   let isAnimating = false;
 
-  const threshold = () => wrapper.clientWidth * 0.25;
+  let startX = 0;
+  let currentX = 0;
+
+  const pageWidth = () => wrapper.clientWidth;
 
   /* ===== 初期表示 ===== */
   pages[0].classList.add('active');
@@ -14,32 +15,22 @@ export function initCarousel(wrapper, pages) {
   /* ===== ドット ===== */
   function updateDots() {
     const dots = document.querySelectorAll('.dot');
+
     dots.forEach((dot, i) => {
       if (i === 0 || i === dots.length - 1) return;
       dot.classList.toggle('active', i === currentPage + 1);
     });
-    dots[0].style.opacity = currentPage === 0 ? 0 : 1;
-  }
 
-  /* ===== 対象 inner ===== */
-  function getInner(page) {
-    return page.querySelector('.carousel-inner');
+    dots[0].style.opacity = currentPage === 0 ? 0 : 1;
   }
 
   /* ===== Pointer ===== */
   wrapper.addEventListener('pointerdown', e => {
     if (isAnimating) return;
 
-    const page = pages[currentPage];
-    const inner = getInner(page);
-    if (!inner) return;
-
     isDragging = true;
     startX = e.clientX;
     currentX = 0;
-
-    inner.style.transition = 'none';
-    inner.classList.add('dragging');
 
     wrapper.setPointerCapture(e.pointerId);
   });
@@ -50,48 +41,38 @@ export function initCarousel(wrapper, pages) {
     const dx = e.clientX - startX;
     currentX = dx;
 
-    const page = pages[currentPage];
-    const inner = getInner(page);
-
-    // 最終ページで「次へ」無効
+    // 最終ページで左へ行くのは無効
     if (currentPage === pages.length - 1 && dx < 0) return;
 
-    inner.style.transform = `translateX(${dx}px)`;
+    const r = Math.min(Math.abs(dx) / pageWidth(), 1);
 
-    /* フェード演出（今までと同じ印象） */
-    const r = Math.min(Math.abs(dx) / wrapper.clientWidth, 1);
-
-    if (dx < 0 && pages[currentPage + 1]) {
+    if (dx < 0 && currentPage < pages.length - 1) {
       pages[currentPage + 1].style.opacity = r;
-      page.style.opacity = 1 - r;
+      pages[currentPage].style.opacity = 1 - r;
     }
 
-    if (dx > 0 && pages[currentPage - 1]) {
+    if (dx > 0 && currentPage > 0) {
       pages[currentPage - 1].style.opacity = r;
-      page.style.opacity = 1 - r;
+      pages[currentPage].style.opacity = 1 - r;
     }
   });
 
-  wrapper.addEventListener('pointerup', finish);
-  wrapper.addEventListener('pointercancel', finish);
+  wrapper.addEventListener('pointerup', finishDrag);
+  wrapper.addEventListener('pointercancel', finishDrag);
 
-  function finish(e) {
+  function finishDrag(e) {
     if (!isDragging || isAnimating) return;
+
     isDragging = false;
+    wrapper.releasePointerCapture(e.pointerId);
 
-    const dx = currentX;
-    const page = pages[currentPage];
-    const inner = getInner(page);
-
-    inner.classList.remove('dragging');
-    inner.style.transition = 'transform 0.35s ease-out';
-    inner.style.transform = 'translateX(0)';
-
+    const threshold = pageWidth() * 0.25;
     let next = null;
-    if (dx < -threshold() && currentPage < pages.length - 1) {
+
+    if (currentX < -threshold && currentPage < pages.length - 1) {
       next = currentPage + 1;
     }
-    if (dx > threshold() && currentPage > 0) {
+    if (currentX > threshold && currentPage > 0) {
       next = currentPage - 1;
     }
 
@@ -99,6 +80,7 @@ export function initCarousel(wrapper, pages) {
 
     if (next !== null) {
       isAnimating = true;
+
       pages[currentPage].classList.remove('active');
       pages[next].classList.add('active');
       currentPage = next;
@@ -108,11 +90,10 @@ export function initCarousel(wrapper, pages) {
         isAnimating = false;
       }, 1400);
     }
-
-    wrapper.releasePointerCapture(e.pointerId);
   }
 
   return {
     getCurrentPage: () => currentPage
   };
 }
+
