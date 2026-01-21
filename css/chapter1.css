@@ -43,41 +43,26 @@ body {
   position: fixed;
   inset: 0;
   z-index: 1;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   overflow: hidden;
-
-  /* 🔴 超重要：ここでタッチを完全に掴む */
   touch-action: none;
 }
 
 .carousel-page {
   position: absolute;
   inset: 0;
-
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
-
   opacity: 0;
   transition: opacity 1.4s ease;
-
-  /* 非アクティブは操作不可 */
-  pointer-events: none;
 }
 
 .carousel-page.active {
   opacity: 1;
-  pointer-events: auto; /* ← all ではなく auto */
-}
-
-.carousel-page.first-load {
-  opacity: 0;
-  transition: opacity 7.28s ease;
 }
 
 .carousel-inner {
@@ -86,24 +71,18 @@ body {
   justify-content: center;
   overflow: hidden;
   cursor: grab;
+
+  pointer-events: none;
 }
 
-.carousel-inner.single {
-  justify-content: center;
-}
-
-.carousel-inner img {
-  width: 88vw;
-  max-width: 540px;
-  border-radius: 8px;
-  flex-shrink: 0;
-
-  -webkit-user-drag: none;
+.carousel-page.active .carousel-inner {
+  pointer-events: auto;
 }
 
 .dragging {
   cursor: grabbing;
 }
+
 
 /* ===== ドット ===== */
 .dots {
