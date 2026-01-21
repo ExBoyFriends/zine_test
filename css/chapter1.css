@@ -77,6 +77,17 @@ body {
   pointer-events: none;
 }
 
+.carousel-inner img {
+  width: 48%;
+  max-width: 260px;
+
+  height: auto;
+  flex-shrink: 0;
+
+  -webkit-user-drag: none;
+}
+
+
 .carousel-page.active .carousel-inner {
   pointer-events: auto;
 }
