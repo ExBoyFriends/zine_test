@@ -10,34 +10,31 @@ export function initCarousel(wrapper, pages) {
 
   const pageWidth = wrapper.clientWidth;
 
-  /* ===== ドット更新 ===== */
+  /* ===== ドット ===== */
   function updateDots() {
     const dots = document.querySelectorAll('.dot');
 
     dots.forEach((dot, i) => {
-      // 左右三角は除外
       if (i === 0 || i === dots.length - 1) return;
       dot.classList.toggle('active', i === currentPage + 1);
     });
 
-    // 左三角の表示制御
     dots[0].style.opacity = currentPage === 0 ? 0 : 1;
   }
 
   updateDots();
 
   /* ===== ドラッグ開始 ===== */
-  function startDrag(x) {
+  function startDrag(e) {
     if (isAnimating) return;
-
-    // 最後ページではカルーセルドラッグしない
-    if (currentPage === pages.length - 1) return;
 
     isDragging = true;
     dragX = 0;
-    startX = x;
-    lastX = x;
+    startX = e.clientX;
+    lastX = e.clientX;
     lastTime = Date.now();
+
+    wrapper.setPointerCapture(e.pointerId);
   }
 
   /* ===== ドラッグ中 ===== */
@@ -51,13 +48,18 @@ export function initCarousel(wrapper, pages) {
     lastX = x;
     lastTime = now;
 
-    // 次ページへ
+    // 🔴 最後ページでは「次へ」は無効
+    if (dragX < 0 && currentPage === pages.length - 1) {
+      return;
+    }
+
+    // 次へ
     if (dragX < 0 && currentPage < pages.length - 1) {
       const ratio = Math.min(Math.abs(dragX) / pageWidth, 1);
       pages[currentPage + 1].style.opacity = ratio;
       pages[currentPage].style.opacity = 1 - ratio;
     }
-    // 前ページへ
+    // 前へ（← 最後ページでも有効）
     else if (dragX > 0 && currentPage > 0) {
       const ratio = Math.min(Math.abs(dragX) / pageWidth, 1);
       pages[currentPage - 1].style.opacity = ratio;
@@ -99,7 +101,6 @@ export function initCarousel(wrapper, pages) {
         isAnimating = false;
       }, 1400);
     } else {
-      // 元のページに戻す
       pages.forEach((p, i) => {
         p.style.opacity = i === currentPage ? 1 : 0;
       });
@@ -110,10 +111,9 @@ export function initCarousel(wrapper, pages) {
     updateDots();
   }
 
-  /* ===== Pointer Events ===== */
+  /* ===== Pointer ===== */
   wrapper.addEventListener('pointerdown', e => {
-    wrapper.setPointerCapture(e.pointerId);
-    startDrag(e.clientX);
+    startDrag(e);
   });
 
   wrapper.addEventListener('pointermove', e => {
@@ -121,19 +121,13 @@ export function initCarousel(wrapper, pages) {
     drag(e.clientX);
   });
 
-  wrapper.addEventListener('pointerup', () => {
-    endDrag();
-  });
-
-  wrapper.addEventListener('pointercancel', () => {
-    endDrag();
-  });
+  wrapper.addEventListener('pointerup', endDrag);
+  wrapper.addEventListener('pointercancel', endDrag);
 
   return {
     getCurrentPage: () => currentPage
   };
 }
-
 
 
 
