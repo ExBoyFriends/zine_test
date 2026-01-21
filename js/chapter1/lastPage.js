@@ -5,17 +5,24 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
 
   const rightDot = document.querySelector('.dot.right-dot');
   const half = () => lastImg.clientWidth / 2;
+  const TAP_THRESHOLD = 6; // px
 
-  const setOpened = () => {
-    if (opened) return;
-
+  const open = () => {
     opened = true;
     lastImg.style.transition =
       'transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1)';
     lastImg.style.transform =
       `translate(-50%, -50%) translateX(${-half()}px)`;
-
     rightDot?.classList.add('active');
+  };
+
+  const close = () => {
+    opened = false;
+    lastImg.style.transition =
+      'transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1)';
+    lastImg.style.transform =
+      'translate(-50%, -50%) translateX(0px)';
+    rightDot?.classList.remove('active');
   };
 
   /* ===== pointerdown ===== */
@@ -34,14 +41,14 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
 
     const dx = e.clientX - startX;
 
-    // 👉 右ドラッグは常にカルーセルへ返す
+    // 右ドラッグは常にカルーセルへ返す
     if (dx > 0) {
       isDragging = false;
       lastImg.releasePointerCapture(e.pointerId);
       return;
     }
 
-    // すでに開いていたら追従させない
+    // 開いているときは追従させない
     if (opened) return;
 
     e.stopPropagation();
@@ -56,10 +63,19 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
     if (!isDragging) return;
     e.stopPropagation();
 
+    const dx = e.clientX - startX;
     isDragging = false;
 
-    // 👉 離したら必ず開く
-    setOpened();
+    // 👇 ほぼ動いていなければ「タップ」
+    if (Math.abs(dx) < TAP_THRESHOLD) {
+      opened ? close() : open();
+      return;
+    }
+
+    // 左ドラッグしたら必ず開く
+    if (dx < 0) {
+      open();
+    }
   });
 
   /* ===== cancel ===== */
