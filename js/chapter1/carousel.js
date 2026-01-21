@@ -3,9 +3,6 @@ export function initCarousel(wrapper, pages) {
   let isDragging = false;
   let startX = 0;
   let dragX = 0;
-  let velocity = 0;
-  let lastX = 0;
-  let lastTime = 0;
   let isAnimating = false;
 
   const pageWidth = () => wrapper.clientWidth;
@@ -33,8 +30,6 @@ export function initCarousel(wrapper, pages) {
     isDragging = true;
     startX = e.clientX;
     dragX = 0;
-    lastX = e.clientX;
-    lastTime = performance.now();
 
     wrapper.setPointerCapture(e.pointerId);
   });
@@ -42,15 +37,9 @@ export function initCarousel(wrapper, pages) {
   wrapper.addEventListener('pointermove', e => {
     if (!isDragging || isAnimating) return;
 
-    const x = e.clientX;
-    dragX = x - startX;
+    dragX = e.clientX - startX;
 
-    const now = performance.now();
-    velocity = (x - lastX) / (now - lastTime);
-    lastX = x;
-    lastTime = now;
-
-    // 🔴 最終ページでは「次へ」だけ無効
+    // 最終ページで「次へ」は無効
     if (currentPage === pages.length - 1 && dragX < 0) return;
 
     if (dragX < 0 && currentPage < pages.length - 1) {
@@ -69,9 +58,11 @@ export function initCarousel(wrapper, pages) {
   wrapper.addEventListener('pointerup', finishDrag);
   wrapper.addEventListener('pointercancel', finishDrag);
 
-  function finishDrag() {
+  function finishDrag(e) {
     if (!isDragging || isAnimating) return;
+
     isDragging = false;
+    wrapper.releasePointerCapture(e.pointerId);
 
     let next = null;
     const threshold = pageWidth() * 0.25;
@@ -98,6 +89,12 @@ export function initCarousel(wrapper, pages) {
       }, 1400);
     }
   }
+
+  return {
+    getCurrentPage: () => currentPage
+  };
+}
+
 
   return {
     getCurrentPage: () => currentPage
