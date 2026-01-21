@@ -1,30 +1,40 @@
 export function initCarousel(wrapper, pages) {
-  let startX = 0,
-      currentPage = 0,
-      isDragging = false,
-      dragX = 0,
-      lastX = 0,
-      lastTime = 0,
-      velocity = 0,
-      isAnimating = false;
+  let currentPage = 0;
+  let startX = 0;
+  let isDragging = false;
 
-  const pageWidth = wrapper.clientWidth;
+  const width = wrapper.clientWidth;
 
-  function updateDots() {
-    const dots = document.querySelectorAll('.dot');
-    dots.forEach((dot, i) => {
-      if (i === 0 || i === dots.length - 1) return;
-      dot.classList.toggle('active', i === currentPage + 1);
+  function showPage(index) {
+    pages.forEach((p, i) => {
+      p.classList.toggle('active', i === index);
     });
-
-    dots[0].style.opacity = currentPage === 0 ? 0 : 1;
   }
 
-  // 👇 ★これを追加するだけ
-  updateDots();
+  wrapper.addEventListener('pointerdown', e => {
+    isDragging = true;
+    startX = e.clientX;
+    wrapper.setPointerCapture(e.pointerId);
+  });
+
+  wrapper.addEventListener('pointerup', e => {
+    if (!isDragging) return;
+    isDragging = false;
+
+    const dx = e.clientX - startX;
+
+    if (dx < -width * 0.25 && currentPage < pages.length - 1) {
+      currentPage++;
+    } else if (dx > width * 0.25 && currentPage > 0) {
+      currentPage--;
+    }
+
+    showPage(currentPage);
+  });
+
+  showPage(0);
 
   return {
     getCurrentPage: () => currentPage
   };
 }
-
