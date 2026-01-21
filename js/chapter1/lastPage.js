@@ -87,6 +87,10 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
     lastImg.style.transition =
       'transform 0.4s ease-out';
     applyX(baseX);
+
+     startX = e.clientX;
+  baseX = nextX;
+    
   });
 
   /* ===== cancel ===== */
