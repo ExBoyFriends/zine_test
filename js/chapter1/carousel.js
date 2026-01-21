@@ -24,15 +24,11 @@ export function initCarousel(wrapper, pages) {
       dot.classList.toggle('active', i === currentPage + 1);
     });
     dots[0].style.opacity = currentPage === 0 ? 0 : 1;
-//  dots[dots.length - 1].style.opacity = currentPage === pages.length - 1 ? 0 : 1;
   }
-  
- updateDots();
 
-  return {
-    getCurrentPage: () => currentPage
-  };
-}
+  // ⭐ 初期状態を反映
+  updateDots();
+
   // ===== ページ切替ドラッグ =====
   function startDrag(x) {
     if (isAnimating) return;
@@ -50,7 +46,6 @@ export function initCarousel(wrapper, pages) {
     lastX = x;
     lastTime = now;
 
-    // ドラッグによるページフェード
     if (dragX < 0 && currentPage < pages.length - 1) {
       const ratio = Math.min(Math.abs(dragX) / pageWidth, 1);
       pages[currentPage + 1].style.opacity = ratio;
@@ -70,8 +65,10 @@ export function initCarousel(wrapper, pages) {
     const threshold = pageWidth * 0.25;
     const velocityThreshold = 0.25;
 
-    if ((dragX < -threshold || velocity < -velocityThreshold) && currentPage < pages.length - 1) nextPage = currentPage + 1;
-    else if ((dragX > threshold || velocity > velocityThreshold) && currentPage > 0) nextPage = currentPage - 1;
+    if ((dragX < -threshold || velocity < -velocityThreshold) && currentPage < pages.length - 1)
+      nextPage = currentPage + 1;
+    else if ((dragX > threshold || velocity > velocityThreshold) && currentPage > 0)
+      nextPage = currentPage - 1;
 
     if (nextPage !== null) {
       isAnimating = true;
@@ -82,8 +79,7 @@ export function initCarousel(wrapper, pages) {
       currentPage = nextPage;
     } else {
       pages.forEach((p, i) => {
-        if (i === currentPage) p.style.opacity = 1;
-        else p.style.opacity = 0;
+        p.style.opacity = i === currentPage ? 1 : 0;
       });
     }
 
@@ -118,8 +114,14 @@ export function initCarousel(wrapper, pages) {
       inner.scrollLeft = scrollLeft + (start - (e.pageX - inner.offsetLeft));
     });
 
-    inner.addEventListener('mouseup', () => { isInnerDrag = false; inner.classList.remove('dragging'); });
-    inner.addEventListener('mouseleave', () => { isInnerDrag = false; inner.classList.remove('dragging'); });
+    inner.addEventListener('mouseup', () => {
+      isInnerDrag = false;
+      inner.classList.remove('dragging');
+    });
+    inner.addEventListener('mouseleave', () => {
+      isInnerDrag = false;
+      inner.classList.remove('dragging');
+    });
 
     inner.addEventListener('touchstart', e => {
       isInnerDrag = true;
@@ -130,8 +132,14 @@ export function initCarousel(wrapper, pages) {
       if (!isInnerDrag) return;
       inner.scrollLeft = scrollLeft + (start - (e.touches[0].pageX - inner.offsetLeft));
     });
-    inner.addEventListener('touchend', () => { isInnerDrag = false; });
+    inner.addEventListener('touchend', () => {
+      isInnerDrag = false;
+    });
   });
 
-  return { getCurrentPage: () => currentPage };
+  // ✅ return は1回だけ
+  return {
+    getCurrentPage: () => currentPage
+  };
 }
+
