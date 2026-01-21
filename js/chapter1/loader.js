@@ -1,5 +1,6 @@
 export function initLoader(pages, loader, dotsContainer) {
-  window.addEventListener('load', () => {
+
+  const start = () => {
     const firstPage = pages[0];
 
     firstPage.classList.add('first-load', 'active');
@@ -13,15 +14,22 @@ export function initLoader(pages, loader, dotsContainer) {
 
       firstPage.classList.remove('first-load');
 
-      // 👇 ドット表示をワンテンポ遅らせる
+      // ドットを少し遅らせて表示
       setTimeout(() => {
         dotsContainer.classList.add('visible');
-      }, 400); // ← 好みで調整（300〜600ms）
+      }, 400);
 
       setTimeout(() => {
         loader.style.display = 'none';
       }, 500);
 
     }, 7280);
-  });
+  };
+
+  // 👇 ここが超重要
+  if (document.readyState === 'complete') {
+    start(); // すでに load 済み
+  } else {
+    window.addEventListener('load', start, { once: true });
+  }
 }
