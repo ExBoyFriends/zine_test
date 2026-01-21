@@ -14,6 +14,7 @@ const carousel = initCarousel(wrapper, pages);
 
 initLastPage(
   lastImg,
-  carousel,
+  carousel.getCurrentPage,
   pages.length
 );
+
