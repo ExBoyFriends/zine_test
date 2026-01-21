@@ -181,4 +181,4 @@ body { min-height:100svh; overflow:hidden;
 
 /* アニメーション */
 @keyframes slowFade {0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);}}
-@keyframes siren {0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);}}　　　　　　　　どうなってる？
+@keyframes siren {0%{filter:brightness(1);}50%{filter:brightness(0.2);}100%{filter:brightness(1);}}　　　　　
