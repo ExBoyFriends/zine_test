@@ -1,35 +1,20 @@
-export function initLoader(pages, loader, dotsContainer) {
-
+export function initLoader(pages, loader, dots) {
   const start = () => {
-    const firstPage = pages[0];
-
-    firstPage.classList.add('first-load', 'active');
-
-    loader.style.display = 'block';
-    loader.style.opacity = '1';
+    pages[0].classList.add('active');
 
     setTimeout(() => {
       loader.style.transition = 'opacity 0.5s ease';
       loader.style.opacity = '0';
 
-      firstPage.classList.remove('first-load');
-
-      // ドットを少し遅らせて表示
-      setTimeout(() => {
-        dotsContainer.classList.add('visible');
-      }, 400);
-
       setTimeout(() => {
         loader.style.display = 'none';
+        dots.classList.add('visible');
       }, 500);
 
-    }, 7280);
+    }, 1200);
   };
 
-  // 👇 ここが超重要
-  if (document.readyState === 'complete') {
-    start(); // すでに load 済み
-  } else {
-    window.addEventListener('load', start, { once: true });
-  }
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start, { once: true });
 }
+
