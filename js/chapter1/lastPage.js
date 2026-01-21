@@ -6,6 +6,7 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
 
   const rightDot = document.querySelector('.dot.right-dot');
   const half = () => lastImg.clientWidth / 2;
+
   const TAP_THRESHOLD = 6;
   const RESISTANCE = 0.25;
 
@@ -48,56 +49,81 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
 
     let dx = e.clientX - startX;
 
-    // 🔒 閉じている時の右ドラッグは「完全無反応」
+    // 閉じている時の右ドラッグ → カルーセルへ返す
+    if (!opened && dx > 0) {
+      isDragging = false;
+      lastImg.releasePointerCapture(e.pointerId);
+      return;
+    }
+
+    // 開いている時の左右ドラッグ → 抵抗感のみ
+    dx *= RESISTANCE;
+
+    e.stopPropagation();
+
+    const nextX = Math.max(-half(), Math.min(0, baseX + dx));
+    applyX(nextX);
+
+    // 🔑 ここが超重要：毎回同期
+    startX = e.clientX;
+    baseX = nextX;
+  });
+
+   // pointermove で baseX を更新
+  lastImg.addEventListener('pointermove', e => {
+    if (!isDragging) return;
+
+    let dx = e.clientX - startX;
+
+    // 閉じている時の右ドラッグ → カルーセルへ返す
     if (!opened && dx > 0) {
       dx = 0;
     }
 
-    // 🟡 開いている時の右ドラッグは「抵抗感」
+    // 開いている時の右ドラッグ → 抵抗感
     if (opened && dx > 0) {
       dx *= RESISTANCE;
     }
 
-    // 🟡 左ドラッグも抵抗（もう使わない操作）
+    // 左ドラッグも抵抗（使わないけど）
     if (dx < 0) {
       dx *= RESISTANCE;
     }
 
     e.stopPropagation();
 
-    const nextX = Math.max(-half(), Math.min(0, baseX + dx));
+    const nextX = Math.max(-half(), Math.min(0, baseX + dx));  // nextX を baseX に代入して更新
     applyX(nextX);
+
+    // ここで baseX と startX を更新（pointermove のたびに）
+    startX = e.clientX;
+    baseX = nextX; // baseX を毎回更新
   });
 
-  /* ===== pointerup ===== */
+  // pointerup では baseX をそのまま使って戻す
   lastImg.addEventListener('pointerup', e => {
     if (!isDragging) return;
     e.stopPropagation();
 
-    const dx = e.clientX - startX;
+    const moved = Math.abs(e.clientX - startX);
     isDragging = false;
 
     // タップで開閉
-    if (Math.abs(dx) < TAP_THRESHOLD) {
+    if (moved < TAP_THRESHOLD) {
       opened ? close() : open();
       return;
     }
 
-    // 状態を必ず正規位置に戻す
-    lastImg.style.transition =
-      'transform 0.4s ease-out';
-    applyX(baseX);
-
-     startX = e.clientX;
-  baseX = nextX;
-    
+    // ドラッグ後は必ず正規位置へ
+    lastImg.style.transition = 'transform 0.4s ease-out';
+    applyX(baseX); // baseX を使って状態を戻す
   });
+
 
   /* ===== cancel ===== */
   lastImg.addEventListener('pointercancel', () => {
     isDragging = false;
-    lastImg.style.transition =
-      'transform 0.4s ease-out';
+    lastImg.style.transition = 'transform 0.4s ease-out';
     applyX(baseX);
   });
 }
