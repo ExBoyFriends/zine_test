@@ -47,7 +47,7 @@ body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  touch-action: none;
+  touch-action: pan-y;
 }
 
 .carousel-page {
