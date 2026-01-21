@@ -89,12 +89,11 @@ body {
 }
 
 .carousel-inner img {
-  width: 48%;
-  max-width: 260px;
+  width: 88vw;
+  max-width: 540px;
   height: auto;
 
   flex-shrink: 0;
-
   -webkit-user-drag: none;
 }
 
