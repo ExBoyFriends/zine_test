@@ -94,9 +94,3 @@ export function initCarousel(wrapper, pages) {
     getCurrentPage: () => currentPage
   };
 }
-
-
-  return {
-    getCurrentPage: () => currentPage
-  };
-}
