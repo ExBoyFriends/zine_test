@@ -12,7 +12,7 @@ html, body {
   -webkit-touch-callout: none;
 
   /* 全体はブラウザ標準ジェスチャ許可 */
-  touch-action: auto;
+  touch-action: none;
 }
 
 body {
@@ -51,7 +51,7 @@ body {
   overflow: hidden;
 
   /* 縦スクロールのみ許可（横はJS制御） */
-  touch-action: pan-y;
+  touch-action: auto;
 }
 
 .carousel-page {
@@ -85,7 +85,7 @@ body {
   cursor: grab;
 
   /* カルーセル操作はJSで完全制御 */
-  touch-action: none;
+  touch-action: auto;
 }
 
 .carousel-inner img {
@@ -186,7 +186,7 @@ body {
   cursor: grab;
 
   /* 最終ページのドラッグ専用 */
-  touch-action: none;
+  touch-action: auto;
 }
 
 /* 下のリンク画像 */
