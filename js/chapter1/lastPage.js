@@ -3,6 +3,7 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
   let startX = 0;
   let startOffset = 0;
   let currentX = 0;
+  let allowCarousel = false;
 
   const rightDot = document.querySelector('.dot.right-dot');
 
@@ -15,11 +16,7 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
   };
 
   const updateDot = () => {
-    if (currentX < 0) {
-      rightDot?.classList.add('active');
-    } else {
-      rightDot?.classList.remove('active');
-    }
+    rightDot?.classList.toggle('active', currentX < 0);
   };
 
   setX(0);
@@ -28,30 +25,28 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
   lastImg.addEventListener('pointerdown', e => {
     if (getCurrentPage() !== totalPages - 1) return;
 
-    isDragging = true;
     startX = e.clientX;
     startOffset = currentX;
 
-    lastImg.style.transition = 'none';
-    lastImg.setPointerCapture(e.pointerId);
+    // 🔑 初期位置 ＆ 右ドラッグ → 最初から親に任せる
+    allowCarousel = currentX === 0;
+
+    if (!allowCarousel) {
+      e.stopPropagation();
+      isDragging = true;
+      lastImg.style.transition = 'none';
+      lastImg.setPointerCapture(e.pointerId);
+    }
   });
 
   lastImg.addEventListener('pointermove', e => {
     if (!isDragging) return;
 
+    e.stopPropagation();
+
     const dx = e.clientX - startX;
     const nextX = startOffset + dx;
 
-    // ▶ 右ドラッグ ＆ 初期位置 → 親に渡す
-    if (nextX > 0 && currentX === 0) {
-      isDragging = false;
-      lastImg.releasePointerCapture(e.pointerId);
-      return; // stopPropagationしない
-    }
-
-    e.stopPropagation();
-
-    // 左右制限
     setX(Math.max(-half(), Math.min(0, nextX)));
     updateDot();
   });
@@ -59,12 +54,12 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
   lastImg.addEventListener('pointerup', e => {
     if (!isDragging) return;
 
-    isDragging = false;
     e.stopPropagation();
+    isDragging = false;
 
     lastImg.style.transition = 'transform 0.3s ease-out';
 
-    // 🔥 離したら必ずスナップ
+    // 🔥 必ずスナップ
     if (Math.abs(currentX) > half() / 2) {
       setX(-half());
     } else {
@@ -82,4 +77,3 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
     updateDot();
   });
 }
-
