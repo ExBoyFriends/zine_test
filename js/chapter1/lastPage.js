@@ -1,74 +1,49 @@
-export function initLastPage(lastImg, getCurrentPage, totalPages) {
-  let isDragging = false;
+export function initLastPage(lastImg, carousel, totalPages) {
   let startX = 0;
   let currentX = 0;
+  let dragging = false;
 
   const rightDot = document.querySelector('.dot.right-dot');
 
-  const getHalf = () => lastImg.clientWidth / 2;
-
-  const setTransform = x => {
+  const half = () => lastImg.clientWidth / 2;
+  const setX = x =>
     lastImg.style.transform =
       `translate(-50%, -50%) translateX(${x}px)`;
-  };
 
-  setTransform(0);
+  setX(0);
 
-  /* ===== ドラッグ開始 ===== */
   lastImg.addEventListener('pointerdown', e => {
-    if (getCurrentPage() !== totalPages - 1) return;
+    if (carousel.getCurrentPage() !== totalPages - 1) return;
 
-    // 🔴 ここが超重要：カルーセル側にイベントを渡さない
-    e.stopPropagation();
-
-    isDragging = true;
+    dragging = true;
     startX = e.clientX;
     lastImg.style.transition = 'none';
-    lastImg.classList.add('dragging');
 
-    // 右ドットのハイライトを消す
+    carousel.lock(true);
     rightDot?.classList.remove('active');
 
     lastImg.setPointerCapture(e.pointerId);
   });
 
-  /* ===== ドラッグ中 ===== */
   lastImg.addEventListener('pointermove', e => {
-    if (!isDragging) return;
-    e.stopPropagation();
-
-    const dx = e.clientX - startX;
-    currentX = Math.max(-getHalf(), Math.min(0, dx));
-    setTransform(currentX);
+    if (!dragging) return;
+    currentX = Math.max(-half(), Math.min(0, e.clientX - startX));
+    setX(currentX);
   });
 
-  /* ===== ドラッグ終了 ===== */
-  lastImg.addEventListener('pointerup', e => {
-    if (!isDragging) return;
-    e.stopPropagation();
+  lastImg.addEventListener('pointerup', () => {
+    if (!dragging) return;
+    dragging = false;
 
-    isDragging = false;
-    lastImg.classList.remove('dragging');
     lastImg.style.transition = 'transform 0.3s ease-out';
 
-    if (Math.abs(currentX) > getHalf() / 2) {
-      // 半分以上 → 左に固定
-      setTransform(-getHalf());
-      currentX = -getHalf();
-      // ドットは消えたまま
+    if (Math.abs(currentX) > half() / 2) {
+      setX(-half());
     } else {
-      // 戻す
-      setTransform(0);
-      currentX = 0;
+      setX(0);
       rightDot?.classList.add('active');
+      carousel.lock(false);
     }
-  });
-
-  lastImg.addEventListener('pointercancel', e => {
-    e.stopPropagation();
-    isDragging = false;
-    setTransform(0);
-    rightDot?.classList.add('active');
   });
 }
 
