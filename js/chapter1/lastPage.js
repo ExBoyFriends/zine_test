@@ -51,32 +51,6 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
 
     // 閉じている時の右ドラッグ → カルーセルへ返す
     if (!opened && dx > 0) {
-      isDragging = false;
-      lastImg.releasePointerCapture(e.pointerId);
-      return;
-    }
-
-    // 開いている時の左右ドラッグ → 抵抗感のみ
-    dx *= RESISTANCE;
-
-    e.stopPropagation();
-
-    const nextX = Math.max(-half(), Math.min(0, baseX + dx));
-    applyX(nextX);
-
-    // 🔑 ここが超重要：毎回同期
-    startX = e.clientX;
-    baseX = nextX;
-  });
-
-   // pointermove で baseX を更新
-  lastImg.addEventListener('pointermove', e => {
-    if (!isDragging) return;
-
-    let dx = e.clientX - startX;
-
-    // 閉じている時の右ドラッグ → カルーセルへ返す
-    if (!opened && dx > 0) {
       dx = 0;
     }
 
@@ -92,7 +66,7 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
 
     e.stopPropagation();
 
-    const nextX = Math.max(-half(), Math.min(0, baseX + dx));  // nextX を baseX に代入して更新
+    const nextX = Math.max(-half(), Math.min(0, baseX + dx));
     applyX(nextX);
 
     // ここで baseX と startX を更新（pointermove のたびに）
@@ -100,7 +74,7 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
     baseX = nextX; // baseX を毎回更新
   });
 
-  // pointerup では baseX をそのまま使って戻す
+  /* ===== pointerup ===== */
   lastImg.addEventListener('pointerup', e => {
     if (!isDragging) return;
     e.stopPropagation();
@@ -118,7 +92,6 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
     lastImg.style.transition = 'transform 0.4s ease-out';
     applyX(baseX); // baseX を使って状態を戻す
   });
-
 
   /* ===== cancel ===== */
   lastImg.addEventListener('pointercancel', () => {
