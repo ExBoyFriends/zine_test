@@ -26,7 +26,13 @@ export function initCarousel(wrapper, pages) {
     dots[0].style.opacity = currentPage === 0 ? 0 : 1;
 //  dots[dots.length - 1].style.opacity = currentPage === pages.length - 1 ? 0 : 1;
   }
+  
+ updateDots();
 
+  return {
+    getCurrentPage: () => currentPage
+  };
+}
   // ===== ページ切替ドラッグ =====
   function startDrag(x) {
     if (isAnimating) return;
