@@ -1,7 +1,6 @@
 export function initLastPage(lastImg, getCurrentPage, totalPages) {
   let isDragging = false;
   let startX = 0;
-  let startOffset = 0;
   let currentX = 0;
 
   const rightDot = document.querySelector('.dot.right-dot');
@@ -26,8 +25,6 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
 
     isDragging = true;
     startX = e.clientX;
-    startOffset = currentX;
-
     lastImg.style.transition = 'none';
     lastImg.setPointerCapture(e.pointerId);
   });
@@ -36,23 +33,23 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
     if (!isDragging) return;
 
     const dx = e.clientX - startX;
-    let nextX = startOffset + dx;
 
-    /* 🔴 右ドラッグの扱いが最重要 */
-    if (nextX > 0) {
-      // 画像が中央にある時だけカルーセルへ返す
-      if (startOffset === 0) {
-        isDragging = false;
-        lastImg.releasePointerCapture(e.pointerId);
-        return;
-      }
-      nextX = 0;
+    /* 🔴 ここが最重要 */
+    if (currentX === 0 && dx > 0) {
+      // 右ドラッグ → カルーセルへ返す
+      isDragging = false;
+      lastImg.releasePointerCapture(e.pointerId);
+      return;
     }
 
-    if (nextX < -half()) nextX = -half();
-
     e.stopPropagation();
+
+    let nextX = currentX + dx;
+    if (nextX < -half()) nextX = -half();
+    if (nextX > 0) nextX = 0;
+
     setX(nextX);
+    startX = e.clientX;
   });
 
   lastImg.addEventListener('pointerup', e => {
@@ -75,3 +72,4 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
     setX(0);
   });
 }
+
