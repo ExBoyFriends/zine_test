@@ -7,13 +7,13 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   const rightDot = document.querySelector('.dot.right-dot');
 
   const applyX = x => {
-    wrapper.style.transform =
-      `translate(-50%, -50%) translateX(${x}px)`;
+    slideTop.style.transition = 'transform 0.35s ease-out';
+    slideTop.style.transform = translateX(${x}px)`;
   };
 
   const open = () => {
     opened = true;
-    applyX(-slideTop.clientWidth);
+    applyX(-slideTop.clientWidth / 2);
     rightDot?.classList.add('active');
   };
 
