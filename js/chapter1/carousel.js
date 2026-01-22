@@ -22,8 +22,9 @@ export function initCarousel(wrapper, pages) {
   wrapper.addEventListener('pointermove', e => {
     if (!dragging) return;
     dx = e.clientX - startX;
-    const inner = pages[current].querySelector('.carousel-inner');
-    inner.style.transform = `translateX(${dx}px)`;
+    pages[current]
+      .querySelector('.carousel-inner')
+      .style.transform = `translateX(${dx}px)`;
   });
 
   wrapper.addEventListener('pointerup', () => {
