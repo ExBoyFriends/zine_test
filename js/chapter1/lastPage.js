@@ -6,10 +6,11 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   const slideTop = document.querySelector('.slide-top');
   const rightDot = document.querySelector('.dot.right-dot');
 
-  const applyX = x => {
-    slideTop.style.transition = 'transform 0.35s ease-out';
-    slideTop.style.transform = translateX(${x}px)`;
-  };
+ const applyX = x => {
+  slideTop.style.transition = 'transform 0.35s ease-out';
+  slideTop.style.transform = `translateX(${x}px)`;
+};
+
 
   const open = () => {
     opened = true;
