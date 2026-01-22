@@ -147,16 +147,23 @@ body {
 /* tap-cover = 当たり判定専用 */
 .tap-cover {
   position: absolute;
-  top: 0;
-  left: 0;
+  
+  /* ① 中央基準 */
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  
   width: 180px;
   height: 260px;
+  
   pointer-events: auto;   
 
   background: transparent; 
   z-index: 3;
   
-  outline: 2px solid blue; /* 確認用 */
+  /* ③ 調整用（あとで消す） */
+  outline: 2px solid red;
+  background: rgba(255,0,0,.1);
 }
 
 .last-img {
