@@ -38,8 +38,8 @@ body {
   inset: 0;
   z-index: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  /*justify-content: center;*/
+ /* align-items: center;*/
   overflow: hidden;
 }
 
@@ -49,8 +49,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: 0;
-  pointer-events: none;
+  opacity: 1;
+  pointer-events: auto;
   transition: opacity 1.4s ease;
 }
 
@@ -87,10 +87,6 @@ body {
   z-index: 9;
   opacity: 0;
   transition: opacity 0.8s ease;
-}
-
-.dots.visible {
-  opacity: 1;
 }
 
 .dot {
