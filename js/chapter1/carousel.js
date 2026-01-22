@@ -1,117 +1,50 @@
 export function initCarousel(wrapper, pages) {
-  let currentPage = 0;
-  let isDragging = false;
+  let current = 0;
   let startX = 0;
-  let currentX = 0;
-  let isAnimating = false;
+  let dx = 0;
+  let dragging = false;
 
   const threshold = () => wrapper.clientWidth * 0.25;
 
-  /* ===== 初期表示 ===== */
-  pages[0].classList.add('active');
-  updateDots();
-
-  /* ===== ドット ===== */
   function updateDots() {
-    const dots = document.querySelectorAll('.dot');
-    dots.forEach((dot, i) => {
-      if (i === 0 || i === dots.length - 1) return;
-      dot.classList.toggle('active', i === currentPage + 1);
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      if (i === 0 || i === 6) return;
+      d.classList.toggle('active', i === current + 1);
     });
-    dots[0].style.opacity = currentPage === 0 ? 0 : 1;
   }
 
-  /* ===== 対象 inner ===== */
-  function getInner(page) {
-    return page.querySelector('.carousel-inner');
-  }
-
-  /* ===== Pointer ===== */
   wrapper.addEventListener('pointerdown', e => {
-    if (isAnimating) return;
-
-    const page = pages[currentPage];
-    const inner = getInner(page);
-    if (!inner) return;
-
-    isDragging = true;
+    dragging = true;
     startX = e.clientX;
-    currentX = 0;
-
-    inner.style.transition = 'none';
-    inner.classList.add('dragging');
-
-    wrapper.setPointerCapture(e.pointerId);
+    dx = 0;
   });
 
   wrapper.addEventListener('pointermove', e => {
-    if (!isDragging || isAnimating) return;
-
-    const dx = e.clientX - startX;
-    currentX = dx;
-
-    const page = pages[currentPage];
-    const inner = getInner(page);
-
-    // 最終ページで「次へ」無効
-    if (currentPage === pages.length - 1 && dx < 0) return;
-
+    if (!dragging) return;
+    dx = e.clientX - startX;
+    const inner = pages[current].querySelector('.carousel-inner');
     inner.style.transform = `translateX(${dx}px)`;
+  });
 
-    /* フェード演出（今までと同じ印象） */
-    const r = Math.min(Math.abs(dx) / wrapper.clientWidth, 1);
+  wrapper.addEventListener('pointerup', () => {
+    dragging = false;
+    let next = null;
 
-    if (dx < 0 && pages[currentPage + 1]) {
-      pages[currentPage + 1].style.opacity = r;
-      page.style.opacity = 1 - r;
-    }
+    if (dx < -threshold() && current < pages.length - 1) next = current + 1;
+    if (dx > threshold() && current > 0) next = current - 1;
 
-    if (dx > 0 && pages[currentPage - 1]) {
-      pages[currentPage - 1].style.opacity = r;
-      page.style.opacity = 1 - r;
+    pages[current].querySelector('.carousel-inner').style.transform = '';
+
+    if (next !== null) {
+      pages[current].classList.remove('active');
+      pages[next].classList.add('active');
+      current = next;
+      updateDots();
     }
   });
 
-  wrapper.addEventListener('pointerup', finish);
-  wrapper.addEventListener('pointercancel', finish);
-
-  function finish(e) {
-    if (!isDragging || isAnimating) return;
-    isDragging = false;
-
-    const dx = currentX;
-    const page = pages[currentPage];
-    const inner = getInner(page);
-
-    inner.classList.remove('dragging');
-    inner.style.transition = 'transform 0.35s ease-out';
-    inner.style.transform = 'translateX(0)';
-
-    let next = null;
-    if (dx < -threshold() && currentPage < pages.length - 1) {
-      next = currentPage + 1;
-    }
-    if (dx > threshold() && currentPage > 0) {
-      next = currentPage - 1;
-    }
-
-    pages.forEach(p => (p.style.opacity = ''));
-
-    if (next !== null) {
-      isAnimating = true;
-      pages[currentPage].classList.remove('active');
-      pages[next].classList.add('active');
-      currentPage = next;
-      updateDots();
-
-      setTimeout(() => {
-        isAnimating = false;
-      }, 1400);
-    }
-
-    wrapper.releasePointerCapture(e.pointerId);
-  }
-   return {
-    getCurrentPage: () => currentPage
+  return {
+    getCurrentPage: () => current
   };
 }
+
