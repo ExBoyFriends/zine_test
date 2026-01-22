@@ -2,8 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-  content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>第一章カルーセル</title>
 <link rel="stylesheet" href="../css/chapter1.css">
 </head>
@@ -13,6 +12,7 @@
 <div id="loader"></div>
 
 <div class="carousel-wrapper">
+
   <div class="carousel-page active">
     <div class="carousel-inner">
       <img src="../image/queen.of.clubs.png">
@@ -41,16 +41,19 @@
     </div>
   </div>
 
+  <!-- 最終ページ -->
   <div class="carousel-page" id="last-page">
- 　 <div class="carousel-inner single">
-   　 <div class="last-img-wrapper">
-    　  <img src="../image/zebra.png" class="last-img top slide-top">
-    　　  <a href="chapter2.html">
-      　　  <img src="../image/next.png" class="last-img under">
-    　　  </a>
-  　  </div>
-　  </div>
-　</div>
+    <div class="carousel-inner single">
+      <div class="last-img-wrapper">
+        <img src="../image/zebra.png" class="last-img top">
+        <a href="chapter2.html" class="last-link">
+          <img src="../image/next.png" class="last-img under">
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
 
 <div class="dots">
   <span class="dot left-dot"></span>
@@ -65,3 +68,4 @@
 <script type="module" src="../js/chapter1/main.js"></script>
 </body>
 </html>
+
