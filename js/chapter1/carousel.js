@@ -1,65 +1,50 @@
-export function initCarousel(wrapper, pages, dots) {
+export function initCarousel(wrapper, pages) {
   let current = 0;
   let startX = 0;
+  let dx = 0;
   let dragging = false;
 
-  const width = () => window.innerWidth;
+  const threshold = () => wrapper.clientWidth * 0.25;
 
-  const update = (animate = true) => {
-    wrapper.style.transition = animate
-      ? 'transform 0.8s ease-out'
-      : 'none';
-
-    wrapper.style.transform =
-      `translateX(${-current * width()}px)`;
-
-    pages.forEach((p, i) =>
-      p.classList.toggle('active', i === current)
-    );
-
-    dots.forEach((d, i) =>
-      d.classList.toggle('active', i === current)
-    );
-  };
-
-  update(true);
+  function updateDots() {
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      if (i === 0 || i === 6) return;
+      d.classList.toggle('active', i === current + 1);
+    });
+  }
 
   wrapper.addEventListener('pointerdown', e => {
-    if (current === pages.length - 1) return;
-
     dragging = true;
     startX = e.clientX;
-    wrapper.style.transition = 'none';
+    dx = 0;
   });
 
   wrapper.addEventListener('pointermove', e => {
     if (!dragging) return;
-
-    const dx = e.clientX - startX;
-
-    // ★ 流れるだけ（反発なし）
-    wrapper.style.transform =
-      `translateX(${-current * width() + dx * 0.25}px)`;
+    dx = e.clientX - startX;
+    const inner = pages[current].querySelector('.carousel-inner');
+    inner.style.transform = `translateX(${dx}px)`;
   });
 
-  wrapper.addEventListener('pointerup', e => {
-    if (!dragging) return;
+  wrapper.addEventListener('pointerup', () => {
     dragging = false;
+    let next = null;
 
-    const dx = e.clientX - startX;
-    const threshold = width() * 0.2;
+    if (dx < -threshold() && current < pages.length - 1) next = current + 1;
+    if (dx > threshold() && current > 0) next = current - 1;
 
-    if (dx < -threshold && current < pages.length - 1) current++;
-    else if (dx > threshold && current > 0) current--;
+    pages[current].querySelector('.carousel-inner').style.transform = '';
 
-    update(true);
+    if (next !== null) {
+      pages[current].classList.remove('active');
+      pages[next].classList.add('active');
+      current = next;
+      updateDots();
+    }
   });
 
-  wrapper.addEventListener('pointercancel', () => {
-    dragging = false;
-    update(true);
-  });
-
-  return () => current;
+  return {
+    getCurrentPage: () => current
+  };
 }
 
