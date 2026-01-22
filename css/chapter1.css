@@ -193,6 +193,10 @@ body {
   z-index: 1;
 }
 
+.last-img.under a {
+  display: block;
+  width: 100%;
+  height: 100%;
 
 
 /* ===== アニメーション ===== */
