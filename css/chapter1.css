@@ -149,12 +149,11 @@ body {
   position: absolute;
   
   /* ① 中央基準 */
-  left: 50%;
-  top: 50%;
+ left: calc(50% + 8px);
+  top: calc(50% + 20px);
   transform: translate(-50%, -50%);
-  
-  width: 180px;
-  height: 260px;
+  width: 64px;
+  height: 40px;
   
   pointer-events: auto;   
 
