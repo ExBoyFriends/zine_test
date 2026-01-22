@@ -149,20 +149,14 @@ body {
 /* ===== 最終ページ ===== */
 #last-page .carousel-inner.single {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: 88vw;          
+  max-width: 540px;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
   overflow: hidden;
-}
-
-.last-img-stack {
-  position: relative;
-  width: 88vw;          /* ← 通常ページと完全一致 */
-  max-width: 540px;
 }
 
 .last-img.top,
