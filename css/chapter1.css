@@ -84,7 +84,7 @@ body {
   bottom: 40px;
   width: 100%;
   text-align: center;
-  z-index: 20;
+  z-index: 9;
   opacity: 0;
   transition: opacity 0.8s ease;
 }
