@@ -17,3 +17,5 @@ initLastPage(
   () => carousel.getCurrentPage(),
   pages.length
 );
+
+document.addEventListener('contextmenu', e => e.preventDefault());
