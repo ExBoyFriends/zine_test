@@ -153,14 +153,11 @@ body {
   height: 260px;
   pointer-events: auto;   
 
-  background: transparent; /* ← 明示 */
+  background: transparent; 
   z-index: 3;
   
-  outline: 2px solid red; /* 確認用 */
-
-
+  outline: 2px solid blue; /* 確認用 */
 }
-
 
 .last-img {
   position: absolute;
