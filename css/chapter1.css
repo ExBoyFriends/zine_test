@@ -148,8 +148,8 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  height: 260px;
   width: 180px;
+  height: 260px;
   pointer-events: none;
 
  outline: 2px solid red; /*確認用*/
