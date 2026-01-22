@@ -151,7 +151,9 @@ body {
   left: 0;
   width: 180px;
   height: 260px;
-  pointer-events: none;
+  pointer-events: auto;   
+  
+  outline: 2px solid red; /* 確認用 */
 
 
 }
@@ -188,6 +190,7 @@ body {
 
 .next-link {
   position: absolute;
+  inset: 0;  
   bottom: 8%;
   left: 50%;
   transform: translateX(-50%);
