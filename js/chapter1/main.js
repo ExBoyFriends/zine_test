@@ -5,14 +5,8 @@ import { initLastPage } from './lastPage.js';
 const pages = document.querySelectorAll('.carousel-page');
 const wrapper = document.querySelector('.carousel-wrapper');
 const loader = document.getElementById('loader');
-const dots = document.querySelector('.dots');
+const dots = document.querySelectorAll('.dot');
 
 initLoader(pages, loader, dots);
-
-const carousel = initCarousel(wrapper, pages);
-
-initLastPage(
-  document.querySelector('.last-img.top'),
-  () => carousel.getCurrentPage(),
-  pages.length
-);
+const getCurrent = initCarousel(wrapper, pages, dots);
+initLastPage(getCurrent, pages.length);
