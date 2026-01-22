@@ -3,16 +3,28 @@ export function initCarousel(wrapper, pages, dots) {
   let startX = 0;
   let dragging = false;
 
-  const update = () => {
-    wrapper.style.transform = `translateX(${-current * 100}%)`;
-    pages.forEach((p, i) => p.classList.toggle('active', i === current));
-    dots.forEach((d, i) => d.classList.toggle('active', i === current + 1));
+  const width = () => window.innerWidth;
+
+  const update = (animate = true) => {
+    wrapper.style.transition = animate
+      ? 'transform 0.8s ease-out'
+      : 'none';
+
+    wrapper.style.transform =
+      `translateX(${-current * width()}px)`;
+
+    pages.forEach((p, i) =>
+      p.classList.toggle('active', i === current)
+    );
+
+    dots.forEach((d, i) =>
+      d.classList.toggle('active', i === current)
+    );
   };
 
-  update();
+  update(true);
 
   wrapper.addEventListener('pointerdown', e => {
-    // ★ 最終ページではカルーセル操作しない
     if (current === pages.length - 1) return;
 
     dragging = true;
@@ -24,21 +36,28 @@ export function initCarousel(wrapper, pages, dots) {
     if (!dragging) return;
 
     const dx = e.clientX - startX;
+
+    // ★ 流れるだけ（反発なし）
     wrapper.style.transform =
-      `translateX(${-current * window.innerWidth + dx * 0.3}px)`;
+      `translateX(${-current * width() + dx * 0.25}px)`;
   });
 
   wrapper.addEventListener('pointerup', e => {
     if (!dragging) return;
     dragging = false;
 
-    wrapper.style.transition = 'transform 0.6s ease-out';
     const dx = e.clientX - startX;
+    const threshold = width() * 0.2;
 
-    if (dx < -80 && current < pages.length - 1) current++;
-    if (dx > 80 && current > 0) current--;
+    if (dx < -threshold && current < pages.length - 1) current++;
+    else if (dx > threshold && current > 0) current--;
 
-    update();
+    update(true);
+  });
+
+  wrapper.addEventListener('pointercancel', () => {
+    dragging = false;
+    update(true);
   });
 
   return () => current;
