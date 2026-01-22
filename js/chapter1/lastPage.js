@@ -1,15 +1,14 @@
 export function initLastPage(lastImg, getCurrentPage, totalPages) {
-  let startX = 0;
   let opened = false;
 
   const rightDot = document.querySelector('.dot.right-dot');
-  const half = () => lastImg.clientWidth / 2;
   const TAP_THRESHOLD = 6;
+  const half = () => lastImg.clientWidth / 2;
 
-  const inner = lastImg.closest('.carousel-inner');
+  let startX = 0;
 
   const applyX = x => {
-   inner.style.transform =
+    lastImg.style.transform =
       `translate(-50%, -50%) translateX(${x}px)`;
   };
 
@@ -29,21 +28,21 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
     rightDot?.classList.remove('active');
   };
 
-  /* ===== pointerdown ===== */
+  /* ===== タップ判定のみ ===== */
   lastImg.addEventListener('pointerdown', e => {
     if (getCurrentPage() !== totalPages - 1) return;
     startX = e.clientX;
   });
 
-  /* ===== pointerup ===== */
   lastImg.addEventListener('pointerup', e => {
     if (getCurrentPage() !== totalPages - 1) return;
 
     const dx = e.clientX - startX;
 
-    // 👆 タップのみ
+    // 👆 タップだけ反応
     if (Math.abs(dx) < TAP_THRESHOLD) {
       opened ? close() : open();
     }
   });
 }
+
