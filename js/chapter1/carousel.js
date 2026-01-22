@@ -12,6 +12,9 @@ export function initCarousel(wrapper, pages, dots) {
   update();
 
   wrapper.addEventListener('pointerdown', e => {
+    // ★ 最終ページではカルーセル操作しない
+    if (current === pages.length - 1) return;
+
     dragging = true;
     startX = e.clientX;
     wrapper.style.transition = 'none';
@@ -19,6 +22,7 @@ export function initCarousel(wrapper, pages, dots) {
 
   wrapper.addEventListener('pointermove', e => {
     if (!dragging) return;
+
     const dx = e.clientX - startX;
     wrapper.style.transform =
       `translateX(${-current * window.innerWidth + dx * 0.3}px)`;
@@ -27,9 +31,10 @@ export function initCarousel(wrapper, pages, dots) {
   wrapper.addEventListener('pointerup', e => {
     if (!dragging) return;
     dragging = false;
-    wrapper.style.transition = 'transform 0.6s ease-out';
 
+    wrapper.style.transition = 'transform 0.6s ease-out';
     const dx = e.clientX - startX;
+
     if (dx < -80 && current < pages.length - 1) current++;
     if (dx > 80 && current > 0) current--;
 
