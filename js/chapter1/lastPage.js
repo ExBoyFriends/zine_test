@@ -30,36 +30,18 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
   /* ===== pointerdown ===== */
   lastImg.addEventListener('pointerdown', e => {
     if (getCurrentPage() !== totalPages - 1) return;
-
     startX = e.clientX;
-    lastImg.setPointerCapture(e.pointerId);
-  });
-
-  /* ===== pointermove ===== */
-  lastImg.addEventListener('pointermove', e => {
-    const dx = e.clientX - startX;
-
-    // 🔒 右ドラッグは完全に無視（返さない）
-    if (dx > 0) {
-      e.stopPropagation();
-      return;
-    }
-
-    // 左ドラッグも無視
-    e.stopPropagation();
   });
 
   /* ===== pointerup ===== */
   lastImg.addEventListener('pointerup', e => {
+    if (getCurrentPage() !== totalPages - 1) return;
+
     const dx = e.clientX - startX;
 
-    // タップのみ有効
+    // 👆 タップのみ
     if (Math.abs(dx) < TAP_THRESHOLD) {
       opened ? close() : open();
     }
   });
-
-  /* ===== cancel ===== */
-  lastImg.addEventListener('pointercancel', () => {});
 }
-
