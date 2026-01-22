@@ -193,9 +193,8 @@ body {
  /*pointer-events: none;*/
   z-index: 2;
   cursor: grab;
-  transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+
   transform: translateX(0);
-  
   will-change: transform;
 }
 
@@ -216,10 +215,3 @@ body {
   50% { filter: brightness(0.2); }
   100% { filter: brightness(1); }
 }
-
-@keyframes siren {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
-
