@@ -29,7 +29,7 @@ body {
   inset: 0;
   background: url('../image/background.jpg') center / cover no-repeat;
   z-index: 10;
-  animation: siren 1.68s linear infinite;
+  animation: siren 2.68s linear infinite;
 }
 
 /* ===== カルーセル ===== */
