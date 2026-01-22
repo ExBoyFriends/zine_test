@@ -1,27 +1,37 @@
-export function initLastPage(topImg, getCurrentPage, total) {
+export function initLastPage(wrapper, getCurrentPage, totalPages) {
   let opened = false;
   let startX = 0;
-  const TAP = 6;
+
+  const TAP_THRESHOLD = 6;
+  const slideTop = document.querySelector('.slide-top');
+  const rightDot = document.querySelector('.dot.right-dot');
+
+  const applyX = x => {
+    wrapper.style.transform =
+      `translate(-50%, -50%) translateX(${x}px)`;
+  };
 
   const open = () => {
     opened = true;
-    topImg.style.transform = `translateX(-100%)`;
+    applyX(-slideTop.clientWidth);
+    rightDot?.classList.add('active');
   };
 
   const close = () => {
     opened = false;
-    topImg.style.transform = `translateX(0)`;
+    applyX(0);
+    rightDot?.classList.remove('active');
   };
 
-  topImg.addEventListener('pointerdown', e => {
-    if (getCurrentPage() !== total - 1) return;
+  wrapper.addEventListener('pointerdown', e => {
+    if (getCurrentPage() !== totalPages - 1) return;
     startX = e.clientX;
   });
 
-  topImg.addEventListener('pointerup', e => {
-    if (getCurrentPage() !== total - 1) return;
+  wrapper.addEventListener('pointerup', e => {
+    if (getCurrentPage() !== totalPages - 1) return;
     const dx = e.clientX - startX;
-    if (Math.abs(dx) < TAP) {
+    if (Math.abs(dx) < TAP_THRESHOLD) {
       opened ? close() : open();
     }
   });
