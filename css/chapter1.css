@@ -151,20 +151,23 @@ body {
   position: relative;
   width: 88vw;
   max-width: 540px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  overflow: visible; /* ← ここが超重要 */
+  overflow: visible;
 }
 
+/* 中央配置は wrapper */
+.last-img-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* 画像は重ねるだけ */
 .last-img.top,
 .last-img.under {
   position: absolute;
   width: 100%;
   height: auto;
-
   -webkit-user-drag: none;
 }
 
@@ -176,6 +179,7 @@ body {
 .last-img.under {
   z-index: 1;
 }
+
 
 
 /* ===== アニメーション ===== */
