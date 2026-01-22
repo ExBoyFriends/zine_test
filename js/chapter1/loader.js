@@ -3,8 +3,8 @@ export function initLoader(pages, loader, dots) {
     pages[0].classList.add('active');
 
     setTimeout(() => {
-      loader.style.opacity = '0';
       loader.style.transition = 'opacity 0.5s ease';
+      loader.style.opacity = '0';
 
       setTimeout(() => {
         loader.style.display = 'none';
