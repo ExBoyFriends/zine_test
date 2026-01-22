@@ -7,7 +7,8 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   const rightDot = document.querySelector('.dot.right-dot');
 
  const applyX = x => {
-  slideTop.style.transition = 'transform 0.35s ease-out';
+  slideTop.style.transition = 
+   　　　　　　'transform 1.4s cubic-bezier(.16,1.3,.3,1)';
   slideTop.style.transform = `translateX(${x}px)`;
 };
 
