@@ -147,11 +147,11 @@ body {
 .tap-cover {
   position: absolute;
   top: 0;
-  left: 0;
+  left: 25%;
   height: 100%;
 
   /* 初期はタップ不可 */
-  width: 0;
+  width: 50%;
   pointer-events: none;
 }
 
