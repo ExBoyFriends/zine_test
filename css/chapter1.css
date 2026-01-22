@@ -204,7 +204,9 @@ body {
   width: 90px;  
   height: 60px;
 
-  outline: 2px solid red; /*確認用*/
+ /* ③ 調整用（あとで消す） */
+  outline: 2px solid red;
+  background: rgba(255,0,0,.1);
 }
 .next-link img {
   width: 100%;
