@@ -1,3 +1,4 @@
+/* ===== 基本 ===== */
 html, body {
   margin: 0;
   padding: 0;
@@ -8,13 +9,16 @@ html, body {
   touch-action: none;
 }
 
+/* ===== 背景 ===== */
 .background {
   position: fixed;
   inset: 0;
   background: url('../image/background.jpg') center / cover no-repeat;
   animation: slowFade 20s ease-in-out infinite alternate;
+  z-index: 0;
 }
 
+/* ===== ローダー ===== */
 #loader {
   position: fixed;
   inset: 0;
@@ -24,15 +28,16 @@ html, body {
 }
 
 /* ===== カルーセル ===== */
-
 .carousel-wrapper {
   position: fixed;
   inset: 0;
   display: flex;
   overflow: hidden;
+  z-index: 1;
 }
 
 .carousel-page {
+  position: relative;
   flex: 0 0 100%;
   opacity: 0;
   pointer-events: none;
@@ -44,19 +49,26 @@ html, body {
   pointer-events: auto;
 }
 
-/* ===== 通常ページ（左右半分） ===== */
+/* ===== 通常ページ（オリジナルサイズ） ===== */
 
 .carousel-inner {
   display: flex;
-  width: 100%;
-  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  gap: 0;
+  cursor: grab;
 }
 
 .carousel-inner img {
-  width: 50%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  width: auto;
+  max-height: 88vh;     /* ← 元の雰囲気 */
+  max-width: none;     /* ← 縮小しない */
+  flex-shrink: 0;
+
   -webkit-user-drag: none;
+  user-select: none;
 }
 
 /* ===== 最終ページ ===== */
@@ -68,39 +80,33 @@ html, body {
 
 .last-img-wrapper {
   position: relative;
-  width: 70vw;
-  max-width: 420px;
-  aspect-ratio: 3 / 4;
+  transform: translateZ(0);
 }
 
 .last-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  display: block;
+  height: auto;
+  width: auto;
+  max-height: 88vh;
+  max-width: 88vw;
 }
 
 .last-img.top {
+  position: relative;
   z-index: 2;
-  transition: transform 0.6s ease-out;
-}
-
-.last-img.under {
-  z-index: 1;
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .last-link {
-  display: block;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
 
 /* ===== dots ===== */
-
 .dots {
   position: fixed;
-  bottom: 24px;
+  bottom: 32px;
   width: 100%;
   text-align: center;
   z-index: 5;
@@ -108,23 +114,29 @@ html, body {
 
 .dot {
   display: inline-block;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 8px;
   margin: 0 6px;
-  background: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.25);
 }
 
 .dot.active {
-  background: rgba(255,255,255,1);
+  background: rgba(255,255,255,0.9);
 }
 
 /* ===== animations ===== */
-
 @keyframes slowFade {
   0% { filter: brightness(1); }
   50% { filter: brightness(0.3); }
   100% { filter: brightness(1); }
 }
+
+@keyframes siren {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
+}
+
 
 @keyframes siren {
   0% { filter: brightness(1); }
