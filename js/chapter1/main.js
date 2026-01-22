@@ -6,15 +6,13 @@ const pages = document.querySelectorAll('.carousel-page');
 const wrapper = document.querySelector('.carousel-wrapper');
 const loader = document.getElementById('loader');
 const dots = document.querySelector('.dots');
-const lastWrapper = document.querySelector('.last-img-wrapper');
 
 initLoader(pages, loader, dots);
 
 const carousel = initCarousel(wrapper, pages);
 
 initLastPage(
-  lastWrapper,
+  document.querySelector('.last-img.top'),
   () => carousel.getCurrentPage(),
   pages.length
 );
-
