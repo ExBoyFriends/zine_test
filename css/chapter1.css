@@ -149,8 +149,6 @@ body {
   top: 0;
   left: 0;
   height: 260px;
-
-  /* 初期はタップ不可 */
   width: 180px;
   pointer-events: none;
 }
