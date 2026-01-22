@@ -159,8 +159,11 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 100%;              /* ← 必須 */
+  max-width: 540px;         /* ← carousel と一致 */
   transform: translate(-50%, -50%);
 }
+
 
 /* 画像は重ねるだけ */
 .last-img.top,
