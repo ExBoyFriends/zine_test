@@ -152,6 +152,9 @@ body {
   width: 180px;
   height: 260px;
   pointer-events: auto;   
+
+  background: transparent; /* ← 明示 */
+  z-index: 3;
   
   outline: 2px solid red; /* 確認用 */
 
@@ -191,6 +194,7 @@ body {
 .next-link {
   position: absolute;
   inset: 0;  
+  z-index: auto;
   bottom: 8%;
   left: 50%;
   transform: translateX(-50%);
