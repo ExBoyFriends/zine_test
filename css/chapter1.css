@@ -151,7 +151,6 @@ body {
   position: relative;
   width: 88vw;
   max-width: 540px;
-  height: 100%;
   overflow: visible;
 }
 
@@ -163,6 +162,7 @@ body {
   width: 100%;              /* ← 必須 */
   max-width: 540px;         /* ← carousel と一致 */
   transform: translate(-50%, -50%);
+  transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1); /* 初期位置の動きもスムーズに */
 }
 
 
