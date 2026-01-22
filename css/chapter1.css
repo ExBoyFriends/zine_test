@@ -6,7 +6,13 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #000;
+
   touch-action: none;
+  overscroll-behavior: none;
+
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 /* ===== 背景 ===== */
@@ -25,6 +31,8 @@ html, body {
   background: url('../image/background.jpg') center / cover no-repeat;
   z-index: 10;
   animation: siren 1.68s linear infinite;
+
+  pointer-events: none; /* ロード中の誤操作防止 */
 }
 
 /* ===== カルーセル ===== */
@@ -34,6 +42,9 @@ html, body {
   display: flex;
   overflow: hidden;
   z-index: 1;
+
+  /* iOS Safari 安定化 */
+  touch-action: pan-y;
 }
 
 .carousel-page {
@@ -50,7 +61,6 @@ html, body {
 }
 
 /* ===== 通常ページ（オリジナルサイズ） ===== */
-
 .carousel-inner {
   display: flex;
   justify-content: center;
@@ -58,13 +68,15 @@ html, body {
   height: 100%;
   gap: 0;
   cursor: grab;
+
+  touch-action: pan-y;
 }
 
 .carousel-inner img {
   height: auto;
   width: auto;
-  max-height: 88vh;     /* ← 元の雰囲気 */
-  max-width: none;     /* ← 縮小しない */
+  max-height: 88vh;
+  max-width: none;
   flex-shrink: 0;
 
   -webkit-user-drag: none;
@@ -72,7 +84,6 @@ html, body {
 }
 
 /* ===== 最終ページ ===== */
-
 .carousel-inner.single {
   justify-content: center;
   align-items: center;
@@ -94,7 +105,12 @@ html, body {
 .last-img.top {
   position: relative;
   z-index: 2;
+  cursor: grab;
+
   transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* iOS タップ安定化 */
+  touch-action: manipulation;
 }
 
 .last-link {
@@ -110,6 +126,13 @@ html, body {
   width: 100%;
   text-align: center;
   z-index: 5;
+
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.dots.visible {
+  opacity: 1;
 }
 
 .dot {
@@ -130,13 +153,6 @@ html, body {
   50% { filter: brightness(0.3); }
   100% { filter: brightness(1); }
 }
-
-@keyframes siren {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
-
 
 @keyframes siren {
   0% { filter: brightness(1); }
