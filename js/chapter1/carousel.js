@@ -1,51 +1,41 @@
-export function initCarousel(wrapper, pages) {
+export function initCarousel(wrapper, pages, dots) {
   let current = 0;
   let startX = 0;
-  let dx = 0;
   let dragging = false;
 
-  const threshold = () => wrapper.clientWidth * 0.25;
+  const update = () => {
+    wrapper.style.transform = `translateX(${-current * 100}%)`;
+    pages.forEach((p, i) => p.classList.toggle('active', i === current));
+    dots.forEach((d, i) => d.classList.toggle('active', i === current + 1));
+  };
 
-  function updateDots() {
-    document.querySelectorAll('.dot').forEach((d, i) => {
-      if (i === 0 || i === 6) return;
-      d.classList.toggle('active', i === current + 1);
-    });
-  }
+  update();
 
   wrapper.addEventListener('pointerdown', e => {
     dragging = true;
     startX = e.clientX;
-    dx = 0;
+    wrapper.style.transition = 'none';
   });
 
   wrapper.addEventListener('pointermove', e => {
     if (!dragging) return;
-    dx = e.clientX - startX;
-    pages[current]
-      .querySelector('.carousel-inner')
-      .style.transform = `translateX(${dx}px)`;
+    const dx = e.clientX - startX;
+    wrapper.style.transform =
+      `translateX(${-current * window.innerWidth + dx * 0.3}px)`;
   });
 
-  wrapper.addEventListener('pointerup', () => {
+  wrapper.addEventListener('pointerup', e => {
+    if (!dragging) return;
     dragging = false;
-    let next = null;
+    wrapper.style.transition = 'transform 0.6s ease-out';
 
-    if (dx < -threshold() && current < pages.length - 1) next = current + 1;
-    if (dx > threshold() && current > 0) next = current - 1;
+    const dx = e.clientX - startX;
+    if (dx < -80 && current < pages.length - 1) current++;
+    if (dx > 80 && current > 0) current--;
 
-    pages[current].querySelector('.carousel-inner').style.transform = '';
-
-    if (next !== null) {
-      pages[current].classList.remove('active');
-      pages[next].classList.add('active');
-      current = next;
-      updateDots();
-    }
+    update();
   });
 
-  return {
-    getCurrentPage: () => current
-  };
+  return () => current;
 }
 
