@@ -193,8 +193,9 @@ body {
  /*pointer-events: none;*/
   z-index: 2;
   cursor: grab;
-
+  transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
   transform: translateX(0);
+  
   will-change: transform;
 }
 
