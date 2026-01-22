@@ -148,10 +148,10 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  height: 260%;
+  height: 260px;
 
   /* 初期はタップ不可 */
-  width: 180%;
+  width: 180px;
   pointer-events: none;
 }
 
@@ -182,6 +182,19 @@ body {
 /* 通常ページではリンク無効 */
 .carousel-page:not(#last-page) a {
   pointer-events: none;
+}
+
+.next-link {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 96px;   /* ← 見た目に合わせる */
+  height: 96px;
+}
+.next-link img {
+  width: 90px;
+  height: 60px;
 }
 
 /* アニメーション */
