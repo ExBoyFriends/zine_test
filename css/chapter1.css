@@ -149,8 +149,8 @@ body {
   position: absolute;
   
   /* ① 中央基準 */
- left: calc(50% + px);
-  top: calc(50% + 20px);
+ left: calc(50% + 0px);
+  top: calc(50% + 0px);
   transform: translate(-50%, -50%);
   width: 60px;
   height: 50px;
