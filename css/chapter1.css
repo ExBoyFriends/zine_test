@@ -193,6 +193,9 @@ body {
  pointer-events: none;
   z-index: 2;
   cursor: grab;
+
+  transform: translateX(0);
+  will-change: transform;
 }
 
 .last-img.under {
