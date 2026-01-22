@@ -1,18 +1,57 @@
-.carousel {
+/* ===== 基本 ===== */
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  position: relative;
+  background: #000;
+  user-select: none;
+  touch-action: none;
 }
 
+body {
+  min-height: 100svh;
+  overscroll-behavior: none;
+}
+
+/* ===== 背景 ===== */
+.background {
+  position: fixed;
+  inset: 0;
+  background: url('../image/background.jpg') center / cover no-repeat;
+  z-index: 0;
+  animation: slowFade 20s ease-in-out infinite alternate;
+}
+
+/* ===== ローダー ===== */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: url('../image/background.jpg') center / cover no-repeat;
+  z-index: 10;
+  animation: siren 1.68s linear infinite;
+}
+
+/* ===== カルーセル ===== */
 .carousel-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
   display: flex;
-  transition: transform 0.6s ease-out;
-  touch-action: pan-y;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .carousel-page {
-  flex: 0 0 100%;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   opacity: 0;
   pointer-events: none;
+  transition: opacity 1.4s ease;
 }
 
 .carousel-page.active {
@@ -20,76 +59,127 @@
   pointer-events: auto;
 }
 
-/* ===== 通常ページ ===== */
-
-.carousel-inner.double {
+.carousel-inner {
   display: flex;
-  width: 100%;
-  height: 100vh;
+  gap: 10px;
+  width: 88vw;
+  max-width: 540px;
+  cursor: grab;
 }
 
-.carousel-inner.double img {
-  width: 50%;
-  height: 100%;
-  object-fit: cover;
+.carousel-inner img {
+  width: 100%;
+  max-width: 540px;
+  -webkit-user-drag: none;
+  flex-shrink: 0;
+}
+
+.carousel-inner.dragging {
+  cursor: grabbing;
+}
+
+/* ===== ドット ===== */
+.dots {
+  position: fixed;
+  bottom: 40px;
+  width: 100%;
+  text-align: center;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.dots.visible {
+  opacity: 1;
+}
+
+.dot {
+  display: inline-block;
+  width: 5px;
+  height: 8px;
+  margin: 0 5px;
+  background: rgba(200,200,200,0.25);
+}
+
+.dot.active {
+  background: rgba(240,240,240,0.9);
+}
+
+.left-dot,
+.right-dot {
+  width: 12px;
+  height: 12px;
+}
+
+.left-dot {
+  clip-path: polygon(100% 0%, 0% 50%, 100% 100%);
+}
+
+.right-dot {
+  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
 }
 
 /* ===== 最終ページ ===== */
-
-.carousel-inner.single {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+#last-page .carousel-inner.single {
+  position: relative;
+  width: 88vw;
+  max-width: 540px;
 }
 
 .last-img-wrapper {
   position: relative;
-  width: 70vw;
-  max-width: 420px;
+  width: 100%;
   aspect-ratio: 3 / 4;
 }
 
+/* 共通 */
 .last-img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  -webkit-user-drag: none;
 }
 
+/* 上の画像 */
 .last-img.top {
-  transition: transform 0.6s ease-out;
   z-index: 2;
+  cursor: grab;
+  transition: transform 0.7s cubic-bezier(0.22,0.61,0.36,1);
+  will-change: transform;
 }
 
-.last-img.back {
+/* 裏のリンク画像 */
+.last-link {
+  position: absolute;
+  inset: 0;
   z-index: 1;
+  display: block;
+}
+
+/* 初期状態では触れない */
+.last-link {
   pointer-events: none;
 }
 
-/* ===== dots ===== */
-
-.dots {
-  position: absolute;
-  bottom: 16px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
+/* 開いたらクリック可能 */
+.last-link.active {
+  pointer-events: auto;
 }
 
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #777;
-  opacity: 0.4;
+/* ===== アニメーション ===== */
+@keyframes slowFade {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
 }
 
-.dot.active {
-  opacity: 1;
-  background: #fff;
+@keyframes siren {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
 }
+
 
 
