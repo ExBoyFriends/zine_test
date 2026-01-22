@@ -160,11 +160,11 @@ body {
   overflow: hidden;
 }
 
-.last-img-stack {
-  position: relative;
-  width: 88vw;          
-  max-width: 540px;
-}
+/*.last-img-stack {       */
+/*  position: relative;   */
+/*  width: 88vw;          */
+/*  max-width: 540px;     */
+/*}                       */
 
 .last-img.top,
 .last-img.under {
