@@ -1,7 +1,10 @@
 export function initLastPage(getCurrentPage, totalPages) {
   const topImg = document.querySelector('.last-img.top');
+  if (!topImg) return;
+
   let opened = false;
   let startX = 0;
+  const TAP_THRESHOLD = 6;
 
   const half = () => topImg.clientWidth / 2;
 
@@ -12,7 +15,9 @@ export function initLastPage(getCurrentPage, totalPages) {
 
   topImg.addEventListener('pointerup', e => {
     if (getCurrentPage() !== totalPages - 1) return;
-    if (Math.abs(e.clientX - startX) > 6) return;
+
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > TAP_THRESHOLD) return;
 
     opened = !opened;
     topImg.style.transform = opened
@@ -20,10 +25,4 @@ export function initLastPage(getCurrentPage, totalPages) {
       : 'translateX(0)';
   });
 }
-
-
-    topImg.releasePointerCapture(e.pointerId);
-  });
-}
-
 
