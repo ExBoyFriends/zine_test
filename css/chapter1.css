@@ -169,13 +169,13 @@ body {
 .last-img.top,
 .last-img.under {
   position: absolute;
-  top: 50%;
-  left: 50%;
+/*  top: 50%;  */
+/*  left: 50%; */
 
   width: 100%;
   height: auto;
 
-  transform: translate(-50%, -50%);
+/*  transform: translate(-50%, -50%);*/
   display: block;
 
   -webkit-user-drag: none;
