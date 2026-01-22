@@ -112,7 +112,7 @@ pages[next].style.transition = `opacity ${duration}s ease`;
 
   // ▶︎ 端で引っ張った場合：弾性で戻す
   } else {
-    inner.style.transition = 'transform 0.35s cubic-bezier(.25,1.4,.5,1)';
+    inner.style.transition = 'transform 1.2s cubic-bezier(.16,1.3,.3,1)';
     inner.style.transform = 'translateX(0)';
   }
 
