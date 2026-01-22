@@ -159,10 +159,12 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 100%;              /* ← 必須 */
-  max-width: 540px;         /* ← carousel と一致 */
-  transform: translate(-50%, -50%);
-  transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1); /* 初期位置の動きもスムーズに */
+  width: 100%;
+  max-width: 540px;
+
+  --x: 0px;
+  transform: translate(-50%, -50%) translateX(var(--x));
+  transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 
