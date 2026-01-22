@@ -6,8 +6,10 @@ export function initLastPage(lastImg, getCurrentPage, totalPages) {
   const half = () => lastImg.clientWidth / 2;
   const TAP_THRESHOLD = 6;
 
+  const inner = lastImg.closest('.carousel-inner');
+
   const applyX = x => {
-    lastImg.style.transform =
+   inner.style.transform =
       `translate(-50%, -50%) translateX(${x}px)`;
   };
 
