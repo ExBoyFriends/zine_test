@@ -190,7 +190,7 @@ body {
 }
 
 .last-img.top {
- pointer-events: none;
+ /*pointer-events: none;*/
   z-index: 2;
   cursor: grab;
 
@@ -199,7 +199,7 @@ body {
 }
 
 .last-img.under {
- /* pointer-events: auto; */
+  pointer-events: auto;
   z-index: 1;
 }
 
