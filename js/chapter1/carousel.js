@@ -67,34 +67,51 @@ export function initCarousel(wrapper, pages) {
   wrapper.addEventListener('pointercancel', finish);
 
   function finish(e) {
-    if (!isDragging || isAnimating) return;
-    isDragging = false;
+  if (!isDragging || isAnimating) return;
+  isDragging = false;
 
-    const dx = currentX;
-    const page = pages[currentPage];
-    const inner = getInner(page);
+  const dx = currentX;
+  const page = pages[currentPage];
+  const inner = getInner(page);
 
-    inner.classList.remove('dragging');
-    inner.style.transition = 'transform 0.35s ease-out';
+  inner.classList.remove('dragging');
+
+  let next = null;
+  if (dx < -threshold() && currentPage < pages.length - 1) {
+    next = currentPage + 1;
+  }
+  if (dx > threshold() && currentPage > 0) {
+    next = currentPage - 1;
+  }
+
+  pages.forEach(p => (p.style.opacity = ''));
+
+  // ▶︎ 次ページがある場合：フェードで消える
+  if (next !== null) {
+    isAnimating = true;
+
+    inner.style.transition = 'none';
     inner.style.transform = 'translateX(0)';
 
-    let next = null;
-    if (dx < -threshold() && currentPage < pages.length - 1) next = currentPage + 1;
-    if (dx > threshold() && currentPage > 0) next = currentPage - 1;
+    pages[currentPage].classList.remove('active');
+    pages[next].classList.add('active');
 
-    pages.forEach(p => (p.style.opacity = ''));
+    currentPage = next;
+    updateDots();
 
-    if (next !== null) {
-      isAnimating = true;
-      pages[currentPage].classList.remove('active');
-      pages[next].classList.add('active');
-      currentPage = next;
-      updateDots();
-      setTimeout(() => (isAnimating = false), 1400);
-    }
+    setTimeout(() => {
+      isAnimating = false;
+    }, 1400);
 
-    wrapper.releasePointerCapture(e.pointerId);
+  // ▶︎ 端で引っ張った場合：弾性で戻す
+  } else {
+    inner.style.transition = 'transform 0.35s cubic-bezier(.25,1.4,.5,1)';
+    inner.style.transform = 'translateX(0)';
   }
+
+  wrapper.releasePointerCapture(e.pointerId);
+}
+
 
   return {
     getCurrentPage: () => currentPage
