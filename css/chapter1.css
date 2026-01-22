@@ -151,6 +151,7 @@ body {
   position: relative;
   width: 88vw;          
   max-width: 540px;
+  height: 100%; 
 
   display: flex;
   justify-content: center;
