@@ -103,11 +103,11 @@ pages[next].style.transition = `opacity ${duration}s ease`;
   currentPage = next;
   updateDots();
 
-  setTimeout(() => {
-    pages[currentPage].style.transition = '';
-    pages[next]?.style.transition = '';
-    isAnimating = false;
-  }, 2400);
+ setTimeout(() => {
+  pages[currentPage].style.transition = '';
+  pages[next].style.transition = '';
+  isAnimating = false;
+}, duration * 1000);
 
 
   // ▶︎ 端で引っ張った場合：弾性で戻す
