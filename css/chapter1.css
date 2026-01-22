@@ -183,7 +183,7 @@ body {
 }
 
 .last-img.top {
-  pointer-events: none;
+ 
   z-index: 2;
   cursor: grab;
 }
