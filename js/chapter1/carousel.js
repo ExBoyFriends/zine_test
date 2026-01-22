@@ -90,18 +90,25 @@ export function initCarousel(wrapper, pages) {
   if (next !== null) {
     isAnimating = true;
 
-    inner.style.transition = 'none';
-    inner.style.transform = 'translateX(0)';
+   // ゆっくりフェード用
+const ratio = Math.min(Math.abs(dx) / wrapper.clientWidth, 1);
+const duration = 1.4 + ratio * 1.6; // 1.4〜3.0秒
 
-    pages[currentPage].classList.remove('active');
-    pages[next].classList.add('active');
+pages[currentPage].style.transition = `opacity ${duration}s ease`;
+pages[next].style.transition = `opacity ${duration}s ease`;
 
-    currentPage = next;
-    updateDots();
+  pages[currentPage].classList.remove('active');
+  pages[next].classList.add('active');
 
-    setTimeout(() => {
-      isAnimating = false;
-    }, 1400);
+  currentPage = next;
+  updateDots();
+
+  setTimeout(() => {
+    pages[currentPage].style.transition = '';
+    pages[next]?.style.transition = '';
+    isAnimating = false;
+  }, 2400);
+
 
   // ▶︎ 端で引っ張った場合：弾性で戻す
   } else {
