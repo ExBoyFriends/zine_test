@@ -223,28 +223,33 @@ body {
 }
 
 
-/* 初期状態（縦向き） */
+/* 初期状態（縦向き）＝存在しない */
 body::before,
 body::after {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .6s ease;
   content: none;
 }
 
-/* 横向き時に表示 */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
+/* 横向き時だけ表示 */
+@media (orientation: landscape) {
 
-  display: block;
-  width: 100vw;
-  height: 100vh;
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #000;
+    pointer-events: all;
+  }
 
-  background: url("../image/eye.jpg") top center / cover no-repeat;
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
 
-  opacity: 1;
-  pointer-events: none;
+    background: url("../image/eye.jpg") center / cover no-repeat;
+
+    pointer-events: none;
+  }
 }
+
