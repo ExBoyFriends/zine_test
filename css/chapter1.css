@@ -5,12 +5,12 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #000;
-  touch-action: none;
 }
 
 body {
   min-height: 100svh;
   overscroll-behavior: none;
+  touch-action: manipulation;
 }
 
 * {
