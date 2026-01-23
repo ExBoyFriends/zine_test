@@ -19,3 +19,11 @@ initLastPage(
 );
 
 document.addEventListener('contextmenu', e => e.preventDefault());
+
+window.addEventListener('orientationchange', () => {
+  if (window.matchMedia('(orientation: landscape)').matches) {
+    setTimeout(() => {
+      window.scrollTo(0, 1);
+    }, 300);
+  }
+});
