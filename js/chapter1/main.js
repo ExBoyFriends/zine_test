@@ -42,18 +42,10 @@ const hideURLBar = () => {
   }
 };
 
-window.addEventListener('orientationchange', () => {
-  setTimeout(hideURLBar, 300);
-});
-
-window.addEventListener('resize', () => {
-  setTimeout(hideURLBar, 300);
-});
-
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) {
+['orientationchange', 'resize', 'visibilitychange'].forEach(event => {
+  window.addEventListener(event, () => {
     setTimeout(hideURLBar, 300);
-  }
+  });
 });
 
 
