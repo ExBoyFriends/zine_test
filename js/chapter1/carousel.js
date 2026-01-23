@@ -33,14 +33,17 @@ export function initCarousel(wrapper, pages) {
     startX = e.clientX;
     currentX = 0;
 
-    pages.forEach(p => (p.style.transition = 'none'));
-    inner.style.transition = 'none';
+    pages.forEach(p => {
+      p.style.transition = 'none';
+      const i = getInner(p);
+      if (i) i.style.transition = 'none';
+    });
 
     wrapper.setPointerCapture(e.pointerId);
   });
 
   /* =====================
-     pointer move（核心）
+     pointer move
   ===================== */
   wrapper.addEventListener('pointermove', e => {
     if (!isDragging) return;
@@ -49,17 +52,31 @@ export function initCarousel(wrapper, pages) {
     currentX = dx;
 
     const width = wrapper.clientWidth;
-    const progress = dx / width;
+    const r = Math.min(Math.abs(dx) / width, 1);
 
-    // 帯を動かす
-    getInner(pages[currentPage]).style.transform =
-      `translateX(${dx}px)`;
+    // 全部一旦消す
+    pages.forEach(p => (p.style.opacity = 0));
 
-    // フェードは位置で決める（アニメーションしない）
-    pages.forEach((page, i) => {
-      const dist = Math.abs(i - (currentPage - progress));
-      page.style.opacity = Math.max(0, 1 - dist);
-    });
+    const current = pages[currentPage];
+    const currentInner = getInner(current);
+
+    // current
+    current.style.opacity = 1 - r;
+    currentInner.style.transform = `translateX(${dx}px)`;
+
+    // next
+    if (dx < 0 && pages[currentPage + 1]) {
+      pages[currentPage + 1].style.opacity = r;
+      getInner(pages[currentPage + 1]).style.transform =
+        `translateX(${dx + width}px)`;
+    }
+
+    // prev
+    if (dx > 0 && pages[currentPage - 1]) {
+      pages[currentPage - 1].style.opacity = r;
+      getInner(pages[currentPage - 1]).style.transform =
+        `translateX(${dx - width}px)`;
+    }
   });
 
   /* =====================
@@ -73,33 +90,25 @@ export function initCarousel(wrapper, pages) {
     isDragging = false;
 
     const dx = currentX;
-    const width = wrapper.clientWidth;
-
     let next = currentPage;
 
-    if (dx < -threshold() && currentPage < pages.length - 1) {
-      next++;
-    }
-    if (dx > threshold() && currentPage > 0) {
-      next--;
-    }
+    if (dx < -threshold() && currentPage < pages.length - 1) next++;
+    if (dx > threshold() && currentPage > 0) next--;
 
     currentPage = next;
     updateDots();
-
     normalize();
 
     wrapper.releasePointerCapture(e.pointerId);
   }
 
   /* =====================
-     見た目を正規化
+     normalize
   ===================== */
   function normalize() {
     pages.forEach((p, i) => {
       p.style.transition = 'opacity .8s ease';
       p.style.opacity = i === currentPage ? 1 : 0;
-      p.classList.toggle('active', i === currentPage);
 
       const inner = getInner(p);
       if (inner) {
@@ -108,15 +117,5 @@ export function initCarousel(wrapper, pages) {
       }
     });
   }
-
-  return {
-    getCurrentPage: () => currentPage
-  };
 }
 
-
-
-  return {
-    getCurrentPage: () => currentPage
-  };
-}
