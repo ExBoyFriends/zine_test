@@ -228,35 +228,18 @@ body::after {
 }
 
 /* 横向き時に表示 */
-@media (orientation: landscape) {
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
 
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: #000;
-    opacity: 1;
-    pointer-events: all;
-  }
+  display: block;
+  width: 100vw;
+  height: 100vh;
 
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
+  background: url("../image/eye.jpg") center center / 40vw no-repeat;
 
-    display: block;              /* ← これ重要 */
-    width: 100vw;
-    height: 100vh;
-
-    background: url("../image/eye.jpg") center center / 160px no-repeat;
-
-    opacity: 1;
-    pointer-events: none;
-  }
+  opacity: 1;
+  pointer-events: none;
 }
-
-
-
-
