@@ -20,10 +20,22 @@ initLastPage(
 
 document.addEventListener('contextmenu', e => e.preventDefault());
 
-window.addEventListener('orientationchange', () => {
+const hideURLBar = () => {
   if (window.matchMedia('(orientation: landscape)').matches) {
-    setTimeout(() => {
-      window.scrollTo(0, 1);
-    }, 300);
+    window.scrollTo(0, 1);
+  }
+};
+
+window.addEventListener('orientationchange', () => {
+  setTimeout(hideURLBar, 300);
+});
+
+window.addEventListener('resize', () => {
+  setTimeout(hideURLBar, 300);
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    setTimeout(hideURLBar, 300);
   }
 });
