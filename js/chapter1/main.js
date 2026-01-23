@@ -18,26 +18,27 @@ initLastPage(
   pages.length
 );
 
+// 右クリック無効
 document.addEventListener('contextmenu', e => e.preventDefault());
-// ピンチズーム無効
+
+// ピンチズーム無効（iOS）
 document.addEventListener('gesturestart', e => e.preventDefault());
 document.addEventListener('gesturechange', e => e.preventDefault());
 document.addEventListener('gestureend', e => e.preventDefault());
 
 // ダブルタップズーム無効
 let lastTouch = 0;
+wrapper.addEventListener(
+  'touchend',
+  e => {
+    const now = Date.now();
+    if (now - lastTouch <= 300) e.preventDefault();
+    lastTouch = now;
+  },
+  { passive: false }
+);
 
-wrapper.addEventListener('touchend', e => {
-  const now = Date.now();
-  if (now - lastTouch <= 300) {
-    e.preventDefault();
-  }
-  lastTouch = now;
-}, { passive: false });
-
-
-
-
+// URLバー対策
 const hideURLBar = () => {
   if (window.matchMedia('(orientation: landscape)').matches) {
     window.scrollTo(0, 1);
@@ -50,7 +51,7 @@ const hideURLBar = () => {
   });
 });
 
-
+// vh対策
 function setVh() {
   document.documentElement.style.setProperty(
     '--vh',
@@ -59,7 +60,6 @@ function setVh() {
 }
 
 setVh();
-
 window.addEventListener('resize', setVh);
 window.addEventListener('orientationchange', setVh);
 
