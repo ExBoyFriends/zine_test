@@ -3,7 +3,7 @@ export function initCarousel(wrapper, pages) {
   let isDragging = false;
   let startX = 0;
   let currentX = 0;
-  let isAnimating = false;
+  let isSettling = false; // ← ページ確定中のみロック
 
   const threshold = () => wrapper.clientWidth * 0.25;
 
@@ -23,7 +23,7 @@ export function initCarousel(wrapper, pages) {
   }
 
   wrapper.addEventListener('pointerdown', e => {
-    if (isAnimating) return;
+    if (isSettling) return;
 
     const inner = getInner(pages[currentPage]);
     if (!inner) return;
@@ -38,7 +38,7 @@ export function initCarousel(wrapper, pages) {
   });
 
   wrapper.addEventListener('pointermove', e => {
-    if (!isDragging || isAnimating) return;
+    if (!isDragging) return;
 
     const dx = e.clientX - startX;
     currentX = dx;
@@ -67,61 +67,57 @@ export function initCarousel(wrapper, pages) {
   wrapper.addEventListener('pointercancel', finish);
 
   function finish(e) {
-  if (!isDragging || isAnimating) return;
-  isDragging = false;
+    if (!isDragging) return;
+    isDragging = false;
 
-  const dx = currentX;
-  const page = pages[currentPage];
-  const inner = getInner(page);
+    const dx = currentX;
+    const page = pages[currentPage];
+    const inner = getInner(page);
 
-  inner.classList.remove('dragging');
+    inner.classList.remove('dragging');
 
-  let next = null;
-  if (dx < -threshold() && currentPage < pages.length - 1) {
-    next = currentPage + 1;
+    let next = null;
+    if (dx < -threshold() && currentPage < pages.length - 1) {
+      next = currentPage + 1;
+    }
+    if (dx > threshold() && currentPage > 0) {
+      next = currentPage - 1;
+    }
+
+    pages.forEach(p => (p.style.opacity = ''));
+
+    // ▶︎ ページ切り替え
+    if (next !== null) {
+      isSettling = true;
+
+      const ratio = Math.min(Math.abs(dx) / wrapper.clientWidth, 1);
+      const duration = 1.6 + ratio * 1.8; // ← 少し遅く
+
+      pages[currentPage].style.transition = `opacity ${duration}s ease`;
+      pages[next].style.transition = `opacity ${duration}s ease`;
+
+      pages[currentPage].classList.remove('active');
+      pages[next].classList.add('active');
+
+      currentPage = next;
+      updateDots();
+
+      setTimeout(() => {
+        pages.forEach(p => (p.style.transition = ''));
+        isSettling = false;
+      }, duration * 1000);
+
+    // ▶︎ 戻るとき（弾性）
+    } else {
+      inner.style.transition =
+        'transform 1.5s cubic-bezier(.16,1.25,.3,1)'; // ← ゆっくり
+      inner.style.transform = 'translateX(0)';
+    }
+
+    wrapper.releasePointerCapture(e.pointerId);
   }
-  if (dx > threshold() && currentPage > 0) {
-    next = currentPage - 1;
-  }
-
-  pages.forEach(p => (p.style.opacity = ''));
-
-  // ▶︎ 次ページがある場合：フェードで消える
-  if (next !== null) {
-    isAnimating = true;
-
-   // ゆっくりフェード用
-const ratio = Math.min(Math.abs(dx) / wrapper.clientWidth, 1);
-const duration = 1.4 + ratio * 1.6; // 1.4〜3.0秒
-
-pages[currentPage].style.transition = `opacity ${duration}s ease`;
-pages[next].style.transition = `opacity ${duration}s ease`;
-
-  pages[currentPage].classList.remove('active');
-  pages[next].classList.add('active');
-
-  currentPage = next;
-  updateDots();
-
- setTimeout(() => {
-  pages[currentPage].style.transition = '';
-  pages[next].style.transition = '';
-  isAnimating = false;
-}, duration * 1000);
-
-
-  // ▶︎ 端で引っ張った場合：弾性で戻す
-  } else {
-    inner.style.transition = 'transform 1.2s cubic-bezier(.16,1.3,.3,1)';
-    inner.style.transform = 'translateX(0)';
-  }
-
-  wrapper.releasePointerCapture(e.pointerId);
-}
-
 
   return {
     getCurrentPage: () => currentPage
   };
 }
-
