@@ -229,6 +229,7 @@ body::after {
   opacity: 0;
   pointer-events: none;
   transition: opacity .6s ease;
+  content: none;
 }
 
 /* 横向き時に表示 */
