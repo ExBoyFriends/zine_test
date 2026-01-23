@@ -14,7 +14,7 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
     'transform 1.4s cubic-bezier(.16,1.3,.3,1)';
 
   /* =====================
-     transform（中央基準を維持）
+     transform（中央基準）
   ===================== */
   const applyX = x => {
     slideTop.style.transition = TRANSITION;
@@ -51,12 +51,11 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   };
 
   /* =====================
-     tap 判定（最終ページのみ）
+     tap 判定（ドラッグ完全無視）
   ===================== */
   wrapper.addEventListener('pointerdown', e => {
-    if (e.button !== 0) return; // PC右クリック対策
+    if (e.button !== 0) return;
     if (getCurrentPage() !== totalPages - 1) return;
-
     startX = e.clientX;
   });
 
@@ -71,16 +70,10 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
     }
   });
 
-  /* =====================
-     pointercancel（iOS安定化）
-  ===================== */
   wrapper.addEventListener('pointercancel', () => {
     startX = 0;
   });
 
-  /* =====================
-     tap-cover 内は伝播停止
-  ===================== */
   tapCover.addEventListener('pointerup', e => {
     e.stopPropagation();
   });
