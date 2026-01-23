@@ -26,6 +26,8 @@ export function initCarousel(wrapper, pages) {
      pointer down
   ===================== */
   wrapper.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+
     const inner = getInner(pages[currentPage]);
     if (!inner) return;
 
@@ -33,6 +35,7 @@ export function initCarousel(wrapper, pages) {
     startX = e.clientX;
     currentX = 0;
 
+    // フェード中でも即操作可能
     pages.forEach(p => {
       p.style.transition = 'none';
       const i = getInner(p);
@@ -54,33 +57,31 @@ export function initCarousel(wrapper, pages) {
     const width = wrapper.clientWidth;
     const r = Math.min(Math.abs(dx) / width, 1);
 
-    // 全部一旦消す
     pages.forEach(p => (p.style.opacity = 0));
 
     const current = pages[currentPage];
     const currentInner = getInner(current);
 
-    // current
     current.style.opacity = 1 - r;
     currentInner.style.transform = `translateX(${dx}px)`;
 
-    // next
     if (dx < 0 && pages[currentPage + 1]) {
-      pages[currentPage + 1].style.opacity = r;
-      getInner(pages[currentPage + 1]).style.transform =
+      const next = pages[currentPage + 1];
+      next.style.opacity = r;
+      getInner(next).style.transform =
         `translateX(${dx + width}px)`;
     }
 
-    // prev
     if (dx > 0 && pages[currentPage - 1]) {
-      pages[currentPage - 1].style.opacity = r;
-      getInner(pages[currentPage - 1]).style.transform =
+      const prev = pages[currentPage - 1];
+      prev.style.opacity = r;
+      getInner(prev).style.transform =
         `translateX(${dx - width}px)`;
     }
   });
 
   /* =====================
-     pointer up
+     pointer up / cancel
   ===================== */
   wrapper.addEventListener('pointerup', finish);
   wrapper.addEventListener('pointercancel', finish);
@@ -103,12 +104,13 @@ export function initCarousel(wrapper, pages) {
   }
 
   /* =====================
-     normalize
+     normalize（静止状態）
   ===================== */
   function normalize() {
     pages.forEach((p, i) => {
       p.style.transition = 'opacity .8s ease';
       p.style.opacity = i === currentPage ? 1 : 0;
+      p.classList.toggle('active', i === currentPage);
 
       const inner = getInner(p);
       if (inner) {
@@ -117,5 +119,9 @@ export function initCarousel(wrapper, pages) {
       }
     });
   }
+
+  return {
+    getCurrentPage: () => currentPage
+  };
 }
 
