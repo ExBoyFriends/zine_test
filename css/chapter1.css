@@ -1,16 +1,11 @@
 html, body {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
   overflow: hidden;
   background: #000;
 }
 
 body {
-  min-height: 100svh;
-  overscroll-behavior: none;
-  touch-action: manipulation;
   height: calc(var(--vh) * 100);
 }
 
@@ -48,6 +43,7 @@ body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  touch-action: pan-x;
 }
 
 .carousel-page {
@@ -149,24 +145,21 @@ body {
 /* tap-cover = 当たり判定専用 */
 .tap-cover {
   position: absolute;
-  
-  /* ① 中央基準 */
- left: calc(50% + 30px);
+  left: calc(50% + 30px);
   top: calc(50% + 10px);
   transform: translate(-50%, -50%);
   width: 52px;
   height: 90px;
-  
-  pointer-events: auto;   
 
-  background: transparent; 
+  pointer-events: auto;
+  background: transparent;
   z-index: 3;
 
   touch-action: manipulation;
+}
 
-
-  a,
-.tap-cover {
+.tap-cover,
+.tap-cover a {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
