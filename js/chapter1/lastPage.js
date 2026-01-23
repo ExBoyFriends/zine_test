@@ -14,14 +14,15 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
     'transform 1.4s cubic-bezier(.16,1.3,.3,1)';
 
   /* =====================
-     共通 transform 適用
+     transform（中央基準を維持）
   ===================== */
   const applyX = x => {
     slideTop.style.transition = TRANSITION;
     tapCover.style.transition = TRANSITION;
 
     slideTop.style.transform = `translateX(${x}px)`;
-    tapCover.style.transform = `translateX(${x}px)`;
+    tapCover.style.transform =
+      `translate(-50%, -50%) translateX(${x}px)`;
   };
 
   /* =====================
@@ -50,31 +51,37 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   };
 
   /* =====================
-     tap 判定
+     tap 判定（最終ページのみ）
   ===================== */
-wrapper.addEventListener('pointerdown', e => {
-  if (getCurrentPage() !== totalPages - 1) return;
-  startX = e.clientX;
-});
+  wrapper.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return; // PC右クリック対策
+    if (getCurrentPage() !== totalPages - 1) return;
 
-wrapper.addEventListener('pointerup', e => {
-  if (getCurrentPage() !== totalPages - 1) return;
+    startX = e.clientX;
+  });
 
-  const dx = e.clientX - startX;
+  wrapper.addEventListener('pointerup', e => {
+    if (getCurrentPage() !== totalPages - 1) return;
 
-  if (Math.abs(dx) < TAP_THRESHOLD) {
-    e.stopPropagation();
-    opened ? close() : open();
-  }
-});
+    const dx = e.clientX - startX;
 
-
+    if (Math.abs(dx) < TAP_THRESHOLD) {
+      e.stopPropagation();
+      opened ? close() : open();
+    }
+  });
 
   /* =====================
-     tap-cover 内での伝播停止
+     pointercancel（iOS安定化）
+  ===================== */
+  wrapper.addEventListener('pointercancel', () => {
+    startX = 0;
+  });
+
+  /* =====================
+     tap-cover 内は伝播停止
   ===================== */
   tapCover.addEventListener('pointerup', e => {
     e.stopPropagation();
   });
 }
-
