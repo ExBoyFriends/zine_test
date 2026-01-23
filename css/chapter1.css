@@ -132,10 +132,16 @@ body {
 }
 
 .last-img-wrapper {
-  position: relative;
-  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  width: 88vw;
+  max-width: 540px;
   aspect-ratio: 3 / 4;
 }
+
 
 /* 上の画像は見た目専用 */
 .slide-top {
