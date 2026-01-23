@@ -15,7 +15,7 @@ export function initCarousel(wrapper, pages) {
       if (i === 0 || i === dots.length - 1) return;
       dot.classList.toggle('active', i === currentPage + 1);
     });
-    dots[0].style.opacity = currentPage === 0 ? 0 : 1;
+    if (dots[0]) dots[0].style.opacity = currentPage === 0 ? 0 : 1;
   }
 
   function getInner(page) {
