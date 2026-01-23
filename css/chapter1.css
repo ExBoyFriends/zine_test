@@ -157,11 +157,15 @@ body {
   width: 52px;
   height: 90px;
 
-  pointer-events: auto;
+  pointer-events: none;
   background: transparent;
   z-index: 3;
 
   touch-action: manipulation;
+}
+
+#last-page.active .tap-cover {
+  pointer-events: auto;
 }
 
 .tap-cover,
