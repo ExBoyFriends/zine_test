@@ -55,10 +55,9 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
     }
   });
 
- /* ★ tap-cover 専用：確実に close */
+
   tapCover.addEventListener('pointerup', e => {
     e.stopPropagation();
-    close();
   });
   
 }
