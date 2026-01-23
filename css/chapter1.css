@@ -47,12 +47,13 @@ body {
 }
 
 .carousel-page {
-  position: absolute;
+  position: relative;
+  flex: 0 0 100vw
   inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.8s ease;
   pointer-events: none;
 }
