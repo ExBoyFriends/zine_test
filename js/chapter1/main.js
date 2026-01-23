@@ -26,13 +26,15 @@ document.addEventListener('gestureend', e => e.preventDefault());
 
 // ダブルタップズーム無効
 let lastTouch = 0;
-document.addEventListener('touchend', e => {
+
+wrapper.addEventListener('touchend', e => {
   const now = Date.now();
   if (now - lastTouch <= 300) {
     e.preventDefault();
   }
   lastTouch = now;
 }, { passive: false });
+
 
 
 
