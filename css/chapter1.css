@@ -258,7 +258,7 @@ body::after {
     letter-spacing: .12em;
 
     background:
-      url("../image/rotate.png") center 42% / 160px no-repeat;
+      url("../image/eye.jpg") center 42% / 160px no-repeat;
 
     opacity: 1;
   }
