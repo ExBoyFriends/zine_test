@@ -86,26 +86,27 @@ export function initCarousel(wrapper, pages) {
 
     pages.forEach(p => (p.style.opacity = ''));
 
-    // ▶︎ ページ切り替え
-    if (next !== null) {
-      isSettling = true;
+   // ▶︎ ページ切り替え
+if (next !== null) {
+  isSettling = true;
 
-      const ratio = Math.min(Math.abs(dx) / wrapper.clientWidth, 1);
-      const duration = 1.6 + ratio * 1.8; // ← 少し遅く
+  const ratio = Math.min(Math.abs(dx) / wrapper.clientWidth, 1);
+  const duration = 1.6 + ratio * 1.8;
 
-      pages[currentPage].style.transition = `opacity ${duration}s ease`;
-      pages[next].style.transition = `opacity ${duration}s ease`;
+  pages[currentPage].style.transition = `opacity ${duration}s ease`;
+  pages[next].style.transition = `opacity ${duration}s ease`;
 
-      pages[currentPage].classList.remove('active');
-      pages[next].classList.add('active');
+  const prev = currentPage;
+  currentPage = next;
+  updateDots();
 
-      currentPage = next;
-      updateDots();
+  setTimeout(() => {
+    pages[prev].classList.remove('active');
+    pages[currentPage].classList.add('active');
 
-      setTimeout(() => {
-        pages.forEach(p => (p.style.transition = ''));
-        isSettling = false;
-      }, duration * 1000);
+    pages.forEach(p => (p.style.transition = ''));
+    isSettling = false;
+  }, duration * 1000);
 
     // ▶︎ 戻るとき（弾性）
     } else {
