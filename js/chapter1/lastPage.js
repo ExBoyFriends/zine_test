@@ -3,30 +3,38 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   let startX = 0;
 
   const TAP_THRESHOLD = 6;
+
   const slideTop = document.querySelector('.slide-top');
   const tapCover = document.querySelector('.tap-cover');
   const rightDot = document.querySelector('.dot.right-dot');
 
-  const duration = '0.9s';
-  
- const applyX = x => {
-   slideTop.style.transition = `transform ${duration} ease-out`;
-   tapCover.style.transition = `transform ${duration} ease-out`;
-   
-  slideTop.style.transition = 
-   　　　　　　'transform 1.4s cubic-bezier(.16,1.3,.3,1)';
-  slideTop.style.transform = `translateX(${x}px)`;
-};
+  if (!slideTop || !tapCover) return;
 
+  const TRANSITION =
+    'transform 1.4s cubic-bezier(.16,1.3,.3,1)';
 
+  /* =====================
+     共通 transform 適用
+  ===================== */
+  const applyX = x => {
+    slideTop.style.transition = TRANSITION;
+    tapCover.style.transition = TRANSITION;
+
+    slideTop.style.transform = `translateX(${x}px)`;
+    tapCover.style.transform = `translateX(${x}px)`;
+  };
+
+  /* =====================
+     open / close
+  ===================== */
   const open = () => {
     opened = true;
 
- const visibleWidth = slideTop.clientWidth / 2;
+    const visibleWidth = slideTop.clientWidth / 2;
 
     tapCover.style.width = `${visibleWidth}px`;
     tapCover.style.pointerEvents = 'auto';
-    
+
     applyX(-visibleWidth);
     rightDot?.classList.add('active');
   };
@@ -34,31 +42,39 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   const close = () => {
     opened = false;
 
-   tapCover.style.pointerEvents = 'none';
-   tapCover.style.width = '0';
-    
+    tapCover.style.pointerEvents = 'none';
+    tapCover.style.width = '0';
+
     applyX(0);
     rightDot?.classList.remove('active');
   };
 
-  wrapper.addEventListener('pointerdown', e => {
-    if (getCurrentPage() !== totalPages - 1) return;
-    startX = e.clientX;
-  });
+  /* =====================
+     tap 判定
+  ===================== */
+wrapper.addEventListener('pointerdown', e => {
+  if (getCurrentPage() !== totalPages - 1) return;
+  startX = e.clientX;
+});
 
-  wrapper.addEventListener('pointerup', e => {
-    if (getCurrentPage() !== totalPages - 1) return;
-    
-    const dx = e.clientX - startX;
-    if (Math.abs(dx) < TAP_THRESHOLD) {
-      opened ? close() : open();
-    }
-  });
+wrapper.addEventListener('pointerup', e => {
+  if (getCurrentPage() !== totalPages - 1) return;
+
+  const dx = e.clientX - startX;
+
+  if (Math.abs(dx) < TAP_THRESHOLD) {
+    e.stopPropagation();
+    opened ? close() : open();
+  }
+});
 
 
+
+  /* =====================
+     tap-cover 内での伝播停止
+  ===================== */
   tapCover.addEventListener('pointerup', e => {
     e.stopPropagation();
   });
-  
 }
 
