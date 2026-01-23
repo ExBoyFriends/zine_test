@@ -38,7 +38,7 @@ export function initCarousel(wrapper, pages) {
   });
 
   wrapper.addEventListener('pointermove', e => {
-    if (!isDragging) return;
+  //  if (!isDragging) return;
 
     const dx = e.clientX - startX;
     currentX = dx;
