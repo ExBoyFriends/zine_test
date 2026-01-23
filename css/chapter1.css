@@ -210,5 +210,39 @@ body {
 }
 
 
+@media (orientation: landscape) {
+
+  /* 黒幕 */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #000;
+    pointer-events: all;
+  }
+
+  /* 画像＋テキストレイヤー */
+  body::after {
+    content: "縦向きでご覧ください"; 
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 12svh;
+
+    color: #fff;
+    font-size: 14px;
+    letter-spacing: .12em;
+
+    background:
+      url("../image/rotate.png") center 42% / 160px no-repeat;
+  }
+
+}
+
 
 
