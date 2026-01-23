@@ -159,6 +159,8 @@ body {
 
   background: transparent; 
   z-index: 3;
+
+  touch-action: manipulation;
   
   /* 調整用 */
 /*  outline: 2px solid red; */
