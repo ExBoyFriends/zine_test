@@ -11,6 +11,7 @@ body {
   min-height: 100svh;
   overscroll-behavior: none;
   touch-action: manipulation;
+  height: calc(var(--vh) * 100);
 }
 
 * {
