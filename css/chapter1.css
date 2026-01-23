@@ -235,34 +235,24 @@ body::after {
     position: fixed;
     inset: 0;
     z-index: 9999;
-
     background: #000;
-
     opacity: 1;
     pointer-events: all;
   }
 
   body::after {
-    content: ""; /* ← テキスト入れたい場合ここ */
+    content: "";
     position: fixed;
     inset: 0;
     z-index: 10000;
 
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    padding-bottom: 12svh;
-
-    color: #fff;
-    font-size: 14px;
-    letter-spacing: .12em;
-
     background:
-      url("../image/eye.jpg") center 0% / 130px no-repeat;
+      url("../image/eye.jpg") center center / 160px no-repeat;
 
     opacity: 1;
   }
 }
+
 
 
 
