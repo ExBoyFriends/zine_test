@@ -194,22 +194,6 @@ body {
   pointer-events: none;
 }
 
-.next-link {
-  position: absolute;
-  inset: 0;  
-  z-index: auto;
-  bottom: 8%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90px;  
-  height: 60px;
-}
-
-.next-link img {
-  width: 100%;
-  height: 100%;
-}
-
 /* アニメーション */
 @keyframes slowFade {
   0% { filter: brightness(1); }
