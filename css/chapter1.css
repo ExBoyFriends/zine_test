@@ -160,10 +160,14 @@ body {
   height: 90px;
   background: transparent;
   z-index: 3;
+
+  background: rgba(255, 0, 0, 0.2);
 }
 
 #last-page.active .tap-cover {
   pointer-events: auto;
+
+  background: rgba(0, 255, 0, 0.25);
 }
 
 .tap-cover,
