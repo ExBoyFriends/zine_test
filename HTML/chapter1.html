@@ -46,11 +46,19 @@
      
      <div class="last-img-wrapper">
     
-        <img src="../image/zebra.png" class="last-img top slide-top">
-        <img class="last-img under" src="../image/next.png">
-        <a href="chapter2.html" class="tap-cover"></a>
-     
-      </div>
+         <!-- Under（リンク専用） -->
+      <a href="chapter2.html" class="tap-cover">
+        <img src="../image/next.png" class="last-img under">
+      </a>
+
+      <!-- Top（見た目だけ） -->
+      <img src="../image/zebra.png"
+           class="last-img top slide-top">
+
+      <!-- Top操作用タップゾーン -->
+      <div class="top-tap-zone"></div>
+
+    </div>
      
    </div>
  </div>
