@@ -15,7 +15,10 @@ body {
   user-select: none;
 }
 
-/* 背景 */
+/* ======================
+   背景
+====================== */
+
 .background {
   position: fixed;
   inset: 0;
@@ -24,7 +27,10 @@ body {
   animation: slowFade 20s ease-in-out infinite alternate;
 }
 
-/* ローダー */
+/* ======================
+   ローダー
+====================== */
+
 #loader {
   position: fixed;
   inset: 0;
@@ -34,7 +40,10 @@ body {
   transition: opacity 0.5s ease;
 }
 
-/* カルーセル */
+/* ======================
+   カルーセル
+====================== */
+
 .carousel-wrapper {
   position: fixed;
   inset: 0;
@@ -55,8 +64,7 @@ body {
   opacity: 0;
   transition: opacity 0.8s ease;
   pointer-events: none;
-
-   will-change: opacity; 
+  will-change: opacity;
 }
 
 .carousel-page.active {
@@ -66,193 +74,3 @@ body {
 
 .carousel-inner {
   display: flex;
-  gap: 10px;
-  justify-content: center;
-  width: 88vw;
-  max-width: 540px;
-  cursor: grab;
-}
-
-.carousel-inner img {
-  width: 88vw;
-  max-width: 540px;
-  -webkit-user-drag: none;
-}
-
-.dragging {
-  cursor: grabbing;
-}
-
-
-/* ドット */
-.dots {
-  position: fixed;
-  bottom: calc(40px + env(safe-area-inset-bottom));
-  width: 100%;
-  text-align: center;
-  z-index: 20;
-  opacity: 0;
-  transition: opacity 0.8s ease;
-}
-
-.dots.visible {
-  opacity: 1;
-}
-
-.dot {
-  display: inline-block;
-  width: 5px;
-  height: 8px;
-  margin: 0 5px;
-  background: rgba(200,200,200,.25);
-}
-
-.dot.active {
-  background: rgba(240,240,240,.9);
-}
-
-.left-dot {
-  width: 12px;
-  height: 12px;
-  clip-path: polygon(100% 0%,0% 50%,100% 100%);
-}
-
-.right-dot {
-  width: 12px;
-  height: 12px;
-  clip-path: polygon(0% 0%,100% 50%,0% 100%);
-}
-
-/* 最終ページ */
-#last-page .carousel-inner.single {
-  position: relative;
-  width: 88vw;
-  max-width: 540px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.last-img-wrapper {
-  position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  
-  width: 88vw;
-  max-width: 540px;
-  aspect-ratio: 3 / 4;
-}
-
-
-/* 上の画像は見た目専用 */
-.slide-top {
-  pointer-events: non
-}
-
-/* Topタップ用 */
-.top-tap-zone {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: auto;
-}
-
-/* tap-cover = 当たり判定専用 */
-.tap-cover {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 52px;
-  height: 90px;
-  background: transparent;
-  z-index: 3;
-
-  background: rgba(255, 0, 0, 0.2);
-}
-
-#last-page.active .tap-cover {
-  pointer-events: auto;
-
-  background: rgba(0, 255, 0, 0.25);
-}
-
-.tap-cover,
-.tap-cover a {
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-.last-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.last-img.top {
-  z-index: 2;
-  cursor: grab;
-}
-
-.last-img.under {
-  z-index: 1;
-  pointer-events: none;
-}
-
-.last-img.under a {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-/* 通常ページではリンク無効 */
-.carousel-page:not(#last-page) a {
-  pointer-events: none;
-}
-
-/* アニメーション */
-@keyframes slowFade {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
-
-@keyframes siren {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
-
-
-/* 初期状態（縦向き）＝存在しない */
-body::before,
-body::after {
-  content: none;
-}
-
-/* 横向き時だけ表示 */
-@media (orientation: landscape) {
-
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: #000;
-    pointer-events: all;
-  }
-
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-
-    background: url("../image/eye.jpg") center / cover no-repeat;
-
-    pointer-events: none;
-  }
-}
