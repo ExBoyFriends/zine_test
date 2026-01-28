@@ -17,6 +17,10 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   /* =====================
      transform（中央基準）
   ===================== */
+    
+  const BASE_OFFSET_X = 30;
+  const BASE_OFFSET_Y = 10;
+  
   const applyX = x => {
     slideTop.style.transition = TRANSITION;
     tapCover.style.transition = TRANSITION;
