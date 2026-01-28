@@ -4,11 +4,12 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
 
   const TAP_THRESHOLD = 6;
 
-  const slideTop = document.querySelector('.slide-top');
-  const tapCover = document.querySelector('.tap-cover');
+  const lastPage = document.getElementById('last-page');
+  const slideTop = lastPage?.querySelector('.slide-top');
+  const tapCover = lastPage?.querySelector('.tap-cover');
   const rightDot = document.querySelector('.dot.right-dot');
 
-  if (!slideTop || !tapCover) return;
+  if (!lastPage || !slideTop || !tapCover) return;
 
   const TRANSITION =
     'transform 1.4s cubic-bezier(.16,1.3,.3,1)';
@@ -51,15 +52,15 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   };
 
   /* =====================
-     tap 判定（ドラッグ完全無視）
+     tap 判定（last-page 限定）
   ===================== */
-  wrapper.addEventListener('pointerdown', e => {
+  lastPage.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
     if (getCurrentPage() !== totalPages - 1) return;
     startX = e.clientX;
   });
 
-  wrapper.addEventListener('pointerup', e => {
+  lastPage.addEventListener('pointerup', e => {
     if (getCurrentPage() !== totalPages - 1) return;
 
     const dx = e.clientX - startX;
@@ -70,13 +71,23 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
     }
   });
 
-  wrapper.addEventListener('pointercancel', () => {
+  lastPage.addEventListener('pointercancel', () => {
     startX = 0;
   });
 
+  /* =====================
+     ページ離脱時の保険
+  ===================== */
+  document.addEventListener('pointerup', () => {
+    if (getCurrentPage() !== totalPages - 1 && opened) {
+      close();
+    }
+  });
+
+  /* =====================
+     tap-cover での伝播停止
+  ===================== */
   tapCover.addEventListener('pointerup', e => {
     e.stopPropagation();
   });
-}
-
-
+}　
