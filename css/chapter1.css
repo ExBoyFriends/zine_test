@@ -135,7 +135,7 @@ body {
 }
 
 .last-img-wrapper {
-  position: absolute;
+  position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -148,7 +148,15 @@ body {
 
 /* 上の画像は見た目専用 */
 .slide-top {
-  pointer-events: none;
+  pointer-events: non
+    
+
+/* Topタップ用 */
+.top-tap-zone {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: auto;
 }
 
 /* tap-cover = 当たり判定専用 */
