@@ -19,11 +19,16 @@
   z-index: 1;
 }
 
-/* Underリンク判定 */
+/* Underリンク判定（★ここが核心） */
 .tap-cover {
   position: absolute;
   inset: 0;
   z-index: 2;
+
+  display: block;     /* ← 必須 */
+  width: 100%;        /* ← 必須 */
+  height: 100%;       /* ← 必須 */
+
   pointer-events: none;
 }
 
@@ -40,8 +45,4 @@
   pointer-events: none;
 }
 
-/* ⭐ 最終ページが active のときだけ有効 */
-#last-page.active .tap-cover,
-#last-page.active .top-tap-zone {
-  pointer-events: auto;
-}
+/* ⭐ 最終ページが activ*
