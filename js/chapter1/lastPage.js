@@ -5,9 +5,11 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   const TAP_THRESHOLD = 6;
 
   const lastPage = document.getElementById('last-page');
-  const slideTop = lastPage?.querySelector('.slide-top');
-  const tapCover = lastPage?.querySelector('.tap-cover');
-  const topTapZone = lastPage?.querySelector('.top-tap-zone');
+  if (!lastPage) return;
+
+  const slideTop = lastPage.querySelector('.slide-top');
+  const tapCover = lastPage.querySelector('.tap-cover');
+  const topTapZone = lastPage.querySelector('.top-tap-zone');
   const rightDot = document.querySelector('.dot.right-dot');
 
   if (!slideTop || !tapCover || !topTapZone) return;
@@ -15,13 +17,16 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   const TRANSITION =
     'transform 1.4s cubic-bezier(.16,1.3,.3,1)';
 
-  /* Top画像だけを動かす */
   const applyX = x => {
     slideTop.style.transition = TRANSITION;
     slideTop.style.transform = `translateX(${x}px)`;
   };
 
+  const isActive = () =>
+    lastPage.classList.contains('active');
+
   const open = () => {
+    if (!isActive()) return;
     opened = true;
     const visibleWidth = slideTop.clientWidth / 2;
     tapCover.style.pointerEvents = 'auto';
@@ -36,13 +41,15 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
     rightDot?.classList.remove('active');
   };
 
-  /* ✅ Top専用タップ判定 */
   topTapZone.addEventListener('pointerdown', e => {
+    if (!isActive()) return;
     if (e.button !== 0) return;
     startX = e.clientX;
   });
 
   topTapZone.addEventListener('pointerup', e => {
+    if (!isActive()) return;
+
     const dx = e.clientX - startX;
     if (Math.abs(dx) < TAP_THRESHOLD) {
       e.stopPropagation();
@@ -54,9 +61,10 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
     startX = 0;
   });
 
-  /* Underリンクの伝播停止 */
   tapCover.addEventListener('pointerup', e => {
+    if (!isActive()) return;
     e.stopPropagation();
   });
 }
+
 
