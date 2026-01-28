@@ -154,17 +154,12 @@ body {
 /* tap-cover = 当たり判定専用 */
 .tap-cover {
   position: absolute;
-  left: calc(50% + 30px);
-  top: calc(50% + 10px);
-  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
   width: 52px;
   height: 90px;
-
-  pointer-events: none;
   background: transparent;
   z-index: 3;
-
-  touch-action: manipulation;
 }
 
 #last-page.active .tap-cover {
