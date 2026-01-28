@@ -149,7 +149,7 @@ body {
 /* 上の画像は見た目専用 */
 .slide-top {
   pointer-events: non
-    
+}
 
 /* Topタップ用 */
 .top-tap-zone {
