@@ -83,10 +83,6 @@ body {
   cursor: grabbing;
 }
 
-.carousel-page:not(#last-page) .tap-cover {
-  display: none;
-}
-
 
 /* ドット */
 .dots {
@@ -169,10 +165,6 @@ body {
   z-index: 3;
 
   touch-action: manipulation;
-}
-
-#last-page .tap-cover {
-  pointer-events: none;
 }
 
 #last-page.active .tap-cover {
