@@ -53,9 +53,10 @@ body {
   justify-content: center;
   align-items: center;
   opacity: 0;
-  transition: opacity .8s ease;
+  transition: opacity 0.8s ease;
   pointer-events: none;
-  will-change: opacity;
+
+   will-change: opacity; 
 }
 
 .carousel-page.active {
@@ -78,6 +79,15 @@ body {
   -webkit-user-drag: none;
 }
 
+.dragging {
+  cursor: grabbing;
+}
+
+.carousel-page:not(#last-page) .tap-cover {
+  display: none;
+}
+
+
 /* ドット */
 .dots {
   position: fixed;
@@ -86,10 +96,12 @@ body {
   text-align: center;
   z-index: 20;
   opacity: 0;
-  transition: opacity .8s ease;
+  transition: opacity 0.8s ease;
 }
 
-.dots.visible { opacity: 1; }
+.dots.visible {
+  opacity: 1;
+}
 
 .dot {
   display: inline-block;
@@ -115,12 +127,12 @@ body {
   clip-path: polygon(0% 0%,100% 50%,0% 100%);
 }
 
-/* ===== 最終ページ ===== */
-
+/* 最終ページ */
 #last-page .carousel-inner.single {
   position: relative;
   width: 88vw;
   max-width: 540px;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -131,10 +143,53 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  
   width: 88vw;
   max-width: 540px;
   aspect-ratio: 3 / 4;
 }
+
+
+/* 上の画像は見た目専用 */
+.slide-top {
+  pointer-events: none;
+}
+
+/* tap-cover = 当たり判定専用 */
+.tap-cover {
+  position: absolute;
+  left: calc(50% + 30px);
+  top: calc(50% + 10px);
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 90px;
+
+  pointer-events: none;
+  background: transparent;
+  z-index: 3;
+
+  touch-action: manipulation;
+}
+
+#last-page .tap-cover {
+  pointer-events: none;
+}
+
+#last-page.active .tap-cover {
+  pointer-events: auto;
+}
+
+.tap-cover,
+.tap-cover a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+  
+  /* 調整用 */
+/*  outline: 2px solid red; */
+/*  background: rgba(255,0,0,.1); */
+
 
 .last-img {
   position: absolute;
@@ -146,7 +201,7 @@ body {
 
 .last-img.top {
   z-index: 2;
-  pointer-events: none;
+  cursor: grab;
 }
 
 .last-img.under {
@@ -154,52 +209,59 @@ body {
   pointer-events: none;
 }
 
-/* リンク当たり判定 */
-.tap-cover {
-  position: absolute;
-  left: calc(50% + 30px);
-  top: calc(50% + 10px);
-  transform: translate(-50%, -50%);
-  width: 52px;
-  height: 90px;
+.last-img.under a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* 通常ページではリンク無効 */
+.carousel-page:not(#last-page) a {
   pointer-events: none;
-  z-index: 3;
 }
 
-#last-page.active .tap-cover {
-  pointer-events: auto;
+/* アニメーション */
+@keyframes slowFade {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
 }
 
-/* 横向き封印 */
+@keyframes siren {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(0.2); }
+  100% { filter: brightness(1); }
+}
+
+
+/* 初期状態（縦向き）＝存在しない */
+body::before,
+body::after {
+  content: none;
+}
+
+/* 横向き時だけ表示 */
 @media (orientation: landscape) {
+
   body::before {
     content: "";
     position: fixed;
     inset: 0;
     z-index: 9999;
     background: #000;
+    pointer-events: all;
   }
+
   body::after {
     content: "";
     position: fixed;
     inset: 0;
     z-index: 10000;
+
     background: url("../image/eye.jpg") center / cover no-repeat;
+
+    pointer-events: none;
   }
 }
-
-/* アニメーション */
-@keyframes slowFade {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(.2); }
-  100% { filter: brightness(1); }
-}
-
-@keyframes siren {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(.2); }
-  100% { filter: brightness(1); }
-}
-
 
 
