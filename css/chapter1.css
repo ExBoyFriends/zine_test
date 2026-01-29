@@ -149,7 +149,6 @@ body {
 .last-img.top {
   z-index: 3;
   pointer-events: none;  
-  cursor: pointer;
 }
 
 .top-layer {
