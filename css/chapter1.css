@@ -207,6 +207,7 @@ body {
 
 /* 開いたときだけリンク有効 */
 #last-page.opened .tap-cover {
+  z-index: 5;
   pointer-events: auto;
 }
 
