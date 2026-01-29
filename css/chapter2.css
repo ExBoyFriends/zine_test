@@ -52,8 +52,8 @@ html, body {
   inset: 0;
   margin: auto;
 
-  width: 115%;
-  height: 115%;
+  width: 135%;
+  height: 135%;
   object-fit: contain;
 
   pointer-events: none;
