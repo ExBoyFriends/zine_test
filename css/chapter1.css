@@ -177,9 +177,6 @@ body {
   pointer-events: auto;
   cursor: pointer;
 
-  /* デバッグ */
-  outline: 2px solid red;
-  background: rgba(255,0,0,.15);
 }
 
 
@@ -269,20 +266,3 @@ body::after {
     pointer-events: none;
   }
 }　
-
-/* ===== 強制デバッグ ===== */
-
-#last-page {
-  opacity: 1 !important;
-  pointer-events: auto !important;
-}
-
-.last-img-wrapper {
-  outline: 3px solid blue;
-}
-
-/* 🔴 Top画像（開閉） */
-.last-img.top {
-  outline: 2px solid red;
-  background: rgba(255,0,0,.1);
-}
