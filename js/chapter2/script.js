@@ -1,74 +1,100 @@
-const track = document.querySelector(".track");
-const slides = document.querySelectorAll(".slide");
+document.addEventListener("DOMContentLoaded", () => {
 
-const slideWidth = slides[0].offsetWidth;
-const singleLoop = slideWidth * (slides.length / 2);
+  const slides = [...document.querySelectorAll(".slide")];
+  const total = slides.length;
 
-let x = -singleLoop;
-let v = 0;
+  /* === チューニング用パラメータ === */
+  const GAP = 260;        // 横の間隔（重なり防止）
+  const RADIUS = 900;     // 円の奥行き
+  const DEPTH = 520;      // Z方向の沈み
+  const TILT = 26;        // 内向き傾き
+  const DAMPING = 0.92;   // 慣性減衰
+  const SCALE_MIN = 0.82; // 最小サイズ
 
-let isDown = false;
-let lastX = 0;
+  let pos = 0;            // 無限位置（連続値）
+  let velocity = 0;
+  let dragging = false;
+  let lastX = 0;
 
-function wrap() {
-  while (x <= -singleLoop * 2) x += singleLoop;
-  while (x >= 0) x -= singleLoop;
-}
+  function render() {
+    slides.forEach((slide, i) => {
 
-function tick() {
-  if (!isDown) {
-    v *= 0.94; // 慣性（軽い）
-    if (Math.abs(v) < 0.02) v = 0;
+      /* 無限ラップ */
+      let d = i * GAP - pos;
+      const wrap = total * GAP;
+      d = ((d + wrap / 2) % wrap) - wrap / 2;
+
+      /* 円を描く錯覚 */
+      const angle = d / RADIUS;
+
+      const x = d;
+      const z = -Math.abs(Math.cos(angle)) * DEPTH;
+      const r = -angle * TILT;
+      const s = Math.max(
+        SCALE_MIN,
+        1 - Math.abs(d) / (wrap * 0.8)
+      );
+
+      slide.style.transform = `
+        translate3d(${x}px, -50%, ${z}px)
+        rotateY(${r}deg)
+        scale(${s})
+      `;
+
+      slide.style.zIndex = 1000 - Math.abs(d);
+    });
   }
 
-  x += v;
-  wrap();
+  function animate() {
+    if (!dragging) {
+      pos += velocity;
+      velocity *= DAMPING;
+      if (Math.abs(velocity) < 0.01) velocity = 0;
+    }
+    render();
+    requestAnimationFrame(animate);
+  }
 
-  track.style.transform = `translateX(${x}px)`;
-  requestAnimationFrame(tick);
-}
-tick();
+  animate();
 
-/* --- touch --- */
-window.addEventListener("touchstart", e => {
-  isDown = true;
-  lastX = e.touches[0].clientX;
-}, { passive: true });
+  /* ===== マウス ===== */
+  window.addEventListener("mousedown", e => {
+    dragging = true;
+    lastX = e.clientX;
+    velocity = 0;
+  });
 
-window.addEventListener("touchmove", e => {
-  if (!isDown) return;
-  const cx = e.touches[0].clientX;
-  const dx = cx - lastX;
+  window.addEventListener("mousemove", e => {
+    if (!dragging) return;
+    const dx = e.clientX - lastX;
+    pos -= dx;
+    velocity = -dx;
+    lastX = e.clientX;
+  });
 
-  x += dx;
-  v = dx;
+  window.addEventListener("mouseup", () => {
+    dragging = false;
+  });
 
-  lastX = cx;
-}, { passive: true });
+  /* ===== タッチ ===== */
+  window.addEventListener("touchstart", e => {
+    dragging = true;
+    lastX = e.touches[0].clientX;
+    velocity = 0;
+  }, { passive: true });
 
-window.addEventListener("touchend", () => {
-  isDown = false;
+  window.addEventListener("touchmove", e => {
+    if (!dragging) return;
+    const dx = e.touches[0].clientX - lastX;
+    pos -= dx;
+    velocity = -dx;
+    lastX = e.touches[0].clientX;
+  }, { passive: true });
+
+  window.addEventListener("touchend", () => {
+    dragging = false;
+  });
+
 });
-
-/* --- mouse --- */
-window.addEventListener("mousedown", e => {
-  isDown = true;
-  lastX = e.clientX;
-});
-
-window.addEventListener("mousemove", e => {
-  if (!isDown) return;
-  const dx = e.clientX - lastX;
-
-  x += dx;
-  v = dx;
-
-  lastX = e.clientX;
-});
-
-window.addEventListener("mouseup", () => {
-  isDown = false;
-});
-
 
 
