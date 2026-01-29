@@ -34,7 +34,9 @@ body {
   transition: opacity 0.5s ease;
 }
 
-/* カルーセル */
+/* =====================
+   カルーセル
+===================== */
 .carousel-wrapper {
   position: fixed;
   inset: 0;
@@ -55,8 +57,7 @@ body {
   opacity: 0;
   transition: opacity 0.8s ease;
   pointer-events: none;
-
-   will-change: opacity; 
+  will-change: opacity;
 }
 
 .carousel-page.active {
@@ -66,11 +67,9 @@ body {
 
 .carousel-inner {
   display: flex;
-  gap: 10px;
   justify-content: center;
   width: 88vw;
   max-width: 540px;
-  cursor: grab;
 }
 
 .carousel-inner img {
@@ -79,16 +78,9 @@ body {
   -webkit-user-drag: none;
 }
 
-.dragging {
-  cursor: grabbing;
-}
-
-.carousel-page:not(#last-page) .tap-cover {
-  display: none;
-}
-
-
-/* ドット */
+/* =====================
+   ドット
+===================== */
 .dots {
   position: fixed;
   bottom: calc(40px + env(safe-area-inset-bottom));
@@ -99,9 +91,7 @@ body {
   transition: opacity 0.8s ease;
 }
 
-.dots.visible {
-  opacity: 1;
-}
+.dots.visible { opacity: 1; }
 
 .dot {
   display: inline-block;
@@ -111,9 +101,7 @@ body {
   background: rgba(200,200,200,.25);
 }
 
-.dot.active {
-  background: rgba(240,240,240,.9);
-}
+.dot.active { background: rgba(240,240,240,.9); }
 
 .left-dot {
   width: 12px;
@@ -127,70 +115,25 @@ body {
   clip-path: polygon(0% 0%,100% 50%,0% 100%);
 }
 
-/* 最終ページ */
+/* =====================
+   最終ページ
+===================== */
 #last-page .carousel-inner.single {
   position: relative;
   width: 88vw;
   max-width: 540px;
-
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .last-img-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  
-  width: 88vw;
-  max-width: 540px;
+  position: relative;   /* ← 基準をここに */
+  width: 100%;
   aspect-ratio: 3 / 4;
 }
 
-
-/* 上の画像は見た目専用 */
-.slide-top {
-  pointer-events: none;
-}
-
-/* tap-cover = 当たり判定専用 */
-.tap-cover {
-  position: absolute;
-  left: calc(50% + 30px);
-  top: calc(50% + 10px);
-  transform: translate(-50%, -50%);
-  width: 52px;
-  height: 90px;
-
-  pointer-events: none;
-  background: transparent;
-  z-index: 3;
-
-  touch-action: manipulation;
-}
-
-#last-page .tap-cover {
-  pointer-events: none;
-}
-
-#last-page.active .tap-cover {
-  pointer-events: auto;
-}
-
-.tap-cover,
-.tap-cover a {
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-  
-  /* 調整用 */
-/*  outline: 2px solid red; */
-/*  background: rgba(255,0,0,.1); */
-
-
+/* 画像共通 */
 .last-img {
   position: absolute;
   inset: 0;
@@ -199,20 +142,37 @@ body {
   object-fit: contain;
 }
 
+/* =====================
+   Top画像（開閉）
+===================== */
 .last-img.top {
-  z-index: 2;
-  cursor: grab;
+  z-index: 3;
+  pointer-events: auto;   /* ← 開閉はここだけ */
+  cursor: pointer;
 }
 
+/* =====================
+   Under画像（表示）
+===================== */
 .last-img.under {
   z-index: 1;
   pointer-events: none;
 }
 
-.last-img.under a {
-  display: block;
-  width: 100%;
-  height: 100%;
+/* =====================
+   Under画像用リンク判定
+===================== */
+.tap-cover {
+  position: absolute;
+  inset: 0;              /* ← Under画像と完全一致 */
+  z-index: 2;
+  pointer-events: none;
+  background: transparent;
+}
+
+/* 開いたときだけリンク有効 */
+#last-page.opened .tap-cover {
+  pointer-events: auto;
 }
 
 /* 通常ページではリンク無効 */
@@ -220,7 +180,9 @@ body {
   pointer-events: none;
 }
 
-/* アニメーション */
+/* =====================
+   アニメーション
+===================== */
 @keyframes slowFade {
   0% { filter: brightness(1); }
   50% { filter: brightness(0.2); }
@@ -233,14 +195,14 @@ body {
   100% { filter: brightness(1); }
 }
 
-
-/* 初期状態（縦向き）＝存在しない */
+/* =====================
+   横向き制御
+===================== */
 body::before,
 body::after {
   content: none;
 }
 
-/* 横向き時だけ表示 */
 @media (orientation: landscape) {
 
   body::before {
@@ -257,8 +219,10 @@ body::after {
     position: fixed;
     inset: 0;
     z-index: 10000;
-
     background: url("../image/eye.jpg") center / cover no-repeat;
+    pointer-events: none;
+  }
+}
 
     pointer-events: none;
   }
