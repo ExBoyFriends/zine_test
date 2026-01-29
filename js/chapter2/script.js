@@ -8,13 +8,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let startX = 0;
 
   /* 円形配置 */
-  const positions = {
-     0: { x: "0vw",   z: "0px",    r: "0deg",   s: 1,   o: 1   },
-    -1: { x: "-25vw",z: "-200px", r: "35deg",  s: 0.9, o: 0.6 },
-     1: { x: "25vw", z: "-200px", r: "-35deg", s: 0.9, o: 0.6 },
-    -2: { x: "-40vw",z: "-420px", r: "65deg",  s: 0.8, o: 0.25 },
-     2: { x: "40vw", z: "-420px", r: "-65deg", s: 0.8, o: 0.25 }
-  };
+ const positions = {
+  0:  { x: "0vw",   z: "0px",    r: "0deg",   s: 1.05, o: 1   },
+
+ -1:  { x: "-20vw", z: "-180px", r: "28deg",  s: 0.95, o: 0.65 },
+  1:  { x: "20vw",  z: "-180px", r: "-28deg", s: 0.95, o: 0.65 },
+
+ -2:  { x: "-32vw", z: "-380px", r: "55deg",  s: 0.85, o: 0.25 },
+  2:  { x: "32vw",  z: "-380px", r: "-55deg", s: 0.85, o: 0.25 }
+};
+
 
   function rel(i) {
     let d = i - current;
