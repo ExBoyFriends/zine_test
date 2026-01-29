@@ -18,9 +18,12 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   /* =====================
      開閉アニメーション
   ===================== */
+
+  const topLayer = lastPage.querySelector('.top-layer');
+  
   const applyX = x => {
-    slideTop.style.transition = TRANSITION;
-    slideTop.style.transform = `translateX(${x}px)`;
+    topLayer.style.transition = TRANSITION;
+    topLayer.style.transform = `translateX(${x}px)`;
   };
 
   const open = () => {
