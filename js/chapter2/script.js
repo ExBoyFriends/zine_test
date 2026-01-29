@@ -96,5 +96,5 @@ document.addEventListener("DOMContentLoaded", () => {
     dragging = false;
   });
 
-});　　　　　横の間隔は、いい感じ。画像をもっと大きくしたい。
+});　　　　　
 
