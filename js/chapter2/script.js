@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   slides.forEach((slide, i) => {
     const angle = (360 / total) * i;
     slide.style.transform = `
-      translate(-50%, -50%)
+      
       rotateY(${angle}deg)
       translateZ(${radius}px)
     `;
