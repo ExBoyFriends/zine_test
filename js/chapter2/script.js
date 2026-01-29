@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const total = slides.length;
 
   /* === チューニング用パラメータ === */
-  const GAP = 200;        // 横の間隔（重なり防止）
+  const GAP = 180;        // 横の間隔（重なり防止）
   const RADIUS = 900;     // 円の奥行き
   const DEPTH = 260;      // Z方向の沈み
   const TILT = 26;        // 内向き傾き
