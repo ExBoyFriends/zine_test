@@ -151,6 +151,12 @@ body {
   cursor: pointer;
 }
 
+.top-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
 /* 🔴 Top画像 開閉用の当たり判定 */
 .top-hit {
   position: absolute;
