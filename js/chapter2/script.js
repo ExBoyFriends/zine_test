@@ -7,52 +7,49 @@ document.addEventListener("DOMContentLoaded", () => {
   let current = 0;
   let startX = 0;
 
+  /*
+    円形配置パラメータ
+    x : 横位置
+    z : 奥行き（負で奥）
+    r : Y回転
+    o : 透明度
+    s : サイズ
+  */
+  const positions = {
+     0: { x:   0,  z:   0,  r:   0, s: 1.0, o: 1   },
+    -1: { x: -28, z: -180, r:  35, s: 0.9, o: 0.6 },
+     1: { x:  28, z: -180, r: -35, s: 0.9, o: 0.6 },
+    -2: { x: -45, z: -360, r:  65, s: 0.8, o: 0.25 },
+     2: { x:  45, z: -360, r: -65, s: 0.8, o: 0.25 }
+  };
+
+  function getRelativeIndex(i) {
+    let d = i - current;
+    if (d > total / 2) d -= total;
+    if (d < -total / 2) d += total;
+    return d;
+  }
+
   function render() {
     slides.forEach((slide, i) => {
-      let d = i - current;
+      const d = getRelativeIndex(i);
+      const p = positions[d];
 
-      if (d > total / 2) d -= total;
-      if (d < -total / 2) d += total;
-
-      /* 中央 */
-      if (d === 0) {
-        slide.style.transform = `
-          translate(-50%, -50%)
-          translateZ(-200px)
-        `;
-        slide.style.opacity = 1;
-        slide.style.zIndex = 3;
-      }
-
-      /* 左 */
-      else if (d === -1) {
-        slide.style.transform = `
-          translate(-50%, -50%)
-          translateX(-40vw)
-          rotateY(40deg)
-          translateZ(-400px)
-        `;
-        slide.style.opacity = 0.8;
-        slide.style.zIndex = 2;
-      }
-
-      /* 右 */
-      else if (d === 1) {
-        slide.style.transform = `
-          translate(-50%, -50%)
-          translateX(40vw)
-          rotateY(-40deg)
-          translateZ(-400px)
-        `;
-        slide.style.opacity = 0.8;
-        slide.style.zIndex = 2;
-      }
-
-      /* 非表示 */
-      else {
+      if (!p) {
         slide.style.opacity = 0;
-        slide.style.zIndex = 1;
+        return;
       }
+
+      slide.style.transform = `
+        translate(-50%, -50%)
+        translateX(${p.x}vw)
+        translateZ(${p.z}px)
+        rotateY(${p.r}deg)
+        scale(${p.s})
+      `;
+
+      slide.style.opacity = p.o;
+      slide.style.zIndex = 10 - Math.abs(d);
     });
   }
 
@@ -73,11 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* マウス（PC確認用） */
-  window.addEventListener("mousedown", e => {
-    startX = e.clientX;
-  });
-
+  /* マウス */
+  window.addEventListener("mousedown", e => startX = e.clientX);
   window.addEventListener("mouseup", e => {
     const dx = e.clientX - startX;
     if (Math.abs(dx) > 30) {
@@ -89,5 +83,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
-
 
