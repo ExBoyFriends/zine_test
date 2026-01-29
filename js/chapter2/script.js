@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const DEPTH = 260;      // Z方向の沈み
   const TILT = 26;        // 内向き傾き
   const DAMPING = 0.92;   // 慣性減衰
-  const SCALE_MIN = 0.94; // 最小サイズ
+  const SCALE_MIN = 0.98; // 最小サイズ
 
   let pos = 0;            // 無限位置（連続値）
   let velocity = 0;
