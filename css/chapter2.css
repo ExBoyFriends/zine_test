@@ -56,7 +56,6 @@ html, body {
 
   will-change: transform, opacity;
 
-  backface-visibility: hidden;
 }
 
 
