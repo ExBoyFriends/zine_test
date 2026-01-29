@@ -7,23 +7,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let current = 0;
   let startX = 0;
 
-  /*
-    円形配置パラメータ
-    x : 横位置
-    z : 奥行き（負で奥）
-    r : Y回転
-    o : 透明度
-    s : サイズ
-  */
+  /* 円形配置 */
   const positions = {
-     0: { x:   0,  z:   0,  r:   0, s: 1.0, o: 1   },
-    -1: { x: -28, z: -180, r:  35, s: 0.9, o: 0.6 },
-     1: { x:  28, z: -180, r: -35, s: 0.9, o: 0.6 },
-    -2: { x: -45, z: -360, r:  65, s: 0.8, o: 0.25 },
-     2: { x:  45, z: -360, r: -65, s: 0.8, o: 0.25 }
+     0: { x: "0vw",   z: "0px",    r: "0deg",   s: 1,   o: 1   },
+    -1: { x: "-25vw",z: "-200px", r: "35deg",  s: 0.9, o: 0.6 },
+     1: { x: "25vw", z: "-200px", r: "-35deg", s: 0.9, o: 0.6 },
+    -2: { x: "-40vw",z: "-420px", r: "65deg",  s: 0.8, o: 0.25 },
+     2: { x: "40vw", z: "-420px", r: "-65deg", s: 0.8, o: 0.25 }
   };
 
-  function getRelativeIndex(i) {
+  function rel(i) {
     let d = i - current;
     if (d > total / 2) d -= total;
     if (d < -total / 2) d += total;
@@ -32,23 +25,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function render() {
     slides.forEach((slide, i) => {
-      const d = getRelativeIndex(i);
+      const d = rel(i);
       const p = positions[d];
 
       if (!p) {
-        slide.style.opacity = 0;
+        slide.style.setProperty("--o", 0);
         return;
       }
 
-      slide.style.transform = `
-        translate(-50%, -50%)
-        translateX(${p.x}vw)
-        translateZ(${p.z}px)
-        rotateY(${p.r}deg)
-        scale(${p.s})
-      `;
-
-      slide.style.opacity = p.o;
+      slide.style.setProperty("--x", p.x);
+      slide.style.setProperty("--z", p.z);
+      slide.style.setProperty("--r", p.r);
+      slide.style.setProperty("--s", p.s);
+      slide.style.setProperty("--o", p.o);
       slide.style.zIndex = 10 - Math.abs(d);
     });
   }
@@ -63,21 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("touchend", e => {
     const dx = e.changedTouches[0].clientX - startX;
     if (Math.abs(dx) > 30) {
-      current = dx < 0
-        ? (current + 1) % total
-        : (current - 1 + total) % total;
+      current = dx < 0 ? (current + 1) % total : (current - 1 + total) % total;
       render();
     }
   });
 
-  /* マウス */
   window.addEventListener("mousedown", e => startX = e.clientX);
   window.addEventListener("mouseup", e => {
     const dx = e.clientX - startX;
     if (Math.abs(dx) > 30) {
-      current = dx < 0
-        ? (current + 1) % total
-        : (current - 1 + total) % total;
+      current = dx < 0 ? (current + 1) % total : (current - 1 + total) % total;
       render();
     }
   });
