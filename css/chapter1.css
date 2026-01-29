@@ -155,7 +155,7 @@ body {
   position: absolute;
   inset: 0;
   z-index: 3;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 /* 🔴 Top画像 開閉用の当たり判定 */
