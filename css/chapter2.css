@@ -32,12 +32,12 @@ html, body {
 
 /* スライド */
 .slide {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  flex: 0 0 78vw;   /* ← 70vw → 78vw */
+  height: 82vh;     /* ← 70vh → 82vh */
 
-  width: 60vw;
-  height: 75vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   transform-style: preserve-3d;
   backface-visibility: hidden;
@@ -52,8 +52,8 @@ html, body {
   inset: 0;
   margin: auto;
 
-  width: 185%;
-  height: 185%;
+  width: 165%;
+  height: 165%;
   object-fit: contain;
 
   pointer-events: none;
