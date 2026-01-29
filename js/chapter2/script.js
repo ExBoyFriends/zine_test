@@ -1,3 +1,7 @@
+/* =========================
+   Chapter 2 Circular Carousel
+   ========================= */
+
 const slides = document.querySelectorAll(".slide");
 const total = slides.length;
 
@@ -7,27 +11,36 @@ let dragging = false;
 
 /*
   相対位置ごとの見え方
-  「奥」ではなく「手前に来すぎて視界外」
+  円形の内側を覗くイメージ
+  見えるのは「中央＋左右」
 */
 const positions = {
   0:  { x: 0,   z: 0,   r: 0,   s: 1,    o: 1 },
-  -1: { x: -30,z: 140, r: 30,  s: 1.05, o: 0.8 },
-   1: { x: 30, z: 140, r: -30, s: 1.05, o: 0.8 },
-  -2: { x: -60,z: 260, r: 75,  s: 0.95, o: 0 },
-   2: { x: 60, z: 260, r: -75, s: 0.95, o: 0 }
+ -1:  { x: -55, z: 120, r: 35,  s: 1.0,  o: 0.85 },
+  1:  { x: 55,  z: 120, r: -35, s: 1.0,  o: 0.85 },
+ -2:  { x: -110,z: 260, r: 75,  s: 0.9,  o: 0 },
+  2:  { x: 110, z: 260, r: -75, s: 0.9,  o: 0 }
 };
 
+/* 現在位置からの相対インデックス取得（ループ対応） */
 function getRelativeIndex(i) {
   let diff = i - current;
-  if (diff > 2) diff -= total;
-  if (diff < -2) diff += total;
+  if (diff > total / 2) diff -= total;
+  if (diff < -total / 2) diff += total;
   return diff;
 }
 
+/* 描画 */
 function render() {
   slides.forEach((slide, i) => {
     const d = getRelativeIndex(i);
     const p = positions[d];
+
+    if (!p) {
+      slide.style.opacity = 0;
+      slide.style.pointerEvents = "none";
+      return;
+    }
 
     slide.style.transform = `
       translate(-50%, -50%)
@@ -36,23 +49,32 @@ function render() {
       rotateY(${p.r}deg)
       scale(${p.s})
     `;
+
     slide.style.opacity = p.o;
     slide.style.pointerEvents = d === 0 ? "auto" : "none";
   });
 }
 
+/* 初期描画 */
 render();
 
-/* スワイプ操作（左右どちらにも回転） */
-window.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-  dragging = true;
-});
+/* =========================
+   スワイプ & マウス操作
+   ========================= */
 
-window.addEventListener("touchend", e => {
+function onStart(e) {
+  startX = e.touches ? e.touches[0].clientX : e.clientX;
+  dragging = true;
+}
+
+function onEnd(e) {
   if (!dragging) return;
 
-  const dx = e.changedTouches[0].clientX - startX;
+  const endX = e.changedTouches
+    ? e.changedTouches[0].clientX
+    : e.clientX;
+
+  const dx = endX - startX;
 
   if (Math.abs(dx) > 40) {
     current = dx < 0
@@ -62,5 +84,13 @@ window.addEventListener("touchend", e => {
   }
 
   dragging = false;
-});
+}
+
+/* touch */
+window.addEventListener("touchstart", onStart, { passive: true });
+window.addEventListener("touchend", onEnd);
+
+/* mouse */
+window.addEventListener("mousedown", onStart);
+window.addEventListener("mouseup", onEnd);
 
