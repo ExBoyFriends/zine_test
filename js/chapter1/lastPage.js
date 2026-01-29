@@ -5,11 +5,12 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   const TAP_THRESHOLD = 6;
 
   const lastPage = document.getElementById('last-page');
-  const slideTop = lastPage?.querySelector('.slide-top');
-  const tapCover = lastPage?.querySelector('.tap-cover');
+  const slideTop = lastPage?.querySelector('.slide-top'); // 見た目用
+  const topHit   = lastPage?.querySelector('.top-hit');   // 🔴 開閉用
+  const tapCover = lastPage?.querySelector('.tap-cover'); // 🟢 リンク用
   const rightDot = document.querySelector('.dot.right-dot');
 
-  if (!lastPage || !slideTop || !tapCover) return;
+  if (!lastPage || !slideTop || !topHit || !tapCover) return;
 
   const TRANSITION =
     'transform 1.4s cubic-bezier(.16,1.3,.3,1)';
@@ -41,24 +42,26 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   };
 
   /* =====================
-     Top画像のみで開閉
+     🔴 Top-hit だけで開閉
   ===================== */
-  slideTop.addEventListener('pointerdown', e => {
+  topHit.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
+    if (getCurrentPage() !== totalPages - 1) return;
     startX = e.clientX;
   });
 
-  slideTop.addEventListener('pointerup', e => {
+  topHit.addEventListener('pointerup', e => {
     if (getCurrentPage() !== totalPages - 1) return;
 
     const dx = e.clientX - startX;
     if (Math.abs(dx) < TAP_THRESHOLD) {
+      e.stopPropagation();
       opened ? close() : open();
     }
   });
 
   /* =====================
-     リンク時に伝播停止
+     🟢 リンク時は伝播停止
   ===================== */
   tapCover.addEventListener('pointerup', e => {
     e.stopPropagation();
@@ -73,4 +76,3 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
     }
   });
 }
-
