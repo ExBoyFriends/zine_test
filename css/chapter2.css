@@ -1,57 +1,36 @@
-* {
+html, body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
   overflow: hidden;
-  background: #000;
-  touch-action: pan-y;
-}
-
-/* 背景 */
-.background {
-  position: fixed;
-  inset: 0;
-  background: url("../image/background.jpg") center / cover no-repeat;
-  z-index: 0;
 }
 
 .carousel {
-  position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  perspective: 1200px;
+
+  display: flex;
+  align-items: center;
 }
 
 .track {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-style: preserve-3d;
+  display: flex;
+  will-change: transform;
 }
 
 .slide {
-  position: absolute;
-  top: -40vh;
-  width: 70vw;
+  flex: 0 0 70vw;
   height: 70vh;
 
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .slide img {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-
-  width: 105%;   /* ← 余白分だけ */
-  height: 105%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   pointer-events: none;
 }
+
