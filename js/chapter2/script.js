@@ -3,34 +3,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const slides = [...document.querySelectorAll(".slide")];
   const total = slides.length;
 
-  let position = 0;
+  let pos = 0;
   let velocity = 0;
   let dragging = false;
   let lastX = 0;
 
-  /* 超軽量パラメータ */
-  const DRAG = 0.0035;     // 指追従（かなり強め）
-  const FRICTION = 0.985;  // すーっと止まる
-  const GAP = 22;          // 重なり最小
-  const ROT = 18;          // 回転は控えめ
-  const SCALE = 0.04;      // 中央強調ほんの少し
+  const GAP = 22;        // 横間隔（vw）
+  const DRAG = 0.004;    // 指追従
+  const FRICTION = 0.96; // 減速
+  const ROT = 14;        // 傾き
+  const SCALE = 0.06;    // 中央強調
 
-  function normalize(d) {
-    if (d > total / 2) d -= total;
-    if (d < -total / 2) d += total;
-    return d;
+  function wrap(n) {
+    const r = n % total;
+    return r < 0 ? r + total : r;
   }
 
   function render() {
     slides.forEach((slide, i) => {
-      const d = normalize(i - position);
+      let d = i - pos;
+      d = ((d + total / 2) % total) - total / 2;
 
       const x = d * GAP;
       const r = -d * ROT;
       const s = 1 + Math.max(0, 1 - Math.abs(d)) * SCALE;
 
       slide.style.transform = `
-        translate(-50%, -50%)
         translateX(${x}vw)
         rotateY(${r}deg)
         scale(${s})
@@ -40,29 +38,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function tick() {
+  function loop() {
     if (!dragging) {
       velocity *= FRICTION;
       if (Math.abs(velocity) < 0.00001) velocity = 0;
-      position += velocity;
+      pos += velocity;
     }
     render();
-    requestAnimationFrame(tick);
+    requestAnimationFrame(loop);
   }
 
-  tick();
+  loop();
 
   /* 操作 */
   function start(x) {
     dragging = true;
     lastX = x;
-    velocity = 0;
   }
 
   function move(x) {
     if (!dragging) return;
     const dx = x - lastX;
-    position -= dx * DRAG;   // ← 向き正しい
+    pos -= dx * DRAG;
+    velocity = -dx * DRAG;
     lastX = x;
   }
 
@@ -79,4 +77,5 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("mouseup",   end);
 
 });
+
 
