@@ -29,48 +29,36 @@ html, body {
   z-index: 1;
 }
 
+/* 回転体 */
+.ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-style: preserve-3d;
+  transform: translate(-50%, -50%) rotateY(var(--rot, 0deg));
+  transition: transform 1.4s cubic-bezier(.2,.8,.2,1);
+}
+
 /* スライド */
 .slide {
   position: absolute;
+  width: 80vw;
+  height: 80vh;
   top: 50%;
   left: 50%;
-
-  width: 80vw; 
-  height: 80vh;
-
-  transform:
-    translate(-50%, -50%)
-    translateX(var(--x))
-    translateZ(var(--z))
-    rotateY(var(--r))
-    scale(var(--s));
-
-  opacity: var(--o);
-
   transform-style: preserve-3d;
   backface-visibility: hidden;
-
-  transition:
-    transform 1.6s cubic-bezier(.18,.7,.2,1),
-    opacity 1.2s ease;
-
-  will-change: transform, opacity;
-
 }
 
-
-/* 画像 */
+/* 画像（透過余白対策） */
 .slide img {
-  width: 120%;   /* ← ここが核心 */
-  height: 120%;
-  object-fit: contain;
-
-  /* 中央基準を維持 */
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 120%;
+  height: 120%;
+  object-fit: contain;
   transform: translate(-50%, -50%);
-
   pointer-events: none;
 }
 
