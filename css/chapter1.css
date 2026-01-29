@@ -161,8 +161,8 @@ body {
 .top-hit {
   position: absolute;
 
-  width: 55%;      
-  height: 65%;
+  width: 58%;      
+  height: 68%;
 
   top: 50%;
   left: 50%;
@@ -195,7 +195,7 @@ body {
   height: 28%;   
 
   top: 50%;      
-  left: 57%;
+  left: 56%;
   transform: translate(-50%, -50%);
 
   z-index: 2;
