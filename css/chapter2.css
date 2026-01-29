@@ -55,6 +55,8 @@ html, body {
     opacity 1.1s ease;
 
   will-change: transform, opacity;
+
+  backface-visibility: hidden;
 }
 
 
