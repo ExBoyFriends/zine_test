@@ -235,13 +235,14 @@ body::after {
   outline: 3px solid blue;
 }
 
-.slide-top {
-  pointer-events: auto !important;
+/* 🔴 Top画像（開閉） */
+.last-img.top {
   outline: 2px solid red;
+  background: rgba(255,0,0,.1);
 }
 
+/* 🟢 Under画像リンク判定 */
 .tap-cover {
-  pointer-events: auto !important;
   outline: 2px solid lime;
   background: rgba(0,255,0,.15);
 }
