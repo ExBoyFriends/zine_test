@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* === チューニング用パラメータ === */
   const GAP = 120;        // 横の間隔（重なり防止）
-  const RADIUS = 900;     // 円の奥行き
+  const RADIUS = 800;     // 円の奥行き
   const DEPTH = 260;      // Z方向の沈み
   const TILT = 26;        // 内向き傾き
   const DAMPING = 0.92;   // 慣性減衰
