@@ -6,8 +6,8 @@ let startX = 0;
 let dragging = false;
 
 /**
- * 各相対位置の見え方
- * 手前に来すぎると視界外に消える設計
+ * 相対位置ごとの見え方
+ * 「奥」ではなく「手前に来すぎて視界外」
  */
 const positions = {
   0:  { x: 0,   z: 0,   r: 0,   s: 1,    o: 1 },
@@ -17,9 +17,6 @@ const positions = {
    2: { x: 60, z: 260, r: -75, s: 0.95, o: 0 }
 };
 
-/**
- * 今の正面（current）から見た相対位置を -2〜+2 に丸める
- */
 function getRelativeIndex(i) {
   let diff = i - current;
   if (diff > 2) diff -= total;
@@ -27,9 +24,6 @@ function getRelativeIndex(i) {
   return diff;
 }
 
-/**
- * 描画
- */
 function render() {
   slides.forEach((slide, i) => {
     const d = getRelativeIndex(i);
@@ -49,9 +43,7 @@ function render() {
 
 render();
 
-/**
- * タッチ操作
- */
+/* スワイプ操作 */
 window.addEventListener("touchstart", e => {
   startX = e.touches[0].clientX;
   dragging = true;
@@ -64,14 +56,12 @@ window.addEventListener("touchend", e => {
 
   if (Math.abs(dx) > 40) {
     if (dx < 0) {
-      // 右方向（時計回り）
       current = (current + 1) % total;
     } else {
-      // 左方向（反時計回り）
       current = (current - 1 + total) % total;
     }
     render();
   }
-
   dragging = false;
 });
+
