@@ -2,6 +2,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  overscroll-behavior: none;
   background: #000;
 }
 
@@ -128,7 +129,7 @@ body {
 }
 
 .last-img-wrapper {
-  position: relative;   /* ← 基準をここに */
+  position: relative;   
   width: 100%;
   aspect-ratio: 3 / 4;
 }
@@ -155,8 +156,10 @@ body {
   position: absolute;
   inset: 0;
   z-index: 3;
-  pointer-events: auto;
+  pointer-events: auto;   /* ← これ */
+  touch-action: pan-x;    /* ← 明示 */
 }
+
 
 /* 🔴 Top画像 開閉用の当たり判定 */
 .top-hit {
@@ -176,6 +179,16 @@ body {
   /* デバッグ */
   outline: 2px solid red;
   background: rgba(255,0,0,.15);
+}
+
+.top-layer,
+.last-img-wrapper {
+  touch-action: pan-x;
+}
+
+.top-hit,
+.tap-cover {
+  touch-action: manipulation;
 }
 
 /* =====================
@@ -275,10 +288,4 @@ body::after {
 .last-img.top {
   outline: 2px solid red;
   background: rgba(255,0,0,.1);
-}
-
-/* 🟢 Under画像リンク判定 */
-.tap-cover {
-  outline: 2px solid lime;
-  background: rgba(0,255,0,.15);
 }
