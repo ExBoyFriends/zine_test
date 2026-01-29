@@ -46,7 +46,7 @@ body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  touch-action: pan-x;
+  touch-action:  manipulation;
 }
 
 .carousel-page {
@@ -59,6 +59,7 @@ body {
   transition: opacity 0.8s ease;
   pointer-events: none;
   will-change: opacity;
+  touch-action: none;
 }
 
 .carousel-page.active {
@@ -132,6 +133,7 @@ body {
   position: relative;   
   width: 100%;
   aspect-ratio: 3 / 4;
+  touch-action: auto;
 }
 
 /* 画像共通 */
@@ -155,8 +157,8 @@ body {
   position: absolute;
   inset: 0;
   z-index: 3;
-  pointer-events: auto;   /* ← これ */
-  touch-action: pan-x;    /* ← 明示 */
+  pointer-events: auto; 
+  touch-action: manipulation;  
 }
 
 
@@ -180,10 +182,6 @@ body {
   background: rgba(255,0,0,.15);
 }
 
-.top-layer,
-.last-img-wrapper {
-  touch-action: pan-x;
-}
 
 .top-hit,
 .tap-cover {
