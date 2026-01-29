@@ -2,29 +2,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const slides = [...document.querySelectorAll(".slide")];
   const total = slides.length;
+  if (!total) return;
 
-  let current = 0;
-  let startX = 0;
+  /* ===== 物理パラメータ ===== */
+  let position = 0;     // 連続回転位置
+  let velocity = 0;     // 回転速度
+  let isDragging = false;
+  let lastX = 0;
 
-  const SPREAD = 28;   // 横の広がり（vw）
-  const ROT = 28;      // 回転角
-  const SCALE = 0.18;  // 縮小率
+  const FRICTION = 0.94;      // 減速（小さいほど止まりやすい）
+  const DRAG_POWER = 0.0007; // 指の力
+  const MAX_VISIBLE = 1.2;   // 見える範囲
 
-  function rel(i) {
-    let d = i - current;
-    if (d > total / 2) d -= total;
-    if (d < -total / 2) d += total;
-    return d;
-  }
+  /* 見た目パラメータ */
+  const X_GAP = 24;      // 横間隔（vw）
+  const ROTATE = 22;     // 傾き
+  const SCALE_GAIN = 0.05;
 
   function render() {
     slides.forEach((slide, i) => {
-      const d = rel(i);
+      let d = i - position;
 
-      const x = Math.sin(d * 0.6) * SPREAD;
-      const r = -d * ROT;
-      const s = 1 - Math.abs(d) * SCALE;
-      const o = Math.abs(d) > 2 ? 0 : 1 - Math.abs(d) * 0.25;
+      /* 無限ループ補正 */
+      if (d > total / 2) d -= total;
+      if (d < -total / 2) d += total;
+
+      const abs = Math.abs(d);
+
+      if (abs > MAX_VISIBLE) {
+        slide.style.opacity = 0;
+        return;
+      }
+
+      const x = d * X_GAP;
+      const r = -d * ROTATE;
+      const s = 1 + abs * SCALE_GAIN;
+      const o = 1 - abs * 0.35;
+
+      slide.style.opacity = o;
+      slide.style.zIndex = 100 - abs;
 
       slide.style.transform = `
         translate(-50%, -50%)
@@ -32,34 +48,54 @@ document.addEventListener("DOMContentLoaded", () => {
         rotateY(${r}deg)
         scale(${s})
       `;
-
-      slide.style.opacity = o;
-      slide.style.zIndex = 100 - Math.abs(d);
     });
   }
 
-  render();
-
-  function move(dir) {
-    current = (current + dir + total) % total;
+  function update() {
+    if (!isDragging) {
+      velocity *= FRICTION;
+      if (Math.abs(velocity) < 0.00001) velocity = 0;
+      position += velocity;
+    }
     render();
+    requestAnimationFrame(update);
   }
 
-  /* touch */
-  window.addEventListener("touchstart", e => {
-    startX = e.touches[0].clientX;
-  }, { passive: true });
+  update();
 
-  window.addEventListener("touchend", e => {
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 40) move(dx < 0 ? 1 : -1);
-  });
+  /* ===== 操作 ===== */
 
-  /* mouse */
-  window.addEventListener("mousedown", e => startX = e.clientX);
-  window.addEventListener("mouseup", e => {
-    const dx = e.clientX - startX;
-    if (Math.abs(dx) > 40) move(dx < 0 ? 1 : -1);
+  function start(x) {
+    isDragging = true;
+    velocity = 0;
+    lastX = x;
+  }
+
+  function move(x) {
+    if (!isDragging) return;
+    const dx = x - lastX;
+    velocity = dx * DRAG_POWER;
+    position += velocity;
+    lastX = x;
+  }
+
+  function end() {
+    isDragging = false;
+  }
+
+  /* タッチ */
+  window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
+  window.addEventListener("touchmove",  e => move(e.touches[0].clientX),  { passive: true });
+  window.addEventListener("touchend",   end);
+
+  /* マウス */
+  window.addEventListener("mousedown", e => start(e.clientX));
+  window.addEventListener("mousemove", e => move(e.clientX));
+  window.addEventListener("mouseup",   end);
+
+  /* タップで即停止 */
+  window.addEventListener("click", () => {
+    velocity = 0;
   });
 
 });
