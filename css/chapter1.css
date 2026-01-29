@@ -224,14 +224,24 @@ body::after {
   }
 }　
 
-/* =====================
-   デバッグ用（確認が終わったら消す）
-===================== */
-.last-img.top {
+/* ===== 強制デバッグ ===== */
+
+#last-page {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.last-img-wrapper {
+  outline: 3px solid blue;
+}
+
+.slide-top {
+  pointer-events: auto !important;
   outline: 2px solid red;
 }
 
 .tap-cover {
+  pointer-events: auto !important;
   outline: 2px solid lime;
   background: rgba(0,255,0,.15);
 }
