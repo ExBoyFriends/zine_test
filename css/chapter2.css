@@ -28,39 +28,29 @@ html, body {
   perspective: 1600px;
 }
 
-/* 回転体 */
-.ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-
-  transform-style: preserve-3d;
-  transform: translate(-50%, -50%) rotateY(var(--rot, 0deg));
-  transition: transform 1.6s cubic-bezier(.2,.8,.2,1);
-}
 
 /* スライド */
 .slide {
   position: absolute;
-  width: 80vw;
-  height: 80vh;
+  top: 50%;
+  left: 50%;
+
+  width: 70vw;
+  height: 70vh;
 
   transform-style: preserve-3d;
+  transition:
+    transform 1.2s cubic-bezier(.22,.61,.36,1),
+    opacity 1.2s;
+
   backface-visibility: hidden;
 }
 
-/* 画像（透過余白対策） */
 .slide img {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  inset: -10%;
   width: 120%;
   height: 120%;
   object-fit: contain;
-  transform: translate(-50%, -50%);
   pointer-events: none;
 }
-
-
