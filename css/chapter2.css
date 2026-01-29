@@ -26,7 +26,6 @@ html, body {
   width: 100vw;
   height: 100vh;
   perspective: 1600px;
-  z-index: 1;
 }
 
 /* 回転体 */
@@ -34,9 +33,12 @@ html, body {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 0;
+  height: 0;
+
   transform-style: preserve-3d;
   transform: translate(-50%, -50%) rotateY(var(--rot, 0deg));
-  transition: transform 1.4s cubic-bezier(.2,.8,.2,1);
+  transition: transform 1.6s cubic-bezier(.2,.8,.2,1);
 }
 
 /* スライド */
@@ -44,7 +46,7 @@ html, body {
   position: absolute;
   width: 80vw;
   height: 80vh;
-  
+
   transform-style: preserve-3d;
   backface-visibility: hidden;
 }
