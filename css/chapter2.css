@@ -33,6 +33,9 @@ html, body {
   left: 50%;
   width: 70vw;
   height: 70vh;
+
+   transform: translate(-50%, -50%);
+  
   transform-style: preserve-3d;
   transition: transform .7s cubic-bezier(.2,.8,.2,1), opacity .4s;
 }
