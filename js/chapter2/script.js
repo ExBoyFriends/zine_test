@@ -2,64 +2,73 @@ const track = document.querySelector(".track");
 const slides = document.querySelectorAll(".slide");
 
 const slideWidth = slides[0].offsetWidth;
-const loopWidth = slideWidth * (slides.length / 2);
+const singleLoop = slideWidth * (slides.length / 2);
 
-let x = -loopWidth / 2;
+let x = -singleLoop;
 let v = 0;
 
-let dragging = false;
+let isDown = false;
 let lastX = 0;
 
-function wrap(val) {
-  if (val <= -loopWidth) return val + loopWidth;
-  if (val >= 0) return val - loopWidth;
-  return val;
+function wrap() {
+  while (x <= -singleLoop * 2) x += singleLoop;
+  while (x >= 0) x -= singleLoop;
 }
 
-function update() {
-  if (!dragging) {
-    v *= 0.95;            // ← 慣性の正体（軽い）
-    if (Math.abs(v) < 0.01) v = 0;
-    x += v;
+function tick() {
+  if (!isDown) {
+    v *= 0.94; // 慣性（軽い）
+    if (Math.abs(v) < 0.02) v = 0;
   }
 
-  x = wrap(x);
+  x += v;
+  wrap();
+
   track.style.transform = `translateX(${x}px)`;
-
-  requestAnimationFrame(update);
+  requestAnimationFrame(tick);
 }
-update();
+tick();
 
-/* touch */
-track.addEventListener("touchstart", e => {
-  dragging = true;
+/* --- touch --- */
+window.addEventListener("touchstart", e => {
+  isDown = true;
   lastX = e.touches[0].clientX;
 }, { passive: true });
 
-track.addEventListener("touchmove", e => {
+window.addEventListener("touchmove", e => {
+  if (!isDown) return;
   const cx = e.touches[0].clientX;
   const dx = cx - lastX;
+
   x += dx;
   v = dx;
+
   lastX = cx;
 }, { passive: true });
 
-track.addEventListener("touchend", () => dragging = false);
+window.addEventListener("touchend", () => {
+  isDown = false;
+});
 
-/* mouse */
-track.addEventListener("mousedown", e => {
-  dragging = true;
+/* --- mouse --- */
+window.addEventListener("mousedown", e => {
+  isDown = true;
   lastX = e.clientX;
 });
 
 window.addEventListener("mousemove", e => {
-  if (!dragging) return;
+  if (!isDown) return;
   const dx = e.clientX - lastX;
+
   x += dx;
   v = dx;
+
   lastX = e.clientX;
 });
 
-window.addEventListener("mouseup", () => dragging = false);
+window.addEventListener("mouseup", () => {
+  isDown = false;
+});
+
 
 
