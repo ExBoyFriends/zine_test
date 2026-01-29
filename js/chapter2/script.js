@@ -2,48 +2,92 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const slides = document.querySelectorAll(".slide");
   const total = slides.length;
+  if (!total) return;
+
   let current = 0;
+  let startX = 0;
 
-  const positions = {
-     0: { x: 0,  z: 0,   r: 0,   o: 1 },
-    -1: { x:-45, z:120, r: 30,  o: .8 },
-     1: { x: 45, z:120, r:-30,  o: .8 },
-    -2: { x:-90, z:260, r: 60,  o: 0 },
-     2: { x: 90, z:260, r:-60,  o: 0 }
-  };
+  function render() {
+    slides.forEach((slide, i) => {
+      let d = i - current;
 
-  function rel(i){
-    let d = i - current;
-    if (d > total/2) d -= total;
-    if (d < -total/2) d += total;
-    return d;
-  }
+      if (d > total / 2) d -= total;
+      if (d < -total / 2) d += total;
 
-  function render(){
-    slides.forEach((s,i)=>{
-      const p = positions[rel(i)];
-      if(!p){ s.style.opacity=0; return; }
+      /* 中央 */
+      if (d === 0) {
+        slide.style.transform = `
+          translate(-50%, -50%)
+          translateZ(-200px)
+        `;
+        slide.style.opacity = 1;
+        slide.style.zIndex = 3;
+      }
 
-      s.style.transform = `
-        translate(-50%, -50%)
-        translateX(${p.x}%)
-        translateZ(${p.z}px)
-        rotateY(${p.r}deg)
-      `;
-      s.style.opacity = p.o;
+      /* 左 */
+      else if (d === -1) {
+        slide.style.transform = `
+          translate(-50%, -50%)
+          translateX(-40vw)
+          rotateY(40deg)
+          translateZ(-400px)
+        `;
+        slide.style.opacity = 0.8;
+        slide.style.zIndex = 2;
+      }
+
+      /* 右 */
+      else if (d === 1) {
+        slide.style.transform = `
+          translate(-50%, -50%)
+          translateX(40vw)
+          rotateY(-40deg)
+          translateZ(-400px)
+        `;
+        slide.style.opacity = 0.8;
+        slide.style.zIndex = 2;
+      }
+
+      /* 非表示 */
+      else {
+        slide.style.opacity = 0;
+        slide.style.zIndex = 1;
+      }
     });
   }
 
   render();
 
-  let sx = 0;
-  window.addEventListener("touchstart",e=>sx=e.touches[0].clientX);
-  window.addEventListener("touchend",e=>{
-    const dx = e.changedTouches[0].clientX - sx;
-    if(Math.abs(dx)>30){
-      current = dx<0 ? (current+1)%total : (current-1+total)%total;
+  /* スワイプ */
+  window.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+  }, { passive: true });
+
+  window.addEventListener("touchend", e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 30) {
+      current = dx < 0
+        ? (current + 1) % total
+        : (current - 1 + total) % total;
       render();
     }
   });
+
+  /* マウス（PC確認用） */
+  window.addEventListener("mousedown", e => {
+    startX = e.clientX;
+  });
+
+  window.addEventListener("mouseup", e => {
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > 30) {
+      current = dx < 0
+        ? (current + 1) % total
+        : (current - 1 + total) % total;
+      render();
+    }
+  });
+
 });
+
 
