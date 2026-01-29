@@ -1,32 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const slides = document.querySelectorAll(".slide");
+  const slides = [...document.querySelectorAll(".slide")];
   const total = slides.length;
   if (!total) return;
 
   let current = 0;
   let startX = 0;
 
-  /* 🔑 まず全スライドを初期化（超重要） */
-  slides.forEach(slide => {
-    slide.style.setProperty("--x", "0vw");
-    slide.style.setProperty("--z", "0px");
-    slide.style.setProperty("--r", "0deg");
-    slide.style.setProperty("--s", "1");
-    slide.style.setProperty("--o", "0");
-    slide.style.zIndex = 0;
-  });
-
-  /* 円形配置 */
-  const positions = {
-     0:  { x: "0vw",   z: "0px",    r: "0deg",   s: 1.05, o: 1   },
-
-    -1:  { x: "-18vw", z: "-160px", r: "28deg",  s: 0.95, o: 0.65 },
-     1:  { x: "18vw",  z: "-160px", r: "-28deg", s: 0.95, o: 0.65 },
-
-    -2:  { x: "-30vw", z: "-360px", r: "55deg",  s: 0.85, o: 0.25 },
-     2:  { x: "30vw",  z: "-360px", r: "-55deg", s: 0.85, o: 0.25 }
-  };
+  /* 円形パラメータ（ここが世界観の心臓） */
+  const RADIUS_X = 22;   // 横方向の広がり（vw）
+  const RADIUS_Z = 420;  // 奥行き
+  const ROTATE = 60;     // 回転量
+  const SIDE_OPACITY = 0.35;
 
   function rel(i) {
     let d = i - current;
@@ -38,20 +23,23 @@ document.addEventListener("DOMContentLoaded", () => {
   function render() {
     slides.forEach((slide, i) => {
       const d = rel(i);
-      const p = positions[d];
 
-      if (!p) {
-        slide.style.setProperty("--o", 0);
-        slide.style.zIndex = 0;
-        return;
-      }
+      /* 角度（円運動） */
+      const angle = (d / total) * Math.PI * 2;
 
-      slide.style.setProperty("--x", p.x);
-      slide.style.setProperty("--z", p.z);
-      slide.style.setProperty("--r", p.r);
-      slide.style.setProperty("--s", p.s);
-      slide.style.setProperty("--o", p.o);
-      slide.style.zIndex = 10 - Math.abs(d);
+      const x = Math.sin(angle) * RADIUS_X;
+      const z = Math.cos(angle) * -RADIUS_Z;
+      const r = -Math.sin(angle) * ROTATE;
+      const s = d === 0 ? 1.08 : 0.9;
+      const o = d === 0 ? 1 : SIDE_OPACITY;
+
+      slide.style.setProperty("--x", `${x}vw`);
+      slide.style.setProperty("--z", `${z}px`);
+      slide.style.setProperty("--r", `${r}deg`);
+      slide.style.setProperty("--s", s);
+      slide.style.setProperty("--o", o);
+
+      slide.style.zIndex = 100 - Math.abs(d);
     });
   }
 
@@ -64,6 +52,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("touchend", e => {
     const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 30) {
+    if (Math.abs(dx) > 40) {
       current = dx < 0
+        ? (current + 1) % total
+        : (current - 1 + total) % total;
+      render();
+    }
+  });
 
+  /* マウス */
+  window.addEventListener("mousedown", e => startX = e.clientX);
+  window.addEventListener("mouseup", e => {
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > 40) {
+      current = dx < 0
+        ? (current + 1) % total
+        : (current - 1 + total) % total;
+      render();
+    }
+  });
+
+});
