@@ -5,10 +5,10 @@ let current = 0;
 let startX = 0;
 let dragging = false;
 
-/**
- * 相対位置ごとの見え方
- * 「奥」ではなく「手前に来すぎて視界外」
- */
+/*
+  相対位置ごとの見え方
+  「奥」ではなく「手前に来すぎて視界外」
+*/
 const positions = {
   0:  { x: 0,   z: 0,   r: 0,   s: 1,    o: 1 },
   -1: { x: -30,z: 140, r: 30,  s: 1.05, o: 0.8 },
@@ -43,7 +43,7 @@ function render() {
 
 render();
 
-/* スワイプ操作 */
+/* スワイプ操作（左右どちらにも回転） */
 window.addEventListener("touchstart", e => {
   startX = e.touches[0].clientX;
   dragging = true;
@@ -55,13 +55,12 @@ window.addEventListener("touchend", e => {
   const dx = e.changedTouches[0].clientX - startX;
 
   if (Math.abs(dx) > 40) {
-    if (dx < 0) {
-      current = (current + 1) % total;
-    } else {
-      current = (current - 1 + total) % total;
-    }
+    current = dx < 0
+      ? (current + 1) % total
+      : (current - 1 + total) % total;
     render();
   }
+
   dragging = false;
 });
 
