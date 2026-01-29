@@ -1,74 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const slides = [...document.querySelectorAll(".slide")];
-  const total = slides.length;
-  if (!total) return;
+  const slides = document.querySelectorAll(".slide");
+  const ring = document.querySelector(".ring");
 
+  const total = slides.length;
+  const radius = 420;          // 円の半径
   let current = 0;
   let startX = 0;
 
-  /* 円形パラメータ（ここが世界観の心臓） */
-  const RADIUS_X = 22;   // 横方向の広がり（vw）
-  const RADIUS_Z = 420;  // 奥行き
-  const ROTATE = 60;     // 回転量
-  const SIDE_OPACITY = 0.35;
+  /* 初期配置：円周上に固定 */
+  slides.forEach((slide, i) => {
+    const angle = (360 / total) * i;
+    slide.style.transform = `
+      translate(-50%, -50%)
+      rotateY(${angle}deg)
+      translateZ(${radius}px)
+    `;
+  });
 
-  function rel(i) {
-    let d = i - current;
-    if (d > total / 2) d -= total;
-    if (d < -total / 2) d += total;
-    return d;
+  function rotate(dir) {
+    current += dir;
+    ring.style.setProperty(
+      "--rot",
+      `${-current * (360 / total)}deg`
+    );
   }
 
- function render() {
-  slides.forEach((slide, i) => {
-    const d = rel(i);
-
-    const angle = d * 0.55;
-
-    const x = Math.sin(angle) * RADIUS_X;
-    const z = Math.cos(angle) * -RADIUS_Z - 120;
-    const r = -Math.sin(angle) * ROTATE;
-    const s = d === 0 ? 1.1 : 0.92;
-    const o = Math.abs(d) <= 2 ? 1 - Math.abs(d) * 0.25 : 0;
-
-    slide.style.setProperty("--x", `${x}vw`);
-    slide.style.setProperty("--z", `${z}px`);
-    slide.style.setProperty("--r", `${r}deg`);
-    slide.style.setProperty("--s", s);
-    slide.style.setProperty("--o", o);
-
-    slide.style.zIndex = 100 - Math.abs(d);
-  });
-}
-
-  render();
-
-  /* スワイプ */
+  /* タッチ */
   window.addEventListener("touchstart", e => {
     startX = e.touches[0].clientX;
   }, { passive: true });
 
   window.addEventListener("touchend", e => {
     const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 40) {
-      current = dx < 0
-        ? (current + 1) % total
-        : (current - 1 + total) % total;
-      render();
-    }
+    if (Math.abs(dx) > 40) rotate(dx < 0 ? 1 : -1);
   });
 
   /* マウス */
   window.addEventListener("mousedown", e => startX = e.clientX);
   window.addEventListener("mouseup", e => {
     const dx = e.clientX - startX;
-    if (Math.abs(dx) > 40) {
-      current = dx < 0
-        ? (current + 1) % total
-        : (current - 1 + total) % total;
-      render();
-    }
+    if (Math.abs(dx) > 40) rotate(dx < 0 ? 1 : -1);
   });
 
 });
