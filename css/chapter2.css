@@ -35,17 +35,28 @@ html, body {
   top: 50%;
   left: 50%;
 
-  width: 75vw;     /* ← 大きく */
-  height: 75vh;
+  width: 80vw;   /* 大きく */
+  height: 80vh;
+
+  /* 🔑 中央固定（絶対にJSで触らない） */
+  transform:
+    translate(-50%, -50%)
+    translateX(var(--x, 0))
+    translateZ(var(--z, 0))
+    rotateY(var(--r, 0deg))
+    scale(var(--s, 1));
+
+  opacity: var(--o, 1);
 
   transform-style: preserve-3d;
 
   transition:
-    transform 1.2s cubic-bezier(.18,.7,.2,1), /* ← ゆっくり */
-    opacity 1s ease;
+    transform 1.3s cubic-bezier(.18,.7,.2,1),
+    opacity 1.1s ease;
 
   will-change: transform, opacity;
 }
+
 
 /* 画像 */
 .slide img {
