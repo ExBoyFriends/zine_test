@@ -1,81 +1,65 @@
-document.addEventListener("DOMContentLoaded", () => {
+const track = document.querySelector(".track");
+const slides = document.querySelectorAll(".slide");
 
-  const slides = [...document.querySelectorAll(".slide")];
-  const total = slides.length;
+const slideWidth = slides[0].offsetWidth;
+const loopWidth = slideWidth * (slides.length / 2);
 
-  let pos = 0;
-  let velocity = 0;
-  let dragging = false;
-  let lastX = 0;
+let x = -loopWidth / 2;
+let v = 0;
 
-  const GAP = 22;        // 横間隔（vw）
-  const DRAG = 0.004;    // 指追従
-  const FRICTION = 0.96; // 減速
-  const ROT = 14;        // 傾き
-  const SCALE = 0.06;    // 中央強調
+let dragging = false;
+let lastX = 0;
 
-  function wrap(n) {
-    const r = n % total;
-    return r < 0 ? r + total : r;
+function wrap(val) {
+  if (val <= -loopWidth) return val + loopWidth;
+  if (val >= 0) return val - loopWidth;
+  return val;
+}
+
+function update() {
+  if (!dragging) {
+    v *= 0.95;            // ← 慣性の正体（軽い）
+    if (Math.abs(v) < 0.01) v = 0;
+    x += v;
   }
 
-  function render() {
-    slides.forEach((slide, i) => {
-      let d = i - pos;
-      d = ((d + total / 2) % total) - total / 2;
+  x = wrap(x);
+  track.style.transform = `translateX(${x}px)`;
 
-      const x = d * GAP;
-      const r = -d * ROT;
-      const s = 1 + Math.max(0, 1 - Math.abs(d)) * SCALE;
+  requestAnimationFrame(update);
+}
+update();
 
-      slide.style.transform = `
-        translateX(${x}vw)
-        rotateY(${r}deg)
-        scale(${s})
-      `;
+/* touch */
+track.addEventListener("touchstart", e => {
+  dragging = true;
+  lastX = e.touches[0].clientX;
+}, { passive: true });
 
-      slide.style.zIndex = 100 - Math.abs(d);
-    });
-  }
+track.addEventListener("touchmove", e => {
+  const cx = e.touches[0].clientX;
+  const dx = cx - lastX;
+  x += dx;
+  v = dx;
+  lastX = cx;
+}, { passive: true });
 
-  function loop() {
-    if (!dragging) {
-      velocity *= FRICTION;
-      if (Math.abs(velocity) < 0.00001) velocity = 0;
-      pos += velocity;
-    }
-    render();
-    requestAnimationFrame(loop);
-  }
+track.addEventListener("touchend", () => dragging = false);
 
-  loop();
-
-  /* 操作 */
-  function start(x) {
-    dragging = true;
-    lastX = x;
-  }
-
-  function move(x) {
-    if (!dragging) return;
-    const dx = x - lastX;
-    pos -= dx * DRAG;
-    velocity = -dx * DRAG;
-    lastX = x;
-  }
-
-  function end() {
-    dragging = false;
-  }
-
-  window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
-  window.addEventListener("touchmove",  e => move(e.touches[0].clientX),  { passive: true });
-  window.addEventListener("touchend",   end);
-
-  window.addEventListener("mousedown", e => start(e.clientX));
-  window.addEventListener("mousemove", e => move(e.clientX));
-  window.addEventListener("mouseup",   end);
-
+/* mouse */
+track.addEventListener("mousedown", e => {
+  dragging = true;
+  lastX = e.clientX;
 });
+
+window.addEventListener("mousemove", e => {
+  if (!dragging) return;
+  const dx = e.clientX - lastX;
+  x += dx;
+  v = dx;
+  lastX = e.clientX;
+});
+
+window.addEventListener("mouseup", () => dragging = false);
 
 
