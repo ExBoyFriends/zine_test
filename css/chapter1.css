@@ -147,8 +147,28 @@ body {
 ===================== */
 .last-img.top {
   z-index: 3;
-  pointer-events: auto;   /* ← 開閉はここだけ */
+  pointer-events: none;  
   cursor: pointer;
+}
+
+/* 🔴 Top画像 開閉用の当たり判定 */
+.top-hit {
+  position: absolute;
+
+  width: 60%;      /* ← ここで狭める */
+  height: 70%;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  z-index: 4;
+  pointer-events: auto;
+  cursor: pointer;
+
+  /* デバッグ */
+  outline: 2px solid red;
+  background: rgba(255,0,0,.15);
 }
 
 /* =====================
