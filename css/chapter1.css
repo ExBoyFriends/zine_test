@@ -149,6 +149,8 @@ body {
   z-index: 3;
   pointer-events: auto;   /* ← 開閉はここだけ */
   cursor: pointer;
+
+  outline: 2px solid red;
 }
 
 /* =====================
@@ -168,6 +170,8 @@ body {
   z-index: 2;
   pointer-events: none;
   background: transparent;
+
+  outline: 2px solid lime; background: rgba(0,255,0,.15);
 }
 
 /* 開いたときだけリンク有効 */
@@ -222,7 +226,9 @@ body::after {
     background: url("../image/eye.jpg") center / cover no-repeat;
     pointer-events: none;
   }
-}
+}　
+
+
 
     pointer-events: none;
   }
