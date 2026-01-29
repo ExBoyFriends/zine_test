@@ -17,33 +17,34 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastX = 0;
 
   function render() {
-    slides.forEach((slide, i) => {
+  slides.forEach((slide, i) => {
 
-      /* 無限ラップ */
-      let d = i * GAP - pos;
-      const wrap = total * GAP;
-      d = ((d + wrap / 2) % wrap) - wrap / 2;
+    let d = i * GAP - pos;
+    const wrap = total * GAP;
 
-      /* 円を描く錯覚 */
-      const angle = d / RADIUS;
+    /* 🔑 完全無限ラップ（左右対称） */
+    d = ((d % wrap) + wrap) % wrap;
+    if (d > wrap / 2) d -= wrap;
 
-      const x = d;
-      const z = -Math.abs(Math.cos(angle)) * DEPTH;
-      const r = -angle * TILT;
-      const s = Math.max(
-        SCALE_MIN,
-        1 - Math.abs(d) / (wrap * 0.8)
-      );
+    const angle = d / RADIUS;
 
-      slide.style.transform = `
-        translate3d(${x}px, -50%, ${z}px)
-        rotateY(${r}deg)
-        scale(${s})
-      `;
+    const x = d;
+    const z = -Math.abs(Math.cos(angle)) * DEPTH;
+    const r = -angle * TILT;
+    const s = Math.max(
+      SCALE_MIN,
+      1 - Math.abs(d) / (wrap * 0.8)
+    );
 
-      slide.style.zIndex = 1000 - Math.abs(d);
-    });
-  }
+    slide.style.transform = `
+      translate3d(${x}px, -50%, ${z}px)
+      rotateY(${r}deg)
+      scale(${s})
+    `;
+
+    slide.style.zIndex = 1000 - Math.abs(d);
+  });
+}
 
   function animate() {
     if (!dragging) {
