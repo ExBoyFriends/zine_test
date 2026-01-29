@@ -20,28 +20,27 @@ document.addEventListener("DOMContentLoaded", () => {
     return d;
   }
 
-  function render() {
-    slides.forEach((slide, i) => {
-      const d = rel(i);
+ function render() {
+  slides.forEach((slide, i) => {
+    const d = rel(i);
 
-      /* 角度（円運動） */
-      const angle = (d / total) * Math.PI * 2;
+    const angle = d * 0.55;
 
-      const x = Math.sin(angle) * RADIUS_X;
-      const z = Math.cos(angle) * -RADIUS_Z;
-      const r = -Math.sin(angle) * ROTATE;
-      const s = d === 0 ? 1.08 : 0.9;
-      const o = d === 0 ? 1 : SIDE_OPACITY;
+    const x = Math.sin(angle) * RADIUS_X;
+    const z = Math.cos(angle) * -RADIUS_Z - 120;
+    const r = -Math.sin(angle) * ROTATE;
+    const s = d === 0 ? 1.1 : 0.92;
+    const o = Math.abs(d) <= 2 ? 1 - Math.abs(d) * 0.25 : 0;
 
-      slide.style.setProperty("--x", `${x}vw`);
-      slide.style.setProperty("--z", `${z}px`);
-      slide.style.setProperty("--r", `${r}deg`);
-      slide.style.setProperty("--s", s);
-      slide.style.setProperty("--o", o);
+    slide.style.setProperty("--x", `${x}vw`);
+    slide.style.setProperty("--z", `${z}px`);
+    slide.style.setProperty("--r", `${r}deg`);
+    slide.style.setProperty("--s", s);
+    slide.style.setProperty("--o", o);
 
-      slide.style.zIndex = 100 - Math.abs(d);
-    });
-  }
+    slide.style.zIndex = 100 - Math.abs(d);
+  });
+}
 
   render();
 
