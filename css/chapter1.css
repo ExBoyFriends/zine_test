@@ -165,11 +165,11 @@ body {
 .tap-cover {
   position: absolute;
 
-  width: 34%;    /* ← 少し小さく */
-  height: 28%;   /* ← 少し小さく */
+  width: 37%;   
+  height: 28%;   
 
-  top: 50%;      /* 中央 */
-  left: 52%;
+  top: 50%;      
+  left: 55%;
   transform: translate(-50%, -50%);
 
   z-index: 2;
