@@ -161,8 +161,8 @@ body {
 .top-hit {
   position: absolute;
 
-  width: 50%;      /* ← ここで狭める */
-  height: 60%;
+  width: 53%;      /* ← ここで狭める */
+  height: 63%;
 
   top: 50%;
   left: 50%;
@@ -191,11 +191,11 @@ body {
 .tap-cover {
   position: absolute;
 
-  width: 40%;   
+  width: 43%;   
   height: 28%;   
 
   top: 50%;      
-  left: 56%;
+  left: 58%;
   transform: translate(-50%, -50%);
 
   z-index: 2;
