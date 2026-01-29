@@ -4,12 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const total = slides.length;
 
   /* === チューニング用パラメータ === */
-  const GAP = 260;        // 横の間隔（重なり防止）
+  const GAP = 230;        // 横の間隔（重なり防止）
   const RADIUS = 900;     // 円の奥行き
-  const DEPTH = 520;      // Z方向の沈み
+  const DEPTH = 260;      // Z方向の沈み
   const TILT = 26;        // 内向き傾き
   const DAMPING = 0.92;   // 慣性減衰
-  const SCALE_MIN = 0.82; // 最小サイズ
+  const SCALE_MIN = 0.94; // 最小サイズ
 
   let pos = 0;            // 無限位置（連続値）
   let velocity = 0;
