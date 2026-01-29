@@ -4,43 +4,52 @@ document.addEventListener("DOMContentLoaded", () => {
   const total = slides.length;
   if (!total) return;
 
-  /* ===== 物理パラメータ ===== */
-  let position = 0;     // 連続回転位置
-  let velocity = 0;     // 回転速度
+  let position = 0;
+  let velocity = 0;
   let isDragging = false;
   let lastX = 0;
 
-  const FRICTION = 0.94;      // 減速（小さいほど止まりやすい）
-  const DRAG_POWER = 0.0007; // 指の力
-  const MAX_VISIBLE = 1.2;   // 見える範囲
+  /* 操作感 */
+  const DRAG_POWER = 0.0022;
+  const FRICTION   = 0.965;
 
-  /* 見た目パラメータ */
-  const X_GAP = 24;      // 横間隔（vw）
-  const ROTATE = 22;     // 傾き
-  const SCALE_GAIN = 0.05;
+  /* 見た目 */
+  const X_GAP = 30;
+  const ROTATE = 26;
+  const SCALE_CENTER = 1.08;
+  const SCALE_SIDE   = 0.96;
+  const VISIBLE_RANGE = 2.2;
+
+  function normalize(d) {
+    if (d > total / 2) d -= total;
+    if (d < -total / 2) d += total;
+    return d;
+  }
 
   function render() {
     slides.forEach((slide, i) => {
-      let d = i - position;
-
-      /* 無限ループ補正 */
-      if (d > total / 2) d -= total;
-      if (d < -total / 2) d += total;
-
+      let d = normalize(i - position);
       const abs = Math.abs(d);
 
-      if (abs > MAX_VISIBLE) {
+      if (abs > VISIBLE_RANGE) {
         slide.style.opacity = 0;
         return;
       }
 
-      const x = d * X_GAP;
-      const r = -d * ROTATE;
-      const s = 1 + abs * SCALE_GAIN;
-      const o = 1 - abs * 0.35;
+      /* 円弧カーブ */
+      const curve = Math.sin(d * 0.6);
 
+      const x = d * X_GAP;
+      const r = -curve * ROTATE;
+      const s = abs < 0.01
+        ? SCALE_CENTER
+        : SCALE_SIDE;
+
+      /* フェードアウトを自然に */
+      const o = Math.max(0, 1 - abs / VISIBLE_RANGE);
+
+      slide.style.zIndex = 100 - abs * 10;
       slide.style.opacity = o;
-      slide.style.zIndex = 100 - abs;
 
       slide.style.transform = `
         translate(-50%, -50%)
@@ -64,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
   update();
 
   /* ===== 操作 ===== */
-
   function start(x) {
     isDragging = true;
     velocity = 0;
@@ -74,8 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function move(x) {
     if (!isDragging) return;
     const dx = x - lastX;
-    velocity = dx * DRAG_POWER;
-    position += velocity;
+    position -= dx * DRAG_POWER;   // ← 向き修正
     lastX = x;
   }
 
@@ -83,15 +90,21 @@ document.addEventListener("DOMContentLoaded", () => {
     isDragging = false;
   }
 
-  /* タッチ */
   window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
   window.addEventListener("touchmove",  e => move(e.touches[0].clientX),  { passive: true });
   window.addEventListener("touchend",   end);
 
-  /* マウス */
   window.addEventListener("mousedown", e => start(e.clientX));
   window.addEventListener("mousemove", e => move(e.clientX));
   window.addEventListener("mouseup",   end);
+
+  /* タップで即停止 */
+  window.addEventListener("click", () => {
+    velocity = 0;
+  });
+
+});
+
 
   /* タップで即停止 */
   window.addEventListener("click", () => {
