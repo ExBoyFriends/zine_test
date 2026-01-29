@@ -4,47 +4,44 @@ document.addEventListener("DOMContentLoaded", () => {
   const total = slides.length;
 
   /* === チューニング用パラメータ === */
-  const GAP = 120;        // 横の間隔（重なり防止）
-  const RADIUS = 800;     // 円の奥行き
-  const DEPTH = 260;      // Z方向の沈み
+  const GAP = 120;        // 横の間隔
+  const RADIUS = 800;     // 円の半径（大きいほど緩やか）
+  const DEPTH = 260;      // Z方向の振れ幅
   const TILT = 26;        // 内向き傾き
   const DAMPING = 0.92;   // 慣性減衰
-  const SCALE_MIN = 0.94; // 最小サイズ
 
-  let pos = 0;            // 無限位置（連続値）
+  let pos = 0;            // 無限位置
   let velocity = 0;
   let dragging = false;
   let lastX = 0;
 
   function render() {
-  slides.forEach((slide, i) => {
+    slides.forEach((slide, i) => {
 
-    let d = i * GAP - pos;
-    const wrap = total * GAP;
+      let d = i * GAP - pos;
+      const wrap = total * GAP;
 
-    /* 🔑 完全無限ラップ（左右対称） */
-    d = ((d % wrap) + wrap) % wrap;
-    if (d > wrap / 2) d -= wrap;
+      /* 完全無限ラップ */
+      d = ((d % wrap) + wrap) % wrap;
+      if (d > wrap / 2) d -= wrap;
 
-    const angle = d / RADIUS;
+      const angle = d / RADIUS;
 
-    const x = d;
-    const z = -Math.abs(Math.cos(angle)) * DEPTH;
-    const r = -angle * TILT;
-    const s = Math.max(
-      SCALE_MIN,
-      1 - Math.abs(d) / (wrap * 0.8)
-    );
+      /* ===== 円弧表現の核心 ===== */
+      const x = d;
+      const z = Math.cos(angle) * DEPTH + 80;          // ← 両端が手前に来る
+      const r = -Math.sin(angle) * TILT * 1.3;         // ← 内向きに倒れる
+      const s = 1 + Math.abs(Math.sin(angle)) * 0.08;  // ← 端が少し大きい
 
-    slide.style.transform = `
-      translate3d(${x}px, -50%, ${z}px)
-      rotateY(${r}deg)
-      scale(${s})
-    `;
+      slide.style.transform = `
+        translate3d(${x}px, -50%, ${z}px)
+        rotateY(${r}deg)
+        scale(${s})
+      `;
 
-    slide.style.zIndex = 1000 - Math.abs(d);
-  });
-}
+      slide.style.zIndex = 1000 - Math.abs(d);
+    });
+  }
 
   function animate() {
     if (!dragging) {
@@ -96,5 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
     dragging = false;
   });
 
-});　　　　　
+});
+
 
