@@ -36,29 +36,38 @@ body {
   position: absolute;
   width: 200px;
   height: 260px;
+
   left: 50%;
   top: 50%;
   margin-left: -100px;
   margin-top: -130px;
+
   backface-visibility: hidden;
   transform-style: preserve-3d;
 
+  /* ★ 画像は分割しない */
   background-image: url("../image/top_b.png");
   background-repeat: no-repeat;
-  background-size: 1000px auto;
-  background-position-y: center;
-  background-position-x: calc(var(--i) * -200px);
+  background-size: contain;
+  background-position: center;
 }
 
+/* ===== 手前 ===== */
 .outer {
   transform:
     rotateY(calc(var(--i) * 72deg))
     translateZ(320px);
+
+  filter: brightness(0.45);
 }
 
+/* ===== 奥 ===== */
 .inner {
   transform:
     rotateY(calc(var(--i) * 72deg))
     translateZ(-260px)
     rotateY(180deg);
+
+  filter: brightness(0.5);
 }
+
