@@ -44,6 +44,8 @@ body {
   top: -130px;    /* ← 高さの半分 */
   backface-visibility: hidden;
   transform-style: preserve-3d;
+  transform-origin: 50% 50% 420px;
+  transition: filter .2s;
 }
 
 /* 内側 */
@@ -52,6 +54,7 @@ body {
     rotateY(calc(var(--i) * 72deg))
     translateZ(-420px)   /* ← 260 → 420 */
     rotateY(180deg);
+    filter: brightness(0.85);
 }
 
 .inner img {
@@ -67,6 +70,8 @@ body {
   background-repeat: no-repeat;
   background-position-x: calc(var(--i) * -200px);
   background-position-y: center;
+
+  filter: brightness(1.1);
 
   transform:
     rotateY(calc(var(--i) * 72deg))
