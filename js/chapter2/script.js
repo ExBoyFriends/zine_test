@@ -20,31 +20,30 @@ document.addEventListener("DOMContentLoaded", () => {
   let dragging = false;
   let lastX = 0;
 
-  function render() {
-    slides.forEach((slide, i) => {
+function render() {
+  slides.forEach((slide, i) => {
 
-      // ★ 角度はこれ1本だけ
-      const a = i * STEP - angle;
+    const a = i * STEP - angle;
 
-      const x = Math.sin(a) * RADIUS_X;
-      const z = Math.cos(a) * RADIUS_Z + DEPTH_OFFSET;
+    const x = Math.sin(a) * RADIUS_X;
+    const z = Math.cos(a) * RADIUS_Z + DEPTH_OFFSET;
 
-      // ★ 向きも a から決める
-      const r = -a * TILT;
+    // ★ 修正ポイント
+    const r = -(a / STEP) * TILT;
 
-      const s = 1 + Math.abs(Math.sin(a)) * SCALE_GAIN;
+    const s = 1 + Math.abs(Math.sin(a)) * SCALE_GAIN;
 
-      slide.style.transform = `
-        translate(-50%, -50%)
-        translate3d(${x}px, 0px, ${z}px)
-        rotateY(${r}deg)
-        scale(${s})
-      `;
+    slide.style.transform = `
+      translate(-50%, -50%)
+      translate3d(${x}px, 0px, ${z}px)
+      rotateY(${r}deg)
+      scale(${s})
+    `;
 
-      // ★ zIndex も sin ベースに
-      slide.style.zIndex = Math.round(1000 - Math.abs(Math.sin(a)) * 1000);
-    });
-  }
+    slide.style.zIndex =
+      Math.round(1000 - Math.abs(Math.sin(a)) * 1000);
+  });
+}
 
   function animate() {
     if (!dragging) {
