@@ -16,6 +16,8 @@ const SNAP  = 360 / COUNT;       // 円を必ず閉じる
 const R_FRONT = 185;             // 手前半径（狭め）
 const R_BACK  = 170;             // 奥半径（少し内側）
 
+const AUTO_SPEED = -0.03; // ★ マイナス＝右→左（超ゆっくり）
+
 const DAMPING = 0.85;
 
 /* ======================
@@ -65,11 +67,17 @@ inners.forEach((p, i) => {
 ====================== */
 function animate() {
 
-  if (!dragging) {
-    angle += velocity;
-    velocity *= DAMPING;
-    if (Math.abs(velocity) < 0.01) velocity = 0;
+ if (!dragging) {
+  angle += velocity;
+  velocity *= DAMPING;
+  if (Math.abs(velocity) < 0.01) velocity = 0;
+
+  // ★ 慣性が完全に止まったら自動回転
+  if (velocity === 0) {
+    angle += AUTO_SPEED;
   }
+}
+
 
   /* ---------- 円柱 ---------- */
   front.style.transform =
