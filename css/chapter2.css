@@ -8,15 +8,13 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
- 
- 
 }
 
 body {
   background: url("../image/background.jpg") center / cover no-repeat fixed;
 }
 
-/* 3Dシーン */
+/* シーン */
 .scene {
   width: 100vw;
   height: 100vh;
@@ -28,15 +26,16 @@ body {
   touch-action: none;
 }
 
-/* 円筒本体 */
+/* 円筒 */
 .cylinder {
   position: relative;
   width: 420px;
   height: 420px;
   transform-style: preserve-3d;
+  transform: translateZ(300px) rotateX(-22deg);
 }
 
-/* 共通パネル */
+/* パネル共通 */
 .panel {
   position: absolute;
   width: 200px;
@@ -45,21 +44,17 @@ body {
   top: 50%;
   margin-left: -100px;
   margin-top: -130px;
-  
   backface-visibility: hidden;
   transform-style: preserve-3d;
 }
-
 
 /* 内側 */
 .inner {
   transform:
     rotateY(calc(var(--i) * 72deg))
-    translateZ(-420px)
+    translateZ(-300px)
     rotateY(180deg);
-  filter: brightness(0.85);
 }
-
 
 .inner img {
   width: 100%;
@@ -77,6 +72,5 @@ body {
 
   transform:
     rotateY(calc(var(--i) * 72deg))
-    translateZ(420px);
+    translateZ(300px);
 }
-
