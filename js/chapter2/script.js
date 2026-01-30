@@ -10,8 +10,8 @@ let velocity = 0;
 let angle = 0;
 
 const DAMPING = 0.92;
-const SNAP = 72;
-const R = 240; // ★ 手前・奥 共通半径
+const SNAP = 60;
+const R = 220; // ★ 手前・奥 共通半径
 
 /* ======================
    入力
@@ -84,7 +84,7 @@ function animate() {
       rotateY(${base - angle}deg)
       translateZ(${-R}px)
       rotateY(180deg)
-      scale(0.85)
+      scale(0.93)
     `;
   });
 
