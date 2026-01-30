@@ -36,24 +36,16 @@ const end = () => {
 };
 
 /* ======================
-   初期配置
+   初期配置（基準角を保存）
 ====================== */
 outers.forEach(p => {
   const i = +p.style.getPropertyValue("--i");
-  p.style.transform = `
-    rotateY(${i * 72}deg)
-    translateZ(280px)
-  `;
+  p.dataset.base = i * 72;
 });
 
 inners.forEach(p => {
   const i = +p.style.getPropertyValue("--i");
-  p.style.transform = `
-    rotateY(${i * 72 + 180}deg)
-    translateZ(-220px)
-    rotateY(180deg)
-    scale(0.6)
-  `;
+  p.dataset.base = i * 72;
 });
 
 /* ======================
@@ -67,13 +59,37 @@ function animate() {
     if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
-  /* 視点は共通 */
+  /* ---------- 手前：円柱ごと回す ---------- */
   front.style.transform =
     `rotateX(-22deg) rotateY(${ angle }deg)`;
 
-  /* ★ 奥は円柱ごと逆回転 */
+  /* ---------- 奥：視点だけ共有 ---------- */
   back.style.transform =
-    `rotateX(-22deg) rotateY(${ -angle }deg)`;
+    `rotateX(-22deg)`;
+
+  /* ---------- 手前パネル ---------- */
+  outers.forEach(p => {
+    const base = +p.dataset.base;
+    p.style.transform = `
+      rotateY(${base}deg)
+      translateZ(280px)
+    `;
+  });
+
+  /* ---------- 奥パネル（反転円弧） ---------- */
+  inners.forEach(p => {
+    const base = +p.dataset.base;
+    const rad  = (angle + base) * Math.PI / 180;
+
+    const z = -220 * Math.cos(rad); // ★反転円弧
+
+    p.style.transform = `
+      rotateY(${base - angle}deg)
+      translateZ(${z}px)
+      rotateY(180deg)
+      scale(0.6)
+    `;
+  });
 
   requestAnimationFrame(animate);
 }
