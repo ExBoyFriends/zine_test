@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const slides = [...document.querySelectorAll(".slide")];
   const total = slides.length;
 
-  /* ===== 設定 ===== */
   const VISIBLE = 4.5;
   const ARC = Math.PI;
   const RADIUS_X = 300;
@@ -13,19 +12,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const SCALE_GAIN = 0.22;
   const DAMPING = 0.9;
 
-  let position = 1;      // ← current+offset を一本化
+  let position = 1;
   let velocity = 0;
   let dragging = false;
   let lastX = 0;
 
-  function wrap(d) {
-    return ((d + total / 2) % total) - total / 2;
+  function shortestDistance(i, pos) {
+    let d = i - pos;
+    if (d > total / 2) d -= total;
+    if (d < -total / 2) d += total;
+    return d;
   }
 
   function render() {
     slides.forEach((slide, i) => {
 
-      const d = wrap(i - position);
+      const d = shortestDistance(i, position);
 
       if (Math.abs(d) > VISIBLE) {
         slide.style.opacity = 0;
@@ -57,6 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!dragging) {
       position += velocity;
       velocity *= DAMPING;
+
+      // ★ position 自体を常に循環
+      position = ((position % total) + total) % total;
     }
 
     render();
@@ -65,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   animate();
 
-  /* ===== 入力 ===== */
   const start = x => {
     dragging = true;
     lastX = x;
@@ -76,7 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!dragging) return;
     const dx = x - lastX;
 
-    // ← 方向も完全一致
     position -= dx * 0.005;
     velocity = -dx * 0.005;
 
