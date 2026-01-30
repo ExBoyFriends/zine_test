@@ -64,12 +64,19 @@ function animate() {
   });
 
   /* 内側ライティング */
-  inners.forEach(panel => {
-    const i = Number(panel.style.getPropertyValue("--i"));
-    const angle = (rotationY + i * 72 + 180) * Math.PI / 180;
-    const light = Math.max(0.3, Math.cos(angle) * 0.9);
-    panel.style.filter = `brightness(${light})`;
-  });
+ inners.forEach(panel => {
+  const i = Number(panel.style.getPropertyValue("--i"));
+
+  // ★ 内側は逆方向で計算
+  const angle =
+    (-rotationY + i * 72) * Math.PI / 180;
+
+  const light =
+    Math.max(0.3, Math.cos(angle) * 0.9);
+
+  panel.style.filter = `brightness(${light})`;
+});
+
 
   requestAnimationFrame(animate);
 }
