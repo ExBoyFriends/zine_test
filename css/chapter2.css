@@ -44,29 +44,35 @@ body {
 
   backface-visibility: hidden;
   transform-style: preserve-3d;
-
-  /* ★ 画像は分割しない */
-  background-image: url("../image/top_b.png");
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
 }
 
-/* ===== 手前 ===== */
+/* ===== 手前：カード ===== */
+.outer img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,.4));
+}
+
 .outer {
   transform:
     rotateY(calc(var(--i) * 72deg))
     translateZ(320px);
-
-  filter: brightness(0.45);
 }
 
-/* ===== 奥 ===== */
+/* ===== 奥：top_b ===== */
 .inner {
+  background-image: url("../image/top_b.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+
   transform:
     rotateY(calc(var(--i) * 72deg))
     translateZ(-260px)
     rotateY(180deg);
+}
+
 
   filter: brightness(0.5);
 }
