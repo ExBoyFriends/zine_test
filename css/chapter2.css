@@ -15,6 +15,7 @@ body {
     center / cover no-repeat fixed;
 }
 
+/* ===== シーン ===== */
 .scene {
   width: 100vw;
   height: 100vh;
@@ -25,6 +26,7 @@ body {
   justify-content: center;
 }
 
+/* ===== 円柱 ===== */
 .cylinder {
   position: relative;
   width: 420px;
@@ -32,6 +34,7 @@ body {
   transform-style: preserve-3d;
 }
 
+/* ===== 共通パネル ===== */
 .panel {
   position: absolute;
   width: 200px;
@@ -42,11 +45,14 @@ body {
   margin-left: -100px;
   margin-top: -130px;
 
-  backface-visibility: hidden;
   transform-style: preserve-3d;
 }
 
-/* ===== 手前：カード ===== */
+/* ===== 手前（カード） ===== */
+.outer {
+  backface-visibility: hidden;
+}
+
 .outer img {
   width: 100%;
   height: 100%;
@@ -54,24 +60,10 @@ body {
   filter: drop-shadow(0 10px 20px rgba(0,0,0,.4));
 }
 
-.outer {
-  transform:
-    rotateY(calc(var(--i) * 72deg))
-    translateZ(320px);
-}
-
-/* ===== 奥：top_b ===== */
+/* ===== 奥（逆回転） ===== */
 .inner {
-  background-image: url("../image/top_b.png");
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  filter: brightness(0.5);
-
-  transform:
-    rotateY(calc(var(--i) * 72deg))
-    translateZ(-260px)
-    rotateY(180deg);
+  backface-visibility: visible;
+  background: url("../image/top_b.png") center / contain no-repeat;
+  filter: brightness(0.45);
 }
-
 
