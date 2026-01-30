@@ -8,36 +8,67 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #000;
   touch-action: none;
 }
 
-.carousel {
-  position: relative;
+/* ===== 背景 ===== */
+body {
+  background: url("/image/background.jpg") center / cover no-repeat fixed;
+}
+
+/* ===== 3Dシーン ===== */
+.scene {
   width: 100vw;
   height: 100vh;
   perspective: 1400px;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.slide {
+/* ===== 円筒 ===== */
+.cylinder {
+  position: relative;
+  width: 400px;
+  height: 300px;
+  transform-style: preserve-3d;
+  transform: rotateX(-22deg);
+}
+
+/* ===== 共通パネル ===== */
+.panel {
   position: absolute;
   top: 50%;
   left: 50%;
-
-  width: 60vw;
-  height: 75vh;
-
+  width: 200px;
+  height: 260px;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  will-change: transform;
-
-  pointer-events: none;
 }
 
-.slide img {
+/* ===== 内側（5枚・連続） ===== */
+.inner {
+  transform:
+    rotateY(calc(var(--i) * 72deg))
+    translateZ(-260px)
+    rotateY(180deg)
+    translate(-50%, -50%);
+}
+
+.inner img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
+/* ===== 外側（同一画像） ===== */
+.outer {
+  background-image: url("/image/top_b.png");
+  background-size: cover;
+  background-position: center;
+
+  transform:
+    rotateY(calc(var(--i) * 72deg))
+    translateZ(260px)
+    translate(-50%, -50%);
+}
