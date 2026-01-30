@@ -24,26 +24,25 @@ document.addEventListener("DOMContentLoaded", () => {
     d = ((d % wrap) + wrap) % wrap;
     if (d > wrap / 2) d -= wrap;
 
-    /* 強めの角度 */
-    const angle = d / 320;
+    const angle = d / RADIUS;
 
-    /* ===== 位置ベース ===== */
+    /* ===== 位置 ===== */
     const x = d;
-    const z = Math.sin(Math.abs(angle)) * DEPTH;
 
-    /* ===== 引っ張られ感の核心 ===== */
-    const drag = Math.max(
-      -1,
-      Math.min(1, velocity / 40)   // ← 移動方向の力
-    );
+    /* ===== 奥行き（中央が奥・端が手前）===== */
+    const z =
+      -Math.cos(angle) * DEPTH      // 中央が一番奥
+      + Math.abs(Math.sin(angle)) * 160; // ← 両端をさらに手前へ
+
+    /* ===== 引っ張られ＋円弧傾き ===== */
+    const drag = Math.max(-1, Math.min(1, velocity / 40));
 
     const r =
-      (-angle * TILT)              // 基本の円弧傾き
-      - drag * 18                  // ← 全体が同じ方向に倒れる
-      * (1 - Math.min(1, Math.abs(d) / 600));
-      // ↑ 中央ほど強く、端は弱く（連なり感）
+      -angle * TILT * 1.2
+      - drag * 20 * (1 - Math.min(1, Math.abs(d) / 600));
 
-    const s = 1 + Math.abs(angle) * 0.12;
+    /* ===== サイズ ===== */
+    const s = 1 + Math.abs(Math.sin(angle)) * 0.12;
 
     slide.style.transform = `
       translate3d(${x}px, -50%, ${z}px)
