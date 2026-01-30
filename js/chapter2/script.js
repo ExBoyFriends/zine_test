@@ -7,8 +7,16 @@ let lastX = 0;
 let velocity = 0;
 let rotationY = 0;
 
+/* カメラ */
+let cameraZ = 300;
+let targetZ = -180;
+
 const DAMPING = 0.92;
 const SNAP = 72;
+
+/* 入場演出 */
+let intro = true;
+setTimeout(() => intro = false, 1200);
 
 const start = x => {
   dragging = true;
@@ -31,40 +39,11 @@ const end = () => {
 };
 
 function animate() {
-  if (!dragging) {
-    rotationY += velocity;
-    velocity *= DAMPING;
-    if (Math.abs(velocity) < 0.01) velocity = 0;
+  /* カメラ移動 */
+  if (intro) {
+    cameraZ += (targetZ - cameraZ) * 0.05;
   }
 
-  cylinder.style.transform =
-    `translateZ(300px) rotateX(-22deg) rotateY(${rotationY}deg)`;
-
-  outers.forEach(panel => {
-    const i = Number(panel.style.getPropertyValue("--i"));
-    const angle = (rotationY + i * 72) * Math.PI / 180;
-    const light = Math.max(0.15, Math.cos(angle) * 0.85);
-    panel.style.filter = `brightness(${light})`;
-  });
-
-  inners.forEach(panel => {
-    const i = Number(panel.style.getPropertyValue("--i"));
-    const angle = (rotationY + i * 72 + 180) * Math.PI / 180;
-    const light = Math.max(0.25, Math.cos(angle) * 0.9);
-    panel.style.filter = `brightness(${light})`;
-  });
-
-  requestAnimationFrame(animate);
-}
-
-animate();
-
-window.addEventListener("mousedown", e => start(e.clientX));
-window.addEventListener("mousemove", e => move(e.clientX));
-window.addEventListener("mouseup", end);
-
-window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
-window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
-window.addEventListener("touchend", end);
-
-
+  /* 回転慣性 */
+  if (!dragging) {
+    rotationY
