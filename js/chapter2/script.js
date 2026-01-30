@@ -12,7 +12,7 @@ let angle = 0;
 const DAMPING = 0.92;
 const SNAP = 72;
 
-/* ===== 入力 ===== */
+/* 入力 */
 const start = x => {
   dragging = true;
   lastX = x;
@@ -33,26 +33,26 @@ const end = () => {
   velocity = (target - angle) * 0.18;
 };
 
-/* ===== 初期配置 ===== */
-outers.forEach(panel => {
-  const i = Number(panel.style.getPropertyValue("--i"));
-  panel.style.transform = `
+/* 初期配置 */
+outers.forEach(p => {
+  const i = +p.style.getPropertyValue("--i");
+  p.style.transform = `
     rotateY(${i * 72}deg)
     translateZ(340px)
   `;
 });
 
-inners.forEach(panel => {
-  const i = Number(panel.style.getPropertyValue("--i"));
-  panel.style.transform = `
+inners.forEach(p => {
+  const i = +p.style.getPropertyValue("--i");
+  p.style.transform = `
     rotateY(${i * 72}deg)
-    translateZ(-240px)
+    translateZ(220px)
     rotateY(180deg)
     scale(0.7)
   `;
 });
 
-/* ===== アニメーション ===== */
+/* アニメーション */
 function animate() {
 
   if (!dragging) {
@@ -61,20 +61,19 @@ function animate() {
     if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
-  const transform = `
-    rotateX(-22deg)
-    rotateY(${angle}deg)
-  `;
+  /* ★ ここが決定的に違う */
+  front.style.transform =
+    `rotateX(-22deg) rotateY(${ angle}deg)`;
 
-  front.style.transform = transform;
-  back.style.transform  = transform;
+  back.style.transform =
+    `rotateX(-22deg) rotateY(${-angle}deg)`;
 
   requestAnimationFrame(animate);
 }
 
 animate();
 
-/* ===== イベント ===== */
+/* イベント */
 window.addEventListener("mousedown", e => start(e.clientX));
 window.addEventListener("mousemove", e => move(e.clientX));
 window.addEventListener("mouseup", end);
@@ -82,4 +81,3 @@ window.addEventListener("mouseup", end);
 window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchend", end);
-
