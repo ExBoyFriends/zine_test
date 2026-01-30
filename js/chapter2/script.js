@@ -46,7 +46,7 @@ inners.forEach(panel => {
   const i = Number(panel.style.getPropertyValue("--i"));
   panel.style.transform = `
     rotateY(${i * 72}deg)
-    translateZ(-360px)
+    translateZ(-240px)
     rotateY(180deg)
     scale(0.7)
   `;
