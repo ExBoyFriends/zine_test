@@ -56,8 +56,17 @@ body {
   filter: drop-shadow(0 10px 20px rgba(0,0,0,.4));
 }
 
-/* 奥 */
+/* ===== 奥（top_b：背景円柱） ===== */
 .inner {
+  width: 160px;
+  height: 210px;
+
+  margin-left: -80px;
+  margin-top: -105px;
+
   backface-visibility: visible;
   background: url("../image/top_b.png") center / contain no-repeat;
+  filter: brightness(0.35);
+  opacity: 0.9;
 }
+
