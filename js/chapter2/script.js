@@ -16,32 +16,38 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastX = 0;
 
   function render() {
-    slides.forEach((slide, i) => {
+  slides.forEach((slide, i) => {
 
-      let d = i * GAP - pos;
-      const wrap = total * GAP;
+    let d = i * GAP - pos;
+    const wrap = total * GAP;
 
-      /* 完全無限ラップ */
-      d = ((d % wrap) + wrap) % wrap;
-      if (d > wrap / 2) d -= wrap;
+    d = ((d % wrap) + wrap) % wrap;
+    if (d > wrap / 2) d -= wrap;
 
-      const angle = d / RADIUS;
+    /* 🔑 角度を強めに取る */
+    const angle = d / 320;   // ← 800 → 320（超重要）
 
-      /* ===== 円弧表現の核心 ===== */
-      const x = d;
-      const z = Math.cos(angle) * DEPTH + 80;          // ← 両端が手前に来る
-      const r = -Math.sin(angle) * TILT * 1.3;         // ← 内向きに倒れる
-      const s = 1 + Math.abs(Math.sin(angle)) * 0.08;  // ← 端が少し大きい
+    /* ===== 見た目を支配する式 ===== */
+    const x = d;
 
-      slide.style.transform = `
-        translate3d(${x}px, -50%, ${z}px)
-        rotateY(${r}deg)
-        scale(${s})
-      `;
+    // 両端が手前、中央が奥
+    const z = Math.sin(Math.abs(angle)) * DEPTH;
 
-      slide.style.zIndex = 1000 - Math.abs(d);
-    });
-  }
+    // 内向きにしっかり倒す
+    const r = -angle * TILT * 1.6;
+
+    // 外側ほど少し大きい
+    const s = 1 + Math.abs(angle) * 0.12;
+
+    slide.style.transform = `
+      translate3d(${x}px, -50%, ${z}px)
+      rotateY(${r}deg)
+      scale(${s})
+    `;
+
+    slide.style.zIndex = 1000 - Math.abs(d);
+  });
+}
 
   function animate() {
     if (!dragging) {
