@@ -6,7 +6,7 @@ const inners = document.querySelectorAll(".inner");
 
 const COUNT = outers.length;     // ★ これが抜けてた
 const SNAP  = 360 / COUNT;       // ★ 円を必ず閉じる
-const R = 230;                   // ★ 共通半径
+const R = 185;                   // ★ 共通半径
 
 let dragging = false;
 let lastX = 0;
@@ -84,7 +84,7 @@ function animate() {
       rotateY(${base + 180}deg)
       translateZ(${R}px)
       rotateY(180deg)
-      scale(0.93)
+      scale(0.96)
     `;
   });
 
