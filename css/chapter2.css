@@ -1,75 +1,53 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+.scene{
+  width:100vw;
+  height:100vh;
+  perspective:1200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-body {
-  background: url("../image/background.jpg") center / cover no-repeat;
+.stage{
+  position:relative;
+  width:300px;
+  height:420px;
+  transform-style:preserve-3d;
+  transform: rotateX(-20deg);
 }
 
-/* 視点 */
-.scene {
-  width: 100vw;
-  height: 100vh;
-  perspective: 1400px;
-  perspective-origin: 50% 40%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* 主役 */
+.panel{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transform-style:preserve-3d;
+  transition: transform .6s ease, opacity .6s ease;
 }
 
-/* 円筒 */
-.cylinder {
-  position: relative;
-  width: 400px;
-  height: 400px;
-  transform-style: preserve-3d;
-  transform: rotateX(-22deg);
+.panel img{
+  width:220px;
+  height:300px;
+  object-fit:contain;
 }
 
-/* 内側パネル */
-.panel {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 220px;
-  height: 300px;
-  margin-left: -110px;
-  margin-top: -150px;
-  transform-style: preserve-3d;
-  transition:
-    transform .6s ease,
-    opacity .6s ease,
-    filter .6s ease;
-}
-
-.panel img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* 外側リング（装飾） */
-.outer-ring {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-}
-
-.outer-ring::before {
-  content: "";
-  position: absolute;
-  inset: -120px;
-  background: url("../image/top_b.png") center / cover no-repeat;
-  transform: translateZ(380px);
-  opacity: 0.35;
+/* 外側装飾 */
+.outer{
+  position:absolute;
+  inset:-160px;
+  background:url("../image/top_b.png") repeat-x;
+  background-size:800px auto;
+  transform: translateZ(220px);
+  opacity:.2;
 }
 
 
