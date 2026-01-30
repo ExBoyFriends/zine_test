@@ -1,4 +1,4 @@
-export function initLoader(pages, loader, dots) {
+export function initLoader(loader) {
   const start = () => {
     pages[0].classList.add('active');
 
