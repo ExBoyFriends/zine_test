@@ -4,11 +4,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const total = slides.length;
 
   /* === チューニング用パラメータ === */
-  const GAP = 120;        // 横の間隔
-  const RADIUS = 800;     // 円の半径
-  const spread = 0.55; 　 // 横の広がり係数
-  const DEPTH = 260;      // Z方向の振れ幅
-  const TILT = 26;        // 内向き傾き
+  const GAP = 90;        // 横の間隔
+  const RADIUS = 700;     // 円の半径
+  const spread = 0.45; 　 // 横の広がり係数
+  const DEPTH = 320;      // Z方向の振れ幅
+  const TILT = 42;        // 内向き傾き
   const DAMPING = 0.92;   // 慣性減衰
 
   /* ===== 初期位置 =====
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let dragging = false;
   let lastX = 0;
 
-  function render() {
+ function render() {
   slides.forEach((slide, i) => {
 
     let d = i * GAP - pos;
@@ -28,18 +28,14 @@ document.addEventListener("DOMContentLoaded", () => {
     d = ((d % wrap) + wrap) % wrap;
     if (d > wrap / 2) d -= wrap;
 
-    /* ===== 多角柱の核心 ===== */
+    const rawAngle = d / RADIUS;
+    const step = Math.PI / 6;
+    const angle = Math.round(rawAngle / step) * step;
 
-    const step = GAP;                 // 1面ぶん
-    const faceIndex = d / step;       // 何面ズレてるか
-    const angleStep = 32;             // ← ★角柱の角度（強め）
-    
-    const angle = faceIndex * angleStep * Math.PI / 180;
-
-    const x = Math.sin(angle) * RADIUS * spread;
-    const z = Math.cos(angle) * RADIUS * -1 + 300;
-    const r = -faceIndex * angleStep;
-    const s = 1 + Math.abs(faceIndex) * 0.04;
+    const x = Math.sin(angle) * RADIUS * SPREAD;
+    const z = Math.cos(angle) * DEPTH * -1 + DEPTH * 0.4;
+    const r = -angle * TILT;
+    const s = 1 + Math.abs(angle) * 0.12;
 
     slide.style.transform = `
       translate3d(${x}px, -50%, ${z}px)
@@ -47,10 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
       scale(${s})
     `;
 
-    slide.style.zIndex = 1000 - Math.abs(faceIndex);
+    slide.style.zIndex = 1000 - Math.abs(d);
   });
 }
-
 
   function animate() {
     if (!dragging) {
