@@ -1,4 +1,6 @@
 const cylinder = document.getElementById("cylinder");
+const outers = document.querySelectorAll(".panel.outer");
+
 
 let dragging = false;
 let lastX = 0;
