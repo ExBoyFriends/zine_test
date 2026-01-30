@@ -30,8 +30,8 @@ body {
 /* 円筒本体 */
 .cylinder {
   position: relative;
-  width: 0;
-  height: 0;
+  width: 420;
+  height: 420;
   transform-style: preserve-3d;
 }
 
@@ -40,8 +40,11 @@ body {
   position: absolute;
   width: 200px;
   height: 260px;
-  left: -100px;
-  top: -130px;
+  left: 50px;
+  top: 50px;
+  margin-left: -100px;
+  margin-top: -130px;
+  
   backface-visibility: hidden;
   transform-style: preserve-3d;
 }
