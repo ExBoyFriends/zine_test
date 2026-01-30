@@ -5,55 +5,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* === チューニング用パラメータ === */
   const GAP = 120;        // 横の間隔
-  const RADIUS = 800;     // 円の半径（大きいほど緩やか）
+  const RADIUS = 800;     // 円の半径
   const DEPTH = 260;      // Z方向の振れ幅
   const TILT = 26;        // 内向き傾き
   const DAMPING = 0.92;   // 慣性減衰
 
-  let pos = 0;            // 無限位置
+  /* ===== 初期位置 =====
+     2枚目（index:1）が中央・最奥に来る */
+  let pos = GAP * 1;
+
   let velocity = 0;
   let dragging = false;
   let lastX = 0;
 
- function render() {
-  slides.forEach((slide, i) => {
+  function render() {
+    slides.forEach((slide, i) => {
 
-    let d = i * GAP - pos;
-    const wrap = total * GAP;
+      let d = i * GAP - pos;
+      const wrap = total * GAP;
 
-    d = ((d % wrap) + wrap) % wrap;
-    if (d > wrap / 2) d -= wrap;
+      /* 完全無限ラップ */
+      d = ((d % wrap) + wrap) % wrap;
+      if (d > wrap / 2) d -= wrap;
 
-    const angle = d / RADIUS;
+      const angle = d / RADIUS;
 
-    /* ===== 位置 ===== */
-    const x = d;
+      /* ===== 円弧カーブ ===== */
+      const x = d;
+      const z = Math.cos(angle) * DEPTH;          // 中央が奥
+      const r = -Math.sin(angle) * TILT;           // 連続した傾き
+      const s = 1 + Math.abs(Math.sin(angle)) * 0.08;
 
-    /* ===== 奥行き（中央が奥・端が手前）===== */
-    const z =
-      -Math.cos(angle) * DEPTH      // 中央が一番奥
-      + Math.abs(Math.sin(angle)) * 160; // ← 両端をさらに手前へ
+      slide.style.transform = `
+        translate3d(${x}px, -50%, ${z}px)
+        rotateY(${r}deg)
+        scale(${s})
+      `;
 
-    /* ===== 引っ張られ＋円弧傾き ===== */
-    const drag = Math.max(-1, Math.min(1, velocity / 40));
-
-    const r =
-      -angle * TILT * 1.2
-      - drag * 20 * (1 - Math.min(1, Math.abs(d) / 600));
-
-    /* ===== サイズ ===== */
-    const s = 1 + Math.abs(Math.sin(angle)) * 0.12;
-
-    slide.style.transform = `
-      translate3d(${x}px, -50%, ${z}px)
-      rotateY(${r}deg)
-      scale(${s})
-    `;
-
-    slide.style.zIndex = 1000 - Math.abs(d);
-  });
-}
-
+      slide.style.zIndex = 1000 - Math.abs(d);
+    });
+  }
 
   function animate() {
     if (!dragging) {
@@ -65,7 +56,11 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(animate);
   }
 
-  animate();
+  /* 初期フレーム安定化（iOS対策） */
+  requestAnimationFrame(() => {
+    render();
+    animate();
+  });
 
   /* ===== マウス ===== */
   window.addEventListener("mousedown", e => {
@@ -106,5 +101,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
-
 
