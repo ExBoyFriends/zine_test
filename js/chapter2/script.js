@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* === チューニング用パラメータ === */
   const GAP = 120;        // 横の間隔
   const RADIUS = 800;     // 円の半径
+  const spread = 0.55; 　 // 横の広がり係数
   const DEPTH = 260;      // Z方向の振れ幅
   const TILT = 26;        // 内向き傾き
   const DAMPING = 0.92;   // 慣性減衰
@@ -35,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const angle = faceIndex * angleStep * Math.PI / 180;
 
-    const x = Math.sin(angle) * RADIUS;
+    const x = Math.sin(angle) * RADIUS * spread;
     const z = Math.cos(angle) * RADIUS * -1 + 300;
     const r = -faceIndex * angleStep;
     const s = 1 + Math.abs(faceIndex) * 0.04;
