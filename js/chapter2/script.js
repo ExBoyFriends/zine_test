@@ -21,16 +21,17 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastX = 0;
 
 function render() {
+  const centerIndex = Math.round(angle / STEP);
+
   slides.forEach((slide, i) => {
 
-    const a = i * STEP - angle;
+    const offset = i - centerIndex;
+    const a = offset * STEP - (angle % STEP);
 
     const x = Math.sin(a) * RADIUS_X;
     const z = Math.cos(a) * RADIUS_Z + DEPTH_OFFSET;
 
-    // ★ 修正ポイント
-    const r = -(a / STEP) * TILT;
-
+    const r = -offset * TILT;
     const s = 1 + Math.abs(Math.sin(a)) * SCALE_GAIN;
 
     slide.style.transform = `
@@ -40,10 +41,10 @@ function render() {
       scale(${s})
     `;
 
-    slide.style.zIndex =
-      Math.round(1000 - Math.abs(Math.sin(a)) * 1000);
+    slide.style.zIndex = 1000 - Math.abs(offset) * 100;
   });
 }
+
 
   function animate() {
     if (!dragging) {
