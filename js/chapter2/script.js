@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const s = 1 + Math.abs(Math.sin(a)) * SCALE_GAIN;
 
       slide.style.transform = `
-        translate3d(${x}px, -50%, ${z}px)
+        translate3d(${x}px, 0px, ${z}px)
         rotateY(${r}deg)
         scale(${s})
       `;
