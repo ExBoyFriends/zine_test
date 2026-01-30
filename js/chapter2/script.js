@@ -57,11 +57,11 @@ function animate() {
     if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
-  /* 視点（←ここは固定でOK） */
+  /* 視点 + 手前用の回転 */
   cylinder.style.transform =
     `rotateX(-22deg) rotateY(${angle}deg)`;
 
-  /* ---------- 手前 ---------- */
+  /* ---------- 手前（円柱に任せる） ---------- */
   outers.forEach(p => {
     const base = +p.dataset.base;
     p.style.transform = `
@@ -70,11 +70,12 @@ function animate() {
     `;
   });
 
-  /* ---------- 奥（逆流）---------- */
+  /* ---------- 奥（円柱とは切り離す） ---------- */
   inners.forEach(p => {
     const base = +p.dataset.base;
+
     p.style.transform = `
-      rotateY(${ -base - angle}deg)
+      rotateY(${base - angle * 0.8}deg)
       translateZ(-200px)
       rotateY(180deg)
       scale(0.5)
@@ -83,6 +84,7 @@ function animate() {
 
   requestAnimationFrame(animate);
 }
+
 
 animate();
 
