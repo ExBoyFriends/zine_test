@@ -29,8 +29,20 @@ function animate() {
     velocity *= DAMPING;
   }
 
-  cylinder.style.transform =
-    `translateZ(0) rotateX(-22deg) rotateY(${rotationY}deg)`;
+ cylinder.style.transform =
+    `rotateX(-22deg) rotateY(${rotationY}deg)`;
+
+  outers.forEach(panel => {
+    const i = Number(panel.style.getPropertyValue("--i"));
+    const angle =
+      (rotationY + i * 72) * Math.PI / 180;
+
+    // 正面=1 / 横=0.4 / 奥=0.15
+    const light =
+      Math.max(0.15, Math.cos(angle) * 0.85);
+
+    panel.style.filter = `brightness(${light})`;
+  });
 
   requestAnimationFrame(animate);
 }
