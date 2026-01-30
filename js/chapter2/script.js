@@ -47,14 +47,19 @@ outers.forEach(p => {
 });
 
 inners.forEach(p => {
-  const i = +p.style.getPropertyValue("--i");
+  const base = +p.dataset.base;
+
+  const rad = (base - angle) * Math.PI / 180;
+  const z = Math.cos(rad) * 120; // ← 円弧の深さ
+
   p.style.transform = `
-    rotateY(${i * 72}deg)
-    translateZ(-200px)
+    rotateY(${base - angle * 0.8}deg)
+    translateZ(${-200 - z}px)
     rotateY(180deg)
     scale(0.5)
   `;
 });
+
 
 /* ======================
    アニメーション
