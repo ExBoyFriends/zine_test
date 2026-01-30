@@ -26,7 +26,6 @@ const start = x => {
 
 const move = x => {
   if (!dragging) return;
-
   const dx = x - lastX;
   rotationY += dx * 0.3;
   innerRotationY -= dx * 0.18;
@@ -62,29 +61,27 @@ function animate() {
       `brightness(${0.35 + Math.cos(rad) * 0.5})`;
   });
 
-  /* 奥（逆回転＋円弧） */
- inners.forEach(panel => {
-  const i = +panel.style.getPropertyValue("--i");
+  /* 奥（逆回転・円弧） */
+  inners.forEach(panel => {
+    const i = +panel.style.getPropertyValue("--i");
 
-  const deg = innerRotationY + i * 72;
-  const rad = deg * Math.PI / 180;
+    const deg = -rotationY + innerRotationY + i * 72;
+    const rad = deg * Math.PI / 180;
 
-  const center = Math.max(0, Math.cos(rad));
+    const center = Math.max(0, Math.cos(rad));
+    const scale = 0.9 - center * 0.15;
+    const z = -220 - center * 60;
 
-  const scale = 0.9 - center * 0.15;
-  const z = -220 - center * 60; // ★ 前に出す
+    panel.style.transform = `
+      rotateY(${deg}deg)
+      translateZ(${z}px)
+      rotateY(180deg)
+      scale(${scale})
+    `;
 
-  panel.style.transform = `
-    rotateY(${deg}deg)
-    translateZ(${z}px)
-    rotateY(180deg)
-    scale(${scale})
-  `;
-
-  panel.style.filter =
-    `brightness(${0.35 + center * 0.6})`;
-});
-
+    panel.style.filter =
+      `brightness(${0.35 + center * 0.6})`;
+  });
 
   requestAnimationFrame(animate);
 }
@@ -98,4 +95,3 @@ window.addEventListener("mouseup", end);
 window.addEventListener("touchstart", e => start(e.touches[0].clientX));
 window.addEventListener("touchmove", e => move(e.touches[0].clientX));
 window.addEventListener("touchend", end);
-
