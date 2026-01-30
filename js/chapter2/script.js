@@ -19,32 +19,37 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastX = 0;
 
   function render() {
-    slides.forEach((slide, i) => {
+  slides.forEach((slide, i) => {
 
-      let d = i * GAP - pos;
-      const wrap = total * GAP;
+    let d = i * GAP - pos;
+    const wrap = total * GAP;
 
-      /* 完全無限ラップ */
-      d = ((d % wrap) + wrap) % wrap;
-      if (d > wrap / 2) d -= wrap;
+    d = ((d % wrap) + wrap) % wrap;
+    if (d > wrap / 2) d -= wrap;
 
-      const angle = d / RADIUS;
+    /* ===== 多角柱の核心 ===== */
 
-      /* ===== 円弧カーブ ===== */
-      const x = d;
-      const z = Math.cos(angle) * DEPTH;          // 中央が奥
-      const r = -Math.sin(angle) * TILT;           // 連続した傾き
-      const s = 1 + Math.abs(Math.sin(angle)) * 0.08;
+    const step = GAP;                 // 1面ぶん
+    const faceIndex = d / step;       // 何面ズレてるか
+    const angleStep = 32;             // ← ★角柱の角度（強め）
+    
+    const angle = faceIndex * angleStep * Math.PI / 180;
 
-      slide.style.transform = `
-        translate3d(${x}px, -50%, ${z}px)
-        rotateY(${r}deg)
-        scale(${s})
-      `;
+    const x = Math.sin(angle) * RADIUS;
+    const z = Math.cos(angle) * RADIUS * -1 + 300;
+    const r = -faceIndex * angleStep;
+    const s = 1 + Math.abs(faceIndex) * 0.04;
 
-      slide.style.zIndex = 1000 - Math.abs(d);
-    });
-  }
+    slide.style.transform = `
+      translate3d(${x}px, -50%, ${z}px)
+      rotateY(${r}deg)
+      scale(${s})
+    `;
+
+    slide.style.zIndex = 1000 - Math.abs(faceIndex);
+  });
+}
+
 
   function animate() {
     if (!dragging) {
