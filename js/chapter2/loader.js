@@ -18,4 +18,3 @@ export function initLoader(loader) {
   if (document.readyState === "complete") start();
   else window.addEventListener("load", start, { once: true });
 }
-
