@@ -5,10 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== パラメータ ===== */
   const STEP = (Math.PI * 2) / total; // 1面分
-  const RADIUS_X = 360;
-  const RADIUS_Z = 520;
-  const DEPTH_OFFSET = -200;
-  const TILT = 58;
+  const RADIUS_X = 240;
+  const RADIUS_Z = 620;
+  const DEPTH_OFFSET = -260;
+  const TILT = 72;
   const SCALE_GAIN = 0.12;
   const DAMPING = 0.92;
   const SNAP = 0.14;
