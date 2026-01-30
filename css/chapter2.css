@@ -9,6 +9,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   touch-action: none;
+  background: #000;
 }
 
 body {
