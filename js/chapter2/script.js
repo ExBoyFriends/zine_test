@@ -4,17 +4,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const total = slides.length;
 
   /* ===== 設定 ===== */
-  const VISIBLE = 2.5;        // 中央±何枚見せるか
-  const ARC = Math.PI;        // 半円（180°）
-  const RADIUS_X = 360;
-  const RADIUS_Z = 560;
+  const ARC = Math.PI;              // 半円
+  const VISIBLE = 3;                // 表示範囲（密に）
+  const RADIUS_X = 280;
+  const RADIUS_Z = 520;
   const BASE_Z = -420;
 
-  const SCALE_GAIN = 0.25;
-  const DAMPING = 0.88;
-  const SNAP = 0.18;
+  const SCALE_GAIN = 0.15;
+  const DAMPING = 0.9;
+  const SNAP = 0.2;
 
-  let current = 1;            // 表示中インデックス
+  let index = 0;
   let offset = 0;
   let velocity = 0;
   let dragging = false;
@@ -23,26 +23,25 @@ document.addEventListener("DOMContentLoaded", () => {
   function render() {
     slides.forEach((slide, i) => {
 
-      const d = i - current + offset;
+      // 無限ループ距離
+      let d = i - index + offset;
+      d = ((d + total / 2) % total) - total / 2;
 
-      // 半円外は表示しない
       if (Math.abs(d) > VISIBLE) {
         slide.style.opacity = 0;
         return;
       }
       slide.style.opacity = 1;
 
-      // -1〜1 に正規化 → -90°〜+90°
       const t = d / VISIBLE;
       const a = t * (ARC / 2);
 
       const x = Math.sin(a) * RADIUS_X;
       const z = Math.cos(a) * RADIUS_Z + BASE_Z;
 
-      // 常に内側を向く
-      const rotateY = -a * 180 / Math.PI;
+      // ★ 円の中心を向く（最重要）
+      const rotateY = (a * 180 / Math.PI) + 90;
 
-      // 両端が大きく見える
       const scale = 1 + Math.abs(t) * SCALE_GAIN;
 
       slide.style.transform = `
@@ -52,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scale(${scale})
       `;
 
-      slide.style.zIndex = 1000 - Math.abs(t) * 1000;
+      slide.style.zIndex = 1000 - Math.abs(d) * 100;
     });
   }
 
@@ -64,10 +63,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (Math.abs(velocity) < 0.001) {
         const snap = Math.round(offset);
         offset += (snap - offset) * SNAP;
-        velocity = 0;
 
         if (Math.abs(offset) > 0.5) {
-          current -= snap;
+          index = (index - snap + total) % total;
           offset = 0;
         }
       }
@@ -89,8 +87,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const move = x => {
     if (!dragging) return;
     const dx = x - lastX;
-    offset -= dx * 0.005;
-    velocity = -dx * 0.005;
+
+    // ★ ドラッグ方向＝移動方向
+    offset += dx * 0.004;
+    velocity = dx * 0.004;
+
     lastX = x;
   };
 
