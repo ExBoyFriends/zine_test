@@ -88,7 +88,7 @@ function animate() {
   p.style.transform = `
     translateX(${x}px)
     translateZ(${z}px)
-    rotateY(${base - angle + 180}deg)
+    rotateY(${base + angle + 180}deg)
     scale(0.6)
   `;
 });
