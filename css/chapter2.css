@@ -44,8 +44,6 @@ body {
   top: -130px;
   backface-visibility: hidden;
   transform-style: preserve-3d;
-
-  transform-origin: 50% 50% 420px;
 }
 
 
