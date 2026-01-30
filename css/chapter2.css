@@ -20,7 +20,7 @@ body {
 .scene {
   width: 100vw;
   height: 100vh;
-  perspective: 1400px;
+  perspective: 800px;
   perspective-origin: 50% 50%;
   display: flex;
   align-items: center;
@@ -33,8 +33,6 @@ body {
   width: 0;
   height: 0;
   transform-style: preserve-3d;
-
-  transform: translateZ(0) rotateX(-22deg);
 }
 
 /* 共通パネル */
@@ -64,8 +62,14 @@ body {
 
 /* 外側 */
 .outer {
-  background: url("../image/top_b.png") center / cover no-repeat;
+  background-image: url("../image/top_b.png");
+  background-size: 1000px 100%; /* ← 5枚分 */
+  background-repeat: no-repeat;
+  background-position-x: calc(var(--i) * -200px);
+  background-position-y: center;
+
   transform:
     rotateY(calc(var(--i) * 72deg))
-    translateZ(420px);   /* ← 同じ値 */
+    translateZ(420px);
 }
+
