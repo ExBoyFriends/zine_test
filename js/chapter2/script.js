@@ -36,7 +36,7 @@ outers.forEach(panel => {
   const i = +panel.style.getPropertyValue("--i");
   panel.style.transform = `
     rotateY(${i * 72}deg)
-    translateZ(320px)
+    translateZ(340px)
   `;
 });
 
@@ -44,11 +44,12 @@ inners.forEach(panel => {
   const i = +panel.style.getPropertyValue("--i");
   panel.style.transform = `
     rotateY(${i * 72}deg)
-    translateZ(-240px)
+    translateZ(-360px)
     rotateY(180deg)
-    scale(0.75)
+    scale(0.7)
   `;
 });
+
 
 /* ===== アニメーション ===== */
 function animate() {
