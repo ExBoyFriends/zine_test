@@ -16,7 +16,7 @@ const SNAP  = 360 / COUNT;       // 円を必ず閉じる
 const R_FRONT = 185;             // 手前半径（狭め）
 const R_BACK  = 170;             // 奥半径（少し内側）
 
-const DAMPING = 0.92;
+const DAMPING = 0.85;
 
 /* ======================
    状態
@@ -39,14 +39,14 @@ const move = x => {
   if (!dragging) return;
   const dx = x - lastX;
   angle += dx * 0.35;
-  velocity = dx * 0.35;
+  velocity = dx * 0.15;
   lastX = x;
 };
 
 const end = () => {
   dragging = false;
   const target = Math.round(angle / SNAP) * SNAP;
-  velocity = (target - angle) * 0.18;
+  velocity = (target - angle) * 0.1;
 };
 
 /* ======================
