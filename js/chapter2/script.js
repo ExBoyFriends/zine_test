@@ -30,10 +30,11 @@ function animate() {
   }
 
   cylinder.style.transform =
-    `rotateX(-22deg) rotateY(${rotationY}deg)`;
+    `translateZ(0) rotateX(-22deg) rotateY(${rotationY}deg)`;
 
   requestAnimationFrame(animate);
 }
+
 
 animate();
 
