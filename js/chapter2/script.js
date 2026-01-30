@@ -1,3 +1,4 @@
+const pages  = document.querySelectorAll(".scene");
 import { initLoader } from "../js/loader.js";
 
 /* ======================
