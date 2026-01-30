@@ -6,13 +6,16 @@ const inners = document.querySelectorAll(".inner");
 
 let dragging = false;
 let lastX = 0;
+
+let angle = 0;        // 手前（スナップあり）
+let backAngle = 0;    // ★ 奥専用（スナップなし）
+
 let velocity = 0;
-let angle = 0;
 
 const DAMPING = 0.92;
 const SNAP = 72;
 
-/* 入力 */
+/* ===== 入力 ===== */
 const start = x => {
   dragging = true;
   lastX = x;
@@ -22,7 +25,10 @@ const start = x => {
 const move = x => {
   if (!dragging) return;
   const dx = x - lastX;
-  angle += dx * 0.35;
+
+  angle     += dx * 0.35;
+  backAngle -= dx * 0.26;   // ★ 常に逆方向・連続
+
   velocity = dx * 0.35;
   lastX = x;
 };
@@ -33,7 +39,7 @@ const end = () => {
   velocity = (target - angle) * 0.18;
 };
 
-/* 初期配置 */
+/* ===== 初期配置 ===== */
 outers.forEach(p => {
   const i = +p.style.getPropertyValue("--i");
   p.style.transform = `
@@ -52,22 +58,22 @@ inners.forEach(p => {
   `;
 });
 
-/* アニメーション */
+/* ===== アニメーション ===== */
 function animate() {
 
   if (!dragging) {
     angle += velocity;
     velocity *= DAMPING;
     if (Math.abs(velocity) < 0.01) velocity = 0;
-  }
 
-  const frontAngle = angle;
-  const backAngle  = -angle * 0.75; 
+    // ★ 奥は手前に追従するがスナップしない
+    backAngle += ( -angle * 0.75 - backAngle ) * 0.08;
+  }
 
   const camera = `rotateX(-22deg)`;
 
   front.style.transform =
-    `${camera} rotateY(${frontAngle}deg)`;
+    `${camera} rotateY(${angle}deg)`;
 
   back.style.transform =
     `${camera} rotateY(${backAngle}deg)`;
@@ -75,10 +81,9 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-
 animate();
 
-/* イベント */
+/* ===== イベント ===== */
 window.addEventListener("mousedown", e => start(e.clientX));
 window.addEventListener("mousemove", e => move(e.clientX));
 window.addEventListener("mouseup", end);
@@ -86,3 +91,4 @@ window.addEventListener("mouseup", end);
 window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchend", end);
+
