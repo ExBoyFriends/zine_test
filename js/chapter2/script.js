@@ -72,7 +72,7 @@ function animate() {
     const base = +p.dataset.base;
     p.style.transform = `
       rotateY(${base}deg)
-      translateZ(280px)
+      translateZ(240px)
     `;
   });
 
@@ -81,7 +81,7 @@ function animate() {
   const base = +p.dataset.base;
   const rad  = (base - angle) * Math.PI / 180;
 
-  const R = 220; // 奥円弧の半径
+  const R = 180; // 奥円弧の半径
   const x = Math.sin(rad) * R;
   const z = -Math.cos(rad) * R; // 中央で最奥
 
