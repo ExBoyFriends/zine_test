@@ -4,14 +4,16 @@ const back  = document.querySelector(".cylinder-back");
 const outers = document.querySelectorAll(".outer");
 const inners = document.querySelectorAll(".inner");
 
+const COUNT = outers.length;     // ★ これが抜けてた
+const SNAP  = 360 / COUNT;       // ★ 円を必ず閉じる
+const R = 230;                   // ★ 共通半径
+
 let dragging = false;
 let lastX = 0;
 let velocity = 0;
 let angle = 0;
 
 const DAMPING = 0.92;
-const SNAP = 60;
-const R = 220; // ★ 手前・奥 共通半径
 
 /* ======================
    入力
@@ -39,13 +41,11 @@ const end = () => {
 /* ======================
    初期配置
 ====================== */
-outers.forEach(p => {
-  const i = +p.style.getPropertyValue("--i");
+outers.forEach((p, i) => {
   p.dataset.base = i * SNAP;
 });
 
-inners.forEach(p => {
-  const i = +p.style.getPropertyValue("--i");
+inners.forEach((p, i) => {
   p.dataset.base = i * SNAP;
 });
 
@@ -60,15 +60,14 @@ function animate() {
     if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
-  /* ---------- 手前円柱 ---------- */
+  /* ---------- 円柱 ---------- */
   front.style.transform =
     `rotateX(-22deg) rotateY(${angle}deg)`;
 
-  /* ---------- 奥（同じ視点） ---------- */
   back.style.transform =
     `rotateX(-22deg) rotateY(${angle}deg)`;
 
-  /* ---------- 手前パネル ---------- */
+  /* ---------- 手前 ---------- */
   outers.forEach(p => {
     const base = +p.dataset.base;
     p.style.transform = `
@@ -77,10 +76,11 @@ function animate() {
     `;
   });
 
-  /* ---------- 奥パネル（裏側・反転） ---------- */
+  /* ---------- 奥（完全に同一円弧・裏側） ---------- */
   inners.forEach(p => {
     const base = +p.dataset.base;
     p.style.transform = `
+      translateY(-18px)
       rotateY(${base + 180}deg)
       translateZ(${R}px)
       rotateY(180deg)
@@ -103,3 +103,4 @@ window.addEventListener("mouseup", end);
 window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchend", end);
+
