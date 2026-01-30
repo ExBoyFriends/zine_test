@@ -36,7 +36,7 @@ const end = () => {
 };
 
 /* ======================
-   初期配置（基準角だけ）
+   初期配置
 ====================== */
 outers.forEach(p => {
   const i = +p.style.getPropertyValue("--i");
@@ -47,19 +47,14 @@ outers.forEach(p => {
 });
 
 inners.forEach(p => {
-  const base = +p.dataset.base;
-
-  const rad = (base - angle) * Math.PI / 180;
-  const z = Math.cos(rad) * 120; // ← 円弧の深さ
-
+  const i = +p.style.getPropertyValue("--i");
   p.style.transform = `
-    rotateY(${base - angle * 0.8}deg)
-    translateZ(${-200 - z}px)
+    rotateY(${i * 72 + 180}deg)
+    translateZ(-220px)
     rotateY(180deg)
-    scale(0.5)
+    scale(0.6)
   `;
 });
-
 
 /* ======================
    アニメーション
@@ -72,13 +67,13 @@ function animate() {
     if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
-  /* 手前：通常回転 */
+  /* 視点は共通 */
   front.style.transform =
-    `rotateX(-22deg) rotateY(${angle}deg)`;
+    `rotateX(-22deg) rotateY(${ angle }deg)`;
 
-  /* 奥：逆回転（同じ軌道） */
+  /* ★ 奥は円柱ごと逆回転 */
   back.style.transform =
-    `rotateX(-22deg) rotateY(${-angle * 0.8}deg)`;
+    `rotateX(-22deg) rotateY(${ -angle }deg)`;
 
   requestAnimationFrame(animate);
 }
@@ -95,4 +90,3 @@ window.addEventListener("mouseup", end);
 window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchend", end);
-
