@@ -46,9 +46,9 @@ inners.forEach(p => {
   const i = +p.style.getPropertyValue("--i");
   p.style.transform = `
     rotateY(${i * 72 + 36}deg)
-    translateZ(220px)
+    translateZ(-260px)
     rotateY(180deg)
-    scale(0.7)
+    scale(0.85)
   `;
 });
 
