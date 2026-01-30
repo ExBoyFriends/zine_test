@@ -1,58 +1,81 @@
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#000;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.scene{
-  width:100vw;
-  height:100vh;
-  perspective:1400px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:url("../image/background.jpg") center/cover no-repeat;
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+ 
 }
 
-.stage{
-  position:relative;
-  width:320px;
-  height:460px;
-  transform-style:preserve-3d;
+body {
+  background: url("../image/background.jpg") center / cover no-repeat fixed;
 }
 
-/* カード */
-.panel{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transform-style:preserve-3d;
-  transition:
-    transform .6s cubic-bezier(.22,.61,.36,1),
-    opacity .6s ease;
+/* 3Dシーン */
+.scene {
+  width: 100vw;
+  height: 100vh;
+  perspective: 1000px;
+  perspective-origin: 50% 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.panel img{
-  width:240px;
-  height:340px;
-  object-fit:contain;
-  pointer-events:none;
+/* 円筒本体 */
+.cylinder {
+  position: relative;
+  width: 420;
+  height: 420;
+  transform-style: preserve-3d;
 }
 
-/* 外側の流れる装飾 */
-.ring{
-  position:absolute;
-  inset:-220px;
-  background:url("../image/top_b.png") repeat-x;
-  background-size:900px auto;
-  opacity:.18;
-  filter: blur(2px);
-  transform: translateZ(-100px);
-  pointer-events:none;
+/* 共通パネル */
+.panel {
+  position: absolute;
+  width: 200px;
+  height: 260px;
+  left: 50px;
+  top: 50px;
+  margin-left: -100px;
+  margin-top: -130px;
+  
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
 
+
+/* 内側 */
+.inner {
+  transform:
+    rotateY(calc(var(--i) * 72deg))
+    translateZ(-420px)
+    rotateY(180deg);
+  filter: brightness(0.85);
+}
+
+
+.inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 外側 */
+.outer {
+  background-image: url("../image/top_b.png");
+  background-size: 1000px 100%;
+  background-repeat: no-repeat;
+  background-position-x: calc(var(--i) * -200px);
+  background-position-y: center;
+
+  transform:
+    rotateY(calc(var(--i) * 72deg))
+    translateZ(420px);
+}
 
