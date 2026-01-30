@@ -61,15 +61,18 @@ function animate() {
     if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
-  /* ★ ここが決定的に違う */
- front.style.transform =
-  `rotateX(-22deg) rotateY(${ angle }deg)`;
+  const frontAngle = angle;
+  const backAngle  = -angle * 0.75; // ← 完全に別扱い
 
-back.style.transform =
-  `rotateX(-22deg) rotateY(${ -angle * 0.75 }deg)`;
+  front.style.transform =
+    `rotateX(-22deg) rotateY(${frontAngle}deg)`;
+
+  back.style.transform =
+    `rotateX(-32deg) rotateY(${backAngle}deg)`;
 
   requestAnimationFrame(animate);
 }
+
 
 animate();
 
