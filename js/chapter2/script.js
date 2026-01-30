@@ -3,16 +3,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const slides = [...document.querySelectorAll(".slide")];
   const total = slides.length;
 
-  /* === チューニング用パラメータ === */
-  const GAP = 90;
-  const RADIUS = 700;
-  const SPREAD = 0.45;
-  const DEPTH = 320;
-  const TILT = 42;
+  /* ===== パラメータ ===== */
+  const STEP = (Math.PI * 2) / total; // 1面分
+  const RADIUS_X = 360;
+  const RADIUS_Z = 520;
+  const DEPTH_OFFSET = -200;
+  const TILT = 58;
+  const SCALE_GAIN = 0.12;
   const DAMPING = 0.92;
+  const SNAP = 0.14;
 
-  /* 初期位置：2枚目が中央・最奥 */
-  let pos = GAP * 1.66;
+  /* 初期：2枚目が正面 */
+  let angle = STEP * 1;
 
   let velocity = 0;
   let dragging = false;
@@ -21,20 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function render() {
     slides.forEach((slide, i) => {
 
-      let d = i * GAP - pos;
-      const wrap = total * GAP;
+      const a = i * STEP - angle;
 
-      d = ((d % wrap) + wrap) % wrap;
-      if (d > wrap / 2) d -= wrap;
-
-      const rawAngle = d / RADIUS;
-      const step = Math.PI / 6;
-      const angle = Math.round(rawAngle / step) * step;
-
-      const x = Math.sin(angle) * RADIUS * SPREAD;
-      const z = Math.cos(angle) * DEPTH * -1 + DEPTH * 0.4;
-      const r = -angle * TILT;
-      const s = 1 + Math.abs(angle) * 0.12;
+      const x = Math.sin(a) * RADIUS_X;
+      const z = Math.cos(a) * RADIUS_Z + DEPTH_OFFSET;
+      const r = -a * TILT;
+      const s = 1 + Math.abs(Math.sin(a)) * SCALE_GAIN;
 
       slide.style.transform = `
         translate3d(${x}px, -50%, ${z}px)
@@ -42,24 +36,29 @@ document.addEventListener("DOMContentLoaded", () => {
         scale(${s})
       `;
 
-      slide.style.zIndex = 1000 - Math.abs(d);
+      slide.style.zIndex = Math.round(1000 - Math.abs(a) * 100);
     });
   }
 
   function animate() {
+
     if (!dragging) {
-      pos += velocity;
+      angle += velocity;
       velocity *= DAMPING;
-      if (Math.abs(velocity) < 0.01) velocity = 0;
+
+      /* 停止直前だけスナップ */
+      if (Math.abs(velocity) < 0.002) {
+        const target = Math.round(angle / STEP) * STEP;
+        angle += (target - angle) * SNAP;
+        velocity = 0;
+      }
     }
+
     render();
     requestAnimationFrame(animate);
   }
 
-  requestAnimationFrame(() => {
-    render();
-    animate();
-  });
+  animate();
 
   /* ===== マウス ===== */
   window.addEventListener("mousedown", e => {
@@ -71,8 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("mousemove", e => {
     if (!dragging) return;
     const dx = e.clientX - lastX;
-    pos -= dx;
-    velocity = -dx;
+    angle -= dx * 0.003;
+    velocity = -dx * 0.003;
     lastX = e.clientX;
   });
 
@@ -90,8 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("touchmove", e => {
     if (!dragging) return;
     const dx = e.touches[0].clientX - lastX;
-    pos -= dx;
-    velocity = -dx;
+    angle -= dx * 0.003;
+    velocity = -dx * 0.003;
     lastX = e.touches[0].clientX;
   }, { passive: true });
 
