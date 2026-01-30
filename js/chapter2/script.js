@@ -10,9 +10,9 @@ let angle = 0;
 const DAMPING = 0.92;
 const SNAP = 72;
 
-/* =========================
+/* ======================
    入力
-========================= */
+====================== */
 const start = x => {
   dragging = true;
   lastX = x;
@@ -33,33 +33,22 @@ const end = () => {
   velocity = (target - angle) * 0.18;
 };
 
-/* =========================
-   初期配置
-========================= */
-
-/* 手前：カード（通常回転） */
-outers.forEach(panel => {
-  const i = +panel.style.getPropertyValue("--i");
-  panel.style.transform = `
-    rotateY(${ i * 72 }deg)
-    translateZ(320px)
-  `;
+/* ======================
+   初期配置（基準角）
+====================== */
+outers.forEach(p => {
+  const i = +p.style.getPropertyValue("--i");
+  p.dataset.base = i * 72;
 });
 
-/* 奥：top_b（逆回転専用・ここが肝） */
-inners.forEach(panel => {
-  const i = +panel.style.getPropertyValue("--i");
-  panel.style.transform = `
-    rotateY(${ -i * 72 }deg)
-    translateZ(-240px)
-    rotateY(180deg)
-    scale(0.75)
-  `;
+inners.forEach(p => {
+  const i = +p.style.getPropertyValue("--i");
+  p.dataset.base = i * 72;
 });
 
-/* =========================
+/* ======================
    アニメーション
-========================= */
+====================== */
 function animate() {
 
   if (!dragging) {
@@ -68,18 +57,38 @@ function animate() {
     if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
-  /* ★ 円柱は1つ・視点は固定 */
+  /* 視点（←ここは固定でOK） */
   cylinder.style.transform =
-    `rotateX(-22deg) rotateY(${ angle }deg)`;
+    `rotateX(-22deg) rotateY(${angle}deg)`;
+
+  /* ---------- 手前 ---------- */
+  outers.forEach(p => {
+    const base = +p.dataset.base;
+    p.style.transform = `
+      rotateY(${base}deg)
+      translateZ(320px)
+    `;
+  });
+
+  /* ---------- 奥（逆流）---------- */
+  inners.forEach(p => {
+    const base = +p.dataset.base;
+    p.style.transform = `
+      rotateY(${ -base - angle * 1.0 }deg)
+      translateZ(-240px)
+      rotateY(180deg)
+      scale(0.8)
+    `;
+  });
 
   requestAnimationFrame(animate);
 }
 
 animate();
 
-/* =========================
+/* ======================
    イベント
-========================= */
+====================== */
 window.addEventListener("mousedown", e => start(e.clientX));
 window.addEventListener("mousemove", e => move(e.clientX));
 window.addEventListener("mouseup", end);
@@ -97,4 +106,3 @@ window.addEventListener(
 );
 
 window.addEventListener("touchend", end);
-
