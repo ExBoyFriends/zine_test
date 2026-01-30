@@ -1,3 +1,6 @@
+/* =========================
+   リセット
+========================= */
 * {
   margin: 0;
   padding: 0;
@@ -11,66 +14,109 @@ html, body {
 }
 
 body {
-  background: url("../image/background.jpg") center / cover no-repeat fixed;
+  background: url("../image/background.jpg")
+    center / cover no-repeat fixed;
 }
 
-/* シーン */
+/* =========================
+   3Dシーン
+========================= */
 .scene {
   width: 100vw;
   height: 100vh;
+
   perspective: 1000px;
   perspective-origin: 50% 45%;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   touch-action: none;
 }
 
-/* 円筒 */
+/* =========================
+   円筒本体
+========================= */
 .cylinder {
   position: relative;
   width: 420px;
   height: 420px;
+
   transform-style: preserve-3d;
+
+  /* 初期表示用（JSが動かなくても見える） */
   transform: translateZ(300px) rotateX(-22deg);
 }
 
-/* パネル共通 */
+/* =========================
+   共通パネル
+========================= */
 .panel {
   position: absolute;
+
   width: 200px;
   height: 260px;
+
   left: 50%;
   top: 50%;
+
   margin-left: -100px;
   margin-top: -130px;
+
   backface-visibility: hidden;
   transform-style: preserve-3d;
 }
 
-/* 内側 */
+/* =========================
+   内側パネル（内壁）
+========================= */
 .inner {
   transform:
     rotateY(calc(var(--i) * 72deg))
     translateZ(-300px)
     rotateY(180deg);
+
+  /* JSで動的に上書きされるが初期値として */
+  filter: brightness(0.7);
 }
 
 .inner img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+
+  /* カード感を少し出す */
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,.4));
 }
 
-/* 外側 */
+/* =========================
+   外側パネル（外壁）
+========================= */
 .outer {
   background-image: url("../image/top_b.png");
-  background-size: 1000px 100%;
   background-repeat: no-repeat;
+  background-size: 1000px 100%;
+
   background-position-x: calc(var(--i) * -200px);
   background-position-y: center;
 
   transform:
     rotateY(calc(var(--i) * 72deg))
     translateZ(300px);
+
+  /* 初期暗さ（JSで変化） */
+  filter: brightness(0.3);
 }
+
+/* =========================
+   デバッグ用（必要なら）
+========================= */
+/*
+.outer {
+  outline: 1px solid rgba(255,0,0,0.4);
+}
+.inner {
+  outline: 1px solid rgba(0,255,255,0.4);
+}
+*/
