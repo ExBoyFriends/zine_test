@@ -4,12 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const total = slides.length;
 
   /* ===== パラメータ ===== */
-  const STEP = (Math.PI * 2) / total;
+  const STEP = (Math.PI * 2) / total;   // 1面分
   const RADIUS_X = 240;
   const RADIUS_Z = 620;
   const DEPTH_OFFSET = -260;
-  const TILT = 72;
-  const SCALE_GAIN = 0.12;
+
+  const TILT = 72;          // 面ごとの固定角度（多角柱）
+  const SCALE_GAIN = 0.04;  // 奥行き感（控えめ）
   const DAMPING = 0.92;
   const SNAP = 0.14;
 
@@ -20,33 +21,43 @@ document.addEventListener("DOMContentLoaded", () => {
   let dragging = false;
   let lastX = 0;
 
-function render() {
-  const centerIndex = Math.round(angle / STEP);
+  function render() {
 
-  slides.forEach((slide, i) => {
+    /* ★ 中央に来る面を決定 */
+    const centerIndex = Math.round(angle / STEP);
+    const localAngle  = angle - centerIndex * STEP;
 
-    const offset = i - centerIndex;
-    const a = offset * STEP - (angle % STEP);
+    slides.forEach((slide, i) => {
 
-    const x = Math.sin(a) * RADIUS_X;
-    const z = Math.cos(a) * RADIUS_Z + DEPTH_OFFSET;
+      /* ★ 面としての相対位置 */
+      const faceOffset = i - centerIndex;
 
-    const r = -offset * TILT;
-    const s = 1 + Math.abs(Math.sin(a)) * SCALE_GAIN;
+      /* ===== 位置（円弧） ===== */
+      const a = faceOffset * STEP - localAngle;
 
-    slide.style.transform = `
-      translate(-50%, -50%)
-      translate3d(${x}px, 0px, ${z}px)
-      rotateY(${r}deg)
-      scale(${s})
-    `;
+      const x = Math.sin(a) * RADIUS_X;
+      const z = Math.cos(a) * RADIUS_Z + DEPTH_OFFSET;
 
-    slide.style.zIndex = 1000 - Math.abs(offset) * 100;
-  });
-}
+      /* ===== 向き（面ごとに固定） ===== */
+      const r = -faceOffset * TILT;
 
+      /* ===== スケール ===== */
+      const s = 1 + Math.abs(faceOffset) * SCALE_GAIN;
+
+      slide.style.transform = `
+        translate(-50%, -50%)
+        translate3d(${x}px, 0px, ${z}px)
+        rotateY(${r}deg)
+        scale(${s})
+      `;
+
+      /* ★ 前後関係は「面番号」で安定 */
+      slide.style.zIndex = 1000 - Math.abs(faceOffset) * 100;
+    });
+  }
 
   function animate() {
+
     if (!dragging) {
       angle += velocity;
       velocity *= DAMPING;
@@ -79,7 +90,9 @@ function render() {
     lastX = e.clientX;
   });
 
-  window.addEventListener("mouseup", () => dragging = false);
+  window.addEventListener("mouseup", () => {
+    dragging = false;
+  });
 
   /* ===== タッチ ===== */
   window.addEventListener("touchstart", e => {
@@ -96,6 +109,9 @@ function render() {
     lastX = e.touches[0].clientX;
   }, { passive: true });
 
-  window.addEventListener("touchend", () => dragging = false);
+  window.addEventListener("touchend", () => {
+    dragging = false;
+  });
+
 });
 
