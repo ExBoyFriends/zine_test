@@ -1,4 +1,4 @@
-import { initLoader } from "../js/loader.js";
+import { initLoader } from "./js/loader.js";
 
 /* ======================
    loader
