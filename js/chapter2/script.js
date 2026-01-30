@@ -64,9 +64,9 @@ function animate() {
   front.style.transform =
     `rotateX(-22deg) rotateY(${angle}deg)`;
 
-  /* ---------- 奥（視点共有） ---------- */
+  /* ---------- 奥（同じ視点） ---------- */
   back.style.transform =
-    `rotateX(-22deg)`;
+    `rotateX(-22deg) rotateY(${angle}deg)`;
 
   /* ---------- 手前パネル ---------- */
   outers.forEach(p => {
@@ -77,12 +77,12 @@ function animate() {
     `;
   });
 
-  /* ---------- 奥パネル（同一円弧・反転） ---------- */
+  /* ---------- 奥パネル（裏側・反転） ---------- */
   inners.forEach(p => {
     const base = +p.dataset.base;
     p.style.transform = `
-      rotateY(${base - angle}deg)
-      translateZ(${-R}px)
+      rotateY(${base + 180}deg)
+      translateZ(${R}px)
       rotateY(180deg)
       scale(0.93)
     `;
@@ -103,4 +103,3 @@ window.addEventListener("mouseup", end);
 window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchend", end);
-
