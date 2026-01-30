@@ -66,7 +66,7 @@ function animate() {
     const base = +p.dataset.base;
     p.style.transform = `
       rotateY(${base}deg)
-      translateZ(320px)
+      translateZ(280px)
     `;
   });
 
@@ -74,10 +74,10 @@ function animate() {
   inners.forEach(p => {
     const base = +p.dataset.base;
     p.style.transform = `
-      rotateY(${ -base - angle * 1.0 }deg)
-      translateZ(-240px)
+      rotateY(${ -base - angle}deg)
+      translateZ(-200px)
       rotateY(180deg)
-      scale(0.8)
+      scale(0.5)
     `;
   });
 
