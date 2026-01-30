@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== 初期位置 =====
      2枚目（index:1）が中央・最奥に来る */
- let pos = GAP * 1 + GAP * 0.62; // ← ここ微調整
+ let pos = GAP * 1 + GAP * 0.66; // ← ここ微調整
 
   let velocity = 0;
   let dragging = false;
