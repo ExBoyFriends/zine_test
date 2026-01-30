@@ -52,7 +52,7 @@ body {
 .inner {
   transform:
     rotateY(calc(var(--i) * 72deg))
-    translateZ(-260px)
+    translateZ(-420px)   /* ← 260 → 420 */
     rotateY(180deg);
 }
 
@@ -67,6 +67,5 @@ body {
   background: url("../image/top_b.png") center / cover no-repeat;
   transform:
     rotateY(calc(var(--i) * 72deg))
-    translateZ(260px);
+    translateZ(420px);   /* ← 同じ値 */
 }
-
