@@ -1,4 +1,6 @@
-const cylinder = document.querySelector(".cylinder");
+const front = document.querySelector(".cylinder-front");
+const back  = document.querySelector(".cylinder-back");
+
 const outers = document.querySelectorAll(".outer");
 const inners = document.querySelectorAll(".inner");
 
@@ -34,16 +36,24 @@ const end = () => {
 };
 
 /* ======================
-   初期配置（基準角）
+   初期配置（基準角だけ）
 ====================== */
 outers.forEach(p => {
   const i = +p.style.getPropertyValue("--i");
-  p.dataset.base = i * 72;
+  p.style.transform = `
+    rotateY(${i * 72}deg)
+    translateZ(280px)
+  `;
 });
 
 inners.forEach(p => {
   const i = +p.style.getPropertyValue("--i");
-  p.dataset.base = i * 72;
+  p.style.transform = `
+    rotateY(${i * 72}deg)
+    translateZ(-200px)
+    rotateY(180deg)
+    scale(0.5)
+  `;
 });
 
 /* ======================
@@ -57,34 +67,16 @@ function animate() {
     if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
-  /* 視点 + 手前用の回転 */
-  cylinder.style.transform =
+  /* 手前：通常回転 */
+  front.style.transform =
     `rotateX(-22deg) rotateY(${angle}deg)`;
 
-  /* ---------- 手前（円柱に任せる） ---------- */
-  outers.forEach(p => {
-    const base = +p.dataset.base;
-    p.style.transform = `
-      rotateY(${base}deg)
-      translateZ(280px)
-    `;
-  });
-
-  /* ---------- 奥（円柱とは切り離す） ---------- */
-  inners.forEach(p => {
-    const base = +p.dataset.base;
-
-    p.style.transform = `
-      rotateY(${base - angle * 0.8}deg)
-      translateZ(-200px)
-      rotateY(180deg)
-      scale(0.5)
-    `;
-  });
+  /* 奥：逆回転（同じ軌道） */
+  back.style.transform =
+    `rotateX(-22deg) rotateY(${-angle * 0.8}deg)`;
 
   requestAnimationFrame(animate);
 }
-
 
 animate();
 
@@ -95,16 +87,7 @@ window.addEventListener("mousedown", e => start(e.clientX));
 window.addEventListener("mousemove", e => move(e.clientX));
 window.addEventListener("mouseup", end);
 
-window.addEventListener(
-  "touchstart",
-  e => start(e.touches[0].clientX),
-  { passive: true }
-);
-
-window.addEventListener(
-  "touchmove",
-  e => move(e.touches[0].clientX),
-  { passive: true }
-);
-
+window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
+window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchend", end);
+
