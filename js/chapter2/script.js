@@ -1,42 +1,60 @@
-const cylinder = document.getElementById("cylinder");
+const panels = [...document.querySelectorAll(".panel")];
+const ring = document.querySelector(".ring");
 
-let rotY = 0;
-let lastX = 0;
-let dragging = false;
-let velocity = 0;
+let current = 0;
+let startX = 0;
 
-const DAMPING = 0.94;
+/* 円弧っぽい配置定義 */
+const layout = {
+  0:  { x:   0, z:   0, rot:  0,  scale:1,   op:1 },
+  1:  { x: 140, z:-120, rot:-25, scale:.85, op:.6 },
+ -1:  { x:-140, z:-120, rot: 25, scale:.85, op:.6 },
+  2:  { x: 260, z:-260, rot:-45, scale:.7,  op:0 },
+ -2:  { x:-260, z:-260, rot: 45, scale:.7,  op:0 }
+};
 
-/* ドラッグ */
-window.addEventListener("pointerdown", e=>{
-  dragging = true;
-  lastX = e.clientX;
-  velocity = 0;
+function update(){
+  panels.forEach((p,i)=>{
+    let d = i - current;
+    if(d > 2) d -= panels.length;
+    if(d < -2) d += panels.length;
+
+    const s = layout[d];
+    if(!s){
+      p.style.opacity = 0;
+      p.style.transform = "translateZ(-600px)";
+      return;
+    }
+
+    p.style.opacity = s.op;
+    p.style.transform = `
+      translateX(${s.x}px)
+      translateZ(${s.z}px)
+      rotateY(${s.rot}deg)
+      scale(${s.scale})
+    `;
+  });
+}
+
+update();
+
+/* ドラッグ操作 */
+window.addEventListener("pointerdown",e=>{
+  startX = e.clientX;
 });
 
-window.addEventListener("pointermove", e=>{
-  if(!dragging) return;
-  const dx = e.clientX - lastX;
-  rotY += dx * 0.3;
-  velocity = dx * 0.3;
-  lastX = e.clientX;
+window.addEventListener("pointerup",e=>{
+  const dx = e.clientX - startX;
+  if(dx > 40) current = (current - 1 + panels.length) % panels.length;
+  if(dx < -40) current = (current + 1) % panels.length;
+  update();
 });
 
-window.addEventListener("pointerup", ()=>{
-  dragging = false;
-});
-
-/* アニメーション */
+/* 外側はゆっくり流すだけ */
+let offset = 0;
 function animate(){
-  if(!dragging){
-    rotY += velocity;
-    velocity *= DAMPING;
-  }
-
-  cylinder.style.transform =
-    `rotateX(-22deg) rotateY(${rotY}deg)`;
-
+  offset += 0.3;
+  ring.style.backgroundPositionX = `${offset}px`;
   requestAnimationFrame(animate);
 }
 animate();
-
