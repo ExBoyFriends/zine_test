@@ -3,65 +3,73 @@ document.addEventListener("DOMContentLoaded", () => {
   const slides = [...document.querySelectorAll(".slide")];
   const total = slides.length;
 
-  /* ===== パラメータ ===== */
-  const STEP = (Math.PI * 2) / total;
-  const RADIUS_X = 240;
-  const RADIUS_Z = 620;
-  const DEPTH_OFFSET = -260;
+  /* ===== 設定 ===== */
+  const VISIBLE = 2.5;        // 中央±何枚見せるか
+  const ARC = Math.PI;        // 半円（180°）
+  const RADIUS_X = 360;
+  const RADIUS_Z = 560;
+  const BASE_Z = -420;
 
-  const FACE_TILT = 72;     // 面そのものの角度（多角柱）
-  const FOLLOW_TILT = 40;   // ★ スライドに追従する角度量
+  const SCALE_GAIN = 0.25;
+  const DAMPING = 0.88;
+  const SNAP = 0.18;
 
-  const SCALE_GAIN = 0.06;
-  const DAMPING = 0.92;
-  const SNAP = 0.14;
-
-  let angle = STEP * 1;
+  let current = 1;            // 表示中インデックス
+  let offset = 0;
   let velocity = 0;
   let dragging = false;
   let lastX = 0;
 
   function render() {
-
-    const centerIndex = Math.round(angle / STEP);
-    const localAngle  = angle - centerIndex * STEP;
-
     slides.forEach((slide, i) => {
 
-      const faceOffset = i - centerIndex;
+      const d = i - current + offset;
 
-      /* ===== 位置 ===== */
-      const a = faceOffset * STEP - localAngle;
+      // 半円外は表示しない
+      if (Math.abs(d) > VISIBLE) {
+        slide.style.opacity = 0;
+        return;
+      }
+      slide.style.opacity = 1;
+
+      // -1〜1 に正規化 → -90°〜+90°
+      const t = d / VISIBLE;
+      const a = t * (ARC / 2);
+
       const x = Math.sin(a) * RADIUS_X;
-      const z = Math.cos(a) * RADIUS_Z + DEPTH_OFFSET;
+      const z = Math.cos(a) * RADIUS_Z + BASE_Z;
 
-      /* ===== 向き（ここが肝） ===== */
-      const baseRotate   = -faceOffset * FACE_TILT;
-      const followRotate = -localAngle * FOLLOW_TILT;
-      const r = baseRotate + followRotate;
+      // 常に内側を向く
+      const rotateY = -a * 180 / Math.PI;
 
-      const s = 1 + Math.abs(faceOffset) * SCALE_GAIN;
+      // 両端が大きく見える
+      const scale = 1 + Math.abs(t) * SCALE_GAIN;
 
       slide.style.transform = `
         translate(-50%, -50%)
-        translate3d(${x}px, 0px, ${z}px)
-        rotateY(${r}deg)
-        scale(${s})
+        translate3d(${x}px, 0, ${z}px)
+        rotateY(${rotateY}deg)
+        scale(${scale})
       `;
 
-      slide.style.zIndex = 1000 - Math.abs(faceOffset) * 100;
+      slide.style.zIndex = 1000 - Math.abs(t) * 1000;
     });
   }
 
   function animate() {
     if (!dragging) {
-      angle += velocity;
+      offset += velocity;
       velocity *= DAMPING;
 
-      if (Math.abs(velocity) < 0.002) {
-        const target = Math.round(angle / STEP) * STEP;
-        angle += (target - angle) * SNAP;
+      if (Math.abs(velocity) < 0.001) {
+        const snap = Math.round(offset);
+        offset += (snap - offset) * SNAP;
         velocity = 0;
+
+        if (Math.abs(offset) > 0.5) {
+          current -= snap;
+          offset = 0;
+        }
       }
     }
 
@@ -72,36 +80,28 @@ document.addEventListener("DOMContentLoaded", () => {
   animate();
 
   /* ===== 入力 ===== */
-  window.addEventListener("mousedown", e => {
+  const start = x => {
     dragging = true;
-    lastX = e.clientX;
+    lastX = x;
     velocity = 0;
-  });
+  };
 
-  window.addEventListener("mousemove", e => {
+  const move = x => {
     if (!dragging) return;
-    const dx = e.clientX - lastX;
-    angle -= dx * 0.003;
-    velocity = -dx * 0.003;
-    lastX = e.clientX;
-  });
+    const dx = x - lastX;
+    offset -= dx * 0.005;
+    velocity = -dx * 0.005;
+    lastX = x;
+  };
 
-  window.addEventListener("mouseup", () => dragging = false);
+  const end = () => dragging = false;
 
-  window.addEventListener("touchstart", e => {
-    dragging = true;
-    lastX = e.touches[0].clientX;
-    velocity = 0;
-  }, { passive: true });
+  window.addEventListener("mousedown", e => start(e.clientX));
+  window.addEventListener("mousemove", e => move(e.clientX));
+  window.addEventListener("mouseup", end);
 
-  window.addEventListener("touchmove", e => {
-    if (!dragging) return;
-    const dx = e.touches[0].clientX - lastX;
-    angle -= dx * 0.003;
-    velocity = -dx * 0.003;
-    lastX = e.touches[0].clientX;
-  }, { passive: true });
+  window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
+  window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
+  window.addEventListener("touchend", end);
 
-  window.addEventListener("touchend", () => dragging = false);
 });
-
