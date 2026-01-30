@@ -40,22 +40,22 @@ body {
   position: absolute;
   width: 200px;
   height: 260px;
-  left: -100px;   /* ← 幅の半分 */
-  top: -130px;    /* ← 高さの半分 */
+  left: -100px;
+  top: -130px;
   backface-visibility: hidden;
   transform-style: preserve-3d;
-  transform-origin: 50% 50% 420px;
-  transition: filter .2s;
 }
+
 
 /* 内側 */
 .inner {
   transform:
     rotateY(calc(var(--i) * 72deg))
-    translateZ(-420px)   /* ← 260 → 420 */
+    translateZ(-420px)
     rotateY(180deg);
-    filter: brightness(0.85);
+  filter: brightness(0.85);
 }
+
 
 .inner img {
   width: 100%;
@@ -66,15 +66,15 @@ body {
 /* 外側 */
 .outer {
   background-image: url("../image/top_b.png");
-  background-size: 1000px 100%; /* ← 5枚分 */
+  background-size: 1000px 100%;
   background-repeat: no-repeat;
   background-position-x: calc(var(--i) * -200px);
   background-position-y: center;
-
   filter: brightness(1.1);
 
   transform:
     rotateY(calc(var(--i) * 72deg))
     translateZ(420px);
 }
+
 
