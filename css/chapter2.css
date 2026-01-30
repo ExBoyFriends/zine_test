@@ -48,11 +48,12 @@ body {
 
 /* 内側（5枚・連続） */
 .inner {
-  transform:
-    rotateY(calc(var(--i) * 72deg))
-    translateZ(-260px)
-    rotateY(180deg)
-    translate(-50%, -50%);
+ transform:
+  translate(-50%, -50%)
+  rotateY(calc(var(--i) * 72deg))
+  translateZ(-260px)
+  rotateY(180deg);
+
 }
 
 .inner img {
@@ -68,7 +69,8 @@ body {
   background-position: center;
 
   transform:
-    rotateY(calc(var(--i) * 72deg))
-    translateZ(260px)
-    translate(-50%, -50%);
+  translate(-50%, -50%)
+  rotateY(calc(var(--i) * 72deg))
+  translateZ(260px);
+
 }
