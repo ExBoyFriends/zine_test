@@ -15,6 +15,25 @@ body {
     center / cover no-repeat fixed;
 }
 
+/* 背景 */
+.background {
+  position: fixed;
+  inset: 0;
+  background: url('../image/background.jpg') center / cover no-repeat;
+  z-index: 0;
+  animation: slowFade 20s ease-in-out infinite alternate;
+}
+
+/* ローダー */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: url('../image/background.jpg') center / cover no-repeat;
+  z-index: 10;
+  animation: siren 1.68s linear infinite;
+  transition: opacity 0.5s ease;
+}
+
 /* ===== シーン ===== */
 
 .scene {
