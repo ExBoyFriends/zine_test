@@ -1,8 +1,3 @@
-import { initLoader } from "./loader.js";
-
-/* loader */
-const loader = document.getElementById("loader");
-initLoader(loader);
 
 /* 要素取得 */
 const front = document.querySelector(".cylinder-front");
