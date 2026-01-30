@@ -57,8 +57,8 @@ body {
 /* ===== 手前カード ===== */
 
 .outer {
-  width: 200px;
-  height: 280px;
+  width: 230px;
+  height: 300px;
   margin-left: -110px;
   margin-top: -140px;
   backface-visibility: hidden;
@@ -74,8 +74,8 @@ body {
 /* ===== 奥（top_b） ===== */
 
 .inner {
-  width: 200px;
-  height: 260px;
+  width: 220px;
+  height: 290px;
   margin-left: -100px;
   margin-top: -130px;
 
