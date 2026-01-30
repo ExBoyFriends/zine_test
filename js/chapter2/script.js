@@ -17,60 +17,52 @@ document.addEventListener("DOMContentLoaded", () => {
   let dragging = false;
   let lastX = 0;
 
-  function shortestDistance(i, pos) {
-    let d = i - pos;
+  // ★ 最短循環距離
+  function wrap(d) {
     if (d > total / 2) d -= total;
     if (d < -total / 2) d += total;
     return d;
   }
 
   function render() {
-  slides.forEach((slide, i) => {
+    slides.forEach((slide, i) => {
 
-    const d = wrap(i - position);
+      const d = wrap(i - position);
 
-    if (Math.abs(d) > VISIBLE) {
-      slide.style.opacity = 0;
-      return;
-    }
-    slide.style.opacity = 1;
+      if (Math.abs(d) > VISIBLE) {
+        slide.style.opacity = 0;
+        return;
+      }
+      slide.style.opacity = 1;
 
-    // 正規化
-    const t = d / VISIBLE;           // -1〜1
-    const a = t * (ARC / 2);         // -90°〜+90°
+      const t = d / VISIBLE;
+      const a = t * (ARC / 2);
 
-    // 円筒内側の位置
-    const x = Math.sin(a) * RADIUS_X;
-    const z = Math.cos(a) * RADIUS_Z + BASE_Z;
+      const x = Math.sin(a) * RADIUS_X;
+      const z = Math.cos(a) * RADIUS_Z + BASE_Z;
 
-    // ★ 面は常に円の接線方向を向く
-    const rotateY = -a * 180 / Math.PI;
+      // 円筒の接線方向
+      const rotateY = -a * 180 / Math.PI;
 
-    // ★ 遠近で幅が縮む → 台形に見える
-    const perspectiveScale =
-      Math.cos(a) * 0.6 + 0.4;       // 端でも0にならない
+      // 遠近で台形になるスケール
+      const perspectiveScale = Math.cos(a) * 0.6 + 0.4;
+      const scale = perspectiveScale * (1 + Math.abs(t) * SCALE_GAIN);
 
-    const scale =
-      perspectiveScale * (1 + Math.abs(t) * SCALE_GAIN);
+      slide.style.transform = `
+        translate(-50%, -50%)
+        translate3d(${x}px, 0, ${z}px)
+        rotateY(${rotateY}deg)
+        scale(${scale})
+      `;
 
-    slide.style.transform = `
-      translate(-50%, -50%)
-      translate3d(${x}px, 0, ${z}px)
-      rotateY(${rotateY}deg)
-      scale(${scale})
-    `;
-
-    slide.style.zIndex = Math.round(1000 - Math.abs(d) * 100);
-  });
-}
+      slide.style.zIndex = Math.round(1000 - Math.abs(d) * 100);
+    });
+  }
 
   function animate() {
     if (!dragging) {
       position += velocity;
       velocity *= DAMPING;
-
-      // ★ position 自体を常に循環
-      position = ((position % total) + total) % total;
     }
 
     render();
@@ -79,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   animate();
 
+  /* ===== 入力 ===== */
   const start = x => {
     dragging = true;
     lastX = x;
@@ -105,3 +98,4 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
   window.addEventListener("touchend", end);
 });
+
