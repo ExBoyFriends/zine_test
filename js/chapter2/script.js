@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const z = Math.sin(Math.abs(angle)) * DEPTH;
 
     // 内向きにしっかり倒す
-    const r = -angle * TILT * 1.6;
+    const r = -angle * TILT * 2.0;
 
     // 外側ほど少し大きい
     const s = 1 + Math.abs(angle) * 0.12;
