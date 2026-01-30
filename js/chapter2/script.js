@@ -36,24 +36,22 @@ document.addEventListener("DOMContentLoaded", () => {
       slide.style.opacity = 1;
 
       const t = d / VISIBLE;
-      const a = t * (ARC / 2);
+const a = t * (ARC / 2);
 
-      const x = Math.sin(a) * RADIUS_X;
-      const z = Math.cos(a) * RADIUS_Z + BASE_Z;
+// 円筒内側の位置
+const x = Math.sin(a) * RADIUS_X;
+const z = Math.cos(a) * RADIUS_Z + BASE_Z;
 
-      // 円筒の接線方向
-      const rotateY = -a * 180 / Math.PI;
+// ★ 面は円筒の接線方向を正確に向く
+const rotateY = -a * 180 / Math.PI;
 
-      // 遠近で台形になるスケール
-      const perspectiveScale = Math.cos(a) * 0.6 + 0.4;
-      const scale = perspectiveScale * (1 + Math.abs(t) * SCALE_GAIN);
+// ★ スケールは一切しない
+slide.style.transform = `
+  translate(-50%, -50%)
+  translate3d(${x}px, 0, ${z}px)
+  rotateY(${rotateY}deg)
+`;
 
-      slide.style.transform = `
-        translate(-50%, -50%)
-        translate3d(${x}px, 0, ${z}px)
-        rotateY(${rotateY}deg)
-        scale(${scale})
-      `;
 
       slide.style.zIndex = Math.round(1000 - Math.abs(d) * 100);
     });
