@@ -32,7 +32,7 @@ function animate() {
   }
 
  cylinder.style.transform =
-    `rotateX(-22deg) rotateY(${rotationY}deg)`;
+  `translateZ(300px) rotateX(-22deg) rotateY(${rotationY}deg)`;
 
   outers.forEach(panel => {
     const i = Number(panel.style.getPropertyValue("--i"));
