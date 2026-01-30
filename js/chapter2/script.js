@@ -4,48 +4,47 @@ document.addEventListener("DOMContentLoaded", () => {
   const total = slides.length;
 
   /* === チューニング用パラメータ === */
-  const GAP = 90;        // 横の間隔
-  const RADIUS = 700;     // 円の半径
-  const spread = 0.45; 　 // 横の広がり係数
-  const DEPTH = 320;      // Z方向の振れ幅
-  const TILT = 42;        // 内向き傾き
-  const DAMPING = 0.92;   // 慣性減衰
+  const GAP = 90;
+  const RADIUS = 700;
+  const SPREAD = 0.45;
+  const DEPTH = 320;
+  const TILT = 42;
+  const DAMPING = 0.92;
 
-  /* ===== 初期位置 =====
-     2枚目（index:1）が中央・最奥に来る */
- let pos = GAP * 1 + GAP * 0.66; // ← ここ微調整
+  /* 初期位置：2枚目が中央・最奥 */
+  let pos = GAP * 1.66;
 
   let velocity = 0;
   let dragging = false;
   let lastX = 0;
 
- function render() {
-  slides.forEach((slide, i) => {
+  function render() {
+    slides.forEach((slide, i) => {
 
-    let d = i * GAP - pos;
-    const wrap = total * GAP;
+      let d = i * GAP - pos;
+      const wrap = total * GAP;
 
-    d = ((d % wrap) + wrap) % wrap;
-    if (d > wrap / 2) d -= wrap;
+      d = ((d % wrap) + wrap) % wrap;
+      if (d > wrap / 2) d -= wrap;
 
-    const rawAngle = d / RADIUS;
-    const step = Math.PI / 6;
-    const angle = Math.round(rawAngle / step) * step;
+      const rawAngle = d / RADIUS;
+      const step = Math.PI / 6;
+      const angle = Math.round(rawAngle / step) * step;
 
-    const x = Math.sin(angle) * RADIUS * SPREAD;
-    const z = Math.cos(angle) * DEPTH * -1 + DEPTH * 0.4;
-    const r = -angle * TILT;
-    const s = 1 + Math.abs(angle) * 0.12;
+      const x = Math.sin(angle) * RADIUS * SPREAD;
+      const z = Math.cos(angle) * DEPTH * -1 + DEPTH * 0.4;
+      const r = -angle * TILT;
+      const s = 1 + Math.abs(angle) * 0.12;
 
-    slide.style.transform = `
-      translate3d(${x}px, -50%, ${z}px)
-      rotateY(${r}deg)
-      scale(${s})
-    `;
+      slide.style.transform = `
+        translate3d(${x}px, -50%, ${z}px)
+        rotateY(${r}deg)
+        scale(${s})
+      `;
 
-    slide.style.zIndex = 1000 - Math.abs(d);
-  });
-}
+      slide.style.zIndex = 1000 - Math.abs(d);
+    });
+  }
 
   function animate() {
     if (!dragging) {
@@ -57,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(animate);
   }
 
-  /* 初期フレーム安定化（iOS対策） */
   requestAnimationFrame(() => {
     render();
     animate();
