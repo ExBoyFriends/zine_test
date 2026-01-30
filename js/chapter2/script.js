@@ -10,7 +10,7 @@ let angle = 0;
 const DAMPING = 0.92;
 const SNAP = 72;
 
-/* 入力 */
+/* ===== 入力 ===== */
 const start = x => {
   dragging = true;
   lastX = x;
@@ -31,7 +31,26 @@ const end = () => {
   velocity = (target - angle) * 0.18;
 };
 
-/* アニメーション */
+/* ===== 初期配置 ===== */
+outers.forEach(panel => {
+  const i = +panel.style.getPropertyValue("--i");
+  panel.style.transform = `
+    rotateY(${i * 72}deg)
+    translateZ(320px)
+  `;
+});
+
+inners.forEach(panel => {
+  const i = +panel.style.getPropertyValue("--i");
+  panel.style.transform = `
+    rotateY(${i * 72}deg)
+    translateZ(-240px)
+    rotateY(180deg)
+    scale(0.75)
+  `;
+});
+
+/* ===== アニメーション ===== */
 function animate() {
 
   if (!dragging) {
@@ -40,58 +59,20 @@ function animate() {
     if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
-  /* ★ 見下ろしアングルは円柱に固定で付与 */
-  cylinder.style.transform = `rotateX(-22deg)`;
-
-  /* ===== 手前 ===== */
-  outers.forEach(panel => {
-    const i = +panel.style.getPropertyValue("--i");
-    const deg = angle + i * 72;
-    const rad = deg * Math.PI / 180;
-
-    panel.style.transform = `
-      rotateY(${deg}deg)
-      translateZ(320px)
-    `;
-
-    panel.style.filter =
-      `brightness(${0.45 + Math.cos(rad) * 0.45})`;
-  });
-
-  /* ===== 奥（逆回転・内側） ===== */
-  inners.forEach(panel => {
-    const i = +panel.style.getPropertyValue("--i");
-    const deg = -angle + i * 72;
-    const rad = deg * Math.PI / 180;
-
-    const center = Math.max(0, Math.cos(rad));
-
-    /* ★ Zは常に「手前より浅い」 */
-    const z = -220 - center * 80;
-
-    /* ★ 中央で少し小さく */
-    const scale = 0.78 - center * 0.12;
-
-    panel.style.transform = `
-      rotateY(${deg}deg)
-      translateZ(${z}px)
-      rotateY(180deg)
-      scale(${scale})
-    `;
-
-    panel.style.filter =
-      `brightness(${0.25 + center * 0.5})`;
-  });
+  /* ★ 円柱自体を回す（これが無かった） */
+  cylinder.style.transform =
+    `rotateX(-22deg) rotateY(${angle}deg)`;
 
   requestAnimationFrame(animate);
 }
 
 animate();
 
-/* イベント */
+/* ===== イベント ===== */
 window.addEventListener("mousedown", e => start(e.clientX));
 window.addEventListener("mousemove", e => move(e.clientX));
 window.addEventListener("mouseup", end);
 
-window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true })
-
+window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
+window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
+window.addEventListener("touchend", end);
