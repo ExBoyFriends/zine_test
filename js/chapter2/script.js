@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let dragging = false;
   let lastX = 0;
 
-  function render() {
+ function render() {
   slides.forEach((slide, i) => {
 
     let d = i * GAP - pos;
@@ -24,19 +24,25 @@ document.addEventListener("DOMContentLoaded", () => {
     d = ((d % wrap) + wrap) % wrap;
     if (d > wrap / 2) d -= wrap;
 
-    /* 🔑 角度を強めに取る */
-    const angle = d / 320;   // ← 800 → 320（超重要）
+    /* 強めの角度 */
+    const angle = d / 320;
 
-    /* ===== 見た目を支配する式 ===== */
+    /* ===== 位置ベース ===== */
     const x = d;
-
-    // 両端が手前、中央が奥
     const z = Math.sin(Math.abs(angle)) * DEPTH;
 
-    // 内向きにしっかり倒す
-    const r = -angle * TILT * 2.0;
+    /* ===== 引っ張られ感の核心 ===== */
+    const drag = Math.max(
+      -1,
+      Math.min(1, velocity / 40)   // ← 移動方向の力
+    );
 
-    // 外側ほど少し大きい
+    const r =
+      (-angle * TILT)              // 基本の円弧傾き
+      - drag * 18                  // ← 全体が同じ方向に倒れる
+      * (1 - Math.min(1, Math.abs(d) / 600));
+      // ↑ 中央ほど強く、端は弱く（連なり感）
+
     const s = 1 + Math.abs(angle) * 0.12;
 
     slide.style.transform = `
@@ -48,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     slide.style.zIndex = 1000 - Math.abs(d);
   });
 }
+
 
   function animate() {
     if (!dragging) {
