@@ -58,9 +58,9 @@ body {
 
 .outer {
   width: 200px;
-  height: 260px;
-  margin-left: -100px;
-  margin-top: -130px;
+  height: 280px;
+  margin-left: -110px;
+  margin-top: -140px;
   backface-visibility: hidden;
 }
 
@@ -74,14 +74,14 @@ body {
 /* ===== 奥（top_b） ===== */
 
 .inner {
-  width: 160px;
-  height: 210px;
-  margin-left: -80px;
-  margin-top: -105px;
+  width: 200px;
+  height: 260px;
+  margin-left: -100px;
+  margin-top: -130px;
 
   backface-visibility: hidden;
   background: url("../image/top_b.png") center / contain no-repeat;
 
-  filter: brightness(0.35);
-  opacity: 0.9;
+  filter: brightness(0.4);
+  opacity: 0.85;
 }
