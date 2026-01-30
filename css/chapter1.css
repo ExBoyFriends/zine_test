@@ -34,7 +34,7 @@ body {
   background: url('../image/background.jpg') center / cover no-repeat;
   z-index: 10;
   animation: siren 2.5s linear infinite;
-  transition: opacity 1.5s ease;
+  transition: opacity 3.5s ease;
 }
 
 /* =====================
