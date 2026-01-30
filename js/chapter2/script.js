@@ -45,7 +45,7 @@ outers.forEach(p => {
 inners.forEach(p => {
   const i = +p.style.getPropertyValue("--i");
   p.style.transform = `
-    rotateY(${i * 72}deg)
+    rotateY(${i * 72 + 36}deg)
     translateZ(220px)
     rotateY(180deg)
     scale(0.7)
@@ -62,11 +62,11 @@ function animate() {
   }
 
   /* ★ ここが決定的に違う */
-  front.style.transform =
-    `rotateX(-22deg) rotateY(${ angle}deg)`;
+ front.style.transform =
+  `rotateX(-22deg) rotateY(${ angle }deg)`;
 
-  back.style.transform =
-    `rotateX(-22deg) rotateY(${-angle}deg)`;
+back.style.transform =
+  `rotateX(-22deg) rotateY(${ -angle * 0.75 }deg)`;
 
   requestAnimationFrame(animate);
 }
