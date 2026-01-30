@@ -78,18 +78,21 @@ function animate() {
 
   /* ---------- 奥パネル（反転円弧） ---------- */
   inners.forEach(p => {
-    const base = +p.dataset.base;
-    const rad  = (base - angle) * Math.PI / 180;
+  const base = +p.dataset.base;
+  const rad  = (base - angle) * Math.PI / 180;
 
-    const z = -220 * Math.cos(rad); // ★反転円弧
+  const R = 220; // 奥円弧の半径
+  const x = Math.sin(rad) * R;
+  const z = -Math.cos(rad) * R; // 中央で最奥
 
-    p.style.transform = `
-      rotateY(${base - angle}deg)
-      translateZ(${z}px)
-      rotateY(180deg)
-      scale(0.6)
-    `;
-  });
+  p.style.transform = `
+    translateX(${x}px)
+    translateZ(${z}px)
+    rotateY(${base - angle + 180}deg)
+    scale(0.6)
+  `;
+});
+
 
   requestAnimationFrame(animate);
 }
