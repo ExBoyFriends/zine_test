@@ -70,9 +70,6 @@ body {
   background-repeat: no-repeat;
   background-position-x: calc(var(--i) * -200px);
   background-position-y: center;
-  filter: brightness(
-    calc(0.6 + 0.4 * cos(var(--i) * 72deg))
-  );
 
   transform:
     rotateY(calc(var(--i) * 72deg))
