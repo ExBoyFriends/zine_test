@@ -1,5 +1,10 @@
-const pages  = document.querySelectorAll(".scene");
 import { initLoader } from "../js/loader.js";
+
+/* ======================
+   loader
+====================== */
+const loader = document.getElementById("loader");
+initLoader(loader);
 
 /* ======================
    要素取得
@@ -10,8 +15,6 @@ const back  = document.querySelector(".cylinder-back");
 const outers = document.querySelectorAll(".outer");
 const inners = document.querySelectorAll(".inner");
 
-const loader = document.getElementById("loader");
-initLoader(loader);
 /* ======================
    定数（← ここが正しい場所）
 ====================== */
