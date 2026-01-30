@@ -4,71 +4,59 @@ document.addEventListener("DOMContentLoaded", () => {
   const total = slides.length;
 
   /* ===== 設定 ===== */
-  const VISIBLE = 4.5;        // 中央±何枚見せるか
-  const ARC = Math.PI;        // 半円（180°）
+  const VISIBLE = 4.5;
+  const ARC = Math.PI;
   const RADIUS_X = 300;
   const RADIUS_Z = 520;
   const BASE_Z = -420;
 
   const SCALE_GAIN = 0.22;
-  const DAMPING = 0.88;
-  const SNAP = 0.18;
+  const DAMPING = 0.9;
 
-  let current = 1;            // 表示中インデックス
-  let offset = 0;
+  let position = 1;      // ← current+offset を一本化
   let velocity = 0;
   let dragging = false;
   let lastX = 0;
 
+  function wrap(d) {
+    return ((d + total / 2) % total) - total / 2;
+  }
+
   function render() {
-  slides.forEach((slide, i) => {
+    slides.forEach((slide, i) => {
 
-    // ★ 無限ループ用：循環距離
-    let d = i - current + offset;
-    d = ((d + total / 2) % total) - total / 2;
+      const d = wrap(i - position);
 
-    // 半円外は非表示
-    if (Math.abs(d) > VISIBLE) {
-      slide.style.opacity = 0;
-      return;
-    }
-    slide.style.opacity = 1;
+      if (Math.abs(d) > VISIBLE) {
+        slide.style.opacity = 0;
+        return;
+      }
+      slide.style.opacity = 1;
 
-    const t = d / VISIBLE;
-    const a = t * (ARC / 2);
+      const t = d / VISIBLE;
+      const a = t * (ARC / 2);
 
-    const x = Math.sin(a) * RADIUS_X;
-    const z = Math.cos(a) * RADIUS_Z + BASE_Z;
+      const x = Math.sin(a) * RADIUS_X;
+      const z = Math.cos(a) * RADIUS_Z + BASE_Z;
 
-    const rotateY = -a * 180 / Math.PI;
-    const scale = 1 + Math.abs(t) * SCALE_GAIN;
+      const rotateY = -a * 180 / Math.PI;
+      const scale = 1 + Math.abs(t) * SCALE_GAIN;
 
-    slide.style.transform = `
-      translate(-50%, -50%)
-      translate3d(${x}px, 0, ${z}px)
-      rotateY(${rotateY}deg)
-      scale(${scale})
-    `;
+      slide.style.transform = `
+        translate(-50%, -50%)
+        translate3d(${x}px, 0, ${z}px)
+        rotateY(${rotateY}deg)
+        scale(${scale})
+      `;
 
-    slide.style.zIndex = Math.round(1000 - Math.abs(t) * 1000);
-  });
-}
+      slide.style.zIndex = Math.round(1000 - Math.abs(t) * 1000);
+    });
+  }
 
   function animate() {
     if (!dragging) {
-      offset += velocity;
+      position += velocity;
       velocity *= DAMPING;
-
-      if (Math.abs(velocity) < 0.001) {
-        const snap = Math.round(offset);
-        offset += (snap - offset) * SNAP;
-        velocity = 0;
-
-        if (Math.abs(offset) > 0.5) {
-          current -= snap;
-          offset = 0;
-        }
-      }
     }
 
     render();
@@ -87,8 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const move = x => {
     if (!dragging) return;
     const dx = x - lastX;
-    offset += dx * 0.005;
-    velocity = dx * 0.005;
+
+    // ← 方向も完全一致
+    position -= dx * 0.005;
+    velocity = -dx * 0.005;
 
     lastX = x;
   };
@@ -102,5 +92,4 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
   window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
   window.addEventListener("touchend", end);
-
 });
