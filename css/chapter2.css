@@ -11,12 +11,12 @@ html, body {
   touch-action: none;
 }
 
-/* ===== 背景 ===== */
+/* 背景 */
 body {
-  background: url("../image/background.jpg") center / cover no-repeat fixed;
+  background: url("/image/background.jpg") center / cover no-repeat fixed;
 }
 
-/* ===== 3Dシーン ===== */
+/* 3Dシーン */
 .scene {
   width: 100vw;
   height: 100vh;
@@ -26,7 +26,7 @@ body {
   justify-content: center;
 }
 
-/* ===== 円筒 ===== */
+/* 円筒 */
 .cylinder {
   position: relative;
   width: 400px;
@@ -35,7 +35,7 @@ body {
   transform: rotateX(-22deg);
 }
 
-/* ===== 共通パネル ===== */
+/* パネル共通 */
 .panel {
   position: absolute;
   top: 50%;
@@ -46,7 +46,7 @@ body {
   backface-visibility: hidden;
 }
 
-/* ===== 内側（5枚・連続） ===== */
+/* 内側（5枚・連続） */
 .inner {
   transform:
     rotateY(calc(var(--i) * 72deg))
@@ -61,9 +61,9 @@ body {
   object-fit: contain;
 }
 
-/* ===== 外側（同一画像） ===== */
+/* 外側（同一画像） */
 .outer {
-  background-image: url("../image/top_b.png");
+  background-image: url("/image/top_b.png");
   background-size: cover;
   background-position: center;
 
