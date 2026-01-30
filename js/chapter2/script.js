@@ -46,9 +46,9 @@ inners.forEach(p => {
   const i = +p.style.getPropertyValue("--i");
   p.style.transform = `
     rotateY(${i * 72 + 36}deg)
-    translateZ(-260px)
+    translateZ(-300px)
     rotateY(180deg)
-    scale(0.85)
+    scale(0.9)
   `;
 });
 
@@ -62,13 +62,15 @@ function animate() {
   }
 
   const frontAngle = angle;
-  const backAngle  = -angle * 0.75; // ← 完全に別扱い
+  const backAngle  = -angle * 0.75; 
+
+  const camera = `rotateX(-22deg)`;
 
   front.style.transform =
-    `rotateX(-22deg) rotateY(${frontAngle}deg)`;
+    `${camera} rotateY(${frontAngle}deg)`;
 
   back.style.transform =
-    `rotateX(-32deg) rotateY(${backAngle}deg)`;
+    `${camera} rotateY(${backAngle}deg)`;
 
   requestAnimationFrame(animate);
 }
