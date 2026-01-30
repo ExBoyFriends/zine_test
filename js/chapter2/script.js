@@ -1,44 +1,33 @@
 import { initLoader } from "./loader.js";
 
-/* ======================
-   loader
-====================== */
+/* loader */
 const loader = document.getElementById("loader");
 initLoader(loader);
 
-/* ======================
-   要素取得
-====================== */
+/* 要素取得 */
 const front = document.querySelector(".cylinder-front");
 const back  = document.querySelector(".cylinder-back");
 
 const outers = document.querySelectorAll(".outer");
 const inners = document.querySelectorAll(".inner");
 
-/* ======================
-   定数（← ここが正しい場所）
-====================== */
-const COUNT = outers.length;     // パネル枚数
-const SNAP  = 360 / COUNT;       // 円を必ず閉じる
+/* 定数 */
+const COUNT = outers.length;
+const SNAP  = 360 / COUNT;
 
-const R_FRONT = 185;             // 手前半径（狭め）
-const R_BACK  = 170;             // 奥半径（少し内側）
+const R_FRONT = 185;
+const R_BACK  = 170;
 
-const AUTO_SPEED = -0.2; // ★ マイナス＝右→左（超ゆっくり）
-
+const AUTO_SPEED = -0.2;
 const DAMPING = 0.85;
 
-/* ======================
-   状態
-====================== */
+/* 状態 */
 let dragging = false;
 let lastX = 0;
 let velocity = 0;
 let angle = 0;
 
-/* ======================
-   入力
-====================== */
+/* 入力 */
 const start = x => {
   dragging = true;
   lastX = x;
@@ -59,51 +48,28 @@ const end = () => {
   velocity = (target - angle) * 0.1;
 };
 
-/* ======================
-   初期配置
-====================== */
-outers.forEach((p, i) => {
-  p.dataset.base = i * SNAP;
-});
+/* 初期配置 */
+outers.forEach((p, i) => p.dataset.base = i * SNAP);
+inners.forEach((p, i) => p.dataset.base = i * SNAP);
 
-inners.forEach((p, i) => {
-  p.dataset.base = i * SNAP;
-});
-
-/* ======================
-   アニメーション
-====================== */
+/* アニメーション */
 function animate() {
 
- if (!dragging) {
-  angle += velocity;
-  velocity *= DAMPING;
-  if (Math.abs(velocity) < 0.01) velocity = 0;
-
-  // ★ 慣性が完全に止まったら自動回転
-  if (velocity === 0) {
-    angle += AUTO_SPEED;
+  if (!dragging) {
+    angle += velocity;
+    velocity *= DAMPING;
+    if (Math.abs(velocity) < 0.01) velocity = 0;
+    if (velocity === 0) angle += AUTO_SPEED;
   }
-}
 
+  front.style.transform = `rotateX(-22deg) rotateY(${angle}deg)`;
+  back.style.transform  = `rotateX(-22deg) rotateY(${angle}deg)`;
 
-  /* ---------- 円柱 ---------- */
-  front.style.transform =
-    `rotateX(-22deg) rotateY(${angle}deg)`;
-
-  back.style.transform =
-    `rotateX(-22deg) rotateY(${angle}deg)`;
-
-  /* ---------- 手前パネル ---------- */
   outers.forEach(p => {
     const base = +p.dataset.base;
-    p.style.transform = `
-      rotateY(${base}deg)
-      translateZ(${R_FRONT}px)
-    `;
+    p.style.transform = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
   });
 
-  /* ---------- 奥パネル（裏側・同一円弧） ---------- */
   inners.forEach(p => {
     const base = +p.dataset.base;
     p.style.transform = `
@@ -120,24 +86,12 @@ function animate() {
 
 animate();
 
-/* ======================
-   イベント
-====================== */
+/* イベント */
 window.addEventListener("mousedown", e => start(e.clientX));
 window.addEventListener("mousemove", e => move(e.clientX));
 window.addEventListener("mouseup", end);
 
-window.addEventListener(
-  "touchstart",
-  e => start(e.touches[0].clientX),
-  { passive: true }
-);
-
-window.addEventListener(
-  "touchmove",
-  e => move(e.touches[0].clientX),
-  { passive: true }
-);
-
+window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
+window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchend", end);
 
