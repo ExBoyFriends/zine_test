@@ -1,23 +1,16 @@
 const cylinder = document.getElementById("cylinder");
-const outers = document.querySelectorAll(".panel.outer");
-const inners = document.querySelectorAll(".panel.inner");
+const outers = document.querySelectorAll(".outer");
+const inners = document.querySelectorAll(".inner");
 
 let dragging = false;
 let lastX = 0;
 let velocity = 0;
-
 let rotationY = 0;
-let innerRotationY = 0;
 
-let cameraZ = 320;
-const targetZ = -160;
-
-const DAMPING = 0.92;
+const DAMPING = 0.9;
 const SNAP = 72;
 
-let intro = true;
-setTimeout(() => intro = false, 1200);
-
+/* ===== 入力 ===== */
 const start = x => {
   dragging = true;
   lastX = x;
@@ -27,50 +20,53 @@ const start = x => {
 const move = x => {
   if (!dragging) return;
   const dx = x - lastX;
-  rotationY += dx * 0.3;
-  innerRotationY -= dx * 0.18;
-  velocity = dx * 0.3;
+  rotationY += dx * 0.35;
+  velocity = dx * 0.35;
   lastX = x;
 };
 
 const end = () => {
   dragging = false;
   const target = Math.round(rotationY / SNAP) * SNAP;
-  velocity = (target - rotationY) * 0.14;
+  velocity = (target - rotationY) * 0.18;
 };
 
+/* ===== アニメーション ===== */
 function animate() {
-
-  if (intro) {
-    cameraZ += (targetZ - cameraZ) * 0.05;
-  }
 
   if (!dragging) {
     rotationY += velocity;
     velocity *= DAMPING;
+    if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
   cylinder.style.transform =
-    `translateZ(${cameraZ}px) rotateX(-22deg) rotateY(${rotationY}deg)`;
+    `rotateX(-22deg) rotateY(${rotationY}deg)`;
 
-  /* 手前 */
+  /* ---- 手前：外円柱 ---- */
   outers.forEach(panel => {
     const i = +panel.style.getPropertyValue("--i");
-    const rad = (rotationY + i * 72) * Math.PI / 180;
+    const deg = rotationY + i * 72;
+    const rad = deg * Math.PI / 180;
+
+    panel.style.transform = `
+      rotateY(${deg}deg)
+      translateZ(320px)
+    `;
+
     panel.style.filter =
-      `brightness(${0.35 + Math.cos(rad) * 0.5})`;
+      `brightness(${0.45 + Math.cos(rad) * 0.45})`;
   });
 
-  /* 奥（逆回転・円弧） */
+  /* ---- 奥：内円柱（逆回転・円弧） ---- */
   inners.forEach(panel => {
     const i = +panel.style.getPropertyValue("--i");
-
-    const deg = -rotationY + innerRotationY + i * 72;
+    const deg = -rotationY + i * 72;
     const rad = deg * Math.PI / 180;
 
     const center = Math.max(0, Math.cos(rad));
-    const scale = 0.9 - center * 0.15;
-    const z = -220 - center * 60;
+    const scale = 0.85 - center * 0.2;
+    const z = -260 - center * 140;
 
     panel.style.transform = `
       rotateY(${deg}deg)
@@ -80,7 +76,7 @@ function animate() {
     `;
 
     panel.style.filter =
-      `brightness(${0.35 + center * 0.6})`;
+      `brightness(${0.3 + center * 0.6})`;
   });
 
   requestAnimationFrame(animate);
@@ -88,10 +84,12 @@ function animate() {
 
 animate();
 
+/* ===== イベント ===== */
 window.addEventListener("mousedown", e => start(e.clientX));
 window.addEventListener("mousemove", e => move(e.clientX));
 window.addEventListener("mouseup", end);
 
-window.addEventListener("touchstart", e => start(e.touches[0].clientX));
-window.addEventListener("touchmove", e => move(e.touches[0].clientX));
+window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
+window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchend", end);
+
