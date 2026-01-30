@@ -87,8 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const move = x => {
     if (!dragging) return;
     const dx = x - lastX;
-    offset -= dx * 0.005;
-    velocity = -dx * 0.005;
+    offset += dx * 0.005;
+    velocity = dx * 0.005;
+
     lastX = x;
   };
 
