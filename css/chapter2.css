@@ -9,10 +9,8 @@ html, body {
   height: 100%;
   overflow: hidden;
   touch-action: none;
-  background: #000;
 }
 
-/* 背景 */
 body {
   background: url("../image/background.jpg") center / cover no-repeat fixed;
 }
@@ -27,31 +25,28 @@ body {
   justify-content: center;
 }
 
-/* 円筒 */
+/* 円筒本体 */
 .cylinder {
   position: relative;
-  width: 400px;
-  height: 300px;
+  width: 0;
+  height: 0;
   transform-style: preserve-3d;
-  transform: rotateX(-22deg);
 }
 
-/* パネル共通 */
+/* 共通パネル */
 .panel {
   position: absolute;
-  top: 50%;
-  left: 50%;
   width: 200px;
   height: 260px;
-  transform-style: preserve-3d;
-  transform-origin: center center;
+  left: -100px;   /* ← 幅の半分 */
+  top: -130px;    /* ← 高さの半分 */
   backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
 
 /* 内側 */
 .inner {
   transform:
-    translate(-50%, -50%)
     rotateY(calc(var(--i) * 72deg))
     translateZ(-260px)
     rotateY(180deg);
@@ -63,14 +58,10 @@ body {
   object-fit: contain;
 }
 
-/* 外側（同じ画像が並ぶ） */
+/* 外側 */
 .outer {
-  background-image: url("../image/top_b.png");
-  background-size: cover;
-  background-position: center;
-
+  background: url("../image/top_b.png") center / cover no-repeat;
   transform:
-    translate(-50%, -50%)
     rotateY(calc(var(--i) * 72deg))
     translateZ(260px);
 }
