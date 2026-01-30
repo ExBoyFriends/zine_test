@@ -16,7 +16,7 @@ const SNAP  = 360 / COUNT;       // 円を必ず閉じる
 const R_FRONT = 185;             // 手前半径（狭め）
 const R_BACK  = 170;             // 奥半径（少し内側）
 
-const AUTO_SPEED = -0.08; // ★ マイナス＝右→左（超ゆっくり）
+const AUTO_SPEED = -0.1; // ★ マイナス＝右→左（超ゆっくり）
 
 const DAMPING = 0.85;
 
