@@ -13,7 +13,7 @@ html, body {
 
 /* ===== 背景 ===== */
 body {
-  background: url("/image/background.jpg") center / cover no-repeat fixed;
+  background: url("../image/background.jpg") center / cover no-repeat fixed;
 }
 
 /* ===== 3Dシーン ===== */
@@ -63,7 +63,7 @@ body {
 
 /* ===== 外側（同一画像） ===== */
 .outer {
-  background-image: url("/image/top_b.png");
+  background-image: url("../image/top_b.png");
   background-size: cover;
   background-position: center;
 
