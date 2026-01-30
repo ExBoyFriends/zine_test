@@ -63,26 +63,28 @@ function animate() {
   });
 
   /* 奥（逆回転＋円弧） */
-  inners.forEach(panel => {
-    const i = +panel.style.getPropertyValue("--i");
+ inners.forEach(panel => {
+  const i = +panel.style.getPropertyValue("--i");
 
-    const deg = innerRotationY + i * 72;
-    const rad = deg * Math.PI / 180;
-    const center = Math.max(0, Math.cos(rad));
+  const deg = innerRotationY + i * 72;
+  const rad = deg * Math.PI / 180;
 
-    const scale = 0.92 - center * 0.18;
-    const z = -260 - center * 40;
+  const center = Math.max(0, Math.cos(rad));
 
-    panel.style.transform = `
-      rotateY(${deg}deg)
-      translateZ(${z}px)
-      rotateY(180deg)
-      scale(${scale})
-    `;
+  const scale = 0.9 - center * 0.15;
+  const z = -220 - center * 60; // ★ 前に出す
 
-    panel.style.filter =
-      `brightness(${0.35 + center * 0.5})`;
-  });
+  panel.style.transform = `
+    rotateY(${deg}deg)
+    translateZ(${z}px)
+    rotateY(180deg)
+    scale(${scale})
+  `;
+
+  panel.style.filter =
+    `brightness(${0.35 + center * 0.6})`;
+});
+
 
   requestAnimationFrame(animate);
 }
