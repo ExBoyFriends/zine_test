@@ -21,40 +21,38 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastX = 0;
 
   function render() {
-    slides.forEach((slide, i) => {
+  slides.forEach((slide, i) => {
 
-      const d = i - current + offset;
+    // ★ 無限ループ用：循環距離
+    let d = i - current + offset;
+    d = ((d + total / 2) % total) - total / 2;
 
-      // 半円外は表示しない
-      if (Math.abs(d) > VISIBLE) {
-        slide.style.opacity = 0;
-        return;
-      }
-      slide.style.opacity = 1;
+    // 半円外は非表示
+    if (Math.abs(d) > VISIBLE) {
+      slide.style.opacity = 0;
+      return;
+    }
+    slide.style.opacity = 1;
 
-      // -1〜1 に正規化 → -90°〜+90°
-      const t = d / VISIBLE;
-      const a = t * (ARC / 2);
+    const t = d / VISIBLE;
+    const a = t * (ARC / 2);
 
-      const x = Math.sin(a) * RADIUS_X;
-      const z = Math.cos(a) * RADIUS_Z + BASE_Z;
+    const x = Math.sin(a) * RADIUS_X;
+    const z = Math.cos(a) * RADIUS_Z + BASE_Z;
 
-      // 常に内側を向く
-      const rotateY = -a * 180 / Math.PI;
+    const rotateY = -a * 180 / Math.PI;
+    const scale = 1 + Math.abs(t) * SCALE_GAIN;
 
-      // 両端が大きく見える
-      const scale = 1 + Math.abs(t) * SCALE_GAIN;
+    slide.style.transform = `
+      translate(-50%, -50%)
+      translate3d(${x}px, 0, ${z}px)
+      rotateY(${rotateY}deg)
+      scale(${scale})
+    `;
 
-      slide.style.transform = `
-        translate(-50%, -50%)
-        translate3d(${x}px, 0, ${z}px)
-        rotateY(${rotateY}deg)
-        scale(${scale})
-      `;
-
-      slide.style.zIndex = 1000 - Math.abs(t) * 1000;
-    });
-  }
+    slide.style.zIndex = Math.round(1000 - Math.abs(t) * 1000);
+  });
+}
 
   function animate() {
     if (!dragging) {
