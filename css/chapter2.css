@@ -1,73 +1,58 @@
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
 html,body{
+  margin:0;
   width:100%;
   height:100%;
   overflow:hidden;
+  background:#000;
 }
 
-body{
-  background:url("../image/background.jpg") center/cover no-repeat;
-}
-
-/* 視点 */
 .scene{
   width:100vw;
   height:100vh;
-  perspective:1600px;
-  perspective-origin:50% 35%;
+  perspective:1400px;
   display:flex;
   align-items:center;
   justify-content:center;
+  background:url("../image/background.jpg") center/cover no-repeat;
 }
 
-/* 円筒 */
-.cylinder{
+.stage{
   position:relative;
-  width:0;
-  height:0;
+  width:320px;
+  height:460px;
   transform-style:preserve-3d;
 }
 
-/* 共通パネル */
+/* カード */
 .panel{
   position:absolute;
-  width:220px;
-  height:300px;
-  left:-110px;
-  top:-150px;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   transform-style:preserve-3d;
-  backface-visibility:hidden;
+  transition:
+    transform .6s cubic-bezier(.22,.61,.36,1),
+    opacity .6s ease;
 }
 
-/* 内側 */
-.inner{
-  transform:
-    rotateY(calc(var(--i) * 72deg))
-    translateZ(-380px)
-    rotateY(180deg);
-}
-
-.inner img{
-  width:100%;
-  height:100%;
+.panel img{
+  width:240px;
+  height:340px;
   object-fit:contain;
+  pointer-events:none;
 }
 
-/* 外側 */
-.outer{
-  background:url("../image/top_b.png") no-repeat;
-  background-size:1100px 100%;
-  background-position-x: calc(var(--i) * -220px);
-  background-position-y:center;
-
-  transform:
-    rotateY(calc(var(--i) * 72deg))
-    translateZ(380px);
+/* 外側の流れる装飾 */
+.ring{
+  position:absolute;
+  inset:-220px;
+  background:url("../image/top_b.png") repeat-x;
+  background-size:900px auto;
+  opacity:.18;
+  filter: blur(2px);
+  transform: translateZ(-100px);
+  pointer-events:none;
 }
 
 
