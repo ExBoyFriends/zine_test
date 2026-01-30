@@ -41,8 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const x = Math.sin(a) * RADIUS_X;
       const z = Math.cos(a) * RADIUS_Z + BASE_Z;
 
-      const rotateY = -a * 180 / Math.PI;
-      const scale = 1 + Math.abs(t) * SCALE_GAIN;
+      const EDGE_TILT = 1.35;
+      const rotateY =
+        -a * 180 / Math.PI *
+        (1 + Math.abs(t) * (EDGE_TILT - 1));
+
+const scale = 1 + Math.abs(t) * SCALE_GAIN;
 
       slide.style.transform = `
         translate(-50%, -50%)
