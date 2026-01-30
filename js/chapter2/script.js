@@ -21,26 +21,27 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastX = 0;
 
   function render() {
-    slides.forEach((slide, i) => {
+  slides.forEach((slide, i) => {
 
-      const a = i * STEP - angle;
+    const a = i * STEP - angle;      // 位置用
+    const faceAngle = i * STEP;      // 向き用（固定）
 
-      const x = Math.sin(a) * RADIUS_X;
-      const z = Math.cos(a) * RADIUS_Z + DEPTH_OFFSET;
-      const r = -a * TILT;
-      const s = 1 + Math.abs(Math.sin(a)) * SCALE_GAIN;
+    const x = Math.sin(a) * RADIUS_X;
+    const z = Math.cos(a) * RADIUS_Z + DEPTH_OFFSET;
+    const r = -faceAngle * TILT;     // ← ここが重要
+    const s = 1 + Math.abs(Math.sin(a)) * SCALE_GAIN;
 
-      slide.style.transform = `
-  translate(-50%, -50%)
-  translate3d(${x}px, 0px, ${z}px)
-  rotateY(${r}deg)
-  scale(${s})
-`;
+    slide.style.transform = `
+      translate(-50%, -50%)
+      translate3d(${x}px, 0px, ${z}px)
+      rotateY(${r}deg)
+      scale(${s})
+    `;
 
+    slide.style.zIndex = Math.round(1000 - Math.abs(a) * 100);
+  });
+}
 
-      slide.style.zIndex = Math.round(1000 - Math.abs(a) * 100);
-    });
-  }
 
   function animate() {
 
