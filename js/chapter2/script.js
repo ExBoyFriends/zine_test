@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const total = slides.length;
 
   /* ===== パラメータ ===== */
-  const STEP = (Math.PI * 2) / total; // 1面分
+  const STEP = (Math.PI * 2) / total;
   const RADIUS_X = 240;
   const RADIUS_Z = 620;
   const DEPTH_OFFSET = -260;
@@ -21,35 +21,36 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastX = 0;
 
   function render() {
-  slides.forEach((slide, i) => {
+    slides.forEach((slide, i) => {
 
-    const a = i * STEP - angle;      // 位置用
-    const faceAngle = i * STEP;      // 向き用（固定）
+      // ★ 角度はこれ1本だけ
+      const a = i * STEP - angle;
 
-    const x = Math.sin(a) * RADIUS_X;
-    const z = Math.cos(a) * RADIUS_Z + DEPTH_OFFSET;
-    const r = -faceAngle * TILT;     // ← ここが重要
-    const s = 1 + Math.abs(Math.sin(a)) * SCALE_GAIN;
+      const x = Math.sin(a) * RADIUS_X;
+      const z = Math.cos(a) * RADIUS_Z + DEPTH_OFFSET;
 
-    slide.style.transform = `
-      translate(-50%, -50%)
-      translate3d(${x}px, 0px, ${z}px)
-      rotateY(${r}deg)
-      scale(${s})
-    `;
+      // ★ 向きも a から決める
+      const r = -a * TILT;
 
-    slide.style.zIndex = Math.round(1000 - Math.abs(a) * 100);
-  });
-}
+      const s = 1 + Math.abs(Math.sin(a)) * SCALE_GAIN;
 
+      slide.style.transform = `
+        translate(-50%, -50%)
+        translate3d(${x}px, 0px, ${z}px)
+        rotateY(${r}deg)
+        scale(${s})
+      `;
+
+      // ★ zIndex も sin ベースに
+      slide.style.zIndex = Math.round(1000 - Math.abs(Math.sin(a)) * 1000);
+    });
+  }
 
   function animate() {
-
     if (!dragging) {
       angle += velocity;
       velocity *= DAMPING;
 
-      /* 停止直前だけスナップ */
       if (Math.abs(velocity) < 0.002) {
         const target = Math.round(angle / STEP) * STEP;
         angle += (target - angle) * SNAP;
@@ -78,9 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lastX = e.clientX;
   });
 
-  window.addEventListener("mouseup", () => {
-    dragging = false;
-  });
+  window.addEventListener("mouseup", () => dragging = false);
 
   /* ===== タッチ ===== */
   window.addEventListener("touchstart", e => {
@@ -97,9 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
     lastX = e.touches[0].clientX;
   }, { passive: true });
 
-  window.addEventListener("touchend", () => {
-    dragging = false;
-  });
-
+  window.addEventListener("touchend", () => dragging = false);
 });
 
