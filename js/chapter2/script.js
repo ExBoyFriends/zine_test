@@ -1,61 +1,58 @@
-const cylinder = document.getElementById("cylinder");
-const outers = document.querySelectorAll(".panel.outer");
+const panels = [...document.querySelectorAll(".panel.inner")];
 
-
+let current = 0;
+let startX = 0;
 let dragging = false;
-let lastX = 0;
-let velocity = 0;
-let rotationY = 0;
 
-const DAMPING = 0.92;
+function update() {
+  panels.forEach((panel, i) => {
+    const diff = ((i - current + panels.length) % panels.length);
 
-const start = x => {
-  dragging = true;
-  lastX = x;
-  velocity = 0;
-};
+    // -2,-1,0,1,2 に正規化
+    const d = diff > panels.length / 2 ? diff - panels.length : diff;
 
-const move = x => {
-  if (!dragging) return;
-  const dx = x - lastX;
-  rotationY += dx * 0.3;
-  velocity = dx * 0.3;
-  lastX = x;
-};
-
-const end = () => dragging = false;
-
-function animate() {
-  if (!dragging) {
-    rotationY += velocity;
-    velocity *= DAMPING;
-  }
-
- cylinder.style.transform =
-  `translateZ(600px) rotateX(-22deg) rotateY(${rotationY}deg)`;
-
-  outers.forEach(panel => {
-    const i = Number(panel.style.getPropertyValue("--i"));
-    const angle =
-      (rotationY + i * 72) * Math.PI / 180;
-
-    // 正面=1 / 横=0.4 / 奥=0.15
-    const light =
-      Math.max(0.15, Math.cos(angle) * 0.85);
-
-    panel.style.filter = `brightness(${light})`;
+    if (d === 0) {
+      // 奥中央（主役）
+      panel.style.opacity = 1;
+      panel.style.filter = "brightness(1)";
+      panel.style.transform =
+        "translateZ(-360px) scale(1)";
+    } else if (d === -1) {
+      panel.style.opacity = 0.5;
+      panel.style.filter = "brightness(0.7)";
+      panel.style.transform =
+        "rotateY(18deg) translateZ(-300px) scale(0.85)";
+    } else if (d === 1) {
+      panel.style.opacity = 0.5;
+      panel.style.filter = "brightness(0.7)";
+      panel.style.transform =
+        "rotateY(-18deg) translateZ(-300px) scale(0.85)";
+    } else {
+      // 見せない
+      panel.style.opacity = 0;
+      panel.style.transform =
+        "translateZ(-600px) scale(0.6)";
+    }
   });
-
-  requestAnimationFrame(animate);
 }
 
+update();
 
-animate();
+/* ドラッグ操作（1枚ずつ切り替え） */
+window.addEventListener("pointerdown", e => {
+  dragging = true;
+  startX = e.clientX;
+});
 
-window.addEventListener("mousedown", e => start(e.clientX));
-window.addEventListener("mousemove", e => move(e.clientX));
-window.addEventListener("mouseup", end);
+window.addEventListener("pointerup", e => {
+  if (!dragging) return;
+  dragging = false;
 
-window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
-window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
-window.addEventListener("touchend", end);
+  const dx = e.clientX - startX;
+  if (dx > 40) {
+    current = (current - 1 + panels.length) % panels.length;
+  } else if (dx < -40) {
+    current = (current + 1) % panels.length;
+  }
+  update();
+});
