@@ -11,6 +11,7 @@ let angle = 0;
 
 const DAMPING = 0.92;
 const SNAP = 72;
+const R = 240; // ★ 手前・奥 共通半径
 
 /* ======================
    入力
@@ -36,16 +37,16 @@ const end = () => {
 };
 
 /* ======================
-   初期配置（基準角を保存）
+   初期配置
 ====================== */
 outers.forEach(p => {
   const i = +p.style.getPropertyValue("--i");
-  p.dataset.base = i * 72;
+  p.dataset.base = i * SNAP;
 });
 
 inners.forEach(p => {
   const i = +p.style.getPropertyValue("--i");
-  p.dataset.base = i * 72;
+  p.dataset.base = i * SNAP;
 });
 
 /* ======================
@@ -59,11 +60,11 @@ function animate() {
     if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
-  /* ---------- 手前：円柱ごと回す ---------- */
+  /* ---------- 手前円柱 ---------- */
   front.style.transform =
-    `rotateX(-22deg) rotateY(${ angle }deg)`;
+    `rotateX(-22deg) rotateY(${angle}deg)`;
 
-  /* ---------- 奥：視点だけ共有 ---------- */
+  /* ---------- 奥（視点共有） ---------- */
   back.style.transform =
     `rotateX(-22deg)`;
 
@@ -72,26 +73,20 @@ function animate() {
     const base = +p.dataset.base;
     p.style.transform = `
       rotateY(${base}deg)
-      translateZ(240px)
+      translateZ(${R}px)
     `;
   });
 
-  /* ---------- 奥パネル（反転円弧） ---------- */
+  /* ---------- 奥パネル（同一円弧・反転） ---------- */
   inners.forEach(p => {
-  const base = +p.dataset.base;
-  const rad  = (base - angle) * Math.PI / 180;
-
-  const R = 220; // 奥円弧の半径
-  const x = Math.sin(rad) * R;
-  const z = -Math.cos(rad) * R; // 中央で最奥
-
-  p.style.transform = `
-    translateX(${x}px)
-    translateZ(${z}px)
-    rotateY(${base + angle + 180}deg)
-    scale(0.85)
-  `;
-});
+    const base = +p.dataset.base;
+    p.style.transform = `
+      rotateY(${base - angle}deg)
+      translateZ(${-R}px)
+      rotateY(180deg)
+      scale(0.85)
+    `;
+  });
 
   requestAnimationFrame(animate);
 }
@@ -108,3 +103,4 @@ window.addEventListener("mouseup", end);
 window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchend", end);
+
