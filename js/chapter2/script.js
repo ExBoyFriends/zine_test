@@ -4,13 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const total = slides.length;
 
   /* ===== 設定 ===== */
-  const VISIBLE = 2.5;        // 中央±何枚見せるか
+  const VISIBLE = 4.5;        // 中央±何枚見せるか
   const ARC = Math.PI;        // 半円（180°）
-  const RADIUS_X = 360;
-  const RADIUS_Z = 560;
+  const RADIUS_X = 300;
+  const RADIUS_Z = 520;
   const BASE_Z = -420;
 
-  const SCALE_GAIN = 0.25;
+  const SCALE_GAIN = 0.22;
   const DAMPING = 0.88;
   const SNAP = 0.18;
 
