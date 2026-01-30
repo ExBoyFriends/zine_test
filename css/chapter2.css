@@ -20,7 +20,9 @@ height: calc(var(--vh) * 100);
   inset: 0;
   background: url('../image/background.jpg') center / cover no-repeat;
   z-index: 0;
-  animation: slowFade 20s ease-in-out infinite alternate;
+  animation: 
+    bgFadeIn 1.5s ease forwards,
+    slowFade 20s ease-in-out infinite alternate;
 }
 
 /* ローダー */
@@ -118,4 +120,9 @@ height: calc(var(--vh) * 100);
   0% { filter: brightness(1); }
   50% { filter: brightness(0.2); }
   100% { filter: brightness(1); }
+}
+
+@keyframes bgFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
