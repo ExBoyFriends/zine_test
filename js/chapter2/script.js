@@ -25,39 +25,44 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function render() {
-    slides.forEach((slide, i) => {
+  slides.forEach((slide, i) => {
 
-      const d = shortestDistance(i, position);
+    const d = wrap(i - position);
 
-      if (Math.abs(d) > VISIBLE) {
-        slide.style.opacity = 0;
-        return;
-      }
-      slide.style.opacity = 1;
+    if (Math.abs(d) > VISIBLE) {
+      slide.style.opacity = 0;
+      return;
+    }
+    slide.style.opacity = 1;
 
-      const t = d / VISIBLE;
-      const a = t * (ARC / 2);
+    // 正規化
+    const t = d / VISIBLE;           // -1〜1
+    const a = t * (ARC / 2);         // -90°〜+90°
 
-      const x = Math.sin(a) * RADIUS_X;
-      const z = Math.cos(a) * RADIUS_Z + BASE_Z;
+    // 円筒内側の位置
+    const x = Math.sin(a) * RADIUS_X;
+    const z = Math.cos(a) * RADIUS_Z + BASE_Z;
 
-      const EDGE_TILT = 1.35;
-      const rotateY =
-        -a * 180 / Math.PI *
-        (1 + Math.abs(t) * (EDGE_TILT - 1));
+    // ★ 面は常に円の接線方向を向く
+    const rotateY = -a * 180 / Math.PI;
 
-const scale = 1 + Math.abs(t) * SCALE_GAIN;
+    // ★ 遠近で幅が縮む → 台形に見える
+    const perspectiveScale =
+      Math.cos(a) * 0.6 + 0.4;       // 端でも0にならない
 
-      slide.style.transform = `
-        translate(-50%, -50%)
-        translate3d(${x}px, 0, ${z}px)
-        rotateY(${rotateY}deg)
-        scale(${scale})
-      `;
+    const scale =
+      perspectiveScale * (1 + Math.abs(t) * SCALE_GAIN);
 
-      slide.style.zIndex = Math.round(1000 - Math.abs(t) * 1000);
-    });
-  }
+    slide.style.transform = `
+      translate(-50%, -50%)
+      translate3d(${x}px, 0, ${z}px)
+      rotateY(${rotateY}deg)
+      scale(${scale})
+    `;
+
+    slide.style.zIndex = Math.round(1000 - Math.abs(d) * 100);
+  });
+}
 
   function animate() {
     if (!dragging) {
