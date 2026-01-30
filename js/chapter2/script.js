@@ -31,10 +31,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const s = 1 + Math.abs(Math.sin(a)) * SCALE_GAIN;
 
       slide.style.transform = `
-        translate3d(${x}px, 0px, ${z}px)
-        rotateY(${r}deg)
-        scale(${s})
-      `;
+  translate(-50%, -50%)
+  translate3d(${x}px, 0px, ${z}px)
+  rotateY(${r}deg)
+  scale(${s})
+`;
+
 
       slide.style.zIndex = Math.round(1000 - Math.abs(a) * 100);
     });
