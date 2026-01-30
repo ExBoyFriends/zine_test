@@ -1,19 +1,30 @@
+/* ======================
+   要素取得
+====================== */
 const front = document.querySelector(".cylinder-front");
 const back  = document.querySelector(".cylinder-back");
 
 const outers = document.querySelectorAll(".outer");
 const inners = document.querySelectorAll(".inner");
 
-const COUNT = outers.length;     // ★ これが抜けてた
-const SNAP  = 360 / COUNT;       // ★ 円を必ず閉じる
-const R = 185;                   // ★ 共通半径
+/* ======================
+   定数（← ここが正しい場所）
+====================== */
+const COUNT = outers.length;     // パネル枚数
+const SNAP  = 360 / COUNT;       // 円を必ず閉じる
 
+const R_FRONT = 185;             // 手前半径（狭め）
+const R_BACK  = 170;             // 奥半径（少し内側）
+
+const DAMPING = 0.92;
+
+/* ======================
+   状態
+====================== */
 let dragging = false;
 let lastX = 0;
 let velocity = 0;
 let angle = 0;
-
-const DAMPING = 0.92;
 
 /* ======================
    入力
@@ -67,24 +78,24 @@ function animate() {
   back.style.transform =
     `rotateX(-22deg) rotateY(${angle}deg)`;
 
-  /* ---------- 手前 ---------- */
+  /* ---------- 手前パネル ---------- */
   outers.forEach(p => {
     const base = +p.dataset.base;
     p.style.transform = `
       rotateY(${base}deg)
-      translateZ(${R}px)
+      translateZ(${R_FRONT}px)
     `;
   });
 
-  /* ---------- 奥（完全に同一円弧・裏側） ---------- */
+  /* ---------- 奥パネル（裏側・同一円弧） ---------- */
   inners.forEach(p => {
     const base = +p.dataset.base;
     p.style.transform = `
-      translateY(-18px)
+      translateY(-20px)
       rotateY(${base + 180}deg)
-      translateZ(${R}px)
+      translateZ(${R_BACK}px)
       rotateY(180deg)
-      scale(0.96)
+      scale(0.97)
     `;
   });
 
@@ -100,7 +111,17 @@ window.addEventListener("mousedown", e => start(e.clientX));
 window.addEventListener("mousemove", e => move(e.clientX));
 window.addEventListener("mouseup", end);
 
-window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
-window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
+window.addEventListener(
+  "touchstart",
+  e => start(e.touches[0].clientX),
+  { passive: true }
+);
+
+window.addEventListener(
+  "touchmove",
+  e => move(e.touches[0].clientX),
+  { passive: true }
+);
+
 window.addEventListener("touchend", end);
 
