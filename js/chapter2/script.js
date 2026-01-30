@@ -1,4 +1,6 @@
-const cylinder = document.querySelector(".cylinder");
+const front = document.querySelector(".cylinder-front");
+const back  = document.querySelector(".cylinder-back");
+
 const outers = document.querySelectorAll(".outer");
 const inners = document.querySelectorAll(".inner");
 
@@ -33,7 +35,7 @@ const end = () => {
 
 /* ===== 初期配置 ===== */
 outers.forEach(panel => {
-  const i = +panel.style.getPropertyValue("--i");
+  const i = Number(panel.style.getPropertyValue("--i"));
   panel.style.transform = `
     rotateY(${i * 72}deg)
     translateZ(340px)
@@ -41,7 +43,7 @@ outers.forEach(panel => {
 });
 
 inners.forEach(panel => {
-  const i = +panel.style.getPropertyValue("--i");
+  const i = Number(panel.style.getPropertyValue("--i"));
   panel.style.transform = `
     rotateY(${i * 72}deg)
     translateZ(-360px)
@@ -49,7 +51,6 @@ inners.forEach(panel => {
     scale(0.7)
   `;
 });
-
 
 /* ===== アニメーション ===== */
 function animate() {
@@ -60,9 +61,13 @@ function animate() {
     if (Math.abs(velocity) < 0.01) velocity = 0;
   }
 
-  /* ★ 円柱自体を回す（これが無かった） */
-  cylinder.style.transform =
-    `rotateX(-22deg) rotateY(${angle}deg)`;
+  const transform = `
+    rotateX(-22deg)
+    rotateY(${angle}deg)
+  `;
+
+  front.style.transform = transform;
+  back.style.transform  = transform;
 
   requestAnimationFrame(animate);
 }
@@ -77,3 +82,4 @@ window.addEventListener("mouseup", end);
 window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
 window.addEventListener("touchend", end);
+
