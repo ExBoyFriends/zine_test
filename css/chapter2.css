@@ -43,6 +43,8 @@ body {
 .cylinder-back {
   z-index: 1;
   pointer-events: none;
+
+  transform-origin: center center -260px;
 }
 
 /* ===== 共通パネル ===== */
