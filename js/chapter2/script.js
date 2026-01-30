@@ -79,7 +79,7 @@ function animate() {
   /* ---------- 奥パネル（反転円弧） ---------- */
   inners.forEach(p => {
     const base = +p.dataset.base;
-    const rad  = (angle - base) * Math.PI / 180;
+    const rad  = (base - angle) * Math.PI / 180;
 
     const z = -220 * Math.cos(rad); // ★反転円弧
 
