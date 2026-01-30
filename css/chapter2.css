@@ -20,8 +20,8 @@ body {
 .scene {
   width: 100vw;
   height: 100vh;
-  perspective: 800px;
-  perspective-origin: 50% 50%;
+  perspective: 600px;
+  perspective-origin: 50% 40%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,7 +70,9 @@ body {
   background-repeat: no-repeat;
   background-position-x: calc(var(--i) * -200px);
   background-position-y: center;
-  filter: brightness(1.1);
+  filter: brightness(
+    calc(0.6 + 0.4 * cos(var(--i) * 72deg))
+  );
 
   transform:
     rotateY(calc(var(--i) * 72deg))
