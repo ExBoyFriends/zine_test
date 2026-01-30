@@ -20,7 +20,7 @@ body {
 .scene {
   width: 100vw;
   height: 100vh;
-  perspective: 1000px;
+  perspective: 1600px;
   perspective-origin: 50% 45%;
   display: flex;
   align-items: center;
@@ -30,8 +30,8 @@ body {
 /* 円筒本体 */
 .cylinder {
   position: relative;
-  width: 420;
-  height: 420;
+  width: 420px;
+  height: 420px;
   transform-style: preserve-3d;
 }
 
@@ -40,8 +40,8 @@ body {
   position: absolute;
   width: 200px;
   height: 260px;
-  left: 50px;
-  top: 50px;
+  left: 50%;
+  top: 50%;
   margin-left: -100px;
   margin-top: -130px;
   
