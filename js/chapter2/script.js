@@ -81,12 +81,25 @@ function animate() {
 
 animate();
 
-/* イベント */
+// ドラッグのイベント設定
 window.addEventListener("mousedown", e => start(e.clientX));
 window.addEventListener("mousemove", e => move(e.clientX));
 window.addEventListener("mouseup", end);
 
-window.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
-window.addEventListener("touchmove", e => move(e.touches[0].clientX), { passive: true });
-window.addEventListener("touchend", end);
+// タッチ操作のイベント設定
+window.addEventListener("touchstart", e => {
+  e.preventDefault(); // 長押しやスクロールを無効化
+  start(e.touches[0].clientX);
+}, { passive: false });
+
+window.addEventListener("touchmove", e => {
+  e.preventDefault(); // 移動中のスクロールやズームを無効化
+  move(e.touches[0].clientX);
+}, { passive: false });
+
+window.addEventListener("touchend", e => {
+  e.preventDefault(); // タッチ終了時のデフォルト動作を無効化
+  end();
+}, { passive: false });
+
 
