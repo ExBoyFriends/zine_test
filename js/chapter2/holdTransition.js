@@ -1,5 +1,9 @@
 import { startGlitch, stopGlitch } from "./effects.js";
 
+/* =====================
+   内部状態
+===================== */
+
 let longPressTimer = null;
 let glitchTimer = null;
 let accelTimer = null;
@@ -8,18 +12,45 @@ let autoTimer = null;
 let isPressing = false;
 let hasTransitioned = false;
 
+/* =====================
+   外部エフェクトフック
+===================== */
+
+let effects = {};
+
+/**
+ * main.js から演出を注入する
+ * {
+ *   glitchStart?: () => void,
+ *   glitchEnd?: () => void
+ * }
+ */
+export function setHoldEffects(e) {
+  effects = e || {};
+}
+
+/* =====================
+   時間定義
+===================== */
+
 const LONG_PRESS_DURATION = 3000;
 const AUTO_TRANSITION_DURATION = 10000;
 const GLITCH_TRIGGER = 700;
 const FINAL_ACCEL_TRIGGER = 1700;
 
-// 回転スピード
+/* =====================
+   回転スピード
+===================== */
+
 const BASE_HOLD_SPEED = 0.8;
 const GLITCH_SPEED = 3.5;
 const PRE_EXIT_MAX = 8;
 const EXIT_SPEED = 10;
 
-// 外部API
+/* =====================
+   外部API
+===================== */
+
 export function resetTransitionState() {
   clearAllTimers();
   isPressing = false;
@@ -53,7 +84,10 @@ export function bindLongPressEvents(element) {
   });
 }
 
-// 内部処理
+/* =====================
+   内部処理
+===================== */
+
 function startPress() {
   if (isPressing || hasTransitioned) return;
   isPressing = true;
@@ -63,7 +97,10 @@ function startPress() {
 
   glitchTimer = setTimeout(() => {
     if (!isPressing || hasTransitioned) return;
+
     startGlitch();
+    effects.glitchStart?.();
+
     window.__carousel__?.setExtraSpeed(GLITCH_SPEED);
   }, GLITCH_TRIGGER);
 
@@ -76,9 +113,7 @@ function startPress() {
     if (hasTransitioned) return;
     hasTransitioned = true;
 
-    // 🔥 遷移中にさらに加速
     window.__carousel__?.setExtraSpeed(EXIT_SPEED);
-
     window.dispatchEvent(new Event("force-exit"));
   }, LONG_PRESS_DURATION);
 }
@@ -90,6 +125,8 @@ function endPress() {
   clearAllTimers();
 
   stopGlitch();
+  effects.glitchEnd?.();
+
   window.__carousel__?.setHolding(false);
   window.__carousel__?.setExtraSpeed(0);
 }
@@ -100,4 +137,3 @@ function clearAllTimers() {
   clearTimeout(accelTimer);
   clearTimeout(autoTimer);
 }
-
