@@ -27,7 +27,7 @@ export function playExitTransition({ onFinish: callback }) {
     if (t >= ACCEL_START) {
       const p = Math.min((t - ACCEL_START) / (FADE_END - ACCEL_START), 1);
       const accel = p ** 0.7; // ← 体感早め
-      carousel.setExtraSpeed(0.8 + accel * 4.2);
+      carousel.setExtraSpeed(1.5 + accel * 6.0);
     }
 
     /* ===== フェード ===== */
