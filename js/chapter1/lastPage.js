@@ -14,7 +14,14 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
 
   const TRANSITION =
     'transform 1.4s cubic-bezier(.16,1.3,.3,1)';
-
+  
+ /* =====================
+     遷移関数
+  ===================== */
+  const goChapter2 = () => {
+    console.log("Chapter2へ遷移");
+    location.href = "../chapter2.html";
+  };
   /* =====================
      開閉アニメーション
   ===================== */
@@ -68,8 +75,10 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   ===================== */
   tapCover.addEventListener('pointerup', e => {
     e.stopPropagation();
+    if (!opened) return;
+    goChapter2();
   });
-
+  
   /* =====================
      ページ離脱時リセット
   ===================== */
