@@ -52,6 +52,11 @@ setHoldEffects({
   }
 });
 
+window.addEventListener("force-exit", () => {
+  goChapter25();
+});
+
+
 /* =====================
    ページ表示時
 ===================== */
