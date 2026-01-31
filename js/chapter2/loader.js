@@ -2,11 +2,11 @@ export function initLoader(loader) {
   const start = () => {
     setTimeout(() => {
       loader.style.opacity = "0";
+      loader.style.pointerEvents = "none"; // ★ ここが重要
 
-      // ★ フォールバックで確実に消す
       setTimeout(() => {
         loader.style.display = "none";
-      }, 4000); // transition(3.5s) + α
+      }, 4000);
     }, 1200);
   };
 
