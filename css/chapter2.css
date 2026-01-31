@@ -1,4 +1,73 @@
 /* =====================
+   iOS Safari 操作完全封印
+===================== */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 3Dシーン */
+.scene {
+  position: fixed;
+  inset: 0;
+  perspective: 900px;
+  touch-action: manipulation;
+}
+
+/* シリンダー */
+.cylinder-front,
+.cylinder-back {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+/* 回転要素 */
+.outer,
+.inner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-style: preserve-3d;
+
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* パネル */
+.panel {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* === 画像完全ロック（最重要） === */
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+
+  pointer-events: none; /* ← 抽出・浮き出し完全防止 */
+}
+
+/* フェードアウト */
+body.fade-out {
+  opacity: 0;
+  transition: opacity 7s ease;
+}
+
+
+/* =====================
    RESET / BASE
 ===================== */
 
