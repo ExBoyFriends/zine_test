@@ -1,3 +1,4 @@
+// loader.js
 export function initLoader(loader) {
   if (!loader) return;
 
