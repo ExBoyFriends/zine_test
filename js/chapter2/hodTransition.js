@@ -1,83 +1,79 @@
+let pressStartTime = null;
 let longPressTimer = null;
-let autoTransitionTimer = null;
-let longPressStartTime = null;
-let autoTransitionStartTime = null;
+let autoTimer = null;
 
-let isLongPress = false;
-let isAutoTransition = false;
+let isPressing = false;
+let hasTransitioned = false;
 
-let transitionCallback = null; // 2.5章への移行コールバック
+const LONG_PRESS_DURATION = 5000;   // 5秒
+const AUTO_TRANSITION_DURATION = 10000; // 10秒
 
-const LONG_PRESS_DURATION = 5000; // 長押しで移行までの時間（5秒）
-const AUTO_TRANSITION_DURATION = 10000; // 自動移行の時間（10秒）
+let transitionCallback = null;
 
-// 長押し判定開始
-export function startLongPress(callback) {
+/* ===== 開始 ===== */
+function startPress(callback) {
+  if (isPressing) return;
+
+  isPressing = true;
+  hasTransitioned = false;
+  pressStartTime = Date.now();
   transitionCallback = callback;
-  isLongPress = false;
-  longPressStartTime = Date.now();
 
-  // 長押しタイマー開始
+  // 長押し
   longPressTimer = setTimeout(() => {
-    isLongPress = true;
-    transitionToChapter2_5();
+    if (isPressing && !hasTransitioned) {
+      doTransition();
+    }
   }, LONG_PRESS_DURATION);
 
-  // 自動移行タイマー開始
-  autoTransitionStartTime = Date.now();
-  autoTransitionTimer = setTimeout(() => {
-    if (!isLongPress) {
-      transitionToChapter2_5();
+  // 自動遷移
+  autoTimer = setTimeout(() => {
+    if (!hasTransitioned) {
+      doTransition();
     }
   }, AUTO_TRANSITION_DURATION);
 }
 
-// 長押しが終了した場合の処理
-export function endLongPress() {
+/* ===== 終了 ===== */
+function endPress() {
+  isPressing = false;
   clearTimeout(longPressTimer);
-  clearTimeout(autoTransitionTimer);
-
-  // 長押しが終了した時は移行をキャンセル
-  if (!isLongPress && Date.now() - longPressStartTime < LONG_PRESS_DURATION) {
-    resetTransitionTimers();
-  }
+  clearTimeout(autoTimer);
 }
 
-// 長押しまたは自動移行で2.5章へ移行する
-function transitionToChapter2_5() {
+/* ===== 遷移 ===== */
+function doTransition() {
+  if (hasTransitioned) return;
+  hasTransitioned = true;
+
   if (transitionCallback) {
     transitionCallback();
   }
-  resetTransitionTimers();
-}
 
-// タイマーリセット
-function resetTransitionTimers() {
   clearTimeout(longPressTimer);
-  clearTimeout(autoTransitionTimer);
-  longPressStartTime = null;
-  autoTransitionStartTime = null;
-  isLongPress = false;
-  isAutoTransition = false;
+  clearTimeout(autoTimer);
 }
 
-// タッチやドラッグ操作を通じて長押し判定をする
+/* ===== バインド ===== */
 export function bindLongPressEvents(element) {
-  element.addEventListener('touchstart', (e) => {
+
+  const start = e => {
     e.preventDefault();
-    startLongPress(() => console.log('2.5章への移行')); // 2.5章移行のコールバック
-  });
+    startPress(() => {
+      console.log("Chapter 2.5 へ移行");
+      // location.href = "chapter2_5.html";
+    });
+  };
 
-  element.addEventListener('touchend', (e) => {
+  const end = e => {
     e.preventDefault();
-    endLongPress();
-  });
+    endPress();
+  };
 
-  element.addEventListener('mousedown', (e) => {
-    startLongPress(() => console.log('2.5章への移行')); // 2.5章移行のコールバック
-  });
+  element.addEventListener("touchstart", start, { passive: false });
+  element.addEventListener("touchend", end, { passive: false });
 
-  element.addEventListener('mouseup', (e) => {
-    endLongPress();
-  });
+  element.addEventListener("mousedown", start);
+  element.addEventListener("mouseup", end);
 }
+
