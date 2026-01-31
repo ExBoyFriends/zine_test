@@ -1,3 +1,7 @@
+/* =====================
+   RESET / BASE
+===================== */
+
 * {
   margin: 0;
   padding: 0;
@@ -10,25 +14,27 @@ html, body {
   overflow: hidden;
   background: #000;
 
-   touch-action: none;
+  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
 
 body {
-height: 100%;
+  position: relative;
 }
 
-/* 背景 */
+/* =====================
+   BACKGROUND
+===================== */
+
 .background {
   position: fixed;
   inset: 0;
   background: url('../image/background.jpg') center / cover no-repeat;
   z-index: 0;
-  opacity: 0; 
-  animation: 
-    bgFadeIn 2s ease forwards;
+  opacity: 0;
+  animation: bgFadeIn 2s ease forwards;
 }
 
 .background::after {
@@ -39,32 +45,46 @@ height: 100%;
   animation: slowFade 20s ease-in-out infinite alternate;
 }
 
-/* ローダー */
+/* =====================
+   LOADER
+===================== */
+
 #loader {
   position: fixed;
   inset: 0;
   background: url('../image/background.jpg') center / cover no-repeat;
   z-index: 10;
+
   animation: siren 2.5s linear infinite;
   transition: opacity 3.5s ease;
+
   pointer-events: none;
   opacity: 1;
 }
 
-/* ===== シーン ===== */
+/* =====================
+   SCENE
+===================== */
 
 .scene {
+  position: relative;
   width: 100vw;
   height: 100vh;
+
   perspective: 1200px;
   perspective-origin: 50% 45%;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   touch-action: none;
+  z-index: 1;
 }
 
-/* ===== 円柱 ===== */
+/* =====================
+   CYLINDER
+===================== */
 
 .cylinder {
   position: absolute;
@@ -82,7 +102,9 @@ height: 100%;
   pointer-events: none;
 }
 
-/* ===== 共通パネル ===== */
+/* =====================
+   PANEL COMMON
+===================== */
 
 .panel {
   position: absolute;
@@ -91,13 +113,17 @@ height: 100%;
   transform-style: preserve-3d;
 }
 
-/* ===== 手前カード ===== */
+/* =====================
+   FRONT CARD
+===================== */
 
 .outer {
   width: 230px;
   height: 300px;
+
   margin-left: -110px;
   margin-top: -140px;
+
   backface-visibility: hidden;
 }
 
@@ -105,34 +131,32 @@ height: 100%;
   width: 100%;
   height: 100%;
   object-fit: contain;
+
   filter: drop-shadow(0 10px 20px rgba(0,0,0,.4));
 }
 
-/* ===== 奥（top_b） ===== */
+/* =====================
+   BACK CARD
+===================== */
 
 .inner {
   width: 220px;
   height: 290px;
+
   margin-left: -100px;
   margin-top: -130px;
 
   backface-visibility: hidden;
+
   background: url("../image/top_b.png") center / contain no-repeat;
 
   filter: brightness(0.4);
   opacity: 0.85;
 }
 
-
-/* 暗転オーバーレイ */
-.fade-overlay {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 20;
-}
+/* =====================
+   FADE OUT OVERLAY
+===================== */
 
 #fadeout {
   position: fixed;
@@ -143,35 +167,13 @@ height: 100%;
   opacity: 0;
   pointer-events: none;
 
-  transition: opacity 2s ease;
+  /* 🔥 前半じわ → 後半ドン */
+  transition: opacity 4.5s cubic-bezier(.3,0,.15,1);
 }
 
 #fadeout.active {
   opacity: 1;
 }
-
-
-
-/* =====================
-   アニメーション
-===================== */
-@keyframes slowFade {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
-
-@keyframes siren {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
-
-@keyframes bgFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
 
 /* =====================
    GLITCH OVERLAY
@@ -186,8 +188,8 @@ height: 100%;
   background:
     repeating-linear-gradient(
       0deg,
-      rgba(255,255,255,0.05),
-      rgba(255,255,255,0.05) 1px,
+      rgba(255,255,255,0.06),
+      rgba(255,255,255,0.06) 1px,
       transparent 1px,
       transparent 3px
     );
@@ -200,12 +202,32 @@ height: 100%;
   animation: glitchFlash 0.12s infinite steps(2);
 }
 
+/* =====================
+   ANIMATIONS
+===================== */
+
+@keyframes slowFade {
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(0.25); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes siren {
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(0.25); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes bgFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 @keyframes glitchFlash {
-  0%   { opacity: 0.05; transform: translate(0,0); }
+  0%   { opacity: 0.04; transform: translate(0,0); }
   20%  { opacity: 0.15; transform: translate(-2px,1px); }
   40%  { opacity: 0.08; transform: translate(2px,-1px); }
   60%  { opacity: 0.18; transform: translate(-1px,2px); }
   80%  { opacity: 0.06; transform: translate(1px,-2px); }
   100% { opacity: 0.12; transform: translate(0,0); }
 }
-
