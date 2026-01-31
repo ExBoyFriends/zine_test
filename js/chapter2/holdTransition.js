@@ -96,17 +96,17 @@ function doTransition() {
 export function bindLongPressEvents(element) {
   if (!element) return;
 
-  element.addEventListener("touchstart", e => {
+  element.addEventListener("pointerdown", e => {
     e.preventDefault();
     startPress();
-  }, { passive: false });
+  });
 
-  element.addEventListener("touchend", e => {
+  element.addEventListener("pointerup", e => {
     e.preventDefault();
     endPress();
-  }, { passive: false });
+  });
 
-  element.addEventListener("mousedown", startPress);
-  element.addEventListener("mouseup", endPress);
+  element.addEventListener("pointercancel", endPress);
 }
+
 
