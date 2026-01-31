@@ -38,7 +38,7 @@ export function playExitTransition({ onFinish: callback }) {
           ? p * 0.6
           : 0.3 + (p - 0.5) * 1.4;
 
-      overlay.style.opacity = Math.min(eased, 1);
+     overlay.style.opacity = Math.min(p * 1.1, 1);
     }
 
     if (t >= TOTAL) {
