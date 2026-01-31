@@ -11,39 +11,43 @@ export function initCarousel3D() {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  const AUTO_SPEED = -0.2;
+  const BASE_AUTO_SPEED = -0.2;
+  const MAX_BOOST_SPEED = -2.5; // 裏側の慌ただしさ
   const DAMPING = 0.85;
 
   let dragging = false;
   let velocity = 0;
   let angle = 0;
+  let fadeBoost = 0; // 0 → 1
 
-  /* ★★★ ここが抜けてた ★★★ */
-  outers.forEach((p, i) => p.dataset.base = i * SNAP);
-  inners.forEach((p, i) => p.dataset.base = i * SNAP);
+  outers.forEach((p, i) => (p.dataset.base = i * SNAP));
+  inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
   function animate() {
     if (!dragging) {
+      const speed =
+        BASE_AUTO_SPEED +
+        (MAX_BOOST_SPEED - BASE_AUTO_SPEED) * fadeBoost;
+
       angle += velocity;
       velocity *= DAMPING;
+
       if (Math.abs(velocity) < 0.01) velocity = 0;
-      if (velocity === 0) angle += AUTO_SPEED;
+      if (velocity === 0) angle += speed;
     }
 
     front.style.transform = `rotateX(-22deg) rotateY(${angle}deg)`;
     back.style.transform  = `rotateX(-22deg) rotateY(${angle}deg)`;
 
     outers.forEach(p => {
-      const base = +p.dataset.base;
       p.style.transform =
-        `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
+        `rotateY(${p.dataset.base}deg) translateZ(${R_FRONT}px)`;
     });
 
     inners.forEach(p => {
-      const base = +p.dataset.base;
       p.style.transform = `
         translateY(-20px)
-        rotateY(${base + 180}deg)
+        rotateY(${+p.dataset.base + 180}deg)
         translateZ(${R_BACK}px)
         rotateY(180deg)
         scale(0.97)
@@ -68,6 +72,12 @@ export function initCarousel3D() {
       dragging = false;
       const target = Math.round(angle / SNAP) * SNAP;
       velocity = (target - angle) * 0.1;
+    },
+
+    // ★ フェードアウト連動
+    setFadeBoost(v) {
+      fadeBoost = Math.min(Math.max(v, 0), 1);
     }
   };
 }
+
