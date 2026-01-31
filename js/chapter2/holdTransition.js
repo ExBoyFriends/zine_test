@@ -8,11 +8,8 @@ let autoTimer = null;
 let isPressing = false;
 let hasTransitioned = false;
 
-/* ===== 調整用パラメータ ===== */
-
 const LONG_PRESS_DURATION = 3000;
 const AUTO_TRANSITION_DURATION = 10000;
-
 const GLITCH_TRIGGER = 700;
 const FINAL_ACCEL_TRIGGER = 1700;
 
@@ -22,10 +19,7 @@ const GLITCH_SPEED = 3.5;
 const PRE_EXIT_MAX = 8;
 const EXIT_SPEED = 10;
 
-/* =====================
-   外部API
-===================== */
-
+// 外部API
 export function resetTransitionState() {
   clearAllTimers();
   isPressing = false;
@@ -59,10 +53,7 @@ export function bindLongPressEvents(element) {
   });
 }
 
-/* =====================
-   内部処理
-===================== */
-
+// 内部処理
 function startPress() {
   if (isPressing || hasTransitioned) return;
   isPressing = true;
@@ -109,3 +100,4 @@ function clearAllTimers() {
   clearTimeout(accelTimer);
   clearTimeout(autoTimer);
 }
+
