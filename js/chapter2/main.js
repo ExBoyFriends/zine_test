@@ -17,6 +17,8 @@ const loader = document.getElementById("loader");
 initLoader(loader);
 
 const carousel = initCarousel3D();
+window.__carousel__ = carousel;
+
 initDragInput(carousel);
 
 const scene = document.querySelector(".scene");
