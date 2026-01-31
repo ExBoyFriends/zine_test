@@ -5,10 +5,11 @@ let rafId = null;
 let onComplete = null;
 
 // 時間設計（ms）
-const TOTAL = 30000;
-const NORMAL_END = 10000;
-const FADE_START = 10000;
-const FADE_END = 30000;
+const TOTAL       = 42000; // ← 全体を長く
+const NORMAL_END  = 6000;  // ← かなり早く加速開始
+const FADE_START  = 12000; // ← 少し遅れてフェード開始
+const FADE_END    = 38000; // ← 遷移直前まで暗転を引っ張る
+
 
 export function playExitTransition({ onFinish }) {
   const carousel = window.__carousel__;
