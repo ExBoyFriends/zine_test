@@ -1,4 +1,3 @@
-// main.js
 import { initLoader } from "./loader.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
@@ -18,6 +17,9 @@ initLoader(loader);
 const carousel = initCarousel3D();
 initDragInput(carousel);
 
+// transitionOut から参照できるように
+window.__carousel__ = carousel;
+
 /* =====================
    Chapter2 → 2.5
 ===================== */
@@ -25,7 +27,7 @@ const scene = document.querySelector(".scene");
 
 const goChapter25 = () => {
   playExitTransition({
-    onComplete: () => {
+    onFinish: () => {
       location.href = "chapter2_5.html";
     }
   });
