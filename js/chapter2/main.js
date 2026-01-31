@@ -2,31 +2,48 @@
 import { initLoader } from "./loader.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
-import { bindLongPressEvents } from "./holdTransition.js";
+import {
+  bindLongPressEvents,
+  startAutoTransition
+} from "./holdTransition.js";
 
-// loader
+/* =====================
+   Loader
+===================== */
 const loader = document.getElementById("loader");
 initLoader(loader);
 
-// carousel
+/* =====================
+   Carousel
+===================== */
 const carousel = initCarousel3D();
 initDragInput(carousel);
 
-// 長押し・自動遷移
+/* =====================
+   Chapter2 → 2.5 遷移
+===================== */
 const scene = document.querySelector(".scene");
-bindLongPressEvents(scene, () => {
-  console.log("Chapter 2.5 へ移行");
-    location.href = "chapter2_5.html";
-});
 
-// 以下は共通対策だけ（OK）
+const goChapter25 = () => {
+  console.log("Chapter 2.5 へ移行");
+  location.href = "chapter2_5.html";
+};
+
+// 🔹 ページ表示と同時に自動遷移スタート
+startAutoTransition(goChapter25);
+
+// 🔹 操作中は長押しでも遷移できる
+bindLongPressEvents(scene, goChapter25);
+
+/* =====================
+   共通対策（OK）
+===================== */
 document.addEventListener("contextmenu", e => e.preventDefault());
 document.addEventListener("gesturestart", e => e.preventDefault());
 document.addEventListener("gesturechange", e => e.preventDefault());
 document.addEventListener("gestureend", e => e.preventDefault());
 
-
-// ダブルタップズーム無効
+/* ダブルタップズーム無効 */
 let lastTouch = 0;
 document.addEventListener(
   "touchend",
@@ -38,7 +55,7 @@ document.addEventListener(
   { passive: false }
 );
 
-// URLバー対策
+/* URLバー対策 */
 const hideURLBar = () => {
   if (window.matchMedia("(orientation: landscape)").matches) {
     window.scrollTo(0, 1);
@@ -51,7 +68,7 @@ const hideURLBar = () => {
   });
 });
 
-// vh対策
+/* vh対策 */
 function setVh() {
   document.documentElement.style.setProperty(
     "--vh",
@@ -62,5 +79,4 @@ function setVh() {
 setVh();
 window.addEventListener("resize", setVh);
 window.addEventListener("orientationchange", setVh);
-
 
