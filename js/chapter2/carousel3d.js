@@ -19,6 +19,9 @@ export function initCarousel3D() {
   let dragging = false;
   let velocity = 0;
   let angle = 0;
+  
+  outers.forEach((p, i) => p.dataset.base = i * SNAP);
+  inners.forEach((p, i) => p.dataset.base = i * SNAP);
 
   // アニメーション
   function animate() {
