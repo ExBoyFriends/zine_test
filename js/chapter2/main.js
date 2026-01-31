@@ -32,9 +32,16 @@ const goChapter25 = () => {
 /* =====================
    表示完了後に開始
 ===================== */
-window.addEventListener("load", () => {
+window.addEventListener("pageshow", () => {
   resetTransitionState();
   startAutoTransition(goChapter25);
+  bindLongPressEvents(scene);
+});
+
+requestAnimationFrame(() => {
+    startAutoTransition(goChapter25);
+  });
+
   bindLongPressEvents(scene);
 });
 
