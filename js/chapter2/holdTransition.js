@@ -5,7 +5,7 @@ let isPressing = false;
 let hasTransitioned = false;
 
 const LONG_PRESS_DURATION = 5000;    // 長押し5秒
-const AUTO_TRANSITION_DURATION = 500; // 自動10秒
+const AUTO_TRANSITION_DURATION = 1000; // 自動10秒
 
 let transitionCallback = null;
 
