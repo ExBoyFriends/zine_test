@@ -14,8 +14,6 @@ export function initCarousel3D() {
   const R_BACK  = 170;
 
   const BASE_AUTO_SPEED = 0.25;
-
-  // 🔑 重要：加速の追従係数（これが無いと全部壊れる）
   const ACCEL_FOLLOW = 0.06;
 
   let angle = 0;
@@ -32,29 +30,29 @@ export function initCarousel3D() {
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
   function animate() {
-    // 🔑 NaN防止
     if (!Number.isFinite(extraSpeed)) extraSpeed = 0;
 
-    // なめらか加速
+    // なめらかに target に追従
     extraSpeed += (targetExtraSpeed - extraSpeed) * ACCEL_FOLLOW;
 
-    // 🔒 遷移前だけ制限
+    // 遷移前の上限
     if (!transitionStarted && extraSpeed > 8) {
       extraSpeed = 8;
     }
 
-    if (!dragging) {
-      visualAngle += BASE_AUTO_SPEED + extraSpeed;
-      if (!isHolding) angle = visualAngle;
+    // 🔑 常に時間で回す（ドラッグ中でも）
+    visualAngle += BASE_AUTO_SPEED + extraSpeed;
+
+    // 🔑 holding / dragging していない時だけ同期
+    if (!isHolding && !dragging) {
+      angle = visualAngle;
     }
 
-    // 円筒回転（位置固定）
     const cylTransform =
       `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     front.style.transform = cylTransform;
     back.style.transform  = cylTransform;
 
-    // 前面
     outers.forEach(p => {
       const base = +p.dataset.base;
       p.style.transform =
@@ -63,7 +61,6 @@ export function initCarousel3D() {
          translateZ(${R_FRONT}px)`;
     });
 
-    // 背面
     inners.forEach(p => {
       const base = +p.dataset.base;
       p.style.transform =
