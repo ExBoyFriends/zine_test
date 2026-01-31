@@ -1,10 +1,10 @@
-// main.js
 import { initLoader } from "./loader.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
 import {
   bindLongPressEvents,
-  startAutoTransition
+  startAutoTransition,
+  resetTransitionState
 } from "./holdTransition.js";
 
 /* =====================
@@ -32,25 +32,20 @@ const goChapter25 = () => {
 /* =====================
    表示完了後に開始
 ===================== */
-import {
-  bindLongPressEvents,
-  startAutoTransition,
-  resetTransitionState
-} from "./holdTransition.js";
-
 window.addEventListener("load", () => {
   resetTransitionState();
   startAutoTransition(goChapter25);
-  bindLongPressEvents(scene, goChapter25);
+  bindLongPressEvents(scene);
 });
 
 /* =====================
-   共通対策（OK）
+   共通対策
 ===================== */
 document.addEventListener("contextmenu", e => e.preventDefault());
 document.addEventListener("gesturestart", e => e.preventDefault());
 document.addEventListener("gesturechange", e => e.preventDefault());
 document.addEventListener("gestureend", e => e.preventDefault());
+
 
 /* ダブルタップズーム無効 */
 let lastTouch = 0;
