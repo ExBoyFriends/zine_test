@@ -1,38 +1,22 @@
 export function initLoader(loader) {
   if (!loader) return;
 
-  const start = () => {
-    // 🔑 戻ってきた時は必ず初期化
-    loader.style.display = "block";
-    loader.style.opacity = "1";
-    loader.style.pointerEvents = "auto";
+  const hide = () => {
+    loader.style.transition = "opacity 3.5s ease";
+    loader.style.opacity = "0";
+    loader.style.pointerEvents = "none";
 
-    // フラグは毎回リセット
-    loader.dataset.started = "";
-
-    // 少し遅らせてから消す
     setTimeout(() => {
-      loader.style.opacity = "0";
-      loader.style.pointerEvents = "none";
-
-      setTimeout(() => {
-        loader.style.display = "none";
-        loader.dataset.started = "true";
-      }, 3500);
-    }, 1200);
+      loader.style.display = "none";
+    }, 3500);
   };
 
-  // 初回ロード
-  if (
-    document.readyState === "complete" ||
-    document.readyState === "interactive"
-  ) {
-    start();
-  } else {
-    window.addEventListener("load", start, { once: true });
-  }
+  // 常に同じ挙動
+  loader.style.display = "block";
+  loader.style.opacity = "1";
+  loader.style.pointerEvents = "auto";
 
-  // 🔑 戻る対応（必須）
-  window.addEventListener("pageshow", start);
+  // 少し待って必ず消す
+  setTimeout(hide, 1200);
 }
 
