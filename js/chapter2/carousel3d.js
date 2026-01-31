@@ -12,10 +12,11 @@ export function initCarousel3D() {
   const R_BACK  = 170;
 
   const BASE_AUTO_SPEED = -0.2;
+
   let extraSpeed = 0;
+  let isTransitioning = false;
 
   let dragging = false;
-  let velocity = 0;
   let angle = 0;
 
   outers.forEach((p, i) => p.dataset.base = i * SNAP);
@@ -23,7 +24,13 @@ export function initCarousel3D() {
 
   function animate() {
     if (!dragging) {
-      angle += BASE_AUTO_SPEED + extraSpeed;
+      if (isTransitioning) {
+        // 🔥 遷移中だけ：同方向のまま加速
+        angle += BASE_AUTO_SPEED * (1 + extraSpeed);
+      } else {
+        // 通常時：今まで通り
+        angle += BASE_AUTO_SPEED;
+      }
     }
 
     front.style.transform = `rotateX(-22deg) rotateY(${angle}deg)`;
@@ -55,6 +62,9 @@ export function initCarousel3D() {
     setExtraSpeed(v) {
       extraSpeed = v;
     },
+    setTransitioning(v) {
+      isTransitioning = v;
+    },
     startDrag() {
       dragging = true;
     },
@@ -66,3 +76,4 @@ export function initCarousel3D() {
     }
   };
 }
+
