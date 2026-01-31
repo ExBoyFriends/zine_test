@@ -20,7 +20,7 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   ===================== */
   const goChapter2 = () => {
     console.log("Chapter2へ遷移");
-    location.href = "../chapter2.html";
+    location.href = "chapter2.html";
   };
   /* =====================
      開閉アニメーション
@@ -36,6 +36,7 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   const open = () => {
     opened = true;
     lastPage.classList.add('opened');
+    console.log("OPENED", lastPage.classList.contains("opened"));
 
     const slideWidth = slideTop.clientWidth / 2;
     applyX(-slideWidth);
