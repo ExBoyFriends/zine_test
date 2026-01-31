@@ -2,70 +2,54 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
+
   <meta name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    content="width=device-width,
+             height=device-height,
+             initial-scale=1.0,
+             maximum-scale=1.0,
+             user-scalable=no">
 
   <title>Chapter 2</title>
 
+  <!-- CSS（完全統合） -->
   <link rel="stylesheet" href="../css/chapter2.css">
-
-  <style>
-    /* ===== iOS Safari 最低限ロック ===== */
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      overflow: hidden;
-      background: #000;
-
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-    }
-
-    /* 操作対象は scene のみ */
-    .scene {
-      touch-action: none;
-    }
-
-    /* 画像は完全ロック */
-    img {
-      pointer-events: none;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-    }
-  </style>
 </head>
 
 <body>
 
+  <!-- 背景 -->
   <div class="background"></div>
+
+  <!-- ローダー（必須） -->
   <div id="loader"></div>
-  <div id="fadeout"></div>
+
+  <!-- グリッチ -->
   <div class="glitch-overlay"></div>
 
+  <!-- 3Dシーン -->
   <div class="scene">
 
+    <!-- 表 -->
     <div class="cylinder cylinder-front">
       <div class="panel outer" style="--i:0">
-        <img src="../image/queen_b.png">
+        <img src="../image/queen_b.png" alt="">
       </div>
       <div class="panel outer" style="--i:1">
-        <img src="../image/king_b.png">
+        <img src="../image/king_b.png" alt="">
       </div>
       <div class="panel outer" style="--i:2">
-        <img src="../image/jack_b.png">
+        <img src="../image/jack_b.png" alt="">
       </div>
       <div class="panel outer" style="--i:3">
-        <img src="../image/joker1_b.png">
+        <img src="../image/joker1_b.png" alt="">
       </div>
       <div class="panel outer" style="--i:4">
-        <img src="../image/joker2_b.png">
+        <img src="../image/joker2_b.png" alt="">
       </div>
     </div>
 
+    <!-- 裏 -->
     <div class="cylinder cylinder-back">
       <div class="panel inner" style="--i:0"></div>
       <div class="panel inner" style="--i:1"></div>
@@ -76,13 +60,18 @@
 
   </div>
 
-  <!-- 共通 -->
+  <!-- フェードアウト -->
+  <div id="fadeout"></div>
+
+  <!-- ===== JS ===== -->
+
+  <!-- 共通（先） -->
   <script type="module" src="../js/base.js"></script>
 
-  <!-- Chapter2 -->
+  <!-- Chapter2 本体 -->
   <script type="module" src="../js/chapter2/main.js"></script>
 
-  <!-- iOS Safari gesture 制御 -->
+  <!-- iOS Safari ジェスチャ完全封印 -->
   <script>
     ["gesturestart", "gesturechange", "gestureend"].forEach(type => {
       document.addEventListener(type, e => e.preventDefault(), { passive: false });
@@ -98,4 +87,3 @@
 
 </body>
 </html>
-
