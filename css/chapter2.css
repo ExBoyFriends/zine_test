@@ -40,6 +40,7 @@ height: 100%;
   z-index: 10;
   animation: siren 2.5s linear infinite;
   transition: opacity 3.5s ease;
+  pointer-events: none;
 }
 
 /* ===== シーン ===== */
