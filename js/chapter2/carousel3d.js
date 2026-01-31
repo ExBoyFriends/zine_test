@@ -8,13 +8,13 @@ export function initCarousel3D() {
   const COUNT = outers.length;
   const SNAP  = 360 / COUNT;
 
-  const R_FRONT = 185; // 前面の半径
-  const R_BACK  = 170; // 背面の半径
+  const R_FRONT = 185;
+  const R_BACK  = 170;
 
   const BASE_AUTO_SPEED = 0.25;
 
-  let angle = 0;        // 回転の角度（固定）
-  let visualAngle = 0;  // 見た目の角度（加速）
+  let angle = 0;
+  let visualAngle = 0;
 
   let dragging = false;
   let isHolding = false;
@@ -33,22 +33,28 @@ export function initCarousel3D() {
       if (!isHolding) angle = visualAngle;
     }
 
-    // 円筒自体の回転（位置は固定）
-    front.style.transform = `rotateX(-22deg) rotateY(${visualAngle}deg)`;
-    back.style.transform  = `rotateX(-22deg) rotateY(${visualAngle}deg)`;
+    // 円筒自体は回すだけ（位置は固定）
+    front.style.transform =
+      `rotateX(-22deg) rotateY(${visualAngle}deg)`;
+    back.style.transform =
+      `rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
-    // outer パネルの回転（位置のズレを防止）
+    // 🔒 各カードは「回転＋奥行き」だけ
     outers.forEach(p => {
       const base = +p.dataset.base;
       p.style.transform =
-        `rotateY(${base + angle}deg) translateZ(${R_FRONT}px)`;
+        `translate(-50%, -50%)
+         rotateY(${base + angle}deg)
+         translateZ(${R_FRONT}px)`;
     });
 
-    // inner パネルの回転（位置のズレを防止）
     inners.forEach(p => {
       const base = +p.dataset.base;
       p.style.transform =
-        `rotateY(${base + angle + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
+        `translate(-50%, -50%)
+         rotateY(${base + angle + 180}deg)
+         translateZ(${R_BACK}px)
+         rotateY(180deg)`;
     });
 
     requestAnimationFrame(animate);
@@ -61,7 +67,7 @@ export function initCarousel3D() {
       targetExtraSpeed = Math.min(Math.max(0, v), 9);
     },
     setHolding(v) {
-      isHolding = v; // 長押し判定
+      isHolding = v;
     },
     startDrag() {
       dragging = true;
