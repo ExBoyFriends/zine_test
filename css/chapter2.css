@@ -74,7 +74,8 @@ img {
 }
 
 #loader.hide {
-  animation: none; /* 🔑 JS が勝つ */
+  animation: none !important;
+  filter: none !important;
 }
 
 /* =====================
