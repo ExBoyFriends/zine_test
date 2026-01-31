@@ -6,14 +6,30 @@
   <title>Chapter 2</title>
   <link rel="stylesheet" href="../css/chapter2.css">
 
-   <style>
-    /* iOS Safari でピンチズームを完全に無効化 */
+  <style>
+    /* iOS Safariでのズームやスクロール無効化 */
     html, body {
-      touch-action: none; /* ピンチズーム無効化 */
-      overflow: hidden;    /* スクロールも無効化 */
+      touch-action: none; /* ピンチズームを無効化 */
+      overflow: hidden;    /* スクロール無効化 */
+      background: #000;    /* 背景色 */
+      user-select: none;   /* ユーザー選択無効 */
+      -webkit-user-select: none; /* Safariの選択無効 */
+      -webkit-touch-callout: none; /* 画像の長押し無効 */
+    }
+
+    /* SceneやPanelにもtouch-actionを無効化 */
+    .scene, .panel, .cylinder {
+      touch-action: none;
+    }
+
+    /* 画像のドラッグと選択無効 */
+    img {
+      pointer-events: none; /* 画像操作を無効化 */
+      user-select: none;    /* ユーザー選択無効 */
+      -webkit-user-select: none; /* Safariの選択無効 */
+      -webkit-touch-callout: none; /* 長押し無効 */
     }
   </style>
-  
 </head>
 <body>
 
@@ -23,9 +39,7 @@
 <div class="fade-overlay"></div>
 <div class="glitch-overlay"></div>
 
-
 <div class="scene">
-
   <div class="cylinder cylinder-front">
     <div class="panel outer" style="--i:0"><img src="../image/queen_b.png"></div>
     <div class="panel outer" style="--i:1"><img src="../image/king_b.png"></div>
@@ -41,12 +55,12 @@
     <div class="panel inner" style="--i:3"></div>
     <div class="panel inner" style="--i:4"></div>
   </div>
-
 </div>
+
 <script type="module" src="../js/base.js"></script>
 <script type="module" src="../js/chapter2/main.js"></script>
 
-  <script>
+<script>
   // ピンチズーム無効化
   ["gesturestart", "gesturechange", "gestureend"].forEach(type => {
     document.addEventListener(type, e => e.preventDefault(), { passive: false });
@@ -57,10 +71,13 @@
   document.addEventListener("touchend", e => {
     const now = Date.now();
     if (now - lastTouch <= 300) {
-      e.preventDefault();  // ダブルタップでのズームを防ぐ
+      e.preventDefault();  // ダブルタップによるズームを防止
     }
     lastTouch = now;
   }, { passive: false });
+
+  // touchmoveによるズーム防止（必要に応じて追加）
+  document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
 </script>
 
 </body>
