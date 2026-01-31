@@ -40,6 +40,9 @@ function startPress() {
   if (isPressing || hasTransitioned) return;
   isPressing = true;
 
+  // 👉 押した瞬間に反応を出す
+  window.__carousel__?.setExtraSpeed(0.2);
+
   glitchTimer = setTimeout(() => {
     if (isPressing && !hasTransitioned) {
       onGlitchStart?.();
@@ -51,14 +54,20 @@ function startPress() {
   }, LONG_PRESS_DURATION);
 }
 
+
 function endPress() {
   isPressing = false;
 
   clearTimeout(glitchTimer);
   clearTimeout(longPressTimer);
 
-  onGlitchEnd?.();
+  // 遷移してなければ戻す
+  if (!hasTransitioned) {
+    window.__carousel__?.setExtraSpeed(0);
+    onGlitchEnd?.();
+  }
 }
+
 
 function doTransition() {
   if (hasTransitioned) return;
