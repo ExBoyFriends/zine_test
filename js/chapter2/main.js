@@ -1,3 +1,4 @@
+// main.js
 import { initLoader } from "./loader.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
@@ -7,90 +8,66 @@ import {
   resetTransitionState
 } from "./holdTransition.js";
 
-/* =====================
-   Loader
-===================== */
+/* Loader */
 const loader = document.getElementById("loader");
 initLoader(loader);
 
-/* =====================
-   Carousel
-===================== */
+/* Carousel */
 const carousel = initCarousel3D();
 initDragInput(carousel);
 
-/* =====================
-   Chapter2 → 2.5 遷移
-===================== */
-const fadeout = document.getElementById("fadeout");
+/* 遷移 */
+const scene = document.querySelector(".scene");
 
 const goChapter25 = () => {
-  if (fadeout) {
-    fadeout.classList.add("active");
+  const DURATION = 2000;
+  const start = performance.now();
 
-    // フェードアウト完了後に遷移
-    setTimeout(() => {
+  function tick(now) {
+    const t = Math.min((now - start) / DURATION, 1);
+    const eased = t * t * t; // 後半ほど急加速
+
+    carousel.setFadeBoost(eased);
+
+    document.body.style.backgroundColor =
+      `rgba(0,0,0,${eased})`;
+
+    if (t < 1) {
+      requestAnimationFrame(tick);
+    } else {
       location.href = "chapter2_5.html";
-    }, 2000); // ← CSSと同じ時間
-  } else {
-    location.href = "chapter2_5.html";
+    }
   }
+
+  requestAnimationFrame(tick);
 };
 
-
-/* =====================
-   表示完了後に開始
-===================== */
+/* 表示後に必ず再スタート */
 window.addEventListener("pageshow", () => {
   resetTransitionState();
   startAutoTransition(goChapter25);
   bindLongPressEvents(scene);
 });
 
-
-/* =====================
-   共通対策
-===================== */
+/* 共通対策 */
 document.addEventListener("contextmenu", e => e.preventDefault());
 document.addEventListener("gesturestart", e => e.preventDefault());
 document.addEventListener("gesturechange", e => e.preventDefault());
 document.addEventListener("gestureend", e => e.preventDefault());
 
-
-/* ダブルタップズーム無効 */
 let lastTouch = 0;
-document.addEventListener(
-  "touchend",
-  e => {
-    const now = Date.now();
-    if (now - lastTouch <= 300) e.preventDefault();
-    lastTouch = now;
-  },
-  { passive: false }
-);
+document.addEventListener("touchend", e => {
+  const now = Date.now();
+  if (now - lastTouch <= 300) e.preventDefault();
+  lastTouch = now;
+}, { passive: false });
 
-/* URLバー対策 */
-const hideURLBar = () => {
-  if (window.matchMedia("(orientation: landscape)").matches) {
-    window.scrollTo(0, 1);
-  }
-};
-
-["orientationchange", "resize", "visibilitychange"].forEach(event => {
-  window.addEventListener(event, () => {
-    setTimeout(hideURLBar, 300);
-  });
-});
-
-/* vh対策 */
 function setVh() {
   document.documentElement.style.setProperty(
     "--vh",
     `${window.innerHeight * 0.01}px`
   );
 }
-
 setVh();
 window.addEventListener("resize", setVh);
 window.addEventListener("orientationchange", setVh);
-
