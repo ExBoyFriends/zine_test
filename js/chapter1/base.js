@@ -1,5 +1,3 @@
-// js/base.js
-
 /* =====================
    共通対策（全章共通）
 ===================== */
@@ -70,3 +68,12 @@ function setVh() {
 setVh();
 window.addEventListener("resize", setVh);
 window.addEventListener("orientationchange", setVh);
+
+// iOSのビューのズーム制御
+if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
+  // スクロール位置を調整してURLバーの隠蔽
+  window.addEventListener('orientationchange', hideURLBar);
+  window.addEventListener('resize', hideURLBar);
+}
+
+
