@@ -23,13 +23,13 @@ document.addEventListener("dragstart", e => {
   document.addEventListener(type, e => e.preventDefault());
 });
 
-// ダブルタップズーム無効（iOS）
+// ダブルタップズーム無効（iOS + Android）
 let lastTouch = 0;
 document.addEventListener(
   "touchend",
   e => {
     const now = Date.now();
-    if (now - lastTouch <= 300) e.preventDefault();
+    if (now - lastTouch <= 300) e.preventDefault(); // ダブルタップを防ぐ
     lastTouch = now;
   },
   { passive: false }
@@ -59,3 +59,4 @@ function setVh() {
 setVh();
 window.addEventListener("resize", setVh);
 window.addEventListener("orientationchange", setVh);
+
