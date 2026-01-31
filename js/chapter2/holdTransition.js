@@ -1,9 +1,11 @@
 let longPressTimer = null;
 let autoTimer = null;
 let glitchTimer = null;
+let pressRaf = null;
 
 let isPressing = false;
 let hasTransitioned = false;
+let pressStartTime = 0;
 
 const LONG_PRESS_DURATION = 5000;
 const AUTO_TRANSITION_DURATION = 10000;
@@ -17,6 +19,7 @@ export function resetTransitionState() {
   clearTimeout(longPressTimer);
   clearTimeout(autoTimer);
   clearTimeout(glitchTimer);
+  cancelAnimationFrame(pressRaf);
 
   isPressing = false;
   hasTransitioned = false;
@@ -39,35 +42,41 @@ export function setHoldEffects({ glitchStart, glitchEnd }) {
 function startPress() {
   if (isPressing || hasTransitioned) return;
   isPressing = true;
+  pressStartTime = performance.now();
 
-  // 👉 押した瞬間に反応を出す
-  window.__carousel__?.setExtraSpeed(0.2);
+  const tick = now => {
+    if (!isPressing || hasTransitioned) return;
+
+    const t = now - pressStartTime;
+    const p = Math.min(t / LONG_PRESS_DURATION, 1);
+
+    // 押してる間ずっと加速（体感重視）
+    window.__carousel__?.setExtraSpeed(0.3 + p * 2.0);
+
+    pressRaf = requestAnimationFrame(tick);
+  };
+
+  pressRaf = requestAnimationFrame(tick);
 
   glitchTimer = setTimeout(() => {
-    if (isPressing && !hasTransitioned) {
-      onGlitchStart?.();
-    }
+    onGlitchStart?.();
   }, GLITCH_TRIGGER);
 
-  longPressTimer = setTimeout(() => {
-    if (isPressing && !hasTransitioned) doTransition();
-  }, LONG_PRESS_DURATION);
+  longPressTimer = setTimeout(doTransition, LONG_PRESS_DURATION);
 }
-
 
 function endPress() {
   isPressing = false;
 
   clearTimeout(glitchTimer);
   clearTimeout(longPressTimer);
+  cancelAnimationFrame(pressRaf);
 
-  // 遷移してなければ戻す
   if (!hasTransitioned) {
     window.__carousel__?.setExtraSpeed(0);
     onGlitchEnd?.();
   }
 }
-
 
 function doTransition() {
   if (hasTransitioned) return;
@@ -76,13 +85,13 @@ function doTransition() {
   clearTimeout(longPressTimer);
   clearTimeout(autoTimer);
   clearTimeout(glitchTimer);
+  cancelAnimationFrame(pressRaf);
 
   onGlitchEnd?.();
 
-  // 🔥 長押しは即 exit transition
+  // 🔥 長押し即遷移
   window.dispatchEvent(new Event("force-exit"));
 }
-
 
 export function bindLongPressEvents(element) {
   if (!element) return;
@@ -100,5 +109,4 @@ export function bindLongPressEvents(element) {
   element.addEventListener("mousedown", startPress);
   element.addEventListener("mouseup", endPress);
 }
-
 
