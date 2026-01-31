@@ -29,12 +29,11 @@ const glitch = document.querySelector(".glitch-overlay");
 ===================== */
 
 const goChapter25 = () => {
-playExitTransition({
-  onFinish: () => {
-    location.href = "chapter2_5.html";
-  }
-});
-
+  playExitTransition({
+    onFinish: () => {
+      location.href = "chapter2_5.html";
+    }
+  });
 };
 
 /* =====================
@@ -44,7 +43,6 @@ playExitTransition({
 setHoldEffects({
   glitchStart: () => {
     glitch.classList.add("glitch-active");
-    carousel.setExtraSpeed(1.4);
   },
   glitchEnd: () => {
     glitch.classList.remove("glitch-active");
@@ -52,10 +50,11 @@ setHoldEffects({
   }
 });
 
-window.addEventListener("force-exit", () => {
-  goChapter25();
-});
+/* =====================
+   強制遷移（長押し）
+===================== */
 
+window.addEventListener("force-exit", goChapter25);
 
 /* =====================
    ページ表示時
