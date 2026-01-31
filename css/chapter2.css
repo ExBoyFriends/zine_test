@@ -73,6 +73,10 @@ img {
   pointer-events: none;
 }
 
+#loader.hide {
+  animation: none; /* 🔑 JS が勝つ */
+}
+
 /* =====================
    SCENE
 ===================== */
