@@ -29,7 +29,14 @@ height: 100%;
   opacity: 0; 
   animation: 
     bgFadeIn 2s ease forwards,
-    slowFade 20s ease-in-out infinite alternate;
+}
+
+.background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  animation: slowFade 20s ease-in-out infinite alternate;
 }
 
 /* ローダー */
