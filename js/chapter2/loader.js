@@ -2,9 +2,9 @@ export function initLoader(loader) {
   if (!loader) return;
 
   const hide = () => {
-    loader.style.transition = "opacity 3.5s ease";
-    loader.style.opacity = "0";
-    loader.style.pointerEvents = "none";
+     loader.classList.add("hide"); // 🔑 追加
+  loader.style.transition = "opacity 3.5s ease";
+  loader.style.opacity = "0";
 
     setTimeout(() => {
       loader.style.display = "none";
