@@ -38,12 +38,6 @@ window.addEventListener("pageshow", () => {
   bindLongPressEvents(scene);
 });
 
-requestAnimationFrame(() => {
-    startAutoTransition(goChapter25);
-  });
-
-  bindLongPressEvents(scene);
-});
 
 /* =====================
    共通対策
