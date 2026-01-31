@@ -11,48 +11,52 @@ export function initCarousel3D() {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  // 🔥 正方向・基準速度
-  const BASE_AUTO_SPEED = 0.2;
+  const BASE_AUTO_SPEED = 0.25;
 
-  let angle = 0;
+  let angle = 0;        // 🔒 判定用（固定される）
+  let visualAngle = 0; // 👀 見た目用（加速）
+
   let dragging = false;
+  let isHolding = false;
 
-  // 🔥 なめらか加速用
   let extraSpeed = 0;
   let targetExtraSpeed = 0;
-
-  let isTransitioning = false;
 
   outers.forEach((p, i) => p.dataset.base = i * SNAP);
   inners.forEach((p, i) => p.dataset.base = i * SNAP);
 
   function animate() {
-    // 🔥 加速をなめらかに追従
-    extraSpeed += (targetExtraSpeed - extraSpeed) * 0.08;
+    extraSpeed += (targetExtraSpeed - extraSpeed) * 0.07;
 
     if (!dragging) {
-      angle += BASE_AUTO_SPEED + extraSpeed;
+      // 🔥 見た目だけ回す
+      visualAngle += BASE_AUTO_SPEED + extraSpeed;
+
+      // 🔒 長押し中でなければ判定角も進める
+      if (!isHolding) {
+        angle = visualAngle;
+      }
     }
 
     front.style.transform =
-      `rotateX(-22deg) rotateY(${angle}deg)`;
+      `rotateX(-22deg) rotateY(${visualAngle}deg)`;
     back.style.transform =
-      `rotateX(-22deg) rotateY(${angle}deg)`;
+      `rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
     outers.forEach(p => {
       const base = +p.dataset.base;
       p.style.transform =
-        `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
+        `rotateY(${base + angle}deg) translateZ(${R_FRONT}px)`;
     });
 
     inners.forEach(p => {
       const base = +p.dataset.base;
       p.style.transform = `
         translateY(-20px)
-        rotateY(${base + 180}deg)
+        rotateY(${base + angle + 180}deg)
         translateZ(${R_BACK}px)
         rotateY(180deg)
-        scale(0.97)
+        scale(1)
       `;
     });
 
@@ -63,19 +67,21 @@ export function initCarousel3D() {
 
   return {
     setExtraSpeed(v) {
-      targetExtraSpeed = v;
+      targetExtraSpeed = Math.min(Math.max(0, v), 9);
     },
-    setTransitioning(v) {
-      isTransitioning = v;
+    setHolding(v) {
+      isHolding = v; // 🔥 長押し判定ロック
     },
     startDrag() {
       dragging = true;
     },
     moveDrag(dx) {
       angle += dx * 0.35;
+      visualAngle = angle;
     },
     endDrag() {
       dragging = false;
     }
   };
 }
+
