@@ -11,19 +11,26 @@ export function initCarousel3D() {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  // 🔥 常に一定・方向固定
-  const BASE_AUTO_SPEED = -0.2;
+  // 🔥 正方向・基準速度
+  const BASE_AUTO_SPEED = 0.2;
 
-  let extraSpeed = 0;
-  let dragging = false;
   let angle = 0;
+  let dragging = false;
+
+  // 🔥 なめらか加速用
+  let extraSpeed = 0;
+  let targetExtraSpeed = 0;
+
+  let isTransitioning = false;
 
   outers.forEach((p, i) => p.dataset.base = i * SNAP);
   inners.forEach((p, i) => p.dataset.base = i * SNAP);
 
   function animate() {
+    // 🔥 加速をなめらかに追従
+    extraSpeed += (targetExtraSpeed - extraSpeed) * 0.08;
+
     if (!dragging) {
-      // 🔥 方向は常に同じ、加速は足すだけ
       angle += BASE_AUTO_SPEED + extraSpeed;
     }
 
@@ -55,11 +62,12 @@ export function initCarousel3D() {
   animate();
 
   return {
-    // 🔥 これだけで全制御OK
     setExtraSpeed(v) {
-      extraSpeed = v;
+      targetExtraSpeed = v;
     },
-
+    setTransitioning(v) {
+      isTransitioning = v;
+    },
     startDrag() {
       dragging = true;
     },
@@ -71,4 +79,3 @@ export function initCarousel3D() {
     }
   };
 }
-
