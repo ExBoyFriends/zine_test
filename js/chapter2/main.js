@@ -16,7 +16,7 @@ initDragInput(carousel);
 const scene = document.querySelector(".scene");
 bindLongPressEvents(scene, () => {
   console.log("Chapter 2.5 へ移行");
-    location.href = "chapter2_5.html";
+    location.href = "../chapter2_5.html";
 });
 
 // 以下は共通対策だけ（OK）
