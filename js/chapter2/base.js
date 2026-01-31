@@ -14,12 +14,7 @@ document.addEventListener("dragstart", e => {
   }
 });
 
-// iOS ピンチズーム無効
-["gesturestart", "gesturechange", "gestureend"].forEach(type => {
-  document.addEventListener(type, e => e.preventDefault());
-});
-
-// ダブルタップズーム無効
+// ダブルタップズーム無効（iOS Safari）
 let lastTouch = 0;
 document.addEventListener(
   "touchend",
@@ -33,12 +28,13 @@ document.addEventListener(
   },
   { passive: false }
 );
-// iOS のピンチズームを完全に無効化
+
+// iOS Safari：ピンチズーム無効化
 ["gesturestart", "gesturechange", "gestureend"].forEach(type => {
   document.addEventListener(type, e => e.preventDefault(), { passive: false });
 });
 
-// iOS Safari：画像長押し・選択・浮き出し完全防止（決定打）
+// 画像長押し・選択・浮き出し防止（iOS Safari）
 document.addEventListener(
   "touchstart",
   e => {
@@ -49,7 +45,7 @@ document.addEventListener(
   { passive: false }
 );
 
-// URLバー対策（横向き）
+// URLバー非表示対策（横向き時）
 const hideURLBar = () => {
   if (window.matchMedia("(orientation: landscape)").matches) {
     window.scrollTo(0, 1);
@@ -62,7 +58,7 @@ const hideURLBar = () => {
   });
 });
 
-// vh対策（iOS）
+// vh単位対応（iOSデバイスでのビューポート対応）
 function setVh() {
   document.documentElement.style.setProperty(
     "--vh",
@@ -74,13 +70,12 @@ setVh();
 window.addEventListener("resize", setVh);
 window.addEventListener("orientationchange", setVh);
 
-// iOSのビューのズーム制御
+// iOSビューのズーム制御（URLバー非表示対応）
 if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
   // スクロール位置を調整してURLバーの隠蔽
   window.addEventListener('orientationchange', hideURLBar);
   window.addEventListener('resize', hideURLBar);
 }
-
 
 /* =====================
    Safari 戻る対策（bfcache）
