@@ -18,13 +18,6 @@ let hasTransitioned = false;
 
 let effects = {};
 
-/**
- * main.js から演出を注入する
- * {
- *   glitchStart?: () => void,
- *   glitchEnd?: () => void
- * }
- */
 export function setHoldEffects(e) {
   effects = e || {};
 }
@@ -60,7 +53,9 @@ export function resetTransitionState() {
 export function startAutoTransition(callback) {
   clearTimeout(autoTimer);
   autoTimer = setTimeout(() => {
-    callback(); // ★ 自動遷移は必ず実行
+    if (hasTransitioned) return;
+    hasTransitioned = true;
+    callback();
   }, AUTO_TRANSITION_DURATION);
 }
 
@@ -125,8 +120,8 @@ function endPress() {
   stopGlitch();
   effects.glitchEnd?.();
 
+  // 🔑 holding 解除のみ。速度は戻さない
   window.__carousel__?.setHolding(false);
-  window.__carousel__?.setExtraSpeed(0);
 }
 
 function clearAllTimers() {
