@@ -51,7 +51,7 @@ function startPress() {
     const p = Math.min(t / LONG_PRESS_DURATION, 1);
 
     // 押してる間ずっと加速（体感重視）
-    window.__carousel__?.setExtraSpeed(0.3 + p * 2.0);
+    window.__carousel__?.setExtraSpeed(1.2 + p * 4.5);
 
     pressRaf = requestAnimationFrame(tick);
   };
