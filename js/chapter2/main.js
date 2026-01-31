@@ -2,6 +2,7 @@
 import { initLoader } from "./loader.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
+import { bindLongPressEvents } from './holdTransition.js';
 
 const loader = document.getElementById("loader");
 initLoader(loader);  // ローダー初期化
