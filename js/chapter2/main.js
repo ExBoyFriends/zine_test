@@ -2,28 +2,29 @@
 import { initLoader } from "./loader.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
-import { bindLongPressEvents } from './holdTransition.js';
+import { bindLongPressEvents } from "./holdTransition.js";
 
-// 長押しイベントをバインド
-const carouselWrapper = document.querySelector('.scene');  // 長押し判定をしたい要素
-bindLongPressEvents(carouselWrapper);
-
+// loader
 const loader = document.getElementById("loader");
-initLoader(loader);  // ローダー初期化
+initLoader(loader);
 
-// 3D回転の初期化
+// carousel
 const carousel = initCarousel3D();
-
-// ドラッグ入力の初期化
 initDragInput(carousel);
 
-// 共通対策（chapter1と同じ）
-document.addEventListener("contextmenu", e => e.preventDefault());
+// 長押し・自動遷移
+const scene = document.querySelector(".scene");
+bindLongPressEvents(scene, () => {
+  console.log("Chapter 2.5 へ移行");
+  // location.href = "../chapter2_5/index.html";
+});
 
-// ピンチズーム無効（iOS）
+// 以下は共通対策だけ（OK）
+document.addEventListener("contextmenu", e => e.preventDefault());
 document.addEventListener("gesturestart", e => e.preventDefault());
 document.addEventListener("gesturechange", e => e.preventDefault());
 document.addEventListener("gestureend", e => e.preventDefault());
+
 
 // ダブルタップズーム無効
 let lastTouch = 0;
