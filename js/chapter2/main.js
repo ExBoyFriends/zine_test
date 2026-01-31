@@ -29,11 +29,20 @@ const goChapter25 = () => {
   location.href = "chapter2_5.html";
 };
 
-// 🔹 ページ表示と同時に自動遷移スタート
-startAutoTransition(goChapter25);
+/* =====================
+   表示完了後に開始
+===================== */
+import {
+  bindLongPressEvents,
+  startAutoTransition,
+  resetTransitionState
+} from "./holdTransition.js";
 
-// 🔹 操作中は長押しでも遷移できる
-bindLongPressEvents(scene, goChapter25);
+window.addEventListener("load", () => {
+  resetTransitionState();
+  startAutoTransition(goChapter25);
+  bindLongPressEvents(scene, goChapter25);
+});
 
 /* =====================
    共通対策（OK）
