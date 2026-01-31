@@ -1,17 +1,12 @@
 export function initLoader(loader) {
   const start = () => {
     setTimeout(() => {
-      requestAnimationFrame(() => {
-        loader.style.opacity = "0";
-      });
+      loader.style.opacity = "0";
 
-      loader.addEventListener(
-        "transitionend",
-        () => {
-          loader.style.display = "none";
-        },
-        { once: true }
-      );
+      // ★ フォールバックで確実に消す
+      setTimeout(() => {
+        loader.style.display = "none";
+      }, 4000); // transition(3.5s) + α
     }, 1200);
   };
 
