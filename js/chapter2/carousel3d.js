@@ -1,17 +1,15 @@
 // carousel3d.js
 export function initCarousel3D() {
-  // 取得する要素
   const front = document.querySelector(".cylinder-front");
-  const back = document.querySelector(".cylinder-back");
+  const back  = document.querySelector(".cylinder-back");
   const outers = document.querySelectorAll(".outer");
   const inners = document.querySelectorAll(".inner");
 
-  // 定数
   const COUNT = outers.length;
-  const SNAP = 360 / COUNT;
+  const SNAP  = 360 / COUNT;
 
   const R_FRONT = 185;
-  const R_BACK = 170;
+  const R_BACK  = 170;
 
   const AUTO_SPEED = -0.2;
   const DAMPING = 0.85;
@@ -19,11 +17,11 @@ export function initCarousel3D() {
   let dragging = false;
   let velocity = 0;
   let angle = 0;
-  
+
+  /* ★★★ ここが抜けてた ★★★ */
   outers.forEach((p, i) => p.dataset.base = i * SNAP);
   inners.forEach((p, i) => p.dataset.base = i * SNAP);
 
-  // アニメーション
   function animate() {
     if (!dragging) {
       angle += velocity;
@@ -33,11 +31,12 @@ export function initCarousel3D() {
     }
 
     front.style.transform = `rotateX(-22deg) rotateY(${angle}deg)`;
-    back.style.transform = `rotateX(-22deg) rotateY(${angle}deg)`;
+    back.style.transform  = `rotateX(-22deg) rotateY(${angle}deg)`;
 
     outers.forEach(p => {
       const base = +p.dataset.base;
-      p.style.transform = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
+      p.style.transform =
+        `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
     });
 
     inners.forEach(p => {
@@ -56,26 +55,19 @@ export function initCarousel3D() {
 
   animate();
 
-  // 入力処理
-  const startDrag = () => {
-    dragging = true;
-    velocity = 0;
-  };
-
-  const moveDrag = (dx) => {
-    angle += dx * 0.35;
-    velocity = dx * 0.15;
-  };
-
-  const endDrag = () => {
-    dragging = false;
-    const target = Math.round(angle / SNAP) * SNAP;
-    velocity = (target - angle) * 0.1;
-  };
-
   return {
-    startDrag,
-    moveDrag,
-    endDrag,
+    startDrag() {
+      dragging = true;
+      velocity = 0;
+    },
+    moveDrag(dx) {
+      angle += dx * 0.35;
+      velocity = dx * 0.15;
+    },
+    endDrag() {
+      dragging = false;
+      const target = Math.round(angle / SNAP) * SNAP;
+      velocity = (target - angle) * 0.1;
+    }
   };
 }
