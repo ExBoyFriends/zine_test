@@ -29,13 +29,15 @@ body {
    画像の完全ロック（最重要）
 ===================== */
 
+/* 画像の完全ロック（最重要） */
 img {
   -webkit-user-drag: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-  pointer-events: auto; /* 修正 */
+  pointer-events: none; /* 修正: 画像操作を完全にロック */
 }
+
 
 /* =====================
    BACKGROUND
