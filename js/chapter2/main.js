@@ -29,11 +29,12 @@ const glitch = document.querySelector(".glitch-overlay");
 ===================== */
 
 const goChapter25 = () => {
-  playExitTransition({
-    onComplete: () => {
-      location.href = "chapter2_5.html";
-    }
-  });
+playExitTransition({
+  onFinish: () => {
+    location.href = "chapter2_5.html";
+  }
+});
+
 };
 
 /* =====================
