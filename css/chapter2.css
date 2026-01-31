@@ -100,7 +100,7 @@ img {
 .cylinder-back  { z-index: 1; pointer-events: none; }
 
 /* =====================
-   PANEL COMMON（★ここが重要）
+   PANEL COMMON
 ===================== */
 
 .panel,
@@ -109,12 +109,9 @@ img {
   position: absolute;
   left: 50%;
   top: 50%;
-
   transform-style: preserve-3d;
   transform: translate(-50%, -50%);
-
   pointer-events: auto;
-
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
@@ -145,7 +142,6 @@ img {
   width: 220px;
   height: 290px;
   backface-visibility: hidden;
-
   background: url("../image/top_b.png") center / contain no-repeat;
   filter: brightness(0.4);
   opacity: 0.85;
