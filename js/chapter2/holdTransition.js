@@ -1,58 +1,62 @@
-// holdTransition.js
-
 let longPressTimer = null;
 let autoTimer = null;
 
 let isPressing = false;
 let hasTransitioned = false;
 
-const LONG_PRESS_DURATION = 5000;       // 5秒
-const AUTO_TRANSITION_DURATION = 10000; // 10秒
+const LONG_PRESS_DURATION = 5000;   // 長押し5秒
+const AUTO_TRANSITION_DURATION = 10000; // 自動10秒
+
+let transitionCallback = null;
+
+/* ===== 自動遷移開始（ページ表示時）===== */
+export function startAutoTransition(callback) {
+  transitionCallback = callback;
+
+  autoTimer = setTimeout(() => {
+    if (!hasTransitioned) {
+      doTransition();
+    }
+  }, AUTO_TRANSITION_DURATION);
+}
+
+/* ===== 長押し開始 ===== */
+function startPress(callback) {
+  if (isPressing || hasTransitioned) return;
+
+  isPressing = true;
+  transitionCallback = callback;
+
+  longPressTimer = setTimeout(() => {
+    if (isPressing && !hasTransitioned) {
+      doTransition();
+    }
+  }, LONG_PRESS_DURATION);
+}
+
+/* ===== 長押し終了 ===== */
+function endPress() {
+  isPressing = false;
+  clearTimeout(longPressTimer);
+}
 
 /* ===== 遷移 ===== */
-function doTransition(callback) {
+function doTransition() {
   if (hasTransitioned) return;
   hasTransitioned = true;
 
   clearTimeout(longPressTimer);
   clearTimeout(autoTimer);
 
-  callback?.();
+  transitionCallback?.();
 }
 
-/* ===== 開始 ===== */
-function startPress(callback) {
-  if (isPressing) return;
-
-  isPressing = true;
-  hasTransitioned = false;
-
-  // 長押し
-  longPressTimer = setTimeout(() => {
-    if (isPressing) {
-      doTransition(callback);
-    }
-  }, LONG_PRESS_DURATION);
-
-  // 自動遷移（触ってなくても）
-  autoTimer = setTimeout(() => {
-    doTransition(callback);
-  }, AUTO_TRANSITION_DURATION);
-}
-
-/* ===== 終了 ===== */
-function endPress() {
-  isPressing = false;
-  clearTimeout(longPressTimer);
-  clearTimeout(autoTimer);
-}
-
-/* ===== 公開API ===== */
-export function bindLongPressEvents(element, onTransition) {
+/* ===== イベントバインド ===== */
+export function bindLongPressEvents(element, callback) {
 
   const start = e => {
     e.preventDefault();
-    startPress(onTransition);
+    startPress(callback);
   };
 
   const end = e => {
