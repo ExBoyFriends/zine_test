@@ -1,7 +1,7 @@
 // carousel3d.js
 export function initCarousel3D() {
-  const front = document.querySelector(".cylinder-front");
-  const back  = document.querySelector(".cylinder-back");
+  const front  = document.querySelector(".cylinder-front");
+  const back   = document.querySelector(".cylinder-back");
   const outers = document.querySelectorAll(".outer");
   const inners = document.querySelectorAll(".inner");
 
@@ -11,11 +11,10 @@ export function initCarousel3D() {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
+  // 🔥 常に一定・方向固定
   const BASE_AUTO_SPEED = -0.2;
 
   let extraSpeed = 0;
-  let isTransitioning = false;
-
   let dragging = false;
   let angle = 0;
 
@@ -24,17 +23,14 @@ export function initCarousel3D() {
 
   function animate() {
     if (!dragging) {
-      if (isTransitioning) {
-        // 🔥 遷移中だけ：同方向のまま加速
-        angle += BASE_AUTO_SPEED * (1 + extraSpeed);
-      } else {
-        // 通常時：今まで通り
-        angle += BASE_AUTO_SPEED;
-      }
+      // 🔥 方向は常に同じ、加速は足すだけ
+      angle += BASE_AUTO_SPEED + extraSpeed;
     }
 
-    front.style.transform = `rotateX(-22deg) rotateY(${angle}deg)`;
-    back.style.transform  = `rotateX(-22deg) rotateY(${angle}deg)`;
+    front.style.transform =
+      `rotateX(-22deg) rotateY(${angle}deg)`;
+    back.style.transform =
+      `rotateX(-22deg) rotateY(${angle}deg)`;
 
     outers.forEach(p => {
       const base = +p.dataset.base;
@@ -59,12 +55,11 @@ export function initCarousel3D() {
   animate();
 
   return {
+    // 🔥 これだけで全制御OK
     setExtraSpeed(v) {
       extraSpeed = v;
     },
-    setTransitioning(v) {
-      isTransitioning = v;
-    },
+
     startDrag() {
       dragging = true;
     },
