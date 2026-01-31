@@ -34,7 +34,7 @@ img {
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-  pointer-events: none;
+  pointer-events: auto; /* 修正 */
 }
 
 /* =====================
@@ -139,7 +139,6 @@ img {
 .outer, .inner {
   will-change: transform;
 }
-
 
 /* =====================
    FRONT CARD
