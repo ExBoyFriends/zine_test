@@ -83,6 +83,7 @@ function startPress() {
   isPressing = true;
 
   window.__carousel__?.setExtraSpeed(0.8);
+  window.__carousel__?.setHolding(true);
 
   glitchTimer = setTimeout(() => {
     if (!hasTransitioned && isPressing) {
@@ -108,6 +109,8 @@ function endPress() {
   if (!isPressing || hasTransitioned) return;
 
   isPressing = false;
+
+  window.__carousel__?.setHolding(false); 
 
   clearTimeout(glitchTimer);
   clearTimeout(longPressTimer);
