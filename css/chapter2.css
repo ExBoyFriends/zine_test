@@ -89,7 +89,7 @@ img {
   perspective: 1200px;
   perspective-origin: 50% 45%;
 
-  display: flex;
+  display: block;
   align-items: center;
   justify-content: center;
 
