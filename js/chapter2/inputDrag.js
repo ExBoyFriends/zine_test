@@ -31,9 +31,10 @@ export function initDragInput(carousel) {
     lastX = x;
   };
 
-  window.__endDragCheck__ = () => {
-    if (isDragging) carousel.endDrag();
-    isDragging = false;
-  };
+  element.addEventListener("pointerup", e => {
+  window.__endDragCheck__?.();
+  endPress();
+});
+
 }
 
