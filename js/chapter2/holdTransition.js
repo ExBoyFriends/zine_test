@@ -77,9 +77,12 @@ function doTransition() {
   clearTimeout(autoTimer);
   clearTimeout(glitchTimer);
 
+  onGlitchEnd?.();
 
-  transitionCallback?.();
+  // 🔥 長押しは即 exit transition
+  window.dispatchEvent(new Event("force-exit"));
 }
+
 
 export function bindLongPressEvents(element) {
   if (!element) return;
