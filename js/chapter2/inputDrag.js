@@ -1,7 +1,7 @@
 // inputDrag.js
 export function initDragInput(carousel) {
   const scene = document.querySelector(".scene");
-  if (!scene) return;
+  if (!scene || !carousel) return;
 
   let isDragging = false;
   let startX = 0;
@@ -9,7 +9,7 @@ export function initDragInput(carousel) {
 
   const DRAG_THRESHOLD = 6;
 
-  // 🔥 holdTransition 側から呼ばれる
+  // holdTransition から呼ばれる
   window.__startDragCheck__ = e => {
     startX = lastX = e.clientX;
     isDragging = false;
@@ -22,7 +22,6 @@ export function initDragInput(carousel) {
 
     if (!isDragging) {
       if (Math.abs(totalDx) < DRAG_THRESHOLD) return;
-
       isDragging = true;
       carousel.startDrag();
     }
@@ -31,10 +30,18 @@ export function initDragInput(carousel) {
     lastX = x;
   };
 
-  element.addEventListener("pointerup", e => {
-  window.__endDragCheck__?.();
-  endPress();
-});
+  window.__endDragCheck__ = () => {
+    if (isDragging) {
+      carousel.endDrag();
+      isDragging = false;
+    }
+  };
 
+  scene.addEventListener("pointerup", () => {
+    window.__endDragCheck__();
+  });
+
+  scene.addEventListener("pointercancel", () => {
+    window.__endDragCheck__();
+  });
 }
-
