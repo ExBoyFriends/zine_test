@@ -4,33 +4,44 @@
    共通対策（全章共通）
 ===================== */
 
-// 右クリック無効（IMG限定：画像の長押しメニュー防止）
+// 右クリック無効（画像含む）
 document.addEventListener("contextmenu", e => {
-  if (e.target.tagName === "IMG") {
-    e.preventDefault();
-  }
+  e.preventDefault();
 });
 
-// 画像ドラッグ（抽出）防止
+// 画像ドラッグ無効
 document.addEventListener("dragstart", e => {
   if (e.target.tagName === "IMG") {
     e.preventDefault();
   }
 });
 
-// ピンチズーム無効（iOS）
+// iOS ピンチズーム無効
 ["gesturestart", "gesturechange", "gestureend"].forEach(type => {
   document.addEventListener(type, e => e.preventDefault());
 });
 
-// ダブルタップズーム無効（iOS + Android）
+// ダブルタップズーム無効
 let lastTouch = 0;
 document.addEventListener(
   "touchend",
   e => {
     const now = Date.now();
-    if (now - lastTouch <= 300) e.preventDefault(); // ダブルタップを防ぐ
+    if (now - lastTouch <= 300) {
+      e.preventDefault();
+    }
     lastTouch = now;
+  },
+  { passive: false }
+);
+
+// iOS Safari：画像長押し・選択・浮き出し完全防止（決定打）
+document.addEventListener(
+  "touchstart",
+  e => {
+    if (e.target.tagName === "IMG") {
+      e.preventDefault();
+    }
   },
   { passive: false }
 );
@@ -58,6 +69,4 @@ function setVh() {
 
 setVh();
 window.addEventListener("resize", setVh);
-window.addEventListener("orientationchange", setVh);
-
 window.addEventListener("orientationchange", setVh);
