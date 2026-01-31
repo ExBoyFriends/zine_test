@@ -1,5 +1,14 @@
 // effects.js
 
+
+export function startGlitch() {
+  document.body.classList.add("glitch-active");
+}
+
+export function stopGlitch() {
+  document.body.classList.remove("glitch-active");
+}
+
 // ノイズエフェクトの追加
 const addGlitchEffect = (targetElement) => {
   targetElement.addEventListener('touchstart', (e) => {
