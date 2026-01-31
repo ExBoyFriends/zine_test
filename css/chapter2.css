@@ -114,6 +114,9 @@ img {
   transform: translate(-50%, -50%);
 }
 
+.cylinder, .cylinder-front, .cylinder-back, .outer, .inner {
+  touch-action: none;  
+}
 
 /* =====================
    PANEL COMMON
