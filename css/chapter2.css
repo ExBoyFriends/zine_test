@@ -155,27 +155,6 @@ body {
 }
 
 /* =====================
-   FADE OUT OVERLAY
-===================== */
-
-#fadeout {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  z-index: 20;
-
-  opacity: 0;
-  pointer-events: none;
-
-  /* 🔥 前半じわ → 後半ドン */
-  transition: opacity 4.5s cubic-bezier(.3,0,.15,1);
-}
-
-#fadeout.active {
-  opacity: 1;
-}
-
-/* =====================
    GLITCH OVERLAY
 ===================== */
 
@@ -200,6 +179,32 @@ body {
 
 .glitch-active {
   animation: glitchFlash 0.12s infinite steps(2);
+}
+
+/* =====================
+   FADE OUT (遷移)
+===================== */
+
+#fadeout {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 40;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 5s cubic-bezier(.25,.1,.15,1);
+}
+
+#fadeout.active {
+  opacity: 1;
+}
+
+/* body全体フェード（保険） */
+body.fade-out {
+  opacity: 0;
+  transition: opacity 7s ease;
 }
 
 /* =====================
