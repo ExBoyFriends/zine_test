@@ -207,14 +207,16 @@ img {
   z-index: 40;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 5s cubic-bezier(.25,.1,.15,1);
+  transition: opacity 2.5s cubic-bezier(.25,.1,.15,1);
 }
 
-#fadeout.active { opacity: 1; }
+#fadeout.active { 
+   opacity: 1; 
+}
 
 body.fade-out {
   opacity: 0;
-  transition: opacity 7s ease;
+  transition: opacity 4s ease;
 }
 
 /* =====================
