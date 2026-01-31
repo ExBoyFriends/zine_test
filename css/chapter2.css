@@ -83,7 +83,7 @@ img {
   perspective-origin: 50% 45%;
   touch-action: none;
   z-index: 1;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 /* =====================
@@ -92,13 +92,28 @@ img {
 
 .cylinder {
   position: absolute;
+  left: 50%;
+  top: 50%;
   width: 420px;
   height: 420px;
   transform-style: preserve-3d;
+  transform: translate(-50%, -50%);
 }
 
 .cylinder-front { z-index: 2; }
 .cylinder-back  { z-index: 1; pointer-events: none; }
+
+.cylinder-front,
+.cylinder-back {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: translate(-50%, -50%);
+}
+
 
 /* =====================
    PANEL COMMON
