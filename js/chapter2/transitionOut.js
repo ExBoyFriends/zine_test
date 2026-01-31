@@ -18,9 +18,7 @@ export function playExitTransition({ onFinish: callback }) {
     return;
   }
 
-  // 🔥 ここで「遷移中フラグ」をON
-  carousel.setTransitioning(true);
-
+ 
   startTime = performance.now();
   onFinish = callback;
 
