@@ -4,15 +4,18 @@ let autoTimer = null;
 let isPressing = false;
 let hasTransitioned = false;
 
-const LONG_PRESS_DURATION = 5000;   // 長押し5秒
-const AUTO_TRANSITION_DURATION = 10000; // 自動10秒
+const LONG_PRESS_DURATION = 5000;    // 長押し5秒
+const AUTO_TRANSITION_DURATION = 500; // 自動10秒
 
 let transitionCallback = null;
 
-/* ===== 自動遷移開始（ページ表示時）===== */
+/* =====================
+   自動遷移開始
+===================== */
 export function startAutoTransition(callback) {
   transitionCallback = callback;
 
+  clearTimeout(autoTimer);
   autoTimer = setTimeout(() => {
     if (!hasTransitioned) {
       doTransition();
@@ -20,13 +23,16 @@ export function startAutoTransition(callback) {
   }, AUTO_TRANSITION_DURATION);
 }
 
-/* ===== 長押し開始 ===== */
+/* =====================
+   長押し開始
+===================== */
 function startPress(callback) {
   if (isPressing || hasTransitioned) return;
 
   isPressing = true;
   transitionCallback = callback;
 
+  clearTimeout(longPressTimer);
   longPressTimer = setTimeout(() => {
     if (isPressing && !hasTransitioned) {
       doTransition();
@@ -34,13 +40,17 @@ function startPress(callback) {
   }, LONG_PRESS_DURATION);
 }
 
-/* ===== 長押し終了 ===== */
+/* =====================
+   長押し終了
+===================== */
 function endPress() {
   isPressing = false;
   clearTimeout(longPressTimer);
 }
 
-/* ===== 遷移 ===== */
+/* =====================
+   遷移実行
+===================== */
 function doTransition() {
   if (hasTransitioned) return;
   hasTransitioned = true;
@@ -51,8 +61,11 @@ function doTransition() {
   transitionCallback?.();
 }
 
-/* ===== イベントバインド ===== */
+/* =====================
+   イベントバインド
+===================== */
 export function bindLongPressEvents(element, callback) {
+  if (!element) return;
 
   const start = e => {
     e.preventDefault();
