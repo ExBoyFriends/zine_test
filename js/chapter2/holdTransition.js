@@ -4,8 +4,8 @@ let autoTimer = null;
 let isPressing = false;
 let hasTransitioned = false;
 
-const LONG_PRESS_DURATION = 5000;    // 長押し5秒
-const AUTO_TRANSITION_DURATION = 1000; // 自動10秒
+const LONG_PRESS_DURATION = 5000;
+const AUTO_TRANSITION_DURATION = 10000; // ← 本当に10秒
 
 let transitionCallback = null;
 
@@ -36,11 +36,10 @@ export function startAutoTransition(callback) {
 /* =====================
    長押し開始
 ===================== */
-function startPress(callback) {
+function startPress() {
   if (isPressing || hasTransitioned) return;
 
   isPressing = true;
-  transitionCallback = callback;
 
   clearTimeout(longPressTimer);
   longPressTimer = setTimeout(() => {
@@ -74,12 +73,12 @@ function doTransition() {
 /* =====================
    イベントバインド
 ===================== */
-export function bindLongPressEvents(element, callback) {
+export function bindLongPressEvents(element) {
   if (!element) return;
 
   const start = e => {
     e.preventDefault();
-    startPress(callback);
+    startPress();
   };
 
   const end = e => {
