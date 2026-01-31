@@ -1,18 +1,18 @@
-// js/chapter2/main.js
+// main.js
 import { initLoader } from "./loader.js";
-import "./script.js"; // ← 実行するだけ（export 不要）
+import { initCarousel3D } from "./carousel3d.js";
+import { initDragInput } from "./inputDrag.js";
 
-/* ======================
-   loader
-====================== */
 const loader = document.getElementById("loader");
-initLoader(loader);
+initLoader(loader);  // ローダー初期化
 
-/* ======================
-   共通対策（chapter1 と同じ）
-====================== */
+// 3D回転の初期化
+const carousel = initCarousel3D();
 
-// 右クリック無効
+// ドラッグ入力の初期化
+initDragInput(carousel);
+
+// 共通対策（chapter1と同じ）
 document.addEventListener("contextmenu", e => e.preventDefault());
 
 // ピンチズーム無効（iOS）
@@ -56,4 +56,5 @@ function setVh() {
 setVh();
 window.addEventListener("resize", setVh);
 window.addEventListener("orientationchange", setVh);
+
 
