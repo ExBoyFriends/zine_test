@@ -68,7 +68,7 @@ function doTransition() {
   clearTimeout(autoTimer);
   clearTimeout(glitchTimer);
 
-  onGlitchEnd?.();
+
   transitionCallback?.();
 }
 
