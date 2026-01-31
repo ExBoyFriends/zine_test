@@ -84,3 +84,4 @@ window.addEventListener("pageshow", e => {
   // 必要なら完全初期化（黒画面が出る場合のみON）
   // requestAnimationFrame(() => setTimeout(() => location.reload(), 50));
 });
+
