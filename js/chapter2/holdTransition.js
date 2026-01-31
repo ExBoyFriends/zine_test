@@ -60,9 +60,7 @@ export function resetTransitionState() {
 export function startAutoTransition(callback) {
   clearTimeout(autoTimer);
   autoTimer = setTimeout(() => {
-    if (hasTransitioned) return;
-    hasTransitioned = true;
-    callback();
+    callback(); // ★ 自動遷移は必ず実行
   }, AUTO_TRANSITION_DURATION);
 }
 
