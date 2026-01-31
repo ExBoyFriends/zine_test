@@ -9,7 +9,7 @@ export function initDragInput(carousel) {
   let startX = 0;
   let lastX = 0;
 
-  const DRAG_THRESHOLD = 6; // px（これ超えたらドラッグ開始）
+  const DRAG_THRESHOLD = 6;
 
   /* =====================
      POINTER DOWN
@@ -33,11 +33,9 @@ export function initDragInput(carousel) {
     const dx = x - lastX;
     const totalDx = x - startX;
 
-    // まだドラッグ扱いしない（＝長押し優先）
+    // まだドラッグ扱いしない（＝長押しと共存）
     if (!isDragging) {
-      if (Math.abs(totalDx) < DRAG_THRESHOLD) {
-        return;
-      }
+      if (Math.abs(totalDx) < DRAG_THRESHOLD) return;
 
       // 🔥 ここで初めてドラッグ開始
       isDragging = true;
