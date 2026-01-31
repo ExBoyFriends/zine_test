@@ -28,7 +28,7 @@ height: 100%;
   z-index: 0;
   opacity: 0; 
   animation: 
-    bgFadeIn 2s ease forwards,
+    bgFadeIn 2s ease forwards;
 }
 
 .background::after {
