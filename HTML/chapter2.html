@@ -2,83 +2,100 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
   <title>Chapter 2</title>
+
   <link rel="stylesheet" href="../css/chapter2.css">
 
   <style>
-    /* iOS Safariでのズームやスクロール無効化 */
+    /* ===== iOS Safari 最低限ロック ===== */
+
     html, body {
-      touch-action: none; /* ピンチズームを無効化 */
-      overflow: hidden;    /* スクロール無効化 */
-      background: #000;    /* 背景色 */
-      user-select: none;   /* ユーザー選択無効 */
-      -webkit-user-select: none; /* Safariの選択無効 */
-      -webkit-touch-callout: none; /* 画像の長押し無効 */
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
     }
 
-    /* SceneやPanelにもtouch-actionを無効化 */
-    .scene, .panel, .cylinder {
+    /* 操作対象は scene のみ */
+    .scene {
       touch-action: none;
     }
 
-    /* 画像のドラッグと選択無効 */
+    /* 画像は完全ロック */
     img {
-      pointer-events: none; /* 画像操作を無効化 */
-      user-select: none;    /* ユーザー選択無効 */
-      -webkit-user-select: none; /* Safariの選択無効 */
-      -webkit-touch-callout: none; /* 長押し無効 */
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
     }
   </style>
 </head>
+
 <body>
 
-<div class="background"></div>
-<div id="loader"></div>
-<div id="fadeout"></div>
-<div class="fade-overlay"></div>
-<div class="glitch-overlay"></div>
+  <div class="background"></div>
+  <div id="loader"></div>
+  <div id="fadeout"></div>
+  <div class="glitch-overlay"></div>
 
-<div class="scene">
-  <div class="cylinder cylinder-front">
-    <div class="panel outer" style="--i:0"><img src="../image/queen_b.png"></div>
-    <div class="panel outer" style="--i:1"><img src="../image/king_b.png"></div>
-    <div class="panel outer" style="--i:2"><img src="../image/jack_b.png"></div>
-    <div class="panel outer" style="--i:3"><img src="../image/joker1_b.png"></div>
-    <div class="panel outer" style="--i:4"><img src="../image/joker2_b.png"></div>
+  <div class="scene">
+
+    <div class="cylinder cylinder-front">
+      <div class="panel outer" style="--i:0">
+        <img src="../image/queen_b.png">
+      </div>
+      <div class="panel outer" style="--i:1">
+        <img src="../image/king_b.png">
+      </div>
+      <div class="panel outer" style="--i:2">
+        <img src="../image/jack_b.png">
+      </div>
+      <div class="panel outer" style="--i:3">
+        <img src="../image/joker1_b.png">
+      </div>
+      <div class="panel outer" style="--i:4">
+        <img src="../image/joker2_b.png">
+      </div>
+    </div>
+
+    <div class="cylinder cylinder-back">
+      <div class="panel inner" style="--i:0"></div>
+      <div class="panel inner" style="--i:1"></div>
+      <div class="panel inner" style="--i:2"></div>
+      <div class="panel inner" style="--i:3"></div>
+      <div class="panel inner" style="--i:4"></div>
+    </div>
+
   </div>
 
-  <div class="cylinder cylinder-back">
-    <div class="panel inner" style="--i:0"></div>
-    <div class="panel inner" style="--i:1"></div>
-    <div class="panel inner" style="--i:2"></div>
-    <div class="panel inner" style="--i:3"></div>
-    <div class="panel inner" style="--i:4"></div>
-  </div>
-</div>
+  <!-- 共通 -->
+  <script type="module" src="../js/base.js"></script>
 
-<script type="module" src="../js/base.js"></script>
-<script type="module" src="../js/chapter2/main.js"></script>
+  <!-- Chapter2 -->
+  <script type="module" src="../js/chapter2/main.js"></script>
 
-<script>
-  // ピンチズーム無効化
-  ["gesturestart", "gesturechange", "gestureend"].forEach(type => {
-    document.addEventListener(type, e => e.preventDefault(), { passive: false });
-  });
+  <!-- iOS Safari gesture 制御 -->
+  <script>
+    ["gesturestart", "gesturechange", "gestureend"].forEach(type => {
+      document.addEventListener(type, e => e.preventDefault(), { passive: false });
+    });
 
-  // ダブルタップズーム無効化
-  let lastTouch = 0;
-  document.addEventListener("touchend", e => {
-    const now = Date.now();
-    if (now - lastTouch <= 300) {
-      e.preventDefault();  // ダブルタップによるズームを防止
-    }
-    lastTouch = now;
-  }, { passive: false });
-
-  // touchmoveによるズーム防止（必要に応じて追加）
-  document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
-</script>
+    let lastTouch = 0;
+    document.addEventListener("touchend", e => {
+      const now = Date.now();
+      if (now - lastTouch <= 300) e.preventDefault();
+      lastTouch = now;
+    }, { passive: false });
+  </script>
 
 </body>
 </html>
+
