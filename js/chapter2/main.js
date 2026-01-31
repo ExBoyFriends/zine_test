@@ -22,12 +22,21 @@ initDragInput(carousel);
 /* =====================
    Chapter2 → 2.5 遷移
 ===================== */
-const scene = document.querySelector(".scene");
+const fadeout = document.getElementById("fadeout");
 
 const goChapter25 = () => {
-  console.log("Chapter 2.5 へ移行");
-  location.href = "chapter2_5.html";
+  if (fadeout) {
+    fadeout.classList.add("active");
+
+    // フェードアウト完了後に遷移
+    setTimeout(() => {
+      location.href = "chapter2_5.html";
+    }, 2000); // ← CSSと同じ時間
+  } else {
+    location.href = "chapter2_5.html";
+  }
 };
+
 
 /* =====================
    表示完了後に開始
