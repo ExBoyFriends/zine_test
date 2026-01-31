@@ -77,5 +77,34 @@ if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
 }
 
 
+/* =====================
+   Safari 戻る対策（bfcache）
+===================== */
+
+window.addEventListener("pageshow", e => {
+  if (e.persisted) {
+    // フェード・ブラックアウト解除
+    document.body.classList.remove("fade-out");
+
+    const fade = document.getElementById("fadeout");
+    if (fade) {
+      fade.classList.remove("active");
+      fade.style.opacity = "0";
+      fade.style.pointerEvents = "none";
+    }
+
+    // 念のためスクロール位置リセット
+    window.scrollTo(0, 0);
+
+    // vh 再計算
+    document.documentElement.style.setProperty(
+      "--vh",
+      `${window.innerHeight * 0.01}px`
+    );
+
+    // 🔥 完全に初期状態に戻したいなら（推奨）
+    location.reload();
+  }
+});
 
 
