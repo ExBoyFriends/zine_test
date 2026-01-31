@@ -4,6 +4,10 @@ import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
 import { bindLongPressEvents } from './holdTransition.js';
 
+// 長押しイベントをバインド
+const carouselWrapper = document.querySelector('.scene');  // 長押し判定をしたい要素
+bindLongPressEvents(carouselWrapper);
+
 const loader = document.getElementById("loader");
 initLoader(loader);  // ローダー初期化
 
