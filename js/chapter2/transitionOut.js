@@ -27,16 +27,18 @@ export function playExitTransition({ onFinish: callback }) {
   function tick(now) {
     const t = now - startTime;
 
-    /* ===== フェード ===== */
-    if (t >= FADE_START) {
-      const p = Math.min((t - FADE_START) / (FADE_END - FADE_START), 1);
-      overlay.style.opacity = p ** 1.6;
-    }
+    
 
     /* ===== 加速 ===== */
     if (t >= NORMAL_END) {
       const p = Math.min((t - NORMAL_END) / (FADE_END - NORMAL_END), 1);
-      carousel.setExtraSpeed(p ** 1.6 * 1.4);
+      carousel.setExtraSpeed(p ** 1.6 * 2.8);
+    }
+
+     /* ===== フェード ===== */
+    if (t >= FADE_START) {
+      const p = Math.min((t - FADE_START) / (FADE_END - FADE_START), 1);
+      overlay.style.opacity = p ** 2.2;
     }
 
     /* ===== 完了 ===== */
