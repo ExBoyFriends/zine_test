@@ -1,4 +1,3 @@
-// carousel3d.js
 export function initCarousel3D() {
   const front = document.querySelector(".cylinder-front");
   const back = document.querySelector(".cylinder-back");
@@ -59,41 +58,42 @@ export function initCarousel3D() {
   function animate() {
     extraSpeed += (targetExtraSpeed - extraSpeed) * accelerationFactor;
 
-   if (extraSpeed > 8) {
-    extraSpeed = 8 + (extraSpeed - 8) * 0.1; // 上限を越えないようにする
+    if (extraSpeed > 8) {
+      extraSpeed = 8 + (extraSpeed - 8) * 0.1; // 上限を越えないようにする
+    }
+
+    if (!dragging) {
+      visualAngle += BASE_AUTO_SPEED + extraSpeed;
+      if (!isHolding) angle = visualAngle;
+    }
+
+    // 円筒自体の回転（位置は固定）
+    front.style.transform =
+      `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+    back.style.transform =
+      `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+
+    // 各カードは回転＋奥行きの調整
+    outers.forEach(p => {
+      const base = +p.dataset.base;
+      p.style.transform =
+        `translate(-50%, -50%)
+         rotateY(${base + angle}deg)
+         translateZ(${R_FRONT}px)`;
+    });
+
+    inners.forEach(p => {
+      const base = +p.dataset.base;
+      p.style.transform =
+        `translate(-50%, -50%)
+         rotateY(${base + angle + 180}deg)
+         translateZ(${R_BACK}px)
+         rotateY(180deg)`;
+    });
+
+    requestAnimationFrame(animate);
   }
 
-  if (!dragging) {
-    visualAngle += BASE_AUTO_SPEED + extraSpeed;
-    if (!isHolding) angle = visualAngle;
-  }
-
-   // 円筒自体の回転（位置は固定）
-  front.style.transform =
-    `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
-  back.style.transform =
-    `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
-
-  // 各カードは回転＋奥行きの調整
-  outers.forEach(p => {
-    const base = +p.dataset.base;
-    p.style.transform =
-      `translate(-50%, -50%)
-       rotateY(${base + angle}deg)
-       translateZ(${R_FRONT}px)`;
-  });
-
-  inners.forEach(p => {
-    const base = +p.dataset.base;
-    p.style.transform =
-      `translate(-50%, -50%)
-       rotateY(${base + angle + 180}deg)
-       translateZ(${R_BACK}px)
-       rotateY(180deg)`;
-  });
-
-  requestAnimationFrame(animate);
-}
   animate();
 
   return {
@@ -121,3 +121,4 @@ export function initCarousel3D() {
     startTransition
   };
 }
+
