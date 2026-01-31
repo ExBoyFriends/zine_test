@@ -25,13 +25,18 @@ document.addEventListener(
   "touchend",
   e => {
     const now = Date.now();
+    // ダブルタップを検知し、ズームを防止
     if (now - lastTouch <= 300) {
-      e.preventDefault();
+      e.preventDefault();  // ズームを防ぐ
     }
     lastTouch = now;
   },
   { passive: false }
 );
+// iOS のピンチズームを完全に無効化
+["gesturestart", "gesturechange", "gestureend"].forEach(type => {
+  document.addEventListener(type, e => e.preventDefault(), { passive: false });
+});
 
 // iOS Safari：画像長押し・選択・浮き出し完全防止（決定打）
 document.addEventListener(
