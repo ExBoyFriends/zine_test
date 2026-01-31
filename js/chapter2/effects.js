@@ -1,16 +1,17 @@
 // effects.js
 
-
+// グリッチ効果開始
 export function startGlitch() {
   document.body.classList.add("glitch-active");
 }
 
+// グリッチ効果停止
 export function stopGlitch() {
   document.body.classList.remove("glitch-active");
 }
 
 // ノイズエフェクトの追加
-const addGlitchEffect = (targetElement) => {
+export function addGlitchEffect(targetElement) {
   targetElement.addEventListener('touchstart', (e) => {
     const body = document.body;
 
@@ -29,7 +30,7 @@ const addGlitchEffect = (targetElement) => {
 
     e.preventDefault();
   });
-};
+}
 
 // ノイズと歪みを追加するスタイル
 const style = document.createElement('style');
@@ -62,6 +63,3 @@ style.textContent = `
 
 document.head.append(style);
 
-// 画面全体や特定のエレメントにノイズエフェクトを追加
-const targetElement = document.querySelector('.scene'); // ここを必要なエレメントに変更
-addGlitchEffect(targetElement);
