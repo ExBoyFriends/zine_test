@@ -48,13 +48,31 @@ export function bindLongPressEvents(element) {
 
   element.addEventListener("pointerdown", e => {
     element.setPointerCapture?.(e.pointerId);
+
+    window.__startDragCheck__?.(e);
     startPress();
   });
 
-  element.addEventListener("pointerup", endPress);
-  element.addEventListener("pointercancel", endPress);
-  element.addEventListener("pointerleave", endPress);
+  element.addEventListener("pointermove", e => {
+    window.__moveDragCheck__?.(e);
+  });
+
+  element.addEventListener("pointerup", e => {
+    window.__endDragCheck__?.();
+    endPress();
+  });
+
+  element.addEventListener("pointercancel", () => {
+    window.__endDragCheck__?.();
+    endPress();
+  });
+
+  element.addEventListener("pointerleave", () => {
+    window.__endDragCheck__?.();
+    endPress();
+  });
 }
+
 
 /* =====================
    内部処理
