@@ -1,13 +1,15 @@
 let longPressTimer = null;
 let autoTimer = null;
 let glitchTimer = null;
+let accelTimer = null;
 
 let isPressing = false;
 let hasTransitioned = false;
 
-const LONG_PRESS_DURATION = 3000; // 3秒で即遷移
+const LONG_PRESS_DURATION = 3000;
 const AUTO_TRANSITION_DURATION = 10000;
-const GLITCH_TRIGGER = 800; // 0.8秒で異変開始
+const GLITCH_TRIGGER = 800;
+const FINAL_ACCEL_TRIGGER = 1800;
 
 let transitionCallback = null;
 let onGlitchStart = null;
@@ -21,6 +23,7 @@ export function resetTransitionState() {
   clearTimeout(longPressTimer);
   clearTimeout(autoTimer);
   clearTimeout(glitchTimer);
+  clearTimeout(accelTimer);
 
   isPressing = false;
   hasTransitioned = false;
@@ -43,9 +46,14 @@ export function setHoldEffects({ glitchStart, glitchEnd }) {
 export function bindLongPressEvents(element) {
   if (!element) return;
 
-  element.addEventListener("pointerdown", startPress);
+  element.addEventListener("pointerdown", e => {
+    element.setPointerCapture?.(e.pointerId);
+    startPress(e);
+  });
+
   element.addEventListener("pointerup", endPress);
   element.addEventListener("pointercancel", endPress);
+  element.addEventListener("pointerleave", endPress);
 }
 
 /* =====================
@@ -59,17 +67,27 @@ function startPress(e) {
   isPressing = true;
   console.log("🔥 startPress");
 
-  // 押した瞬間から違和感
+  // 押した瞬間：軽い違和感
   window.__carousel__?.setExtraSpeed(0.8);
 
+  // 0.8秒：異変（グリッチ）
   glitchTimer = setTimeout(() => {
-    if (!hasTransitioned) {
+    if (!hasTransitioned && isPressing) {
       console.log("⚡ glitch start");
       onGlitchStart?.();
       window.__carousel__?.setExtraSpeed(2.5);
     }
   }, GLITCH_TRIGGER);
 
+  // 1.8秒：後半の狂気加速
+  accelTimer = setTimeout(() => {
+    if (!hasTransitioned && isPressing) {
+      console.log("🌀 final accel");
+      window.__carousel__?.setExtraSpeed(5.5);
+    }
+  }, FINAL_ACCEL_TRIGGER);
+
+  // 3秒：強制遷移
   longPressTimer = setTimeout(() => {
     console.log("🔥 HOLD COMPLETE");
     doTransition();
@@ -84,6 +102,7 @@ function endPress() {
 
   clearTimeout(glitchTimer);
   clearTimeout(longPressTimer);
+  clearTimeout(accelTimer);
 
   onGlitchEnd?.();
   window.__carousel__?.setExtraSpeed(0);
@@ -96,7 +115,7 @@ function doTransition() {
   clearTimeout(longPressTimer);
   clearTimeout(autoTimer);
   clearTimeout(glitchTimer);
+  clearTimeout(accelTimer);
 
-  // 🔥 main.js に通知
   window.dispatchEvent(new Event("force-exit"));
 }
