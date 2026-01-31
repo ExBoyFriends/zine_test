@@ -10,6 +10,16 @@ const AUTO_TRANSITION_DURATION = 1000; // 自動10秒
 let transitionCallback = null;
 
 /* =====================
+   状態リセット
+===================== */
+export function resetTransitionState() {
+  clearTimeout(longPressTimer);
+  clearTimeout(autoTimer);
+  isPressing = false;
+  hasTransitioned = false;
+}
+
+/* =====================
    自動遷移開始
 ===================== */
 export function startAutoTransition(callback) {
