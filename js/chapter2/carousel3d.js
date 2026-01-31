@@ -34,10 +34,11 @@ export function initCarousel3D() {
     }
 
     // 円筒自体は回すだけ（位置は固定）
-    front.style.transform =
-      `rotateX(-22deg) rotateY(${visualAngle}deg)`;
-    back.style.transform =
-      `rotateX(-22deg) rotateY(${visualAngle}deg)`;
+   front.style.transform =
+  `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+back.style.transform =
+  `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+
 
     // 🔒 各カードは「回転＋奥行き」だけ
     outers.forEach(p => {
