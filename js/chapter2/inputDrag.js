@@ -1,40 +1,35 @@
 // inputDrag.js
 export function initDragInput(carousel) {
+  const scene = document.querySelector(".scene");
+  if (!scene) return;
+
+  let isDown = false;
+  let isDragging = false;
+
+  let startX = 0;
   let lastX = 0;
 
-  const start = x => {
-    lastX = x;
-    carousel.startDrag();
-  };
+  const DRAG_THRESHOLD = 6; // px（これ超えたらドラッグ）
 
-  const move = x => {
-    const dx = x - lastX;
-    carousel.moveDrag(dx);
-    lastX = x;
-  };
+  /* =====================
+     POINTER DOWN
+  ===================== */
 
-  const end = () => {
-    carousel.endDrag();
-  };
+  scene.addEventListener("pointerdown", e => {
+    isDown = true;
+    isDragging = false;
 
-  // マウスイベント
-  window.addEventListener("mousedown", e => start(e.clientX));
-  window.addEventListener("mousemove", e => move(e.clientX));
-  window.addEventListener("mouseup", end);
+    startX = lastX = e.clientX;
 
-  // タッチイベント
-  window.addEventListener("touchstart", e => {
-    e.preventDefault();
-    start(e.touches[0].clientX);
-  }, { passive: false });
+    scene.setPointerCapture?.(e.pointerId);
+  });
 
-  window.addEventListener("touchmove", e => {
-    e.preventDefault();
-    move(e.touches[0].clientX);
-  }, { passive: false });
+  /* =====================
+     POINTER MOVE
+  ===================== */
 
-  window.addEventListener("touchend", e => {
-    e.preventDefault();
-    end();
-  }, { passive: false });
-}
+  scene.addEventListener("pointermove", e => {
+    if (!isDown) return;
+
+    const x = e.clientX;
+
