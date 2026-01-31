@@ -48,6 +48,7 @@ height: 100%;
   animation: siren 2.5s linear infinite;
   transition: opacity 3.5s ease;
   pointer-events: none;
+  opacity: 1;
 }
 
 /* ===== シーン ===== */
