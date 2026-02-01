@@ -35,6 +35,7 @@ if (carousel) {
 
 // DOM
 const scene = document.querySelector(".scene");
+const fadeout = document.getElementById("fadeout");
 
 // グリッチ初期化
 initGlitchLayer?.();
@@ -65,7 +66,13 @@ function forceVisibleState() {
     scene.classList.remove("fade-out", "exit");
   }
 
-  // グリッチ状態を完全解除（effects.js 経由）
+  // 🔑 exit フェードを完全解除（最重要）
+  if (fadeout) {
+    fadeout.style.opacity = "0";
+    fadeout.style.pointerEvents = "none";
+  }
+
+  // グリッチ状態を完全解除
   stopGlitch();
 
   document.body.style.background = "";
