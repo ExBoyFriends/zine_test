@@ -81,19 +81,6 @@
 <script src="../js/base.js"></script>
 <script type="module" src="../js/chapter2_5/main.js"></script>
 
-    <!-- iOS Safari ジェスチャ完全封印 -->
-  <script>
-    ["gesturestart", "gesturechange", "gestureend"].forEach(type => {
-      document.addEventListener(type, e => e.preventDefault(), { passive: false });
-    });
-
-    let lastTouch = 0;
-    document.addEventListener("touchend", e => {
-      const now = Date.now();
-      if (now - lastTouch <= 300) e.preventDefault();
-      lastTouch = now;
-    }, { passive: false });
-  </script>
 
 </body>
 </html>
