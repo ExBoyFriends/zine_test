@@ -2,6 +2,7 @@
 
 export const state = {
   index: 0,
+  prevIndex: null,
   showingText: false
 };
 
