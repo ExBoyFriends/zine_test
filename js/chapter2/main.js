@@ -91,9 +91,6 @@ window.addEventListener("pageshow", e => {
       loader.style.display = "none";
     }
 
-    // グリッチ残留対策
-    glitch?.classList.remove("glitch-active");
-
     // カルーセル状態リセット
     if (carousel) {
       carousel?.setHolding?.(false);
