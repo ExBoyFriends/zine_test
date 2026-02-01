@@ -8,7 +8,11 @@ import {
   setHoldEffects
 } from "./holdTransition.js";
 import { playExitTransition } from "./transitionOut.js";
-import { initGlitchLayer } from "./effects.js";
+import {
+  initGlitchLayer,
+  startGlitch,
+  stopGlitch
+} from "./effects.js";
 
 /* =====================
    初期化（初回ロード）
@@ -31,7 +35,6 @@ if (carousel) {
 
 // DOM
 const scene = document.querySelector(".scene");
-const glitch = document.querySelector(".glitch-overlay");
 
 // グリッチ初期化
 initGlitchLayer?.();
@@ -52,16 +55,34 @@ function goChapter25() {
 }
 
 /* =====================
+   見た目の強制復帰
+===================== */
+
+function forceVisibleState() {
+  if (scene) {
+    scene.style.opacity = "1";
+    scene.style.filter = "none";
+    scene.classList.remove("fade-out", "exit");
+  }
+
+  // グリッチ状態を完全解除（effects.js 経由）
+  stopGlitch();
+
+  document.body.style.background = "";
+  document.documentElement.style.background = "";
+}
+
+/* =====================
    長押し演出フック
 ===================== */
 
 setHoldEffects({
   glitchStart: () => {
-    glitch?.classList.add("glitch-active");
+    startGlitch();
     carousel?.setExtraSpeed?.(1.5);
   },
   glitchEnd: () => {
-    glitch?.classList.remove("glitch-active");
+    stopGlitch();
     carousel?.setExtraSpeed?.(0);
   }
 });
@@ -79,29 +100,53 @@ window.addEventListener("force-exit", goChapter25);
 ===================== */
 
 window.addEventListener("pageshow", e => {
-  // 🔥 戻る（bfcache復帰）の場合
   if (e.persisted) {
-    // 遷移・長押し状態を完全リセット
+    /* ===== 戻る（bfcache） ===== */
+
+    // ① まず黒画面を完全回避
+    forceVisibleState();
+
+    // ② 内部状態リセット
     resetTransitionState?.();
     goChapter25._done = false;
 
-    // ローダーが残ってたら強制排除
+    // ローダー残留対策
     if (loader) {
       loader.classList.add("hide");
       loader.style.display = "none";
     }
 
-    // カルーセル状態リセット
+    // カルーセルを安全状態へ
     if (carousel) {
-      carousel?.setHolding?.(false);
-      carousel?.setExtraSpeed?.(0);
+      carousel.setHolding?.(false);
+      carousel.setExtraSpeed?.(0);
     }
+
+    // ③ 戻った瞬間、すでに異変
+    requestAnimationFrame(() => {
+      startGlitch();
+      carousel?.setExtraSpeed?.(1.2);
+    });
+
+    // ④ 収束
+    setTimeout(() => {
+      stopGlitch();
+      carousel?.setExtraSpeed?.(0);
+    }, 1200);
+
+    // ⑤ auto遷移は演出後
+    setTimeout(() => {
+      startAutoTransition?.(goChapter25);
+    }, 1200);
+
+  } else {
+    /* ===== 初回ロード ===== */
+    startAutoTransition?.(goChapter25);
   }
 
-  // 🔁 毎回必ず再セット
-  startAutoTransition?.(goChapter25);
-
+  // 長押しは毎回再バインド
   if (scene) {
     bindLongPressEvents(scene);
   }
 });
+
