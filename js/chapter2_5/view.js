@@ -12,20 +12,20 @@ export function getPages() {
 
 export function showPage(index) {
   pages.forEach(p => {
-    p.classList.remove("active", "show-text", "flipped");
+    p.classList.remove("active", "show-text");
   });
 
   const page = pages[index];
   if (!page) return;
 
-  page.classList.add("active");
-  
-   if (page.classList.contains("dual")) {
+   if (page.classList.contains("dual") && state.prevIndex !== index) {
     dualFlipped = !dualFlipped;
     page.classList.toggle("flipped", dualFlipped);
   }
-  
+
   page.classList.add("active");
+
+  state.prevIndex = index;
   
   state.showingText = false;
 }
