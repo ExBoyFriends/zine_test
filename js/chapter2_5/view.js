@@ -15,7 +15,7 @@ export function getPages() {
 ===================== */
 function updateDots(index) {
   dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === index + 1);
+    dot.classList.toggle("active", i === index);
   });
 }
 
