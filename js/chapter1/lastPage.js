@@ -8,7 +8,6 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
   const slideTop = lastPage?.querySelector('.slide-top'); // 見た目用
   const topHit   = lastPage?.querySelector('.top-hit');   // 🔴 開閉用
   const tapCover = lastPage?.querySelector('.tap-cover'); // 🟢 リンク用
-  const rightDot = document.querySelector('.dot.right-dot');
 
   if (!lastPage || !slideTop || !topHit || !tapCover) return;
 
@@ -40,8 +39,6 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
 
     const slideWidth = slideTop.clientWidth / 2;
     applyX(-slideWidth);
-
-    rightDot?.classList.add('active');
   };
 
   const close = () => {
@@ -49,7 +46,6 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
     lastPage.classList.remove('opened');
 
     applyX(0);
-    rightDot?.classList.remove('active');
   };
 
   /* =====================
