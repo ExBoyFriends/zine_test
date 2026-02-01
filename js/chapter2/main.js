@@ -1,4 +1,4 @@
-import { initLoader } from "./loader.js";
+import { initLoader } from "../loader.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
 import {
