@@ -55,15 +55,15 @@ body.ready .chapter {
   
   object-fit: contain;
 
-  transform: translate(-65%, -50%);
+  transform: translate(-50%, -50%);
 }
 
 .page.dual img:nth-child(1) {
-  transform: translate(-35%, -50%);
+  transform: translate(-70%, -50%);
 }
 
 .page.dual img:nth-child(2) {
-  transform: translate(-45%, -50%);
+  transform: translate(-30%, -50%);
 }
 
 .poem {
