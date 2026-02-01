@@ -7,27 +7,26 @@ export function getPages() {
 }
 
 export function showPage(index) {
-  pages.forEach(p => {
-    p.classList.remove("active", "show-text");
-  });
+  const current = document.querySelector(".page.active");
 
+  if (current) {
+    current.classList.add("fading-out");
+
+    // フェードアウト完了後に切り替え
+    setTimeout(() => {
+      current.classList.remove("active", "fading-out");
+
+      activate(index);
+    }, 700); // ← フェードアウト時間（体感）
+  } else {
+    activate(index);
+  }
+}
+
+function activate(index) {
   const page = pages[index];
   if (!page) return;
 
+  // フェードインはCSS任せ
   page.classList.add("active");
-}
-
-export function showText(index) {
-  const page = pages[index];
-  if (!page) return;
-
-  page.classList.add("show-text");
-  page.dataset.textShown = "1";
-}
-
-export function hideText(index) {
-  const page = pages[index];
-  if (!page) return;
-
-  page.classList.remove("show-text");
 }
