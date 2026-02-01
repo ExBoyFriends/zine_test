@@ -14,7 +14,7 @@ window.addEventListener("load", () => {
     showPage(state.index);
     initTapInteraction();
 
-    // dots は少し遅れて出す（chapter1と同じ間）
+    // dots は少し遅れて出す（chapter1と同じ呼吸）
     requestAnimationFrame(() => {
       setTimeout(() => {
         const dots = document.querySelector(".dots");
@@ -23,3 +23,4 @@ window.addEventListener("load", () => {
     });
   });
 });
+
