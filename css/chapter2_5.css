@@ -1,31 +1,21 @@
 /* chapter2.5.css */
 
-html,
 body {
+  background: #000;
   color: #fff;
-  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
 }
 
-body {
-  opacity: 1;
-  transition: opacity 1.8s ease;
-}
-
-body.ready {
-  opacity: 1;
-}
-
-/* =====================
-   Chapter Wrapper
-===================== */
 .chapter {
   position: fixed;
   inset: 0;
+  opacity: 0;
+  transition: opacity 1.8s ease;
 }
 
-/* =====================
-   Page
-===================== */
+body.ready .chapter {
+  opacity: 1;
+}
+
 .page {
   position: absolute;
   inset: 0;
@@ -43,23 +33,12 @@ body.ready {
   pointer-events: auto;
 }
 
-.page.fading-out {
-  opacity: 0;
-}
-
-/* =====================
-   Single Image
-===================== */
 .page > img {
   max-width: 90vw;
   max-height: 90vh;
   object-fit: contain;
-  transition: opacity 0.8s ease;
 }
 
-/* =====================
-   Dual Images
-===================== */
 .page.dual .dual-images {
   display: flex;
   width: 100%;
@@ -70,12 +49,8 @@ body.ready {
   width: 50%;
   height: 100%;
   object-fit: contain;
-  transition: opacity 0.8s ease;
 }
 
-/* =====================
-   Poem Box
-===================== */
 .poem {
   position: absolute;
   left: 50%;
@@ -84,30 +59,18 @@ body.ready {
 
   min-width: 60%;
   padding: 1.2em 1.6em;
-
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.55);
 
   text-align: center;
   line-height: 1.8;
-  font-size: 16px;
-
   opacity: 0;
-  pointer-events: none;
   transition: opacity 0.6s ease;
 }
 
-/* =====================
-   Text Visibility
-===================== */
 .page.show-text .poem {
   opacity: 1;
 }
 
 .page.show-text img {
-  opacity: 0.75;
-}
-
-.page.dual.show-text img {
   opacity: 0.75;
 }
