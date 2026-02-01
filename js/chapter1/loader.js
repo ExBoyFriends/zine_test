@@ -1,3 +1,5 @@
+//chapter1
+
 export function initLoader(pages, loader, dots) {
   const start = () => {
     pages[0].classList.add('active');
