@@ -1,0 +1,10 @@
+// js/chapter2_5/state.js
+
+export const state = {
+  index: 0,
+  showingText: false
+};
+
+export function resetTextState() {
+  state.showingText = false;
+}
