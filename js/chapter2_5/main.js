@@ -5,6 +5,8 @@ import { showPage } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
 
 window.addEventListener("load", () => {
+  initLoader();
+  
   requestAnimationFrame(() => {
     document.body.classList.add("ready");
 
