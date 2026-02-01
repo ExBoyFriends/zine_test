@@ -6,8 +6,7 @@ export function getPages() {
 
 export function showPage(index) {
   pages.forEach(p => {
-    p.classList.remove("active", "fading-out", "show-text");
-    delete p.dataset.textShown;
+    p.classList.remove("active", "show-text");
   });
 
   const page = pages[index];
@@ -21,8 +20,15 @@ export function showText(index) {
   if (!page) return;
 
   page.classList.add("show-text");
-  page.dataset.textShown = "1";
 }
+
+export function hideText(index) {
+  const page = pages[index];
+  if (!page) return;
+
+  page.classList.remove("show-text");
+}
+
 
 export function hideText(index) {
   const page = pages[index];
