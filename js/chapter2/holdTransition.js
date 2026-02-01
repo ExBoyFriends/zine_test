@@ -4,13 +4,15 @@ import { startGlitch, stopGlitch } from "./effects.js";
    内部状態
 ===================== */
 
+let isPressing = false;
+let exited = false;
+
+let startTime = 0;              // ページ表示からの絶対時間
+let rafId = null;
+
 let longPressTimer = null;
 let glitchTimer = null;
 let accelTimer = null;
-let autoTimer = null;
-
-let isPressing = false;
-let hasTransitioned = false;
 
 /* =====================
    外部エフェクトフック
@@ -47,16 +49,29 @@ const EXIT_SPEED = 10;
 export function resetTransitionState() {
   clearAllTimers();
   isPressing = false;
-  hasTransitioned = false;
+  exited = false;
+  startTime = performance.now();
 }
 
 export function startAutoTransition(callback) {
-  clearTimeout(autoTimer);
-  autoTimer = setTimeout(() => {
-    if (hasTransitioned) return;
-    hasTransitioned = true;
-    callback();
-  }, AUTO_TRANSITION_DURATION);
+  cancelAnimationFrame(rafId);
+
+  function tick(now) {
+    if (exited) return;
+
+    const elapsed = now - startTime;
+
+    // ⏱ 絶対時間で必ず遷移
+    if (elapsed >= AUTO_TRANSITION_DURATION) {
+      exited = true;
+      callback();
+      return;
+    }
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  rafId = requestAnimationFrame(tick);
 }
 
 export function bindLongPressEvents(element) {
@@ -82,51 +97,63 @@ export function bindLongPressEvents(element) {
 ===================== */
 
 function startPress() {
-  if (isPressing || hasTransitioned) return;
+  if (isPressing || exited) return;
   isPressing = true;
 
   window.__carousel__?.setHolding(true);
   window.__carousel__?.setExtraSpeed(BASE_HOLD_SPEED);
 
+  // グリッチ開始
   glitchTimer = setTimeout(() => {
-    if (!isPressing || hasTransitioned) return;
+    if (!isPressing || exited) return;
 
     startGlitch();
     effects.glitchStart?.();
-
     window.__carousel__?.setExtraSpeed(GLITCH_SPEED);
   }, GLITCH_TRIGGER);
 
+  // 最終加速
   accelTimer = setTimeout(() => {
-    if (!isPressing || hasTransitioned) return;
+    if (!isPressing || exited) return;
     window.__carousel__?.setExtraSpeed(PRE_EXIT_MAX);
   }, FINAL_ACCEL_TRIGGER);
 
+  // 🚀 長押しスキップ（時間より早い場合のみ）
   longPressTimer = setTimeout(() => {
-    if (hasTransitioned) return;
-    hasTransitioned = true;
+    if (exited) return;
 
+    exited = true;
     window.__carousel__?.setExtraSpeed(EXIT_SPEED);
     window.dispatchEvent(new Event("force-exit"));
   }, LONG_PRESS_DURATION);
 }
 
 function endPress() {
-  if (!isPressing || hasTransitioned) return;
+  if (!isPressing || exited) return;
 
   isPressing = false;
-  clearAllTimers();
+  clearPressTimers();
 
   stopGlitch();
   effects.glitchEnd?.();
 
-  // 🔑 holding 解除のみ。速度は戻さない
+  // 🔑 holding 解除のみ（速度は保持）
   window.__carousel__?.setHolding(false);
 }
 
-function clearAllTimers() {
+/* =====================
+   タイマー管理
+===================== */
+
+function clearPressTimers() {
   clearTimeout(longPressTimer);
   clearTimeout(glitchTimer);
   clearTimeout(accelTimer);
-  clearTimeout(autoTimer);
 }
+
+function clearAllTimers() {
+  clearPressTimers();
+  cancelAnimationFrame(rafId);
+}
+
+
