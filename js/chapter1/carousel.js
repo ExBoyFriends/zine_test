@@ -15,6 +15,9 @@ export function initCarousel(wrapper, pages) {
       dot.classList.toggle('active', i === currentPage);
     });
   }
+  function getInner(page) {
+  return page.querySelector('.carousel-inner');
+}
 
   /* =====================
      pointer down
