@@ -10,13 +10,18 @@ export function getPages() {
 
 export function showPage(index) {
   pages.forEach(p => {
-    p.classList.remove("active", "show-text");
+    p.classList.remove("active", "show-text", "flipped");
   });
 
   const page = pages[index];
   if (!page) return;
 
   page.classList.add("active");
+  
+   if (page.classList.contains("dual")) {
+    dualFlipped = !dualFlipped;
+    page.classList.toggle("flipped", dualFlipped);
+  }
 
   state.showingText = false;
 }
