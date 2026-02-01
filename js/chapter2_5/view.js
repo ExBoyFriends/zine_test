@@ -1,3 +1,7 @@
+//view.js
+
+import { state } from "./state.js";
+
 const pages = Array.from(document.querySelectorAll(".page"));
 
 export function getPages() {
