@@ -24,7 +24,9 @@ export function showPage(index) {
     dualFlipped = !dualFlipped;
     page.classList.toggle("flipped", dualFlipped);
   }
-
+  
+  page.classList.add("active");
+  
   state.showingText = false;
 }
 
