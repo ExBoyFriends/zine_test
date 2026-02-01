@@ -51,10 +51,13 @@ export function resetTransitionState() {
   isPressing = false;
   exited = false;
   startTime = performance.now();
+  cancelAnimationFrame(rafId);
+  rafId = null;
 }
 
 export function startAutoTransition(callback) {
   cancelAnimationFrame(rafId);
+  startTime = performance.now();
 
   function tick(now) {
     if (exited) return;
