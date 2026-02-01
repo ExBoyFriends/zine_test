@@ -147,18 +147,14 @@ img {
   mix-blend-mode: overlay;
 }
 
-.glitch-active {
-  animation: glitchFlash 0.12s infinite steps(2);
+.glitch-active .scene {
+  animation: glitchShake 0.15s infinite linear;
+  filter: contrast(1.3) saturate(1.2);
 }
 
 .glitch-active .glitch-overlay {
   opacity: 1;
   animation: glitchFlash 0.12s infinite steps(2);
-}
-
-.glitch-active .scene {
-  animation: glitchShake 0.15s infinite linear;
-  filter: contrast(1.3) saturate(1.2);
 }
 
 /* =====================
