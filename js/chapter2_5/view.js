@@ -13,6 +13,8 @@ export function showPage(index) {
   if (!page) return;
 
   page.classList.add("active");
+
+  state.showingText = false;
 }
 
 export function showText(index) {
