@@ -5,21 +5,11 @@ export function getPages() {
 }
 
 export function showPage(index) {
-  const current = document.querySelector(".page.active");
+  pages.forEach(p => {
+    p.classList.remove("active", "fading-out", "show-text");
+    delete p.dataset.textShown;
+  });
 
-  if (current) {
-    current.classList.add("fading-out");
-
-    setTimeout(() => {
-      current.classList.remove("active", "fading-out", "show-text");
-      activate(index);
-    }, 700);
-  } else {
-    activate(index);
-  }
-}
-
-function activate(index) {
   const page = pages[index];
   if (!page) return;
 
@@ -39,5 +29,5 @@ export function hideText(index) {
   if (!page) return;
 
   page.classList.remove("show-text");
+  delete page.dataset.textShown;
 }
-
