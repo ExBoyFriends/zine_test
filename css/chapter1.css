@@ -1,5 +1,8 @@
 /* chapter1.css */
 
+body {
+  height: calc(var(--vh) * 100);
+}
 
 /* =====================
    Carousel
