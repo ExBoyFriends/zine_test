@@ -11,24 +11,16 @@
              user-scalable=no">
 
   <title>Chapter 2</title>
-
-  <!-- CSS（完全統合） -->
   <link rel="stylesheet" href="../css/chapter2.css">
 </head>
 
 <body>
 
-  <!-- 背景 -->
   <div class="background"></div>
-
-  <!-- ローダー（必須） -->
   <div id="loader"></div>
-
-  <!-- グリッチ -->
   <div class="glitch-overlay"></div>
-
-  <!-- 3Dシーン -->
   <div class="scene">
+  <div id="fadeout"></div>
 
     <!-- 表 -->
     <div class="cylinder cylinder-front">
@@ -60,30 +52,11 @@
 
   </div>
 
-  <!-- フェードアウト -->
-  <div id="fadeout"></div>
 
-  <!-- ===== JS ===== -->
-
-  <!-- 共通（先） -->
-  <script type="module" src="../js/base.js"></script>
-
-  <!-- Chapter2 本体 -->
+  <script src="../js/base.js"></script>
   <script type="module" src="../js/chapter2/main.js"></script>
 
-  <!-- iOS Safari ジェスチャ完全封印 -->
-  <script>
-    ["gesturestart", "gesturechange", "gestureend"].forEach(type => {
-      document.addEventListener(type, e => e.preventDefault(), { passive: false });
-    });
 
-    let lastTouch = 0;
-    document.addEventListener("touchend", e => {
-      const now = Date.now();
-      if (now - lastTouch <= 300) e.preventDefault();
-      lastTouch = now;
-    }, { passive: false });
-  </script>
 
 </body>
 </html>
