@@ -42,3 +42,29 @@ export function goPrev() {
   resetTextState();
   showPage(state.index);
 }
+
+
+let startX = 0;
+let dragging = false;
+
+document.addEventListener("pointerdown", e => {
+  startX = e.clientX;
+  dragging = true;
+});
+
+document.addEventListener("pointerup", e => {
+  if (!dragging) return;
+  dragging = false;
+
+  const dx = e.clientX - startX;
+
+  // 横スワイプ判定
+  if (Math.abs(dx) < 40) return;
+
+  if (dx < 0) {
+    goNext();
+  } else {
+    goPrev();
+  }
+});
+
