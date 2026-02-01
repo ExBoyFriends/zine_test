@@ -2,6 +2,8 @@
 
 import { state } from "./state.js";
 
+let dualFlipped = false;
+
 const pages = Array.from(document.querySelectorAll(".page"));
 
 export function getPages() {
