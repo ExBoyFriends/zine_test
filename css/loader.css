@@ -10,7 +10,7 @@
   animation: siren 2.5s linear infinite;
   transition: opacity 3.5s ease;
 
-  opacity: 1 !important;
+  opacity: 1;
 }
 
 @keyframes siren {
