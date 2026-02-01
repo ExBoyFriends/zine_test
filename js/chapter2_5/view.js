@@ -34,12 +34,3 @@ export function hideText(index) {
 
   page.classList.remove("show-text");
 }
-
-
-export function hideText(index) {
-  const page = pages[index];
-  if (!page) return;
-
-  page.classList.remove("show-text");
-  delete page.dataset.textShown;
-}
