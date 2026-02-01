@@ -95,8 +95,10 @@ window.addEventListener("pageshow", e => {
     glitch?.classList.remove("glitch-active");
 
     // カルーセル状態リセット
-    carousel?.setHolding?.(false);
-    carousel?.setExtraSpeed?.(0);
+    if (carousel) {
+      carousel?.setHolding?.(false);
+      carousel?.setExtraSpeed?.(0);
+    }
   }
 
   // 🔁 毎回必ず再セット
