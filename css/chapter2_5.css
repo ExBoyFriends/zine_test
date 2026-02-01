@@ -59,11 +59,17 @@ body.ready .chapter {
 }
 
 .page.dual img:nth-child(1) {
-  transform: translate(-80%, -50%);
+  transform: translate(
+    calc(-50% - max(30%, 140px)),
+    -50%
+  );
 }
 
 .page.dual img:nth-child(2) {
-  transform: translate(-20%, -50%);
+  transform: translate(
+    calc(-50% + max(30%, 140px)),
+    -50%
+  );
 }
 
 .poem {
