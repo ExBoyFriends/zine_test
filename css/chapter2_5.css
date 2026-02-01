@@ -58,6 +58,7 @@ body.ready .chapter {
   transform: translate(-50%, -50%);
 }
 
+/* 通常配置 */
 .page.dual img:nth-child(1) {
   transform: translate(-80%, -50%);
 }
@@ -65,6 +66,16 @@ body.ready .chapter {
 .page.dual img:nth-child(2) {
   transform: translate(-20%, -50%);
 }
+
+/* 反転状態 */
+.page.dual.flipped img:nth-child(1) {
+  transform: translate(-20%, -50%);
+}
+
+.page.dual.flipped img:nth-child(2) {
+  transform: translate(-80%, -50%);
+}
+
 
 .poem {
   position: absolute;
@@ -89,3 +100,6 @@ body.ready .chapter {
 .page.show-text img {
   opacity: 0.75;
 }
+
+
+
