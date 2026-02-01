@@ -19,19 +19,6 @@ body {
 }
 
 /* =====================
-   Background
-===================== */
-.background {
-  position: fixed;
-  inset: 0;
-  background: url('../image/background.jpg') center / cover no-repeat;
-  z-index: 0;
-  animation:
-    bgFadeIn 2s ease forwards,
-    slowFade 20s ease-in-out infinite alternate;
-}
-
-/* =====================
    Carousel
 ===================== */
 .carousel-wrapper {
@@ -207,20 +194,6 @@ body {
 
 .carousel-page:not(#last-page) a {
   pointer-events: none;
-}
-
-/* =====================
-   Animations
-===================== */
-@keyframes slowFade {
-  0%   { filter: brightness(1); }
-  50%  { filter: brightness(0.2); }
-  100% { filter: brightness(1); }
-}
-
-@keyframes bgFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
 }
 
 /* =====================
