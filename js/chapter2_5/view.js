@@ -15,15 +15,8 @@ export function getPages() {
 ===================== */
 function updateDots(index) {
   dots.forEach((dot, i) => {
-    // 左右の三角は除外
-    if (i === 0 || i === dots.length - 1) return;
     dot.classList.toggle("active", i === index + 1);
   });
-
-  // 左矢印の表示制御
-  if (dots[0]) {
-    dots[0].style.opacity = index === 0 ? 0 : 1;
-  }
 }
 
 /* =====================
