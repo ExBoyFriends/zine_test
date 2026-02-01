@@ -65,6 +65,6 @@ function goNext() {
 function goPrev() {
   if (state.index <= 0) return;
   state.index--;
-  resettextState();
+  resetTextState();
   showPage(state.index);
 }
