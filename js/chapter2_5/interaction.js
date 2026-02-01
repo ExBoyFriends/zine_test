@@ -42,31 +42,29 @@ function handleTap() {
   const page = pages[state.index];
   if (!page) return;
 
-  if (state.showingText) {
-    hideText(state.index);
-    state.showingText = false;
-    return;
-  }
-
-  if (!page.dataset.textShown) {
+  if (!state.showingText) {
     showText(state.index);
     state.showingText = true;
     return;
   }
 
+  // テキストが開いていたら閉じて次へ
+  hideText(state.index);
+  state.showingText = false;
   goNext();
 }
+
 
 function goNext() {
   if (state.index >= pages.length - 1) return;
   state.index++;
-  resetState();
+  resetTextState();
   showPage(state.index);
 }
 
 function goPrev() {
   if (state.index <= 0) return;
   state.index--;
-  resetState();
+  resettextState();
   showPage(state.index);
 }
