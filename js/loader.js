@@ -8,7 +8,12 @@ export function initLoader(loader, onComplete) {
     return;
   }
 
+  let finished = false;
+
   const finish = () => {
+    if (finished) return;
+    finished = true;
+
     loader.style.display = "none";
     onComplete?.();
   };
@@ -22,11 +27,8 @@ export function initLoader(loader, onComplete) {
         loader.style.opacity = "0";
       });
 
-      // transitionend（通常ルート）
       loader.addEventListener("transitionend", finish, { once: true });
-
-      // 保険（発火しなかった場合）
-      setTimeout(finish, 4000);
+      setTimeout(finish, 4500); // 保険
     }, 1200);
   };
 
