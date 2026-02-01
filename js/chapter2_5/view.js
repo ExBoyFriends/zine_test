@@ -42,6 +42,7 @@ export function showPage(index) {
   page.classList.add("active");
 
   state.prevIndex = index;
+  state.index = index;
   state.showingText = false;
 }
 
