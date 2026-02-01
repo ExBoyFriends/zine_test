@@ -4,31 +4,29 @@
 
 export function initLoader(loader, onComplete) {
   if (!loader) {
-    if (onComplete) onComplete();
+    onComplete?.();
     return;
   }
 
+  const finish = () => {
+    loader.style.display = "none";
+    onComplete?.();
+  };
+
   const start = () => {
-    // 念のため初期状態を保証
     loader.style.display = "block";
     loader.style.opacity = "1";
 
-    // 少し待ってからフェードアウト
     setTimeout(() => {
       requestAnimationFrame(() => {
         loader.style.opacity = "0";
       });
 
-      loader.addEventListener(
-        "transitionend",
-        () => {
-          loader.style.display = "none";
-          if (typeof onComplete === "function") {
-            onComplete();
-          }
-        },
-        { once: true }
-      );
+      // transitionend（通常ルート）
+      loader.addEventListener("transitionend", finish, { once: true });
+
+      // 保険（発火しなかった場合）
+      setTimeout(finish, 4000);
     }, 1200);
   };
 
