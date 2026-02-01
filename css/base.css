@@ -1,0 +1,45 @@
+/* =====================
+   base.css
+===================== */
+
+/* =====================
+   Reset
+===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* =====================
+   HTML / Body
+===================== */
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #000;
+}
+
+/* =====================
+   Viewport (iOS)
+===================== */
+body {
+  height: calc(var(--vh) * 100);
+}
+
+/* =====================
+   Image Lock (Common)
+===================== */
+img {
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
