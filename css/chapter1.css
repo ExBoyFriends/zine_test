@@ -1,22 +1,5 @@
 /* chapter1.css */
 
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  overscroll-behavior: none;
-  background: #000;
-}
-
-body {
-  height: calc(var(--vh) * 100);
-}
-
-* {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
 
 /* =====================
    Carousel
