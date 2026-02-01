@@ -1,4 +1,5 @@
 // js/chapter2_5/main.js
+import { initLoader } from "../loader.js";
 import { state } from "./state.js";
 import { showPage } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
