@@ -19,6 +19,16 @@ html, body {
   user-select: none;
 }
 
+body {
+  opacity: 0;
+  transition: opacity 1.8s ease;
+}
+
+body.ready {
+  opacity: 1;
+}
+
+
 /* =====================
    Chapter Wrapper
 ===================== */
@@ -42,12 +52,16 @@ html, body {
 
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.8s ease;
+  transition: opacity 1.4s ease;
 }
 
 .page.active {
   opacity: 1;
   pointer-events: auto;
+}
+
+.page.fading-out {
+  opacity: 0;
 }
 
 /* =====================
