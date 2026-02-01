@@ -7,12 +7,11 @@ window.addEventListener("load", () => {
   const loader = document.getElementById("loader");
 
   initLoader(loader, () => {
-    // ローダー完全終了後
     document.body.classList.add("ready");
 
-    setTimeout(() => {
-      showPage(state.index);
-      initTapInteraction();
-    }, 1800);
+    // 初期ページ表示
+    showPage(state.index);
+    initTapInteraction();
   });
 });
+
