@@ -1,4 +1,4 @@
-import { initLoader } from "./loader.js";
+import { initLoader } from "../loader.js";
 import { initCarousel } from "./carousel.js";
 import { initLastPage } from "./lastPage.js";
 
