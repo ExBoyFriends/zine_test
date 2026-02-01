@@ -1,5 +1,5 @@
 // js/chapter2_5/interaction.js
-import { state, resetState } from "./state.js";
+import { state, resetTextState } from "./state.js";
 import { showPage, showText, hideText, getPages } from "./view.js";
 
 const pages = getPages();
