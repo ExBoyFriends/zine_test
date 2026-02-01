@@ -1,3 +1,5 @@
+/* chapter1.css */
+
 html, body {
   margin: 0;
   padding: 0;
@@ -16,18 +18,22 @@ body {
   user-select: none;
 }
 
-/* 背景 */
+/* =====================
+   Background
+===================== */
 .background {
   position: fixed;
   inset: 0;
   background: url('../image/background.jpg') center / cover no-repeat;
   z-index: 0;
-  animation: 
+  animation:
     bgFadeIn 2s ease forwards,
     slowFade 20s ease-in-out infinite alternate;
 }
 
-/* ローダー */
+/* =====================
+   Loader
+===================== */
 #loader {
   position: fixed;
   inset: 0;
@@ -38,7 +44,7 @@ body {
 }
 
 /* =====================
-   カルーセル
+   Carousel
 ===================== */
 .carousel-wrapper {
   position: fixed;
@@ -48,7 +54,7 @@ body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  touch-action:  manipulation;
+  touch-action: manipulation;
 }
 
 .carousel-page {
@@ -57,10 +63,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+
   opacity: 0;
   transition: opacity 0.8s ease;
   pointer-events: none;
   will-change: opacity;
+
   touch-action: none;
 }
 
@@ -83,7 +91,7 @@ body {
 }
 
 /* =====================
-   ドット
+   Dots
 ===================== */
 .dots {
   position: fixed;
@@ -95,32 +103,36 @@ body {
   transition: opacity 0.8s ease;
 }
 
-.dots.visible { opacity: 1; }
+.dots.visible {
+  opacity: 1;
+}
 
 .dot {
   display: inline-block;
   width: 5px;
   height: 8px;
   margin: 0 5px;
-  background: rgba(200,200,200,.25);
+  background: rgba(200, 200, 200, .25);
 }
 
-.dot.active { background: rgba(240,240,240,.9); }
+.dot.active {
+  background: rgba(240, 240, 240, .9);
+}
 
 .left-dot {
   width: 12px;
   height: 12px;
-  clip-path: polygon(100% 0%,0% 50%,100% 100%);
+  clip-path: polygon(100% 0%, 0% 50%, 100% 100%);
 }
 
 .right-dot {
   width: 12px;
   height: 12px;
-  clip-path: polygon(0% 0%,100% 50%,0% 100%);
+  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
 }
 
 /* =====================
-   最終ページ
+   Last Page
 ===================== */
 #last-page .carousel-inner.single {
   position: relative;
@@ -132,13 +144,13 @@ body {
 }
 
 .last-img-wrapper {
-  position: relative;   
+  position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
   touch-action: auto;
 }
 
-/* 画像共通 */
+/* Image (common) */
 .last-img {
   position: absolute;
   inset: 0;
@@ -148,39 +160,32 @@ body {
 }
 
 /* =====================
-   Top画像（開閉）
+   Top Image
 ===================== */
 .last-img.top {
   z-index: 3;
-  pointer-events: none;  
+  pointer-events: none;
 }
 
 .top-layer {
   position: absolute;
   inset: 0;
   z-index: 3;
-  pointer-events: auto; 
-  touch-action: manipulation;  
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
-
-/* 🔴 Top画像 開閉用の当たり判定 */
 .top-hit {
   position: absolute;
-
-  width: 63%;      
+  width: 63%;
   height: 73%;
-
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
   z-index: 4;
   pointer-events: auto;
   cursor: pointer;
-
 }
-
 
 .top-hit,
 .tap-cover {
@@ -188,55 +193,46 @@ body {
 }
 
 /* =====================
-   Under画像（表示）
+   Under Image
 ===================== */
 .last-img.under {
   z-index: 1;
   pointer-events: none;
 }
 
-/* =====================
-   Under画像用リンク判定
-===================== */
 .tap-cover {
   position: absolute;
-
-  width: 43%;   
-  height: 28%;   
-
-  top: 50%;      
+  width: 43%;
+  height: 28%;
+  top: 50%;
   left: 56%;
   transform: translate(-50%, -50%);
-
   z-index: 2;
   pointer-events: none;
   background: transparent;
 }
 
-
-/* 開いたときだけリンク有効 */
 #last-page.opened .tap-cover {
   z-index: 5;
   pointer-events: auto;
 }
 
-/* 通常ページではリンク無効 */
 .carousel-page:not(#last-page) a {
   pointer-events: none;
 }
 
 /* =====================
-   アニメーション
+   Animations
 ===================== */
 @keyframes slowFade {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(0.2); }
   100% { filter: brightness(1); }
 }
 
 @keyframes siren {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(0.2); }
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(0.2); }
   100% { filter: brightness(1); }
 }
 
@@ -246,7 +242,7 @@ body {
 }
 
 /* =====================
-   横向き制御
+   Orientation Lock
 ===================== */
 body::before,
 body::after {
@@ -254,7 +250,6 @@ body::after {
 }
 
 @media (orientation: landscape) {
-
   body::before {
     content: "";
     position: fixed;
@@ -272,4 +267,5 @@ body::after {
     background: url("../image/eye.jpg") center / cover no-repeat;
     pointer-events: none;
   }
-}　
+}
+
