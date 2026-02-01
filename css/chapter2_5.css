@@ -49,7 +49,14 @@ body.ready {
   animation: slowFade 20s ease-in-out infinite alternate;
 }
 
+@keyframes bgFadeIn {
+  to { opacity: 1; }
+}
 
+@keyframes slowFade {
+  from { opacity: 0.8; }
+  to   { opacity: 1; }
+}
 /* =====================
    Chapter Wrapper
 ===================== */
