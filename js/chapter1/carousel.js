@@ -12,8 +12,7 @@ export function initCarousel(wrapper, pages) {
   function updateDots() {
     const dots = document.querySelectorAll('.dot');
     dots.forEach((dot, i) => {
-      if (i === 0 || i === dots.length - 1) return;
-      dot.classList.toggle('active', i === currentPage + 1);
+      dot.classList.toggle('active', i === currentPage);
     });
     if (dots[0]) dots[0].style.opacity = currentPage === 0 ? 0 : 1;
   }
