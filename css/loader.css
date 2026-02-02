@@ -1,6 +1,7 @@
 /* loader.css */
-
-/* ===== ローダー（演出のみ） ===== */
+/* =====================
+   Loader（演出のみ）
+===================== */
 #loader {
   position: fixed;
   inset: 0;
@@ -8,15 +9,14 @@
 
   background: url("../image/background.jpg") center / cover no-repeat;
 
-  /* 見た目演出だけ */
+  /* 演出のみ */
   animation: siren 2s linear infinite;
 
-  /* opacity は JS で制御 */
-  transition: opacity 0.6s ease;
   opacity: 1;
+  transition: opacity 0.6s ease;
 }
 
-/* 明滅演出（残す場合） */
+/* 明滅演出 */
 @keyframes siren {
   0%   { filter: brightness(1); }
   35%  { filter: brightness(0.3); }
@@ -24,24 +24,24 @@
   100% { filter: brightness(1); }
 }
 
-/* ===== 完全暗転レイヤー（本体） ===== */
+/* =====================
+   初回フェード専用レイヤー
+===================== */
 #fadeLayer {
   position: fixed;
   inset: 0;
   z-index: 900;
 
   background: #000;
-  opacity: 0.15;
   pointer-events: none;
 
- transition: opacity 3.0s ease;
+  opacity: 1;
+
+  /* ★ chapter2 と完全一致 */
+  transition: opacity 2.6s cubic-bezier(.22,.61,.36,1);
 }
 
-/* ===== loader / 初回フェード専用 ===== */
-#fadeLayer {
-  transition: opacity 3s cubic-bezier(.22,.61,.36,1);
-}
+/* フェード完了 */
 #fadeLayer.hide {
   opacity: 0;
 }
-
