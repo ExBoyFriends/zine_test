@@ -2,6 +2,7 @@
 /* =====================
    Loader（演出のみ）
 ===================== */
+
 #loader {
   position: fixed;
   inset: 0;
@@ -9,11 +10,10 @@
 
   background: url("../image/background.jpg") center / cover no-repeat;
 
-  /* 演出のみ */
   animation: siren 2s linear infinite;
 
-  opacity: 1;
   transition: opacity 0.6s ease;
+  opacity: 1;
 }
 
 /* 明滅演出 */
@@ -25,8 +25,9 @@
 }
 
 /* =====================
-   初回フェード専用レイヤー
+   初回フェード（世界を覆う闇）
 ===================== */
+
 #fadeLayer {
   position: fixed;
   inset: 0;
@@ -35,13 +36,14 @@
   background: #000;
   pointer-events: none;
 
+  /* ★ 初期は完全に暗い */
   opacity: 1;
 
-  /* ★ chapter2 と完全一致 */
-  transition: opacity 2.6s cubic-bezier(.22,.61,.36,1);
+  /* ★ 初回フェード速度（統一） */
+  transition: opacity 4s cubic-bezier(.22,.61,.36,1);
 }
 
-/* フェード完了 */
+/* 闇が開く */
 #fadeLayer.hide {
   opacity: 0;
 }
