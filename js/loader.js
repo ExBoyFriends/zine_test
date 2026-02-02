@@ -15,7 +15,7 @@ export function initLoader(loader, onComplete) {
 
     /* ローディング演出を「明」で止める */
     loader.style.animation = "none";
-  //  loader.style.filter = "brightness(1)";
+    loader.style.filter = "brightness(1)";
     loader.style.opacity = "0";
 
     requestAnimationFrame(() => {
