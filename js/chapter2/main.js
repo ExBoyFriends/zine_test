@@ -33,21 +33,18 @@ if (carousel) {
 const scene = document.querySelector(".scene");
 const fadeout = document.getElementById("fadeout");
 
-// scene は常に見える
-if (scene) {
-  scene.style.opacity = "1";
-}
-
 // loader
 const loader = document.getElementById("loader");
 
 initLoader(loader, () => {
-  // 初回表示フラグ（必要なら）
-  scene?.classList.add("visible");
+  // ★ここが初回フェードのトリガー
+  requestAnimationFrame(() => {
+    scene?.classList.add("visible");
+  });
 
-  // auto 遷移開始
   startAutoTransition?.(goChapter25);
 });
+
 
 
 // グリッチ初期化
