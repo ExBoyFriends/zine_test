@@ -1,3 +1,5 @@
+//astPage.js
+
 export function initLastPage(wrapper, getCurrentPage, totalPages) {
   let opened = false;
   let startX = 0;
@@ -84,4 +86,5 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
       close();
     }
   });
-}
+}　　　　　　
+
