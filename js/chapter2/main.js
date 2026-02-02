@@ -37,7 +37,11 @@ const fadeout = document.getElementById("fadeout");
 const loader = document.getElementById("loader");
 
 initLoader(loader, () => {
-  // ★ここが初回フェードのトリガー
+  // loader を確実に消す
+  loader.classList.add("hide");
+  loader.style.display = "none";
+
+  // 次フレームで初回フェード開始
   requestAnimationFrame(() => {
     scene?.classList.add("visible");
   });
