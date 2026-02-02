@@ -8,7 +8,7 @@ body {
 /* ===== フェード対象 ===== */
 .chapter {
   opacity: 0;
-  transition: opacity 1.4s ease;
+  transition: opacity 1.3s ease;
 }
 
 .chapter.visible {
