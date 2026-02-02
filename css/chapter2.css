@@ -57,7 +57,7 @@ img {
   z-index: 999;
   opacity: 1;
   pointer-events: none;
-  transition: opacity 2.8s cubic-bezier(.22, .61, .36, 1);
+　transition: opacity 1.6s ease;
 }
 
 #fadeLayer.hidden {
