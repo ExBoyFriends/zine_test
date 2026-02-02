@@ -16,22 +16,24 @@ const pages   = document.querySelectorAll(".page");
 /* =====================
    設定値（Chapter1 / 2_5 共通）
 ===================== */
-const DOT_DELAY = 3800;
+// CSS のフェードと体感を揃える
+const FADE_DURATION = 2800;
+const DOT_DELAY     = FADE_DURATION + 1000;
 
 /* =====================
-   Chapter1 Start Logic
+   Chapter Start Logic
 ===================== */
-function startChapter1() {
+function startChapter() {
   // 世界を出す（初回フェード）
   chapter.classList.add("visible");
 
-  // 初期ページ
+  // 初期ページ確定
   pages[0]?.classList.add("active");
 
-  // 初期ドット状態
+  // 初期ドット状態を確定
   document.querySelectorAll(".dot")[0]?.classList.add("active");
 
-  // dots 表示を遅らせる
+  // dots 表示をフェード後に
   setTimeout(() => {
     dots?.classList.add("visible");
   }, DOT_DELAY);
@@ -46,14 +48,14 @@ initLoader(loader, () => {
   initTapInteraction();
 
   // Chapter 開始
-  startChapter1();
+  startChapter();
 });
 
 /* =====================
-   Init
+   Init（既存ロジック）
 ===================== */
 
-// carousel は「操作」だけ担当（初期表示を触らない）
+// carousel は操作のみ担当
 const carousel = initCarousel(wrapper, pages);
 
 // last page
