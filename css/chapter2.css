@@ -45,23 +45,14 @@ img {
   touch-action: none;
   z-index: 1;
   pointer-events: auto;
-}
 
-/* =====================
-   初回フェード（入口専用）
-===================== */
-#fadeLayer {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  z-index: 999;
-  opacity: 1;
-  pointer-events: none;
-　transition: opacity 1.6s ease;
-}
-
-#fadeLayer.hidden {
   opacity: 0;
+  transition: opacity 1.6s cubic-bezier(.22,.61,.36,1);
+}
+
+.scene.visible {
+  opacity: 1;
+　pointer-events: auto;
 }
 
 /* =====================
