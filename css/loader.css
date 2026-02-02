@@ -34,7 +34,7 @@
   opacity: 0.15;
   pointer-events: none;
 
-  transition: opacity 0.05s linear;
+ transition: opacity 3.0s ease;
 }
 
 /* フェードイン開始 */
