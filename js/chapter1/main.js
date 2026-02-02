@@ -13,8 +13,11 @@ const lastWrapper = document.querySelector(".last-img-wrapper");
 ===================== */
 
 function startChapter1() {
-  pages[0]?.classList.add("active");
-  dots?.classList.add("visible");
+  // ★ 次フレームで active（フェードを確実に出す）
+  requestAnimationFrame(() => {
+    pages[0]?.classList.add("active");
+    dots?.classList.add("visible");
+  });
 }
 
 /* =====================
