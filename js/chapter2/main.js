@@ -36,6 +36,7 @@ if (carousel) {
 const scene   = document.querySelector(".scene");
 const fadeout = document.getElementById("fadeout");
 const loader  = document.getElementById("loader");
+const dots = document.querySelector(".dots");
 
 // 長押し bind 管理（多重防止）
 let longPressBound = false;
