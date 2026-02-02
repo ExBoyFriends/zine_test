@@ -15,41 +15,39 @@ import {
 } from "./effects.js";
 
 /* =====================
-   DOM
+   初期化（初回ロード）
 ===================== */
-const loader    = document.getElementById("loader");
-const fadeLayer = document.getElementById("fadeLayer");
-const scene     = document.querySelector(".scene");
 
-/* =====================
-   初期化
-===================== */
+// loader
+const loader = document.getElementById("loader");
+
+initLoader(loader, () => {
+  // ローダー明け＝世界が見えていい瞬間
+  startAutoTransition?.(goChapter25);
+});
 
 // カルーセル
 const carousel = initCarousel3D?.();
 window.__carousel__ = carousel ?? null;
 
+// ドラッグ
 if (carousel) {
   initDragInput(carousel);
+} else {
+  console.warn("[chapter2] carousel init failed");
 }
 
-// グリッチ
+// DOM
+const scene = document.querySelector(".scene");
+const fadeout = document.getElementById("fadeout");
+
+// グリッチ初期化
 initGlitchLayer?.();
-
-/* =====================
-   初回ロード（入口フェード）
-===================== */
-initLoader(loader, () => {
-  requestAnimationFrame(() => {
-    fadeLayer?.classList.add("hidden");
-  });
-
-  startAutoTransition?.(goChapter25);
-});
 
 /* =====================
    Chapter2 → 2.5
 ===================== */
+
 function goChapter25() {
   if (goChapter25._done) return;
   goChapter25._done = true;
@@ -62,8 +60,40 @@ function goChapter25() {
 }
 
 /* =====================
+   見た目の強制復帰（★最重要）
+===================== */
+
+function forceVisibleState() {
+  // scene の復帰
+  if (scene) {
+    scene.style.opacity = "1";
+    scene.style.filter = "none";
+    scene.classList.remove("fade-out", "exit");
+  }
+
+  // 🔑 fadeout の完全解除（class が最重要）
+  if (fadeout) {
+    fadeout.classList.remove("active");
+    fadeout.style.opacity = "0";
+    fadeout.style.pointerEvents = "none";
+  }
+
+  // body 側も保険
+  document.body.classList.remove("fade-out");
+  document.body.style.opacity = "1";
+
+  // グリッチ完全停止
+  stopGlitch();
+
+  // 背景の念押し
+  document.body.style.background = "";
+  document.documentElement.style.background = "";
+}
+
+/* =====================
    長押し演出フック
 ===================== */
+
 setHoldEffects({
   glitchStart: () => {
     startGlitch();
@@ -76,26 +106,63 @@ setHoldEffects({
 });
 
 /* =====================
-   強制遷移
+   強制遷移イベント
 ===================== */
+
 window.addEventListener("force-exit", goChapter25);
 
 /* =====================
-   pageshow（bfcache 対策）
+   ページ表示（初回 / bfcache）
 ===================== */
+
 window.addEventListener("pageshow", e => {
   if (e.persisted) {
-    fadeLayer?.classList.add("hidden");
+    /* ===== 戻る（bfcache） ===== */
 
+    // ① 即・黒画面を解除
+    forceVisibleState();
+
+    // ② 内部状態リセット
     resetTransitionState?.();
     goChapter25._done = false;
 
-    carousel?.setHolding?.(false);
-    carousel?.setExtraSpeed?.(0);
+    // ローダー残留対策
+    if (loader) {
+      loader.classList.add("hide");
+      loader.style.display = "none";
+    }
 
+    // カルーセルを安全状態へ
+    if (carousel) {
+      carousel.setHolding?.(false);
+      carousel.setExtraSpeed?.(0);
+    }
+
+    // ③ 見えてから演出
+    requestAnimationFrame(() => {
+      startGlitch();
+      carousel?.setExtraSpeed?.(1.2);
+    });
+
+    // ④ 収束
+    setTimeout(() => {
+      stopGlitch();
+      carousel?.setExtraSpeed?.(0);
+    }, 1200);
+
+    // ⑤ auto遷移は演出後
+    setTimeout(() => {
+      startAutoTransition?.(goChapter25);
+    }, 1200);
+
+  } else {
+    /* ===== 初回ロード ===== */
     startAutoTransition?.(goChapter25);
   }
 
-  bindLongPressEvents(scene);
+  // 長押しは毎回再バインド
+  if (scene) {
+    bindLongPressEvents(scene);
+  }
 });
 
