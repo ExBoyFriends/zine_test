@@ -1,9 +1,22 @@
-/* chapter2.5.css */
+/* chapter2_5.css */
 
 body {
   background: #000;
   color: #fff;
 }
+
+/* ===== フェード対象 ===== */
+.chapter {
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+.chapter.visible {
+  opacity: 1;
+}
+
+/* ======================= */
+
 .page {
   position: absolute;
   inset: 0;
@@ -40,12 +53,10 @@ body {
 
   max-width: 80vw;
   max-height: 80vh;
-  
   object-fit: contain;
 
   transform: translate(-50%, -50%);
-
-   transition: none;
+  transition: none;
 }
 
 /* 通常配置 */
@@ -65,7 +76,6 @@ body {
 .page.dual.flipped img:nth-child(2) {
   transform: translate(-80%, -50%);
 }
-
 
 .poem {
   position: absolute;
