@@ -8,7 +8,7 @@
   background: url("../image/background.jpg") center / cover no-repeat;
 
   animation: siren 2.0s linear infinite;
-  transition: opacity 5s ease;
+  transition: opacity 6s ease;
 
   opacity: 1;
 }
@@ -16,6 +16,6 @@
 @keyframes siren {
   0%   { filter: brightness(1); }
   35%  { filter: brightness(0.3); }
-  55%  { filter: brightness(0.15); }
+  55%  { filter: brightness(0.12); }
   100% { filter: brightness(1); }
 }
