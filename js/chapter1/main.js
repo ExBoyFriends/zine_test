@@ -1,10 +1,10 @@
 // main.js
 
 import { initLoader } from "../loader.js";
+import { startChapter } from "../chapterStart.js";
 import { state } from "./state.js";
 import { showPage } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
-import { startChapter } from "../chapterStart.js";
 
 /* =====================
    DOM
