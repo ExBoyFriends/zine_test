@@ -50,7 +50,7 @@ initLoader(loader, () => {
   if (loader) {
     loader.classList.add("hide");
     loader.style.display = "none";
-  }
+　  dots?.classList.add("visible");
 
   // ★ 初回フェードは fadeLayer が担当
   startAutoTransition?.(goChapter25);
@@ -67,6 +67,13 @@ function updateDots(index) {
     dot.classList.toggle("active", i === index);
   });
 }
+
+const carousel = initCarousel3D({
+  onIndexChange: index => {
+    updateDots(index);
+  }
+});
+
 
 /* =====================
    Chapter2 → 2.5
