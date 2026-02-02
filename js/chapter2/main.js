@@ -22,7 +22,7 @@ import {
 const loader = document.getElementById("loader");
 
 initLoader(loader, () => {
-  // ローダー明け＝世界が見えていい瞬間
+  scene?.classList.add("visible");
   startAutoTransition?.(goChapter25);
 });
 
