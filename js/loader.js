@@ -22,9 +22,13 @@ export function initLoader(loader, onComplete) {
       // loader 完全終了
       loader.style.display = "none";
 
-      // ★ 完全同期スタート ★
-      fadeLayer?.classList.add("hide"); // 闇フェード開始
-      onComplete?.();                   // 画像フェード開始
+      // 闇フェード開始
+      fadeLayer?.classList.add("hide");
+
+      // ★ 闇が少し残っている瞬間に画像フェード開始
+      setTimeout(() => {
+        onComplete?.();
+      }, 20); // ← 10〜30ms 微調整ゾーン
     });
   };
 
