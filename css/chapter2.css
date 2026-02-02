@@ -44,7 +44,6 @@ img {
   perspective-origin: 50% 45%;
   touch-action: none;
   z-index: 1;
-  pointer-events: auto;
 
   opacity: 0;
   transition: opacity 1.6s cubic-bezier(.22,.61,.36,1);
@@ -52,7 +51,6 @@ img {
 
 .scene.visible {
   opacity: 1;
-　pointer-events: auto;
 }
 
 /* =====================
