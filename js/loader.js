@@ -13,23 +13,24 @@ export function initLoader(loader, onComplete) {
     finished = true;
 
     loader.style.display = "none";
-    onComplete?.();
+    onComplete?.(); // ← ここでだけ呼ぶ
   };
 
   const start = () => {
     loader.style.display = "block";
     loader.style.opacity = "1";
 
+    // ローディング表示時間（例：4秒）
     setTimeout(() => {
-      requestAnimationFrame(() => {
-        loader.style.opacity = "0";
+      // フェードアウト開始
+      loader.style.opacity = "0";
 
-         onComplete?.();
-      });
-
+      // フェードアウト完了を待つ
       loader.addEventListener("transitionend", finish, { once: true });
-       setTimeout(finish, 8000);
-    }, 4000); //保険
+
+      // 保険（transitionend が来なかった場合）
+      setTimeout(finish, 8000);
+    }, 4000);
   };
 
   if (document.readyState === "complete") {
