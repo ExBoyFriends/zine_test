@@ -7,15 +7,22 @@ window.addEventListener("load", () => {
   const loader = document.getElementById("loader");
 
   initLoader(loader, () => {
-    // 初期ページを即表示（chapter1と同じ）
-    showPage(state.index);
-    initTapInteraction();
 
-    // dots を少し遅らせて表示
+    // loaderが完全に消え、描画が1フレーム確定してから
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        document.querySelector(".dots")?.classList.add("visible");
-      }, 300);
+      requestAnimationFrame(() => {
+
+        // 初期ページ表示（chapter1と同タイミング）
+        showPage(state.index);
+        initTapInteraction();
+
+        // dots は少し遅れて
+        setTimeout(() => {
+          document.querySelector(".dots")?.classList.add("visible");
+        }, 300);
+
+      });
     });
+
   });
 });
