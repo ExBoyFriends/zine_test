@@ -62,9 +62,9 @@ export function initCarousel3D() {
     extraSpeed += (targetExtraSpeed - extraSpeed) * ACCEL_FOLLOW;
 
     // 遷移前の上限
-    if (!transitionStarted && extraSpeed > 8) {
-      extraSpeed = 8;
-    }
+    if (!transitionStarted && !isHolding && extraSpeed > 8) {
+  extraSpeed = 8;
+}
 
     // 常に時間で回す
     visualAngle += BASE_AUTO_SPEED + extraSpeed;
@@ -132,8 +132,13 @@ export function initCarousel3D() {
       targetExtraSpeed = Math.min(Math.max(v, 0), 10);
     },
     setHolding(v) {
-      isHolding = v;
-    },
+  isHolding = v;
+
+  // 長押し解除時だけ減速を許可
+  if (!v && !transitionStarted) {
+    targetExtraSpeed = 0;
+  }
+},
     startTransition() {
       transitionStarted = true;
     },
