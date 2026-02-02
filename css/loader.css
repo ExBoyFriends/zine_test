@@ -37,17 +37,11 @@
  transition: opacity 3.0s ease;
 }
 
-/* フェードイン開始 */
+/* ===== loader / 初回フェード専用 ===== */
+#fadeLayer {
+  transition: opacity 3s cubic-bezier(.22,.61,.36,1);
+}
 #fadeLayer.hide {
   opacity: 0;
-}
-
-.fade-root {
-  opacity: 0;
-  transition: opacity 2.8s cubic-bezier(.22,.61,.36,1);
-}
-
-.fade-root.visible {
-  opacity: 1;
 }
 
