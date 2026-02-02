@@ -78,3 +78,6 @@ export function initLoader(loader, onComplete) {
     }
   });
 }
+
+document.querySelector('.fade-root')?.classList.add('visible');
+document.getElementById('fadeLayer')?.classList.add('hidden');
