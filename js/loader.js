@@ -18,14 +18,16 @@ export function initLoader(loader, onComplete) {
     loader.style.filter = "brightness(1)";
     loader.style.opacity = "0";
 
-    requestAnimationFrame(() => {
-      // loader 演出終了
-      loader.style.display = "none";
+   requestAnimationFrame(() => {
+  loader.style.display = "none";
 
-      // ★ 同一フレームで同期スタート ★
-      fadeLayer?.classList.add("hide"); // 闇フェード開始
-      onComplete?.();                   // 画像フェード開始
-    });
+  // ① まず下の世界を用意する
+  onComplete?.();
+
+  // ② その上の闇を抜く
+  fadeLayer?.classList.add("hide");
+});
+
   };
 
   const start = () => {
