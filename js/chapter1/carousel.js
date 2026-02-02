@@ -1,123 +1,84 @@
-export function initCarousel(wrapper, pages) {
+// carousel.js
+
+export function initCarousel(wrapper, pages, dots) {
   let currentPage = 0;
   let isDragging = false;
   let startX = 0;
-  let currentX = 0;
+  let deltaX = 0;
 
-  const threshold = () => wrapper.clientWidth * 0.25;
-
-  updateDots();
-  normalize();
+  function update() {
+    wrapper.style.transform = `translateX(${-currentPage * 100}%)`;
+    updateDots();
+  }
 
   function updateDots() {
-    const dots = document.querySelectorAll('.dot');
-    dots.forEach((dot, i) => {
-      dot.classList.toggle('active', i === currentPage);
+    dots?.querySelectorAll("span").forEach((dot, i) => {
+      dot.classList.toggle("active", i === currentPage);
     });
   }
-  function getInner(page) {
-  return page.querySelector('.carousel-inner');
-}
 
-  /* =====================
-     pointer down
-  ===================== */
-  wrapper.addEventListener('pointerdown', e => {
-    if (e.button !== 0) return;
+  /* =========================
+     🚫 初期 normalize は呼ばない
+  ========================= */
 
-    const inner = getInner(pages[currentPage]);
-    if (!inner) return;
-
-    isDragging = true;
-    startX = e.clientX;
-    currentX = 0;
-
-    // フェード中でも即操作可能
-    pages.forEach(p => {
-      p.style.transition = 'none';
-      const i = getInner(p);
-      if (i) i.style.transition = 'none';
-    });
-
-    wrapper.setPointerCapture(e.pointerId);
-  });
-
-  /* =====================
-     pointer move
-  ===================== */
-  wrapper.addEventListener('pointermove', e => {
-    if (!isDragging) return;
-
-    const dx = e.clientX - startX;
-    currentX = dx;
-
-    const width = wrapper.clientWidth;
-    const r = Math.min(Math.abs(dx) / width, 1);
-
-    pages.forEach(p => (p.style.opacity = 0));
-
-    const current = pages[currentPage];
-    const currentInner = getInner(current);
-
-    current.style.opacity = 1 - r;
-    currentInner.style.transform = `translateX(${dx}px)`;
-
-    if (dx < 0 && pages[currentPage + 1]) {
-      const next = pages[currentPage + 1];
-      next.style.opacity = r;
-      getInner(next).style.transform =
-        `translateX(${dx + width}px)`;
-    }
-
-    if (dx > 0 && pages[currentPage - 1]) {
-      const prev = pages[currentPage - 1];
-      prev.style.opacity = r;
-      getInner(prev).style.transform =
-        `translateX(${dx - width}px)`;
-    }
-  });
-
-  /* =====================
-     pointer up / cancel
-  ===================== */
-  wrapper.addEventListener('pointerup', finish);
-  wrapper.addEventListener('pointercancel', finish);
-
-  function finish(e) {
-    if (!isDragging) return;
-    isDragging = false;
-
-    const dx = currentX;
-    let next = currentPage;
-
-    if (dx < -threshold() && currentPage < pages.length - 1) next++;
-    if (dx > threshold() && currentPage > 0) next--;
-
-    currentPage = next;
-    updateDots();
-    normalize();
-
-    wrapper.releasePointerCapture(e.pointerId);
-  }
-
-  /* =====================
-     normalize（静止状態）
-  ===================== */
   function normalize() {
     pages.forEach((p, i) => {
-      p.style.transition = 'opacity .8s ease';
-      p.style.opacity = i === currentPage ? 1 : 0;
-      p.classList.toggle('active', i === currentPage);
-
-      const inner = getInner(p);
-      if (inner) {
-        inner.style.transition = 'transform .8s ease';
-        inner.style.transform = 'translateX(0)';
-      }
+      p.style.opacity = i === currentPage ? "1" : "0";
+      p.classList.toggle("active", i === currentPage);
     });
   }
 
+  function goTo(index) {
+    currentPage = Math.max(0, Math.min(index, pages.length - 1));
+    update();
+    normalize();
+  }
+
+  /* ========== Drag ========== */
+
+  function onStart(x) {
+    isDragging = true;
+    startX = x;
+    deltaX = 0;
+    wrapper.style.transition = "none";
+  }
+
+  function onMove(x) {
+    if (!isDragging) return;
+    deltaX = x - startX;
+    wrapper.style.transform =
+      `translateX(${(-currentPage * window.innerWidth + deltaX)}px)`;
+  }
+
+  function onEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    wrapper.style.transition = "";
+
+    if (Math.abs(deltaX) > window.innerWidth * 0.2) {
+      currentPage += deltaX < 0 ? 1 : -1;
+      currentPage = Math.max(0, Math.min(currentPage, pages.length - 1));
+    }
+
+    update();
+    normalize();
+  }
+
+  /* ========== Bind ========== */
+
+  wrapper.addEventListener("mousedown", e => onStart(e.clientX));
+  window.addEventListener("mousemove", e => onMove(e.clientX));
+  window.addEventListener("mouseup", onEnd);
+
+  wrapper.addEventListener("touchstart", e => onStart(e.touches[0].clientX));
+  window.addEventListener("touchmove", e => onMove(e.touches[0].clientX));
+  window.addEventListener("touchend", onEnd);
+
+  update(); // position だけ合わせる（opacity触らない）
+
   return {
+    goTo,
+    normalize,
     getCurrentPage: () => currentPage
   };
 }
