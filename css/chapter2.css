@@ -1,12 +1,17 @@
 /* chapter2.css */
 
 html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
 
 body {
   position: relative;
+  overflow: hidden;
 }
 
 /* =====================
@@ -14,6 +19,7 @@ body {
 ===================== */
 * {
   -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
 }
 
 /* =====================
@@ -29,13 +35,14 @@ img {
 .scene {
   position: fixed;
   inset: 0;
+
   perspective: 1200px;
   perspective-origin: 50% 45%;
+
   touch-action: none;
   z-index: 1;
-  pointer-events: auto;
 
-  /* 🔑 初回フェード用 */
+  /* 初回フェード */
   opacity: 0;
   transition: opacity 1.6s ease;
 }
@@ -45,7 +52,7 @@ img {
 }
 
 /* =====================
-   初回フェード（入口専用）
+   初回フェード（入口）
 ===================== */
 #fadeLayer {
   position: fixed;
@@ -62,65 +69,16 @@ img {
 }
 
 /* =====================
-   Panel (Common)
-===================== */
-.panel,
-.outer,
-.inner {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform-style: preserve-3d;
-  transform: translate(-50%, -50%);
-  pointer-events: auto;
-
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-}
-
-.outer,
-.inner {
-  will-change: transform;
-}
-
-/* =====================
-   Front Card
-===================== */
-.outer {
-  width: 230px;
-  height: 300px;
-  backface-visibility: hidden;
-}
-
-.outer img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, .4));
-}
-
-/* =====================
-   Back Card
-===================== */
-.inner {
-  width: 220px;
-  height: 290px;
-  backface-visibility: hidden;
-  background: url("../image/top_b.png") center / contain no-repeat;
-  filter: brightness(0.4);
-  opacity: 0.85;
-}
-
-/* =====================
-   Cylinder
+   Cylinder（唯一のセンター）
 ===================== */
 .cylinder {
   position: absolute;
   left: 50%;
   top: 50%;
+
   width: 420px;
   height: 420px;
+
   transform-style: preserve-3d;
   transform: translate(-50%, -50%);
 }
@@ -134,19 +92,54 @@ img {
   pointer-events: none;
 }
 
-.cylinder-front,
-.cylinder-back {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-}
-
-.cylinder,
-.cylinder-front,
-.cylinder-back,
+/* =====================
+   Panels（センター禁止）
+===================== */
+.panel,
 .outer,
 .inner {
-  touch-action: none;
+  position: absolute;
+  inset: 0;
+
+  transform-style: preserve-3d;
+  pointer-events: auto;
+
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* =====================
+   Front Card
+===================== */
+.outer {
+  width: 230px;
+  height: 300px;
+
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.outer img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+}
+
+/* =====================
+   Back Card
+===================== */
+.inner {
+  width: 220px;
+  height: 290px;
+
+  backface-visibility: hidden;
+  background: url("../image/top_b.png") center / contain no-repeat;
+
+  filter: brightness(0.4);
+  opacity: 0.85;
+  will-change: transform;
 }
 
 /* =====================
@@ -157,6 +150,7 @@ img {
   inset: 0;
   pointer-events: none;
   z-index: 30;
+
   background:
     repeating-linear-gradient(
       0deg,
@@ -165,6 +159,7 @@ img {
       transparent 1px,
       transparent 3px
     );
+
   opacity: 0;
   mix-blend-mode: overlay;
 }
@@ -180,13 +175,14 @@ img {
 }
 
 /* =====================
-   Fade Out（出口専用）
+   Fade Out（出口）
 ===================== */
 #fadeout {
   position: fixed;
   inset: 0;
   background: #000;
   z-index: 40;
+
   opacity: 0;
   pointer-events: none;
   transition: opacity 2.5s cubic-bezier(.25, .1, .15, 1);
