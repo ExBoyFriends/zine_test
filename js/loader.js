@@ -1,6 +1,4 @@
-/* =====================
-   loader.js (GLOBAL)
-===================== */
+/* loader.js */
 
 export function initLoader(loader, onComplete) {
   if (!loader) {
@@ -28,8 +26,8 @@ export function initLoader(loader, onComplete) {
       });
 
       loader.addEventListener("transitionend", finish, { once: true });
-      setTimeout(finish, 4500); // 保険
-    }, 1200);
+       setTimeout(finish, 6500);
+    }, 2000); //保険
   };
 
   if (document.readyState === "complete") {
