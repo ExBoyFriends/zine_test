@@ -26,8 +26,8 @@ export function initLoader(loader, onComplete) {
       });
 
       loader.addEventListener("transitionend", finish, { once: true });
-       setTimeout(finish, 6500);
-    }, 2000); //保険
+       setTimeout(finish, 8000);
+    }, 4000); //保険
   };
 
   if (document.readyState === "complete") {
