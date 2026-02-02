@@ -26,7 +26,7 @@ body {
 
   opacity: 0;
   pointer-events: none;
-  transition: opacity 1.6s cubic-bezier(.22,.61,.36,1);
+  transition: opacity 2.6s cubic-bezier(.22,.61,.36,1);
 }
 
 .page.active {
@@ -108,7 +108,7 @@ body {
   text-align: center;
   z-index: 20;
   opacity: 0;
-  transition: opacity 1.6s cubic-bezier(.22,.61,.36,1);
+  transition: opacity 2.8s cubic-bezier(.22,.61,.36,1);
 }
 
 .dots.visible {
