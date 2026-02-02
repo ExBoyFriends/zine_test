@@ -36,7 +36,7 @@ const scene   = document.querySelector(".scene");
 const fadeout = document.getElementById("fadeout");
 const loader  = document.getElementById("loader");
 
-// 長押し bind 管理（★多重防止）
+// 長押し bind 管理（多重防止）
 let longPressBound = false;
 
 /* =====================
@@ -45,15 +45,12 @@ let longPressBound = false;
 
 initLoader(loader, () => {
   // loader を確実に消す
-  loader.classList.add("hide");
-  loader.style.display = "none";
+  if (loader) {
+    loader.classList.add("hide");
+    loader.style.display = "none";
+  }
 
-  // 初回フェードイン
-  requestAnimationFrame(() => {
-    scene?.classList.add("visible");
-  });
-
-  // ★ auto 遷移は「初回ロードはここだけ」
+  // ★ 初回フェードは fadeLayer が担当
   startAutoTransition?.(goChapter25);
 });
 
@@ -76,32 +73,23 @@ function goChapter25() {
 }
 
 /* =====================
-   見た目の強制復帰（★最重要）
+   見た目の強制復帰（bfcache用）
 ===================== */
 
 function forceVisibleState() {
-  // scene
-  if (scene) {
-    scene.style.opacity = "1";
-    scene.style.filter = "none";
-    scene.classList.remove("fade-out", "exit");
-  }
-
-  // fadeout
+  // 出口フェード解除
   if (fadeout) {
     fadeout.classList.remove("active");
     fadeout.style.opacity = "0";
     fadeout.style.pointerEvents = "none";
   }
 
-  // body
-  document.body.classList.remove("fade-out");
-  document.body.style.opacity = "1";
-
-  // glitch 停止
+  // グリッチ完全停止
   stopGlitch();
 
-  // 背景保険
+  // body 保険
+  document.body.classList.remove("fade-out");
+  document.body.style.opacity = "1";
   document.body.style.background = "";
   document.documentElement.style.background = "";
 }
@@ -135,7 +123,7 @@ window.addEventListener("pageshow", e => {
   if (e.persisted) {
     /* ===== 戻る（bfcache） ===== */
 
-    // ① 即・黒画面解除
+    // ① 見た目即復帰
     forceVisibleState();
 
     // ② 内部状態リセット
@@ -148,13 +136,13 @@ window.addEventListener("pageshow", e => {
       loader.style.display = "none";
     }
 
-    // carousel を安全状態へ
+    // carousel 安全状態
     if (carousel) {
       carousel.setHolding?.(false);
       carousel.setExtraSpeed?.(0);
     }
 
-    // ③ 復帰演出
+    // ③ 一瞬の復帰演出
     requestAnimationFrame(() => {
       startGlitch();
       carousel?.setExtraSpeed?.(1.2);
@@ -166,17 +154,16 @@ window.addEventListener("pageshow", e => {
       carousel?.setExtraSpeed?.(0);
     }, 1200);
 
-    // ⑤ auto 遷移（★bfcache の時だけ）
+    // ⑤ auto 遷移（bfcache 時のみ）
     setTimeout(() => {
       startAutoTransition?.(goChapter25);
     }, 1200);
   }
 
-  // ★ 長押しイベントは一度だけ bind
+  // 長押しイベントは一度だけ bind
   if (!longPressBound && scene) {
     bindLongPressEvents(scene);
     longPressBound = true;
   }
 });
-
 
