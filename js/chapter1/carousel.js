@@ -1,6 +1,4 @@
 //carouse.js
-
-
 export function initCarousel(wrapper, pages) {
   let currentPage = 0;
   let isDragging = false;
@@ -123,4 +121,4 @@ export function initCarousel(wrapper, pages) {
   return {
     getCurrentPage: () => currentPage
   };
-}
+}　　　　　
