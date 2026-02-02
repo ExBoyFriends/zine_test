@@ -65,18 +65,19 @@ if (carousel) {
 ===================== */
 
 initLoader(loader, () => {
-  // loader を確実に消す
   if (loader) {
     loader.classList.add("hide");
     loader.style.display = "none";
   }
 
-  // dots 表示（chapter1と同じ役割）
-  dotsWrap?.classList.add("visible");
+  // chapter1 と同じ「余韻付き表示」
+  setTimeout(() => {
+    dotsWrap?.classList.add("visible");
+  }, 3800); // = 2800 + 1000
 
-  // 自動遷移スタート
   startAutoTransition?.(goChapter25);
 });
+
 
 // グリッチ初期化
 initGlitchLayer?.();
