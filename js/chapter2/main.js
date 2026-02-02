@@ -1,3 +1,5 @@
+//chapter2/main.js
+
 import { initLoader } from "../loader.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
@@ -30,26 +32,30 @@ if (carousel) {
 }
 
 // DOM
-const scene = document.querySelector(".scene");
+const scene   = document.querySelector(".scene");
 const fadeout = document.getElementById("fadeout");
+const loader  = document.getElementById("loader");
 
-// loader
-const loader = document.getElementById("loader");
+// 長押し bind 管理（★多重防止）
+let longPressBound = false;
+
+/* =====================
+   Loader 完了
+===================== */
 
 initLoader(loader, () => {
   // loader を確実に消す
   loader.classList.add("hide");
   loader.style.display = "none";
 
-  // 次フレームで初回フェード開始
+  // 初回フェードイン
   requestAnimationFrame(() => {
     scene?.classList.add("visible");
   });
 
+  // ★ auto 遷移は「初回ロードはここだけ」
   startAutoTransition?.(goChapter25);
 });
-
-
 
 // グリッチ初期化
 initGlitchLayer?.();
@@ -74,28 +80,28 @@ function goChapter25() {
 ===================== */
 
 function forceVisibleState() {
-  // scene の復帰
+  // scene
   if (scene) {
     scene.style.opacity = "1";
     scene.style.filter = "none";
     scene.classList.remove("fade-out", "exit");
   }
 
-  // 🔑 fadeout の完全解除（class が最重要）
+  // fadeout
   if (fadeout) {
     fadeout.classList.remove("active");
     fadeout.style.opacity = "0";
     fadeout.style.pointerEvents = "none";
   }
 
-  // body 側も保険
+  // body
   document.body.classList.remove("fade-out");
   document.body.style.opacity = "1";
 
-  // グリッチ完全停止
+  // glitch 停止
   stopGlitch();
 
-  // 背景の念押し
+  // 背景保険
   document.body.style.background = "";
   document.documentElement.style.background = "";
 }
@@ -129,26 +135,26 @@ window.addEventListener("pageshow", e => {
   if (e.persisted) {
     /* ===== 戻る（bfcache） ===== */
 
-    // ① 即・黒画面を解除
+    // ① 即・黒画面解除
     forceVisibleState();
 
     // ② 内部状態リセット
     resetTransitionState?.();
     goChapter25._done = false;
 
-    // ローダー残留対策
+    // loader 残留対策
     if (loader) {
       loader.classList.add("hide");
       loader.style.display = "none";
     }
 
-    // カルーセルを安全状態へ
+    // carousel を安全状態へ
     if (carousel) {
       carousel.setHolding?.(false);
       carousel.setExtraSpeed?.(0);
     }
 
-    // ③ 見えてから演出
+    // ③ 復帰演出
     requestAnimationFrame(() => {
       startGlitch();
       carousel?.setExtraSpeed?.(1.2);
@@ -160,19 +166,17 @@ window.addEventListener("pageshow", e => {
       carousel?.setExtraSpeed?.(0);
     }, 1200);
 
-    // ⑤ auto遷移は演出後
+    // ⑤ auto 遷移（★bfcache の時だけ）
     setTimeout(() => {
       startAutoTransition?.(goChapter25);
     }, 1200);
-
-  } else {
-    /* ===== 初回ロード ===== */
-    startAutoTransition?.(goChapter25);
   }
 
-  // 長押しは毎回再バインド
-  if (scene) {
+  // ★ 長押しイベントは一度だけ bind
+  if (!longPressBound && scene) {
     bindLongPressEvents(scene);
+    longPressBound = true;
   }
 });
+
 
