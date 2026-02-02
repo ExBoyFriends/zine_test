@@ -15,12 +15,18 @@ const lastWrapper = document.querySelector(".last-img-wrapper");
 ===================== */
 
 function startChapter1() {
-   pages[0]?.classList.add("active");
-   
-   setTimeout(() => {
-      dots?.classList.add("visible");
-   }, 300);
+  pages[0]?.classList.add("active");
+
+  // ★ 初期ドット状態を確定させる
+  document
+    .querySelectorAll(".dot")[0]
+    ?.classList.add("active");
+
+  setTimeout(() => {
+    dots?.classList.add("visible");
+  }, 300);
 }
+
 
 /* =====================
    Init
