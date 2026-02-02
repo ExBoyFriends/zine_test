@@ -7,52 +7,63 @@ export function initLoader(loader, onComplete) {
   }
 
   const fadeLayer = document.getElementById("fadeLayer");
-  let finished = false;
-  let started = false;
 
+  let finished = false;
+  let started  = false;
+
+  /* =====================
+     見た目リセット（初回専用）
+  ===================== */
   const resetVisualState = () => {
     finished = false;
-    started = false;
+    started  = false;
 
-    loader.style.display = "block";
-    loader.style.opacity = "1";
-    loader.style.filter = "";
-    loader.style.animation = "";
+    loader.style.display   = "block";
+    loader.style.opacity   = "1";
+    loader.style.filter    = "";
+    loader.style.animation = "siren 2s linear infinite";
 
     fadeLayer?.classList.remove("hide");
   };
 
+  /* =====================
+     完了処理
+  ===================== */
   const finish = () => {
     if (finished) return;
     finished = true;
 
-    /* ローディング演出を「明」で止める */
+    /* ローダーを「明」で止める */
     loader.style.animation = "none";
-    loader.style.filter = "brightness(1)";
-    loader.style.opacity = "0";
+    loader.style.filter   = "brightness(1)";
+    loader.style.opacity  = "0";
 
     requestAnimationFrame(() => {
       loader.style.display = "none";
 
-      // 闇フェード解除
+      /* 黒フェード解除 */
       fadeLayer?.classList.add("hide");
 
-      // 闇がわずかに残る瞬間に次へ
+      /* 闇がわずかに残る瞬間に次へ */
       setTimeout(() => {
         onComplete?.();
       }, 60);
     });
   };
 
+  /* =====================
+     開始処理（初回）
+  ===================== */
   const start = () => {
     if (started) return;
     started = true;
 
     resetVisualState();
 
+    /* 演出時間 */
     setTimeout(() => {
       loader.addEventListener("transitionend", finish, { once: true });
-      setTimeout(finish, 1200);
+      setTimeout(finish, 1200); // 念のため保険
     }, 4000);
   };
 
@@ -63,21 +74,23 @@ export function initLoader(loader, onComplete) {
     window.addEventListener("load", start, { once: true });
   }
 
-  /* ===== bfcache 復帰対応 ===== */
+  /* =====================
+     bfcache 復帰対応（★重要）
+  ===================== */
   window.addEventListener("pageshow", e => {
-    if (e.persisted) {
-      // 🔑 黒画面・残留演出を完全排除
-      resetVisualState();
+    if (!e.persisted) return;
 
-      // 即完了扱いで世界を見せる
-      loader.style.display = "none";
-      fadeLayer?.classList.add("hide");
+    /* 🔑 演出は一切しない。即、世界を見せる */
+    finished = true;
+    started  = true;
 
-      finished = true;
-      onComplete?.();
-    }
+    loader.style.display   = "none";
+    loader.style.opacity   = "0";
+    loader.style.animation = "none";
+
+    fadeLayer?.classList.add("hide");
+
+    onComplete?.();
   });
 }
 
-document.querySelector('.fade-root')?.classList.add('visible');
-document.getElementById('fadeLayer')?.classList.add('hidden');
