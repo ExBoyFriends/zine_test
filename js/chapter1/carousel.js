@@ -1,85 +1,88 @@
 // carousel.js
 
-export function initCarousel(wrapper, pages, dots) {
+export function initCarousel(wrapper, pages) {
   let currentPage = 0;
   let isDragging = false;
   let startX = 0;
-  let deltaX = 0;
+  let currentX = 0;
 
-  function update() {
-    wrapper.style.transform = `translateX(${-currentPage * 100}%)`;
-    updateDots();
-  }
+  const threshold = () => wrapper.clientWidth * 0.25;
+
+  updateDots();
+  normalize();
 
   function updateDots() {
-    dots?.querySelectorAll("span").forEach((dot, i) => {
-      dot.classList.toggle("active", i === currentPage);
-    });
+    document.querySelectorAll('.dot')
+      .forEach((d,i)=>d.classList.toggle('active', i===currentPage));
   }
 
-  /* =========================
-     🚫 初期 normalize は呼ばない
-  ========================= */
+  const inner = p => p.querySelector('.carousel-inner');
 
-  function normalize() {
-    pages.forEach((p, i) => {
-      p.style.opacity = i === currentPage ? "1" : "0";
-      p.classList.toggle("active", i === currentPage);
-    });
-  }
-
-  function goTo(index) {
-    currentPage = Math.max(0, Math.min(index, pages.length - 1));
-    update();
-    normalize();
-  }
-
-  /* ========== Drag ========== */
-
-  function onStart(x) {
+  wrapper.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
     isDragging = true;
-    startX = x;
-    deltaX = 0;
-    wrapper.style.transition = "none";
-  }
+    startX = e.clientX;
+    currentX = 0;
 
-  function onMove(x) {
+    pages.forEach(p => {
+      p.style.transition = 'none';
+      inner(p).style.transition = 'none';
+    });
+
+    wrapper.setPointerCapture(e.pointerId);
+  });
+
+  wrapper.addEventListener('pointermove', e => {
     if (!isDragging) return;
-    deltaX = x - startX;
-    wrapper.style.transform =
-      `translateX(${(-currentPage * window.innerWidth + deltaX)}px)`;
-  }
 
-  function onEnd() {
-    if (!isDragging) return;
-    isDragging = false;
-    wrapper.style.transition = "";
+    const dx = e.clientX - startX;
+    currentX = dx;
 
-    if (Math.abs(deltaX) > window.innerWidth * 0.2) {
-      currentPage += deltaX < 0 ? 1 : -1;
-      currentPage = Math.max(0, Math.min(currentPage, pages.length - 1));
+    const w = wrapper.clientWidth;
+    const r = Math.min(Math.abs(dx)/w,1);
+
+    const cur = pages[currentPage];
+    cur.style.opacity = 1 - r;
+    inner(cur).style.transform = `translateX(${dx}px)`;
+
+    if (dx < 0 && pages[currentPage+1]) {
+      const next = pages[currentPage+1];
+      next.style.opacity = r;
+      inner(next).style.transform = `translateX(${dx+w}px)`;
     }
 
-    update();
+    if (dx > 0 && pages[currentPage-1]) {
+      const prev = pages[currentPage-1];
+      prev.style.opacity = r;
+      inner(prev).style.transform = `translateX(${dx-w}px)`;
+    }
+  });
+
+  wrapper.addEventListener('pointerup', finish);
+  wrapper.addEventListener('pointercancel', finish);
+
+  function finish(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    wrapper.releasePointerCapture(e.pointerId);
+
+    if (currentX < -threshold() && pages[currentPage+1]) currentPage++;
+    if (currentX > threshold() && pages[currentPage-1]) currentPage--;
+
+    updateDots();
     normalize();
   }
 
-  /* ========== Bind ========== */
+  function normalize() {
+    pages.forEach((p,i)=>{
+      p.style.transition = 'opacity .8s ease';
+      p.style.opacity = i===currentPage?1:0;
+      p.classList.toggle('active', i===currentPage);
+      inner(p).style.transition = 'transform .8s ease';
+      inner(p).style.transform = 'translateX(0)';
+    });
+  }
 
-  wrapper.addEventListener("mousedown", e => onStart(e.clientX));
-  window.addEventListener("mousemove", e => onMove(e.clientX));
-  window.addEventListener("mouseup", onEnd);
-
-  wrapper.addEventListener("touchstart", e => onStart(e.touches[0].clientX));
-  window.addEventListener("touchmove", e => onMove(e.touches[0].clientX));
-  window.addEventListener("touchend", onEnd);
-
-  update(); // position だけ合わせる（opacity触らない）
-
-  return {
-    goTo,
-    normalize,
-    getCurrentPage: () => currentPage
-  };
+  return { getCurrentPage:()=>currentPage };
 }
 
