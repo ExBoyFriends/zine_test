@@ -1,4 +1,4 @@
-/* loader.js */
+//loader.js
 
 export function initLoader(loader, onComplete) {
   if (!loader) {
@@ -9,21 +9,28 @@ export function initLoader(loader, onComplete) {
   const fadeLayer = document.getElementById("fadeLayer");
   let finished = false;
 
- const finish = () => {
-  if (finished) return;
-  finished = true;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
 
-  // loader は即消す
-  loader.style.display = "none";
+    // siren を「明」で止める
+    loader.style.animation = "none";
+    loader.style.filter = "brightness(1)";
 
-  // 同じフレームで闇を抜ける
-  fadeLayer?.classList.add("hide");
+    // loader 自体を消す
+    loader.style.opacity = "0";
 
-  // 次フレームで初期画面を確定
-  requestAnimationFrame(() => {
-    onComplete?.();
-  });
-};
+    // 次の描画で切り替え
+    requestAnimationFrame(() => {
+      loader.style.display = "none";
+
+      // 闇を一瞬で抜く
+      fadeLayer?.classList.add("hide");
+
+      // 初期画面確定
+      onComplete?.();
+    });
+  };
 
   const start = () => {
     loader.style.display = "block";
@@ -32,20 +39,13 @@ export function initLoader(loader, onComplete) {
     // 暗闇は最初から ON
     fadeLayer?.classList.remove("hide");
 
-    // ローディング表示時間
-   setTimeout(() => {
-  // siren を止めて明るさ固定
-  loader.style.animation = "none";
-  loader.style.filter = "brightness(1)";
+    // ローディング時間
+    setTimeout(() => {
+      loader.addEventListener("transitionend", finish, { once: true });
 
-  // loader 演出をフェードアウト
-  loader.style.opacity = "0";
-
-  loader.addEventListener("transitionend", finish, { once: true });
-
-  setTimeout(finish, 3000);
-}, 4000);
-
+      // 念のため
+      setTimeout(finish, 1200);
+    }, 4000);
   };
 
   if (document.readyState === "complete") {
