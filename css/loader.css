@@ -12,7 +12,7 @@
   animation: siren 2s linear infinite;
 
   /* opacity は JS で制御 */
-  transition: opacity 6s ease;
+  transition: opacity 0.6s ease;
   opacity: 1;
 }
 
