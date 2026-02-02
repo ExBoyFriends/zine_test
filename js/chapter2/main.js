@@ -18,14 +18,6 @@ import {
    初期化（初回ロード）
 ===================== */
 
-// loader
-const loader = document.getElementById("loader");
-
-initLoader(loader, () => {
-  scene?.classList.add("visible");
-  startAutoTransition?.(goChapter25);
-});
-
 // カルーセル
 const carousel = initCarousel3D?.();
 window.__carousel__ = carousel ?? null;
@@ -40,6 +32,23 @@ if (carousel) {
 // DOM
 const scene = document.querySelector(".scene");
 const fadeout = document.getElementById("fadeout");
+
+// scene は常に見える
+if (scene) {
+  scene.style.opacity = "1";
+}
+
+// loader
+const loader = document.getElementById("loader");
+
+initLoader(loader, () => {
+  // 初回表示フラグ（必要なら）
+  scene?.classList.add("visible");
+
+  // auto 遷移開始
+  startAutoTransition?.(goChapter25);
+});
+
 
 // グリッチ初期化
 initGlitchLayer?.();
