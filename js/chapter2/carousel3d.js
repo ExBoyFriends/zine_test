@@ -1,4 +1,5 @@
 // carousel3d.js
+
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -30,12 +31,7 @@ export function initCarousel3D(options = {}) {
 
   let currentIndex = 0;
 
-function setIndex(next) {
-  currentIndex = next;
-  options?.onIndexChange?.(currentIndex);
-}
-
-
+  // 各パネルの基準角
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
@@ -52,6 +48,9 @@ function setIndex(next) {
 
     extraSpeed = 0;
     targetExtraSpeed = 0;
+
+    currentIndex = 0;
+    options.onIndexChange?.(0);
 
     front.style.transform = "";
     back.style.transform  = "";
@@ -71,8 +70,8 @@ function setIndex(next) {
 
     // 遷移前の上限
     if (!transitionStarted && !isHolding && extraSpeed > 8) {
-  extraSpeed = 8;
-}
+      extraSpeed = 8;
+    }
 
     // 常に時間で回す
     visualAngle += BASE_AUTO_SPEED + extraSpeed;
@@ -82,8 +81,22 @@ function setIndex(next) {
       angle = visualAngle;
     }
 
+    /* ===== 正面 index 判定（dots 用） ===== */
+    const normalized =
+      ((visualAngle % 360) + 360) % 360;
+
+    const index =
+      Math.round(normalized / SNAP) % COUNT;
+
+    if (index !== currentIndex) {
+      currentIndex = index;
+      options.onIndexChange?.(currentIndex);
+    }
+
+    /* ===== transform ===== */
     const cylTransform =
       `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+
     front.style.transform = cylTransform;
     back.style.transform  = cylTransform;
 
@@ -108,7 +121,7 @@ function setIndex(next) {
   }
 
   /* =====================
-     起動
+     起動 / 停止
   ===================== */
   function start() {
     if (rafId != null) return;
@@ -135,18 +148,21 @@ function setIndex(next) {
     }
   });
 
+  /* =====================
+     外部 API
+  ===================== */
   return {
     setExtraSpeed(v) {
       targetExtraSpeed = Math.min(Math.max(v, 0), 10);
     },
     setHolding(v) {
-  isHolding = v;
+      isHolding = v;
 
-  // 長押し解除時だけ減速を許可
-  if (!v && !transitionStarted) {
-    targetExtraSpeed = 0;
-  }
-},
+      // 長押し解除時だけ減速を許可
+      if (!v && !transitionStarted) {
+        targetExtraSpeed = 0;
+      }
+    },
     startTransition() {
       transitionStarted = true;
     },
