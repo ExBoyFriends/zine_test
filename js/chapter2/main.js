@@ -17,36 +17,15 @@ import {
 /* =====================
    DOM
 ===================== */
-
 const loader    = document.getElementById("loader");
-const scene     = document.querySelector(".scene");
 const fadeLayer = document.getElementById("fadeLayer");
-const fadeout   = document.getElementById("fadeout");
+const scene     = document.querySelector(".scene");
 
 /* =====================
-   初回フェード開始
+   初期化
 ===================== */
 
-function startInitialFade() {
-  requestAnimationFrame(() => {
-    scene?.classList.add("visible");
-    fadeLayer?.classList.add("hidden");
-  });
-}
-
-/* =====================
-   loader
-===================== */
-
-initLoader(loader, () => {
-  startInitialFade();
-  startAutoTransition?.(goChapter25);
-});
-
-/* =====================
-   Carousel
-===================== */
-
+// カルーセル
 const carousel = initCarousel3D?.();
 window.__carousel__ = carousel ?? null;
 
@@ -54,16 +33,23 @@ if (carousel) {
   initDragInput(carousel);
 }
 
-/* =====================
-   Glitch
-===================== */
-
+// グリッチ
 initGlitchLayer?.();
+
+/* =====================
+   初回ロード（入口フェード）
+===================== */
+initLoader(loader, () => {
+  requestAnimationFrame(() => {
+    fadeLayer?.classList.add("hidden");
+  });
+
+  startAutoTransition?.(goChapter25);
+});
 
 /* =====================
    Chapter2 → 2.5
 ===================== */
-
 function goChapter25() {
   if (goChapter25._done) return;
   goChapter25._done = true;
@@ -76,41 +62,8 @@ function goChapter25() {
 }
 
 /* =====================
-   bfcache 復帰対策
+   長押し演出フック
 ===================== */
-
-function forceVisibleState() {
-  scene?.classList.add("visible");
-  fadeLayer?.classList.add("hidden");
-
-  if (fadeout) {
-    fadeout.style.opacity = "0";
-    fadeout.style.pointerEvents = "none";
-  }
-
-  stopGlitch();
-}
-
-window.addEventListener("pageshow", e => {
-  if (e.persisted) {
-    forceVisibleState();
-    resetTransitionState?.();
-    goChapter25._done = false;
-
-    setTimeout(() => {
-      startAutoTransition?.(goChapter25);
-    }, 800);
-  }
-
-  if (scene) {
-    bindLongPressEvents(scene);
-  }
-});
-
-/* =====================
-   Hold Effects
-===================== */
-
 setHoldEffects({
   glitchStart: () => {
     startGlitch();
@@ -122,4 +75,27 @@ setHoldEffects({
   }
 });
 
+/* =====================
+   強制遷移
+===================== */
 window.addEventListener("force-exit", goChapter25);
+
+/* =====================
+   pageshow（bfcache 対策）
+===================== */
+window.addEventListener("pageshow", e => {
+  if (e.persisted) {
+    fadeLayer?.classList.add("hidden");
+
+    resetTransitionState?.();
+    goChapter25._done = false;
+
+    carousel?.setHolding?.(false);
+    carousel?.setExtraSpeed?.(0);
+
+    startAutoTransition?.(goChapter25);
+  }
+
+  bindLongPressEvents(scene);
+});
+
