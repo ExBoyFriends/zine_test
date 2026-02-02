@@ -15,7 +15,7 @@ export function initLoader(loader, onComplete) {
 
     /* ローディング演出を「明」で止める */
     loader.style.animation = "none";
-    loader.style.filter = "brightness(1)";
+  //  loader.style.filter = "brightness(1)";
     loader.style.opacity = "0";
 
     requestAnimationFrame(() => {
@@ -28,20 +28,18 @@ export function initLoader(loader, onComplete) {
       // ★ 闇が少し残っている瞬間に画像フェード開始
       setTimeout(() => {
         onComplete?.();
-      }, 20); // ← 10〜30ms 微調整ゾーン
+      }, 60);   ///////////////////////////////////////////////////////
     });
   };
 
   const start = () => {
     loader.style.display = "block";
     loader.style.opacity = "1";
-
-    // 暗闇は最初から ON
     fadeLayer?.classList.remove("hide");
 
     setTimeout(() => {
       loader.addEventListener("transitionend", finish, { once: true });
-      setTimeout(finish, 1200); // 保険
+      setTimeout(finish, 1200);
     }, 4000);
   };
 
