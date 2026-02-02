@@ -15,20 +15,22 @@ const dots    = document.querySelector(".dots");
 /* =====================
    設定値（Chapter1 / 2_5 共通）
 ===================== */
-const DOT_DELAY = 3800;
+// CSS のフェードと体感を揃える
+const FADE_DURATION = 2800;
+const DOT_DELAY     = FADE_DURATION + 1000;
 
 /* =====================
-   Chapter2_5 Start Logic
+   Chapter Start Logic
 ===================== */
-function startChapter25() {
+function startChapter() {
   // 世界を出す（初回フェード）
   chapter.classList.add("visible");
 
-  // 初期ページ
+  // 初期ページ表示
   showPage(state.index);
   initTapInteraction();
 
-  // dots 表示を遅らせる
+  // dots 表示をフェード後に
   setTimeout(() => {
     dots?.classList.add("visible");
   }, DOT_DELAY);
@@ -38,6 +40,6 @@ function startChapter25() {
    Loader 完了
 ===================== */
 initLoader(loader, () => {
-  startChapter25();
+  startChapter();
 });
 
