@@ -4,18 +4,6 @@ body {
   background: #000;
   color: #fff;
 }
-
-.chapter {
-  position: fixed;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 1.8s ease;
-}
-
-body.ready .chapter {
-  opacity: 1;
-}
-
 .page {
   position: absolute;
   inset: 0;
