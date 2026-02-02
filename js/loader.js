@@ -8,6 +8,19 @@ export function initLoader(loader, onComplete) {
 
   const fadeLayer = document.getElementById("fadeLayer");
   let finished = false;
+  let started = false;
+
+  const resetVisualState = () => {
+    finished = false;
+    started = false;
+
+    loader.style.display = "block";
+    loader.style.opacity = "1";
+    loader.style.filter = "";
+    loader.style.animation = "";
+
+    fadeLayer?.classList.remove("hide");
+  };
 
   const finish = () => {
     if (finished) return;
@@ -19,23 +32,23 @@ export function initLoader(loader, onComplete) {
     loader.style.opacity = "0";
 
     requestAnimationFrame(() => {
-      // loader 完全終了
       loader.style.display = "none";
 
-      // 闇フェード開始
+      // 闇フェード解除
       fadeLayer?.classList.add("hide");
 
-      // ★ 闇が少し残っている瞬間に画像フェード開始
+      // 闇がわずかに残る瞬間に次へ
       setTimeout(() => {
         onComplete?.();
-      }, 60); 
+      }, 60);
     });
   };
 
   const start = () => {
-    loader.style.display = "block";
-    loader.style.opacity = "1";
-    fadeLayer?.classList.remove("hide");
+    if (started) return;
+    started = true;
+
+    resetVisualState();
 
     setTimeout(() => {
       loader.addEventListener("transitionend", finish, { once: true });
@@ -43,9 +56,25 @@ export function initLoader(loader, onComplete) {
     }, 4000);
   };
 
+  /* ===== 初回ロード ===== */
   if (document.readyState === "complete") {
     start();
   } else {
     window.addEventListener("load", start, { once: true });
   }
+
+  /* ===== bfcache 復帰対応 ===== */
+  window.addEventListener("pageshow", e => {
+    if (e.persisted) {
+      // 🔑 黒画面・残留演出を完全排除
+      resetVisualState();
+
+      // 即完了扱いで世界を見せる
+      loader.style.display = "none";
+      fadeLayer?.classList.add("hide");
+
+      finished = true;
+      onComplete?.();
+    }
+  });
 }
