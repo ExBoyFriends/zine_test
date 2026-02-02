@@ -14,7 +14,7 @@ export function initCarousel3D() {
   const R_BACK  = 170;
 
   const BASE_AUTO_SPEED = 0.25;
-  const ACCEL_FOLLOW = 0.06;
+  const ACCEL_FOLLOW    = 0.06;
 
   let angle = 0;
   let visualAngle = 0;
@@ -26,13 +26,39 @@ export function initCarousel3D() {
   let extraSpeed = 0;
   let targetExtraSpeed = 0;
 
+  let rafId = null;
+
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
+  /* =====================
+     状態リセット
+  ===================== */
+  function resetState() {
+    angle = 0;
+    visualAngle = 0;
+
+    dragging = false;
+    isHolding = false;
+    transitionStarted = false;
+
+    extraSpeed = 0;
+    targetExtraSpeed = 0;
+
+    front.style.transform = "";
+    back.style.transform  = "";
+
+    outers.forEach(p => (p.style.transform = ""));
+    inners.forEach(p => (p.style.transform = ""));
+  }
+
+  /* =====================
+     アニメーション
+  ===================== */
   function animate() {
     if (!Number.isFinite(extraSpeed)) extraSpeed = 0;
 
-    // なめらかに target に追従
+    // target に滑らかに追従
     extraSpeed += (targetExtraSpeed - extraSpeed) * ACCEL_FOLLOW;
 
     // 遷移前の上限
@@ -40,10 +66,10 @@ export function initCarousel3D() {
       extraSpeed = 8;
     }
 
-    // 🔑 常に時間で回す（ドラッグ中でも）
+    // 常に時間で回す
     visualAngle += BASE_AUTO_SPEED + extraSpeed;
 
-    // 🔑 holding / dragging していない時だけ同期
+    // holding / dragging していない時だけ同期
     if (!isHolding && !dragging) {
       angle = visualAngle;
     }
@@ -70,10 +96,36 @@ export function initCarousel3D() {
          rotateY(180deg)`;
     });
 
-    requestAnimationFrame(animate);
+    rafId = requestAnimationFrame(animate);
   }
 
-  animate();
+  /* =====================
+     起動
+  ===================== */
+  function start() {
+    if (rafId != null) return;
+    rafId = requestAnimationFrame(animate);
+  }
+
+  function stop() {
+    if (rafId != null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
+
+  start();
+
+  /* =====================
+     bfcache 対応
+  ===================== */
+  window.addEventListener("pageshow", e => {
+    if (e.persisted) {
+      stop();
+      resetState();
+      start();
+    }
+  });
 
   return {
     setExtraSpeed(v) {
