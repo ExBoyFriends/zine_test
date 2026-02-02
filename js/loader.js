@@ -23,6 +23,8 @@ export function initLoader(loader, onComplete) {
     setTimeout(() => {
       requestAnimationFrame(() => {
         loader.style.opacity = "0";
+
+         onComplete?.();
       });
 
       loader.addEventListener("transitionend", finish, { once: true });
