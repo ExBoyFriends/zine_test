@@ -18,11 +18,39 @@ import {
 } from "./effects.js";
 
 /* =====================
-   初期化（初回ロード）
+   DOM
 ===================== */
 
-// カルーセル
-const carousel = initCarousel3D?.();
+const scene   = document.querySelector(".scene");
+const fadeout = document.getElementById("fadeout");
+const loader  = document.getElementById("loader");
+
+const dotsWrap = document.querySelector(".dots");
+const dots = document.querySelectorAll(".dot");
+
+// 長押し bind 管理（多重防止）
+let longPressBound = false;
+
+/* =====================
+   Dots update（chapter1準拠）
+===================== */
+
+function updateDots(index) {
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("active", i === index);
+  });
+}
+
+/* =====================
+   Carousel 初期化
+===================== */
+
+const carousel = initCarousel3D({
+  onIndexChange: index => {
+    updateDots(index);
+  }
+});
+
 window.__carousel__ = carousel ?? null;
 
 // ドラッグ
@@ -31,15 +59,6 @@ if (carousel) {
 } else {
   console.warn("[chapter2] carousel init failed");
 }
-
-// DOM
-const scene   = document.querySelector(".scene");
-const fadeout = document.getElementById("fadeout");
-const loader  = document.getElementById("loader");
-const dots = document.querySelector(".dots");
-
-// 長押し bind 管理（多重防止）
-let longPressBound = false;
 
 /* =====================
    Loader 完了
@@ -50,30 +69,17 @@ initLoader(loader, () => {
   if (loader) {
     loader.classList.add("hide");
     loader.style.display = "none";
-　  dots?.classList.add("visible");
+  }
 
-  // ★ 初回フェードは fadeLayer が担当
+  // dots 表示（chapter1と同じ役割）
+  dotsWrap?.classList.add("visible");
+
+  // 自動遷移スタート
   startAutoTransition?.(goChapter25);
 });
 
 // グリッチ初期化
 initGlitchLayer?.();
-
-/* =====================
-   Dots update (chapter1準拠)
-===================== */
-function updateDots(index) {
-  dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === index);
-  });
-}
-
-const carousel = initCarousel3D({
-  onIndexChange: index => {
-    updateDots(index);
-  }
-});
-
 
 /* =====================
    Chapter2 → 2.5
