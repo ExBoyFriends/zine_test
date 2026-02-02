@@ -28,6 +28,14 @@ export function initCarousel3D() {
 
   let rafId = null;
 
+  let currentIndex = 0;
+
+function setIndex(next) {
+  currentIndex = next;
+  options?.onIndexChange?.(currentIndex);
+}
+
+
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
