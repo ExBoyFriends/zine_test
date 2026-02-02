@@ -28,7 +28,7 @@ export function initLoader(loader, onComplete) {
       // ★ 闇が少し残っている瞬間に画像フェード開始
       setTimeout(() => {
         onComplete?.();
-      }, 60);   ///////////////////////////////////////////////////////
+      }, 60); 
     });
   };
 
