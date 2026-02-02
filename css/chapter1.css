@@ -26,7 +26,7 @@ body {
   align-items: center;
 
   opacity: 0;
-  transition: opacity 0.8s ease;
+  transition: opacity 1.4s ease;
   pointer-events: none;
   will-change: opacity;
 
