@@ -27,7 +27,7 @@ export function initLoader(loader, onComplete) {
         // （暗闇と初期フェードの二重感を消す）
         setTimeout(() => {
           onComplete?.();
-        }, 120); // ← fadeLayer 0.2s に対してちょい早め
+        }, 50); 
       });
     });
   };
