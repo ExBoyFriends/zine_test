@@ -6,8 +6,9 @@ import { startGlitch, stopGlitch } from "./effects.js";
 
 let isPressing = false;
 let exited = false;
+let commitExit = false;   // ★ 追加：出口にコミットしたか
 
-let startTime = 0;              // ページ表示からの絶対時間
+let startTime = 0;
 let rafId = null;
 
 let longPressTimer = null;
@@ -50,6 +51,7 @@ export function resetTransitionState() {
   clearAllTimers();
   isPressing = false;
   exited = false;
+  commitExit = false;   // ★ リセット必須
   startTime = performance.now();
   cancelAnimationFrame(rafId);
   rafId = null;
@@ -115,13 +117,15 @@ function startPress() {
     window.__carousel__?.setExtraSpeed(GLITCH_SPEED);
   }, GLITCH_TRIGGER);
 
-  // 最終加速
+  // 🔥 最終加速（ここで戻れなくする）
   accelTimer = setTimeout(() => {
     if (!isPressing || exited) return;
+
+    commitExit = true; // ★ ここが核心
     window.__carousel__?.setExtraSpeed(PRE_EXIT_MAX);
   }, FINAL_ACCEL_TRIGGER);
 
-  // 🚀 長押しスキップ（時間より早い場合のみ）
+  // 🚀 長押し完遂 → 即遷移
   longPressTimer = setTimeout(() => {
     if (exited) return;
 
@@ -140,8 +144,10 @@ function endPress() {
   stopGlitch();
   effects.glitchEnd?.();
 
-  // 🔑 holding 解除のみ（速度は保持）
-  window.__carousel__?.setHolding(false);
+  // ★ commit していない場合のみ解除
+  if (!commitExit) {
+    window.__carousel__?.setHolding(false);
+  }
 }
 
 /* =====================
@@ -158,5 +164,3 @@ function clearAllTimers() {
   clearPressTimers();
   cancelAnimationFrame(rafId);
 }
-
-
