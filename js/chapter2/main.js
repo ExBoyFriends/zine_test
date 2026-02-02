@@ -1,5 +1,3 @@
-//chapter2/main.js
-
 import { initBase } from "../base.js";
 import { initLoader } from "../loader.js";
 import { initCarousel3D } from "./carousel3d.js";
@@ -28,6 +26,19 @@ const dotsWrap = document.querySelector(".dots");
 const dots = [...document.querySelectorAll(".dot")];
 
 /* =====================
+   Base 初期化（必須）
+===================== */
+initBase();
+
+/* =====================
+   長押し bind（初回ロード用）
+===================== */
+if (scene && !scene.__holdBound) {
+  bindLongPressEvents(scene);
+  scene.__holdBound = true;
+}
+
+/* =====================
    Dots update（chapter1準拠）
 ===================== */
 function updateDots(index) {
@@ -47,8 +58,13 @@ const carousel = initCarousel3D({
 
 if (carousel) {
   initDragInput(carousel);
-  updateDots(0); // ★ 初期必須
+  updateDots(0); // 初期ドット
 }
+
+/* =====================
+   Glitch 初期化
+===================== */
+initGlitchLayer?.();
 
 /* =====================
    Loader 完了
@@ -57,18 +73,12 @@ initLoader(loader, () => {
   loader?.classList.add("hide");
   loader && (loader.style.display = "none");
 
-  // dots フェードイン（chapter1と同じ）
-  setTimeout(() => {
-    dotsWrap?.classList.add("visible");
-  }, 3800);
+  /* ★ 修正ポイント：
+     dots は loader 完了と同時に必ず表示 */
+  dotsWrap?.classList.add("visible");
 
   startAutoTransition?.(goChapter25);
 });
-
-/* =====================
-   Glitch 初期化
-===================== */
-initGlitchLayer?.();
 
 /* =====================
    Chapter2 → 2.5
@@ -117,10 +127,11 @@ window.addEventListener("pageshow", e => {
     carousel?.setHolding?.(false);
     carousel?.setExtraSpeed?.(0);
 
+    dotsWrap?.classList.add("visible"); // ← 復帰時も必ず表示
     startAutoTransition?.(goChapter25);
   }
 
-  // 長押し bind は一度だけ
+  // 念のため（多重 bind 防止）
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
