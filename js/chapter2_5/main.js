@@ -7,20 +7,15 @@ window.addEventListener("load", () => {
   const loader = document.getElementById("loader");
 
   initLoader(loader, () => {
-    // chapter をフェードイン
-    document.body.classList.add("ready");
-
-    // 初期ページ
+    // 初期ページを即表示（chapter1と同じ）
     showPage(state.index);
     initTapInteraction();
 
-    // dots は少し遅れて出す（chapter1と同じ呼吸）
+    // dots を少し遅らせて表示
     requestAnimationFrame(() => {
       setTimeout(() => {
-        const dots = document.querySelector(".dots");
-        dots?.classList.add("visible");
+        document.querySelector(".dots")?.classList.add("visible");
       }, 300);
     });
   });
 });
-
