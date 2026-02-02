@@ -18,9 +18,14 @@ import {
    初期化（初回ロード）
 ===================== */
 
-// ローダー
+// loader
 const loader = document.getElementById("loader");
-initLoader(loader);
+
+initLoader(loader, () => {
+  // ローダー明け＝世界が見えていい瞬間
+  startAutoTransition?.(goChapter25);
+});
+
 
 // カルーセル
 const carousel = initCarousel3D?.();
