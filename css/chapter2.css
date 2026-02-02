@@ -122,9 +122,11 @@ img {
   bottom: calc(40px + env(safe-area-inset-bottom));
   width: 100%;
   text-align: center;
-  z-index: 20;
-  opacity: 0;
   transition: opacity 2.8s cubic-bezier(.22,.61,.36,1);
+
+   z-index: 100 !important;
+  opacity: 1 !important;
+  pointer-events: none;
 }
 
 .dots.visible {
