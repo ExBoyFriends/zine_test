@@ -24,7 +24,7 @@ function startChapter1() {
 
   setTimeout(() => {
     dots?.classList.add("visible");
-  }, 300);
+  }, 700);
 }
 
 
