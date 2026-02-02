@@ -6,6 +6,8 @@ import { initTapInteraction } from "./interaction.js";
 const loader = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
 
+const DOT_DELAY = 3800; // ★ chapter1 と完全統一
+
 initLoader(loader, () => {
   // ===== 初回フェードイン =====
   chapter.classList.add("visible");
@@ -14,8 +16,8 @@ initLoader(loader, () => {
   showPage(state.index);
   initTapInteraction();
 
-  // dots だけ少し遅らせる
+  // dots はフェード完了後に表示
   setTimeout(() => {
     document.querySelector(".dots")?.classList.add("visible");
-  }, 700);
+  }, DOT_DELAY);
 });
