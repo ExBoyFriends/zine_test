@@ -12,24 +12,28 @@ export function initLoader(loader, onComplete) {
     if (finished) return;
     finished = true;
 
-    loader.style.display = "none";
-    onComplete?.(); // ← ここでだけ呼ぶ
+    // 👇 完全に闇になった「次のフレーム」で確定
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        loader.style.display = "none";
+        onComplete?.(); // ← 闇が確定してから呼ぶ
+      });
+    });
   };
 
   const start = () => {
     loader.style.display = "block";
     loader.style.opacity = "1";
 
-    // ローディング表示時間（例：4秒）
     setTimeout(() => {
       // フェードアウト開始
       loader.style.opacity = "0";
 
-      // フェードアウト完了を待つ
+      // フェード完了検知
       loader.addEventListener("transitionend", finish, { once: true });
 
-      // 保険（transitionend が来なかった場合）
-      setTimeout(finish, 8000);
+      // 保険
+      setTimeout(finish, 3000);
     }, 4000);
   };
 
