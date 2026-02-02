@@ -40,15 +40,19 @@ export function initLoader(loader, onComplete) {
     fadeLayer?.classList.remove("hide");
 
     // ローディング表示時間
-    setTimeout(() => {
-      // loader 演出をフェードアウト
-      loader.style.opacity = "0";
+   setTimeout(() => {
+  // siren を止めて明るさ固定
+  loader.style.animation = "none";
+  loader.style.filter = "brightness(1)";
 
-      loader.addEventListener("transitionend", finish, { once: true });
+  // loader 演出をフェードアウト
+  loader.style.opacity = "0";
 
-      // 保険
-      setTimeout(finish, 3000);
-    }, 4000);
+  loader.addEventListener("transitionend", finish, { once: true });
+
+  setTimeout(finish, 3000);
+}, 4000);
+
   };
 
   if (document.readyState === "complete") {
