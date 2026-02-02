@@ -13,18 +13,21 @@ export function initLoader(loader, onComplete) {
     if (finished) return;
     finished = true;
 
-    // 完全に闇が確定した「次の描画」で処理
+    // 闇が確定した次の描画
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
 
-        // loader は即消す（演出終了）
+        // loader 演出はここで完全終了
         loader.style.display = "none";
 
         // 闇 → フェードイン開始
         fadeLayer?.classList.add("hide");
 
-        // ここで初期画面を出してOK
-        onComplete?.();
+        // 🔑 fadeLayer のフェードが少し進んでから初期画面を出す
+        // （暗闇と初期フェードの二重感を消す）
+        setTimeout(() => {
+          onComplete?.();
+        }, 120); // ← fadeLayer 0.2s に対してちょい早め
       });
     });
   };
@@ -33,7 +36,7 @@ export function initLoader(loader, onComplete) {
     loader.style.display = "block";
     loader.style.opacity = "1";
 
-    // 暗闇は最初からON
+    // 暗闇は最初から ON
     fadeLayer?.classList.remove("hide");
 
     // ローディング表示時間
