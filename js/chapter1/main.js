@@ -17,16 +17,18 @@ const lastWrapper = document.querySelector(".last-img-wrapper");
 function startChapter1() {
   pages[0]?.classList.add("active");
 
-  // ★ 初期ドット状態を確定させる
+  // 初期ドット（アクティブ状態だけ先に確定）
   document
     .querySelectorAll(".dot")[0]
     ?.classList.add("active");
 
+  // 初回フェード完了に合わせて表示
+  const DOT_DELAY = 3800;
+
   setTimeout(() => {
     dots?.classList.add("visible");
-  }, 700);
+  }, DOT_DELAY);
 }
-
 
 /* =====================
    Init
