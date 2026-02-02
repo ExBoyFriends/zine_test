@@ -176,7 +176,7 @@ img {
 
 body.fade-out {
   opacity: 0;
-  transition: opacity 4s ease;
+  transition: opacity 3.5s ease;
 }
 
 /* =====================
