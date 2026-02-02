@@ -60,6 +60,15 @@ initLoader(loader, () => {
 initGlitchLayer?.();
 
 /* =====================
+   Dots update (chapter1準拠)
+===================== */
+function updateDots(index) {
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("active", i === index);
+  });
+}
+
+/* =====================
    Chapter2 → 2.5
 ===================== */
 
