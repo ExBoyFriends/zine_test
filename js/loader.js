@@ -9,28 +9,21 @@ export function initLoader(loader, onComplete) {
   const fadeLayer = document.getElementById("fadeLayer");
   let finished = false;
 
-  const finish = () => {
-    if (finished) return;
-    finished = true;
+ const finish = () => {
+  if (finished) return;
+  finished = true;
 
-    // 闇が確定した次の描画
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
+  // loader は即消す
+  loader.style.display = "none";
 
-        // loader 演出はここで完全終了
-        loader.style.display = "none";
+  // 同じフレームで闇を抜ける
+  fadeLayer?.classList.add("hide");
 
-        // 闇 → フェードイン開始
-        fadeLayer?.classList.add("hide");
-
-        // 🔑 fadeLayer のフェードが少し進んでから初期画面を出す
-        // （暗闇と初期フェードの二重感を消す）
-        setTimeout(() => {
-          onComplete?.();
-        }, 50); 
-      });
-    });
-  };
+  // 次フレームで初期画面を確定
+  requestAnimationFrame(() => {
+    onComplete?.();
+  });
+};
 
   const start = () => {
     loader.style.display = "block";
