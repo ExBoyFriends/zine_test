@@ -17,5 +17,5 @@ initLoader(loader, () => {
   // dots だけ少し遅らせる
   setTimeout(() => {
     document.querySelector(".dots")?.classList.add("visible");
-  }, 300);
+  }, 700);
 });
