@@ -15,11 +15,11 @@ const lastWrapper = document.querySelector(".last-img-wrapper");
 ===================== */
 
 function startChapter1() {
-  // 初回フェードはここだけが担当
-  requestAnimationFrame(() => {
-    pages[0]?.classList.add("active");
-    dots?.classList.add("visible");
-  });
+   pages[0]?.classList.add("active");
+   
+   setTimeout(() => {
+      dots?.classList.add("visible");
+   }, 300);
 }
 
 /* =====================
