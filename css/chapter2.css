@@ -35,7 +35,7 @@ img {
 }
 
 /* =====================
-   Scene（統一版：フェードしない）
+   Scene
 ===================== */
 .scene {
   position: fixed;
@@ -44,12 +44,10 @@ img {
   perspective-origin: 50% 45%;
   touch-action: none;
   z-index: 1;
-
-  opacity: 1;          /* 常に表示 */
 }
 
 /* =====================
-   Panel (Common)
+   Panel Common
 ===================== */
 .panel,
 .outer,
@@ -59,11 +57,6 @@ img {
   top: 50%;
   transform-style: preserve-3d;
   transform: translate(-50%, -50%);
-  pointer-events: auto;
-
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
 }
 
 .outer,
@@ -84,7 +77,7 @@ img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, .4));
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
 }
 
 /* =====================
@@ -95,41 +88,12 @@ img {
   height: 290px;
   backface-visibility: hidden;
   background: url("../image/top_b.png") center / contain no-repeat;
-  filter: brightness(0.4);
+  filter: brightness(0.45);
   opacity: 0.85;
 }
 
 /* =====================
-   Dots
-===================== */
-.dots {
-  position: fixed;
-  bottom: calc(40px + env(safe-area-inset-bottom));
-  width: 100%;
-  text-align: center;
-  z-index: 50;
-  opacity: 0;
-  transition: opacity 2.8s cubic-bezier(.22,.61,.36,1);
-}
-
-.dots.visible {
-  opacity: 1;
-}
-
-.dot {
-  display: inline-block;
-  width: 5px;
-  height: 8px;
-  margin: 0 5px;
-  background: rgba(200, 200, 200, .25);
-}
-
-.dot.active {
-  background: rgba(240, 240, 240, .9);
-}
-
-/* =====================
-   Cylinder（★元のまま）
+   Cylinder
 ===================== */
 .cylinder {
   position: absolute;
@@ -150,23 +114,33 @@ img {
   pointer-events: none;
 }
 
-.cylinder-front,
-.cylinder-back {
-  position: absolute;
-  left: 50%;
-  top: 50%;
+/* =====================
+   Dots（chapter1 準拠）
+===================== */
+.dots {
+  position: fixed;
+  bottom: calc(40px + env(safe-area-inset-bottom));
   width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 2.8s cubic-bezier(.22,.61,.36,1);
 }
 
-.cylinder,
-.cylinder-front,
-.cylinder-back,
-.outer,
-.inner {
-  touch-action: none;
+.dots.visible {
+  opacity: 1;
+}
+
+.dot {
+  display: inline-block;
+  width: 5px;
+  height: 8px;
+  margin: 0 5px;
+  background: rgba(200, 200, 200, 0.25);
+}
+
+.dot.active {
+  background: rgba(240, 240, 240, 0.9);
 }
 
 /* =====================
@@ -180,8 +154,8 @@ img {
   background:
     repeating-linear-gradient(
       0deg,
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 255, 255, 0.06) 1px,
+      rgba(255,255,255,0.06),
+      rgba(255,255,255,0.06) 1px,
       transparent 1px,
       transparent 3px
     );
@@ -200,7 +174,7 @@ img {
 }
 
 /* =====================
-   Exit Fade（出口専用）
+   Exit Fade
 ===================== */
 #fadeout {
   position: fixed;
@@ -209,7 +183,7 @@ img {
   z-index: 40;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 2.5s cubic-bezier(.25, .1, .15, 1);
+  transition: opacity 2.5s cubic-bezier(.25,.1,.15,1);
 }
 
 #fadeout.active {
@@ -220,19 +194,16 @@ img {
    Animations
 ===================== */
 @keyframes glitchShake {
-  0%   { transform: translate(0, 0); }
-  20%  { transform: translate(-1px, 1px); }
-  40%  { transform: translate(2px, -1px); }
-  60%  { transform: translate(-2px, 2px); }
-  80%  { transform: translate(1px, -2px); }
-  100% { transform: translate(0, 0); }
+  0%   { transform: translate(0,0); }
+  25%  { transform: translate(-1px,1px); }
+  50%  { transform: translate(2px,-1px); }
+  75%  { transform: translate(-2px,2px); }
+  100% { transform: translate(0,0); }
 }
 
 @keyframes glitchFlash {
-  0%   { opacity: 0.04; }
-  20%  { opacity: 0.15; }
-  40%  { opacity: 0.08; }
-  60%  { opacity: 0.18; }
-  80%  { opacity: 0.06; }
-  100% { opacity: 0.12; }
+  0%   { opacity: 0.05; }
+  50%  { opacity: 0.18; }
+  100% { opacity: 0.1; }
 }
+
