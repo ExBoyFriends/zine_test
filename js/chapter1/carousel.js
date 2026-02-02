@@ -1,4 +1,4 @@
-//carouse.js
+//carousel.js
 export function initCarousel(wrapper, pages) {
   let currentPage = 0;
   let isDragging = false;
