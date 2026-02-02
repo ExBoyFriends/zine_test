@@ -1,4 +1,5 @@
 //carousel.js
+
 export function initCarousel(wrapper, pages) {
   let currentPage = 0;
   let isDragging = false;
@@ -7,23 +8,24 @@ export function initCarousel(wrapper, pages) {
 
   const threshold = () => wrapper.clientWidth * 0.25;
 
-  updateDots();
-  normalize();
+  function getInner(page) {
+    return page.querySelector(".carousel-inner");
+  }
 
+  /* =====================
+     dots
+  ===================== */
   function updateDots() {
-    const dots = document.querySelectorAll('.dot');
+    const dots = document.querySelectorAll(".dot");
     dots.forEach((dot, i) => {
-      dot.classList.toggle('active', i === currentPage);
+      dot.classList.toggle("active", i === currentPage);
     });
   }
-  function getInner(page) {
-  return page.querySelector('.carousel-inner');
-}
 
   /* =====================
      pointer down
   ===================== */
-  wrapper.addEventListener('pointerdown', e => {
+  wrapper.addEventListener("pointerdown", e => {
     if (e.button !== 0) return;
 
     const inner = getInner(pages[currentPage]);
@@ -33,11 +35,10 @@ export function initCarousel(wrapper, pages) {
     startX = e.clientX;
     currentX = 0;
 
-    // フェード中でも即操作可能
     pages.forEach(p => {
-      p.style.transition = 'none';
+      p.style.transition = "none";
       const i = getInner(p);
-      if (i) i.style.transition = 'none';
+      if (i) i.style.transition = "none";
     });
 
     wrapper.setPointerCapture(e.pointerId);
@@ -46,7 +47,7 @@ export function initCarousel(wrapper, pages) {
   /* =====================
      pointer move
   ===================== */
-  wrapper.addEventListener('pointermove', e => {
+  wrapper.addEventListener("pointermove", e => {
     if (!isDragging) return;
 
     const dx = e.clientX - startX;
@@ -81,8 +82,8 @@ export function initCarousel(wrapper, pages) {
   /* =====================
      pointer up / cancel
   ===================== */
-  wrapper.addEventListener('pointerup', finish);
-  wrapper.addEventListener('pointercancel', finish);
+  wrapper.addEventListener("pointerup", finish);
+  wrapper.addEventListener("pointercancel", finish);
 
   function finish(e) {
     if (!isDragging) return;
@@ -102,18 +103,18 @@ export function initCarousel(wrapper, pages) {
   }
 
   /* =====================
-     normalize（静止状態）
+     normalize（操作後のみ）
   ===================== */
   function normalize() {
     pages.forEach((p, i) => {
-      p.style.transition = 'opacity .8s ease';
+      p.style.transition = "opacity .8s ease";
       p.style.opacity = i === currentPage ? 1 : 0;
-      p.classList.toggle('active', i === currentPage);
+      p.classList.toggle("active", i === currentPage);
 
       const inner = getInner(p);
       if (inner) {
-        inner.style.transition = 'transform .8s ease';
-        inner.style.transform = 'translateX(0)';
+        inner.style.transition = "transform .8s ease";
+        inner.style.transform = "translateX(0)";
       }
     });
   }
@@ -121,4 +122,5 @@ export function initCarousel(wrapper, pages) {
   return {
     getCurrentPage: () => currentPage
   };
-}　　　　　
+}
+
