@@ -4,9 +4,13 @@ import { showPage } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
 
 const loader = document.getElementById("loader");
+const chapter = document.querySelector(".chapter");
 
 initLoader(loader, () => {
-  // ★ loader.js と完全同期
+  // ===== 初回フェードイン =====
+  chapter.classList.add("visible");
+
+  // 初期ページ表示
   showPage(state.index);
   initTapInteraction();
 
