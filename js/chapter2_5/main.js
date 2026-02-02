@@ -1,23 +1,43 @@
+//chapter2_5/main.js
+
 import { initLoader } from "../loader.js";
 import { state } from "./state.js";
 import { showPage } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
 
-const loader = document.getElementById("loader");
+/* =====================
+   DOM
+===================== */
+const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
+const dots    = document.querySelector(".dots");
 
-const DOT_DELAY = 3800; // ★ chapter1 と完全統一
+/* =====================
+   設定値（Chapter1 / 2_5 共通）
+===================== */
+const DOT_DELAY = 3800;
 
-initLoader(loader, () => {
-  // ===== 初回フェードイン =====
+/* =====================
+   Chapter2_5 Start Logic
+===================== */
+function startChapter25() {
+  // 世界を出す（初回フェード）
   chapter.classList.add("visible");
 
-  // 初期ページ表示
+  // 初期ページ
   showPage(state.index);
   initTapInteraction();
 
-  // dots はフェード完了後に表示
+  // dots 表示を遅らせる
   setTimeout(() => {
-    document.querySelector(".dots")?.classList.add("visible");
+    dots?.classList.add("visible");
   }, DOT_DELAY);
+}
+
+/* =====================
+   Loader 完了
+===================== */
+initLoader(loader, () => {
+  startChapter25();
 });
+
