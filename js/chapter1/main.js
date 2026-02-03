@@ -42,6 +42,7 @@ initLoader(loader, () => {
       showPage(state.index);
       initCarousel(document.querySelector(".carousel-wrapper"), document.querySelectorAll(".carousel-page"));
       initLastPage(document.querySelector(".carousel-wrapper"), state.getCurrentPage, document.querySelectorAll(".carousel-page").length);
-    }
+      updateDotsState(); 
+     }
   });
 });
