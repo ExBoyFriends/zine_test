@@ -1,5 +1,5 @@
-// chapter1/carousel.js
 
+// chapter1/carousel.js
 import { state } from "../utils/state.js";
 
 export function initCarousel(wrapper, pages) {
@@ -116,4 +116,5 @@ export function initCarousel(wrapper, pages) {
     getCurrentPage: () => currentPage
   };
 }
+
 
