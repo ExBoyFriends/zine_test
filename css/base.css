@@ -60,7 +60,7 @@ img {
 .background {
   position: fixed;
   inset: 0;
-  background: url("../image/backGround.jpg") center / cover no-repeat;
+  background: url("../image/background.jpg") center / cover no-repeat;
   z-index: 0;
 }
 
