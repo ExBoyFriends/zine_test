@@ -17,6 +17,9 @@ import { initGlitchLayer } from "./effects.js";
 window.addEventListener("pageshow", e => {
   if (e.persisted) {
     resetTransitionState();
+    startAutoTransition(() => {
+      goChapter25();  // 自動遷移を再度トリガー
+    });
   }
 });
 
