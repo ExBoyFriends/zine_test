@@ -17,6 +17,14 @@ import {
   stopGlitch
 } from "./effects.js";
 
+
+
+window.addEventListener("pageshow", e => {
+  if (e.persisted) {
+    resetTransitionState();
+  }
+});
+
 /* =====================
    DOM
 ===================== */
@@ -36,7 +44,9 @@ function bindHoldOnce() {
     scene.__holdBound = true;
   }
 }
-bindHoldOnce();
+initLoader(loader, () => {
+  bindHoldOnce();
+});
 
 /* =====================
    Dots
@@ -57,9 +67,11 @@ const carousel = initCarousel3D({
 });
 
 if (carousel) {
+  window.__carousel__ = carousel;   // ★ これを必ず追加
   initDragInput(carousel);
   updateDots(0);
 }
+
 
 /* =====================
    Glitch
