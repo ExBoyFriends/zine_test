@@ -1,27 +1,26 @@
+/*loader.css*/
+
+
 /* ===============================
    Loader / Fade 共通CSS
    =============================== */
 
-/* 画面全体を覆うフェードレイヤー */
 #fadeLayer {
   position: fixed;
   inset: 0;
   background: #000;
   z-index: 9999;
 
-  /* 初期状態：表示（黒） */
-  opacity: 1;
-  pointer-events: auto;
+  opacity: 0;
+  pointer-events: none;
 
   transition: opacity 1.2s ease;
 }
 
-/* フェードアウト後（表示解除） */
-#fadeLayer.hide {
-  opacity: 0;
-  pointer-events: none;
+#fadeLayer.show {
+  opacity: 1;
+  pointer-events: auto;
 }
-
 /* ===============================
    Loader 本体
    =============================== */
@@ -45,14 +44,4 @@
   font-size: 14px;
   letter-spacing: 0.1em;
   opacity: 0.8;
-}
-
-/* ===============================
-   bfcache / 強制復帰対策
-   =============================== */
-
-/* JS が走らない事故を防ぐ最低保証 */
-html:not(.js-ready) #fadeLayer {
-  opacity: 1;
-  pointer-events: auto;
 }
