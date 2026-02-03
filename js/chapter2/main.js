@@ -1,4 +1,4 @@
-import { initBase } from "../base.js";
+
 import { initLoader } from "../loader.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
@@ -71,13 +71,7 @@ initGlitchLayer?.();
    Loader 完了
 ===================== */
 initLoader(loader, () => {
-  loader?.classList.add("hide");
-  loader && (loader.style.display = "none");
-
-  /* ★ 修正ポイント：
-     dots は loader 完了と同時に必ず表示 */
-  dotsWrap?.classList.add("visible");
-
+  dotsWrap?.classList.add("visible");   // ★ ここで必ず表示
   startAutoTransition?.(goChapter25);
 });
 
@@ -115,27 +109,24 @@ setHoldEffects({
 window.addEventListener("force-exit", goChapter25);
 
 /* =====================
-   pageshow（bfcache 対策）
+   pageshow（bfcache）
 ===================== */
 window.addEventListener("pageshow", e => {
-  if (e.persisted) {
-    resetTransitionState?.();
-    goChapter25._done = false;
+  if (!e.persisted) return;
 
-    fadeout?.classList.remove("active");
-    stopGlitch();
+  resetTransitionState?.();
+  goChapter25._done = false;
 
-    carousel?.setHolding?.(false);
-    carousel?.setExtraSpeed?.(0);
+  stopGlitch();
+  carousel?.setHolding?.(false);
+  carousel?.setExtraSpeed?.(0);
 
-    dotsWrap?.classList.add("visible"); // ← 復帰時も必ず表示
-    startAutoTransition?.(goChapter25);
-  }
+  fadeLayer?.classList.add("hide");   // ★ 闇は即開く
+  dotsWrap?.classList.add("visible");
+  startAutoTransition?.(goChapter25);
 
-  // 念のため（多重 bind 防止）
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
   }
 });
-
