@@ -9,61 +9,55 @@
     content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   >
   <title>Chapter 2</title>
-  
-<link rel="stylesheet" href="../css/base.css">
-<link rel="stylesheet" href="../css/background.css">
-<link rel="stylesheet" href="../css/loader.css">
-<link rel="stylesheet" href="../css/chapter2.css">
+
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/background.css">
+  <link rel="stylesheet" href="../css/loader.css">
+  <link rel="stylesheet" href="../css/chapter2.css">
 </head>
 
 <body>
 
   <div class="background"></div>
+
+  <!-- loader -->
   <div id="loader"></div>
+
+  <!-- glitch -->
   <div class="glitch-overlay"></div>
-  <div id="fadeLayer"></div>
-  
+
+  <!-- ★ EXIT フェード（IDを統一） -->
+  <div id="fadeout"></div>
+
   <div class="scene">
-    
     <!-- front -->
     <div class="cylinder cylinder-front">
-      <div class="panel outer" style="--i:0">
-        <img src="../image/queen_b.png" alt="">
-      </div>
-      <div class="panel outer" style="--i:1">
-        <img src="../image/king_b.png" alt="">
-      </div>
-      <div class="panel outer" style="--i:2">
-        <img src="../image/jack_b.png" alt="">
-      </div>
-      <div class="panel outer" style="--i:3">
-        <img src="../image/joker1_b.png" alt="">
-      </div>
-      <div class="panel outer" style="--i:4">
-        <img src="../image/joker2_b.png" alt="">
-      </div>
+      <div class="panel outer"><img src="../image/queen_b.png" alt=""></div>
+      <div class="panel outer"><img src="../image/king_b.png" alt=""></div>
+      <div class="panel outer"><img src="../image/jack_b.png" alt=""></div>
+      <div class="panel outer"><img src="../image/joker1_b.png" alt=""></div>
+      <div class="panel outer"><img src="../image/joker2_b.png" alt=""></div>
     </div>
 
     <!-- back -->
     <div class="cylinder cylinder-back">
-      <div class="panel inner" style="--i:0"></div>
-      <div class="panel inner" style="--i:1"></div>
-      <div class="panel inner" style="--i:2"></div>
-      <div class="panel inner" style="--i:3"></div>
-      <div class="panel inner" style="--i:4"></div>
+      <div class="panel inner"></div>
+      <div class="panel inner"></div>
+      <div class="panel inner"></div>
+      <div class="panel inner"></div>
+      <div class="panel inner"></div>
     </div>
+  </div>
 
-  </div>
-  
- <div class="dots">
+  <!-- dots -->
+  <div class="dots">
     <span class="dot"></span>
     <span class="dot"></span>
     <span class="dot"></span>
     <span class="dot"></span>
     <span class="dot"></span>
   </div>
-  
+
   <script type="module" src="../js/chapter2/main.js"></script>
-
 </body>
 </html>
