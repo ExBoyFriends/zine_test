@@ -1,4 +1,4 @@
-// utils/chapterStart.js
+/* utils/chapterStart.js*/
 
 /* =====================
    共通フェード設定
