@@ -24,15 +24,7 @@ body {
   -webkit-touch-callout: none;
 }
 
-/* =====================
-   Background
-===================== */
-.background {
-  position: fixed;
-  inset: 0;
-  background: url("../image/background.jpg") center / cover no-repeat;
-  z-index: 0;
-}
+
 
 /* =====================
    Scene
