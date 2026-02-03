@@ -1,5 +1,4 @@
 //chapter1/carousel.js
-
 export function initCarousel(wrapper, pages) {
   let currentPage = 0;
 
@@ -14,15 +13,30 @@ export function initCarousel(wrapper, pages) {
     });
   }
 
-  wrapper.addEventListener("pointerdown", e => {
-    if (e.button !== 0) return;
+  wrapper.addEventListener("pointerdown", handlePointerDown);
+  wrapper.addEventListener("pointermove", handlePointerMove);
+  wrapper.addEventListener("pointerup", finish);
+  wrapper.addEventListener("pointercancel", finish);
+
+  // Safariの場合、pointerイベントがうまく動作しないので、touchイベントも追加
+  wrapper.addEventListener("touchstart", handlePointerDown);
+  wrapper.addEventListener("touchmove", handlePointerMove);
+  wrapper.addEventListener("touchend", finish);
+  wrapper.addEventListener("touchcancel", finish);
+
+  let isDragging = false;
+  let startX = 0;
+  let currentX = 0;
+
+  function handlePointerDown(e) {
+    if (e.button !== 0 && e.type !== "touchstart") return;
 
     const inner = getInner(pages[currentPage]);
     if (!inner) return;
 
-    let isDragging = true;
-    let startX = e.clientX;
-    let currentX = 0;
+    isDragging = true;
+    startX = e.clientX || e.touches[0].clientX;
+    currentX = 0;
 
     pages.forEach(p => {
       p.style.transition = "none";
@@ -31,12 +45,12 @@ export function initCarousel(wrapper, pages) {
     });
 
     wrapper.setPointerCapture(e.pointerId);
-  });
+  }
 
-  wrapper.addEventListener("pointermove", e => {
+  function handlePointerMove(e) {
     if (!isDragging) return;
 
-    const dx = e.clientX - startX;
+    const dx = (e.clientX || e.touches[0].clientX) - startX;
     currentX = dx;
 
     const width = wrapper.clientWidth;
@@ -61,10 +75,7 @@ export function initCarousel(wrapper, pages) {
       prev.style.opacity = r;
       getInner(prev).style.transform = `translateX(${dx - width}px)`;
     }
-  });
-
-  wrapper.addEventListener("pointerup", finish);
-  wrapper.addEventListener("pointercancel", finish);
+  }
 
   function finish(e) {
     if (!isDragging) return;
@@ -81,6 +92,10 @@ export function initCarousel(wrapper, pages) {
     normalize();
 
     wrapper.releasePointerCapture(e.pointerId);
+  }
+
+  function threshold() {
+    return wrapper.clientWidth * 0.25;
   }
 
   function normalize() {
