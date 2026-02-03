@@ -1,8 +1,8 @@
 // chapter2_5/main.js
 
 import "../base.js";
-import { initLoader } from "../loader.js";
-import { startChapter } from "../chapterStart.js";
+import { initLoader } from "../utils/loader.js";
+import { startChapter } from "../utils/chapterStart.js";
 import { state } from "./state.js";
 import { showPage } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
