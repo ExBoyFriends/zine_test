@@ -1,11 +1,6 @@
 // chapter2/main.js
-
-// chapter2/main.js
-
 import "../base.js";
 import { initLoader } from "../loader.js";
-import { startChapter } from "../chapterStart.js";
-
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
 import {
@@ -29,7 +24,7 @@ window.addEventListener("pageshow", e => {
    DOM
 ===================== */
 const scene    = document.querySelector(".scene");
-const chapter  = document.querySelector(".chapter");
+const chapter  = document.querySelector(".chapter"); // ★ 追加
 const loader   = document.getElementById("loader");
 const dotsWrap = document.querySelector(".dots");
 const dots     = [...document.querySelectorAll(".dot")];
@@ -58,28 +53,26 @@ function goChapter25() {
 }
 
 /* =====================
-   Loader 完了 → Chapter 開始
+   Loader 完了
 ===================== */
 initLoader(loader, () => {
 
-  startChapter({
-    chapter,
-    dots: dotsWrap,
-    onStart() {
+  // ★ 世界を表示（これが無かった）
+  chapter?.classList.add("visible");
 
-      /* ---- 長押し bind（1回だけ） ---- */
-      if (scene && !scene.__holdBound) {
-        bindLongPressEvents(scene);
-        scene.__holdBound = true;
-      }
+  // ---- 長押し bind（1回だけ） ----
+  if (scene && !scene.__holdBound) {
+    bindLongPressEvents(scene);
+    scene.__holdBound = true;
+  }
 
-      /* ---- 自動遷移（完全放置対策） ---- */
-      startAutoTransition(() => {
-        goChapter25();
-      });
-    }
+  // ---- dots 表示 ----
+  dotsWrap?.classList.add("visible");
+
+  // ---- 自動遷移（放置対策） ----
+  startAutoTransition(() => {
+    goChapter25();
   });
-
 });
 
 /* =====================
@@ -92,7 +85,7 @@ const carousel = initCarousel3D({
 });
 
 if (carousel) {
-  // 🔑 holdTransition / transitionOut 用
+  // holdTransition / transitionOut 用
   window.__carousel__ = carousel;
 
   initDragInput(carousel);
@@ -110,3 +103,4 @@ initGlitchLayer?.();
 window.addEventListener("force-exit", () => {
   goChapter25();
 });
+
