@@ -1,5 +1,5 @@
 // chapter2_5/view.js
-import { state } from "./state.js";
+import "../utils/state.js";
 
 let dualFlipped = false;
 
