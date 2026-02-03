@@ -77,4 +77,22 @@ export function initLoader(loader, onComplete) {
     safeComplete();
   });
 }
+  
+  /* =====================
+   Fade Layer
+===================== */
+#fadeLayer {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9998;
+  opacity: 1;
+  transition: opacity 1.2s ease;
+  pointer-events: auto;
+}
+
+#fadeLayer.hide {
+  opacity: 0;
+  pointer-events: none;
+}
 
