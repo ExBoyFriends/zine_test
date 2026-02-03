@@ -1,61 +1,76 @@
 // chapter2_5/main.js
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
+  <title>Chapter 2.5</title>
+  
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/background.css">
+  <link rel="stylesheet" href="../css/loader.css">
+  <link rel="stylesheet" href="../css/chapter2_5.css">
+</head>
 
-import "../base.js";
-import { initLoader } from "../utils/loader.js";
-import { startChapter } from "../utils/chapterStart.js";
-import { state } from "./state.js";
-import { showPage } from "./view.js";
-import { initTapInteraction } from "./interaction.js";
+<body>
 
-const loader    = document.getElementById("loader");
-const fadeLayer = document.getElementById("fadeLayer");
-const chapter   = document.querySelector(".chapter");
-const dots      = document.querySelector(".dots");
+  <div class="background"></div>
+  <div id="loader"></div>
+  <div id="fadeLayer" class="hide"></div>
+  
+  <div class="scene">
+    <div class="chapter">
+      <section class="page active">
+        <img src="../image/queen_b.png" alt="">
+        <div class="poem">
+          <p>それは自由だと<br>教えられてきた</p>
+        </div>
+      </section>
 
-/* ------------------------------
-   初期状態の強制リセット
--------------------------------- */
+      <section class="page">
+        <img src="../image/king_b.png" alt="">
+        <div class="poem">
+          <p>選んでいるのは<br>自分だと</p>
+        </div>
+      </section>
 
-if (fadeLayer) {
-  fadeLayer.classList.remove("fadeout");
-  fadeLayer.style.opacity = "1";
-  fadeLayer.style.pointerEvents = "none";
-}
+      <section class="page">
+        <img src="../image/jack_b.png" alt="">
+        <div class="poem">
+          <p>でも<br>いつから決められていた？</p>
+        </div>
+      </section>
 
-if (loader) {
-  loader.style.display = "block";
-}
+      <section class="page dual">
+        <div class="dual-images">
+          <img src="../image/joker1_b.png" alt="">
+          <img src="../image/joker2_b.png" alt="">
+        </div>
+        <div class="poem">
+          <p>並べられた瞬間に<br>比較は始まる</p>
+        </div>
+      </section>
 
-/* ------------------------------
-   Loader → Chapter start
--------------------------------- */
+      <section class="page">
+        <img src="../image/top_b.png" alt="">
+        <div class="poem">
+          <p>白か黒かを<br>問われ続けている</p>
+        </div>
+      </section>
+    </div>
 
-initLoader(loader, () => {
-  startChapter({
-    chapter,
-    dots,
-    onStart() {
-      showPage(state.index);
-      initTapInteraction();
-    }
-  });
-});
+    <div class="dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  </div>
 
-/* ------------------------------
-   bfcache 対策（戻る対策）
--------------------------------- */
-
-window.addEventListener("pageshow", e => {
-  if (!e.persisted) return;
-
-  if (fadeLayer) {
-    fadeLayer.classList.remove("fadeout");
-    fadeLayer.style.opacity = "0";
-  }
-
-  if (loader) {
-    loader.style.display = "none";
-  }
-
-  showPage(state.index);
-});
+  <script type="module" src="../js/chapter2_5/main.js"></script>
+</body>
+</html>
