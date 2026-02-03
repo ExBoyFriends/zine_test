@@ -1,4 +1,4 @@
-//hodTransition.js
+//chapter2/hodTransition.js
 
 import { startGlitch, stopGlitch } from "./effects.js";
 
