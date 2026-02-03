@@ -1,6 +1,9 @@
 // chapter1/carousel.js
+
+import { state } from "../utils/state.js";
+
 export function initCarousel(wrapper, pages) {
-  let currentPage = 0;
+  let currentPage = state.index ?? 0;
 
   function getInner(page) {
     return page.querySelector(".carousel-inner");
@@ -13,46 +16,54 @@ export function initCarousel(wrapper, pages) {
     });
   }
 
-  wrapper.addEventListener("pointerdown", handlePointerDown);
-  wrapper.addEventListener("pointermove", handlePointerMove);
-  wrapper.addEventListener("pointerup", finish);
-  wrapper.addEventListener("pointercancel", finish);
+  function normalize() {
+    pages.forEach((p, i) => {
+      p.style.transition = "opacity .6s ease";
+      p.style.opacity = i === currentPage ? 1 : 0;
 
-  // Safari 対策の touch イベント
-  wrapper.addEventListener("touchstart", handlePointerDown);
-  wrapper.addEventListener("touchmove", handlePointerMove);
-  wrapper.addEventListener("touchend", finish);
-  wrapper.addEventListener("touchcancel", finish);
+      const inner = getInner(p);
+      if (inner) {
+        inner.style.transition = "transform .6s ease";
+        inner.style.transform = "translateX(0)";
+      }
+    });
+
+    updateDots();
+  }
 
   let isDragging = false;
   let startX = 0;
   let currentX = 0;
 
-  // PointerDown イベント処理
-  function handlePointerDown(e) {
-    if (e.button !== 0 && e.type !== "touchstart") return;
+  wrapper.addEventListener("pointerdown", start);
+  wrapper.addEventListener("pointermove", move);
+  wrapper.addEventListener("pointerup", end);
+  wrapper.addEventListener("pointercancel", end);
 
-    const inner = getInner(pages[currentPage]);
-    if (!inner) return;
+  // Safari fallback
+  wrapper.addEventListener("touchstart", start);
+  wrapper.addEventListener("touchmove", move);
+  wrapper.addEventListener("touchend", end);
 
+  function start(e) {
     isDragging = true;
-    startX = e.clientX || e.touches[0].clientX;
+    startX = e.clientX ?? e.touches[0].clientX;
     currentX = 0;
 
     pages.forEach(p => {
       p.style.transition = "none";
-      const i = getInner(p);
-      if (i) i.style.transition = "none";
+      const inner = getInner(p);
+      if (inner) inner.style.transition = "none";
     });
 
-    wrapper.setPointerCapture(e.pointerId);
+    if (e.pointerId) wrapper.setPointerCapture(e.pointerId);
   }
 
-  // PointerMove イベント処理
-  function handlePointerMove(e) {
+  function move(e) {
     if (!isDragging) return;
 
-    const dx = (e.clientX || e.touches[0].clientX) - startX;
+    const x = e.clientX ?? e.touches[0].clientX;
+    const dx = x - startX;
     currentX = dx;
 
     const width = wrapper.clientWidth;
@@ -61,10 +72,8 @@ export function initCarousel(wrapper, pages) {
     pages.forEach(p => (p.style.opacity = 0));
 
     const current = pages[currentPage];
-    const currentInner = getInner(current);
-
     current.style.opacity = 1 - r;
-    currentInner.style.transform = `translateX(${dx}px)`;
+    getInner(current).style.transform = `translateX(${dx}px)`;
 
     if (dx < 0 && pages[currentPage + 1]) {
       const next = pages[currentPage + 1];
@@ -79,41 +88,26 @@ export function initCarousel(wrapper, pages) {
     }
   }
 
-  // PointerUp イベント処理
-  function finish(e) {
+  function end(e) {
     if (!isDragging) return;
     isDragging = false;
 
-    const dx = currentX;
-    let next = currentPage;
+    const width = wrapper.clientWidth;
+    const threshold = width * 0.25;
 
-    if (dx < -threshold() && currentPage < pages.length - 1) next++;
-    if (dx > threshold() && currentPage > 0) next--;
+    if (currentX < -threshold && currentPage < pages.length - 1) {
+      currentPage++;
+    }
+    if (currentX > threshold && currentPage > 0) {
+      currentPage--;
+    }
 
-    currentPage = next;
-    state.index = currentPage;  // ここで state.index を更新
-    updateDots();
+    state.prevIndex = state.index;
+    state.index = currentPage;
+
     normalize();
 
-    wrapper.releasePointerCapture(e.pointerId);
-  }
-
-  function threshold() {
-    return wrapper.clientWidth * 0.25;
-  }
-
-  function normalize() {
-    pages.forEach((p, i) => {
-      p.style.transition = "opacity .8s ease";
-      p.style.opacity = i === currentPage ? 1 : 0;
-      p.classList.toggle("active", i === currentPage);
-
-      const inner = getInner(p);
-      if (inner) {
-        inner.style.transition = "transform .8s ease";
-        inner.style.transform = "translateX(0)";
-      }
-    });
+    if (e.pointerId) wrapper.releasePointerCapture(e.pointerId);
   }
 
   normalize();
