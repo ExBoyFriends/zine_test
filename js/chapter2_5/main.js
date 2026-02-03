@@ -2,8 +2,8 @@
 
 import "../utils/base.js";
 import { state } from "../utils/state.js";
-import { initLoader } from "../loader.js";
-import { startChapter } from "../chapterStart.js";
+import { initLoader } from "../utils/loader.js";
+import { startChapter } from "../utils/chapterStart.js";
 import { showPage } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
 
