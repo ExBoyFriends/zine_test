@@ -25,7 +25,7 @@ export function initCarousel3D(options = {}) {
   let transitionStarted = false;
 
   let extraSpeed = 0;
-  let targetExtraSpeed = 5;  // 初期スピード（通常回転スピード）
+  let targetExtraSpeed = 3;  // 初期スピード（通常回転スピード）
 
   let rafId = null;
   let currentIndex = 0;
@@ -55,7 +55,7 @@ export function initCarousel3D(options = {}) {
     transitionStarted = false;
 
     extraSpeed = 0;
-    targetExtraSpeed = 5;  // 通常回転に戻す
+    targetExtraSpeed = 4;  // 通常回転に戻す
 
     currentIndex = 0;
     options.onIndexChange?.(0);
@@ -73,8 +73,7 @@ export function initCarousel3D(options = {}) {
   /* =====================
      ドットの更新
   ===================== */
-  function updateDots(index = 0) {
-    // ドットの位置を正確に合わせるための計算
+ function updateDots() {
     const normalized = (visualAngle % 360 + 360) % 360;
     const dotIndex = Math.round(normalized / SNAP) % COUNT;
 
@@ -83,6 +82,7 @@ export function initCarousel3D(options = {}) {
     });
   }
 
+
   /* =====================
      アニメーション
   ===================== */
@@ -90,15 +90,10 @@ export function initCarousel3D(options = {}) {
     if (!Number.isFinite(extraSpeed)) extraSpeed = 0;
 
     // target に滑らかに追従
-    extraSpeed += (targetExtraSpeed - extraSpeed) * ACCEL_FOLLOW;
+    extraSpeed += (targetExtraSpeed - extraSpeed) * 0.06; // 減速の度合い
 
     // 常に時間で回す
-    visualAngle += BASE_AUTO_SPEED + extraSpeed;
-
-    // holding / dragging していない時だけ同期
-    if (!isHolding && !dragging) {
-      angle = visualAngle;
-    }
+    visualAngle += 0.25 + extraSpeed;
 
     // ドットの更新
     updateDots();
@@ -153,7 +148,6 @@ export function initCarousel3D(options = {}) {
     if (isHolding) return;
 
     isHolding = true;
-    pressStartTime = performance.now();
 
     // 長押しによる加速開始
     window.__carousel__?.setHolding(true);
@@ -175,12 +169,12 @@ export function initCarousel3D(options = {}) {
 
     // 長押し解除時、通常回転に戻す
     window.__carousel__?.setHolding(false);
-    window.__carousel__?.setExtraSpeed(5);
+    window.__carousel__?.setExtraSpeed(0.25);
 
     // 減速処理
     setTimeout(() => {
       if (!isHolding && !speedingUp) {
-        targetExtraSpeed = 5; // 通常回転速度に戻す
+        targetExtraSpeed = 0.25; // 通常回転速度に戻す
       }
     }, 500); // ゆっくり減速
   }
@@ -189,7 +183,7 @@ export function initCarousel3D(options = {}) {
      8秒後の自動加速（オートスピード）
   ===================== */
   function startAutoTransition(callback) {
-    startTime = performance.now();
+    const startTime = performance.now();
 
     function tick() {
       const elapsed = performance.now() - startTime;
@@ -234,7 +228,7 @@ export function initCarousel3D(options = {}) {
       isHolding = v;
 
       if (!v && !transitionStarted) {
-        targetExtraSpeed = 5;
+        targetExtraSpeed = 0.25;
       }
     },
     startTransition() {
@@ -253,4 +247,3 @@ export function initCarousel3D(options = {}) {
     startAutoTransition
   };
 }
-
