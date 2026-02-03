@@ -1,4 +1,4 @@
-//chapter1/carousel.js
+// chapter1/carousel.js
 export function initCarousel(wrapper, pages) {
   let currentPage = 0;
 
@@ -13,12 +13,13 @@ export function initCarousel(wrapper, pages) {
     });
   }
 
+  // イベントリスナー設定
   wrapper.addEventListener("pointerdown", handlePointerDown);
   wrapper.addEventListener("pointermove", handlePointerMove);
   wrapper.addEventListener("pointerup", finish);
   wrapper.addEventListener("pointercancel", finish);
 
-  // Safariの場合、pointerイベントがうまく動作しないので、touchイベントも追加
+  // Safari対策のtouchイベント
   wrapper.addEventListener("touchstart", handlePointerDown);
   wrapper.addEventListener("touchmove", handlePointerMove);
   wrapper.addEventListener("touchend", finish);
@@ -28,6 +29,7 @@ export function initCarousel(wrapper, pages) {
   let startX = 0;
   let currentX = 0;
 
+  // PointerDownイベント処理
   function handlePointerDown(e) {
     if (e.button !== 0 && e.type !== "touchstart") return;
 
@@ -47,6 +49,7 @@ export function initCarousel(wrapper, pages) {
     wrapper.setPointerCapture(e.pointerId);
   }
 
+  // PointerMoveイベント処理
   function handlePointerMove(e) {
     if (!isDragging) return;
 
@@ -77,6 +80,7 @@ export function initCarousel(wrapper, pages) {
     }
   }
 
+  // PointerUpイベント処理
   function finish(e) {
     if (!isDragging) return;
     isDragging = false;
@@ -88,13 +92,12 @@ export function initCarousel(wrapper, pages) {
     if (dx > threshold() && currentPage > 0) next--;
 
     currentPage = next;
-    updateDots();
+    updateDots(); // ドット更新
     normalize();
 
- // state.index の更新とドットの状態更新
-  state.index = currentPage; // 現在のページをstate.indexに設定
-  updateDotsState(); // ドットの状態を更新
-    
+    state.index = currentPage; // state.indexを更新
+    updateDotsState(); // ドットの状態更新
+
     wrapper.releasePointerCapture(e.pointerId);
   }
 
