@@ -45,13 +45,12 @@ export function initLoader(loader, onComplete) {
     setTimeout(finish, 4200);
   };
 
-   if (document.readyState === "complete") { 
+   if (document.readyState === "complete") {
+    start();
+  } else {
+    window.addEventListener("load", start, { once: true });
+  }
 
-start();
-}
- else {
- window.addEventListener("load", start, { once: true });
- }
 
   // bfcache
   window.addEventListener("pageshow", e => {
