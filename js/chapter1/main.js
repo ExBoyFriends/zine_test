@@ -1,4 +1,4 @@
-// main.js
+// chapter1/main.js
 
 import { initBase } from "../base.js";
 import { initLoader } from "../loader.js";
