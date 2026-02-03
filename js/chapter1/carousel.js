@@ -1,4 +1,4 @@
-//carousel.js
+//chapter1/carousel.js
 
 export function initCarousel(wrapper, pages) {
   let currentPage = 0;
