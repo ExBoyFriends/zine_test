@@ -5,6 +5,19 @@ body {
 }
 
 /* =====================
+   Chapter Fade Control
+===================== */
+.chapter {
+  opacity: 0;
+  transition: opacity 1.3s ease;
+}
+
+.chapter.visible {
+  opacity: 1;
+}
+
+
+/* =====================
    Carousel
 ===================== */
 .carousel-wrapper {
