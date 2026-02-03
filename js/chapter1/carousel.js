@@ -1,4 +1,5 @@
 // chapter1/carousel.js
+// chapter1/carousel.js
 export function initCarousel(wrapper, pages) {
   let currentPage = 0;
 
@@ -125,4 +126,5 @@ export function initCarousel(wrapper, pages) {
     getCurrentPage: () => currentPage
   };
 }
+
 
