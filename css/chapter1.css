@@ -156,7 +156,7 @@ body {
 
 /* =====================
    Orientation Lock
-
+===================== */
 @media (orientation: landscape) {
   body::before {
     content: "";
@@ -174,4 +174,4 @@ body {
     background: url("../image/eye.jpg") center / cover no-repeat;
   }
 }
-===================== */
+
