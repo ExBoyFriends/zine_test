@@ -1,5 +1,4 @@
 // chapter2/carousel3d.js
-// chapter2/carousel3d.js
 
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
@@ -36,6 +35,10 @@ export function initCarousel3D(options = {}) {
   let holdTime = 0;
   let speedingUp = false;
 
+  // ドット要素の取得
+  const dotsWrap = document.querySelector(".dots");
+  const dots = [...document.querySelectorAll(".dot")];
+
   // 各パネルの基準角
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
@@ -62,6 +65,22 @@ export function initCarousel3D(options = {}) {
 
     outers.forEach(p => (p.style.transform = ""));
     inners.forEach(p => (p.style.transform = ""));
+
+    // ドットのリセット
+    updateDots(0);
+  }
+
+  /* =====================
+     ドットの更新
+  ===================== */
+  function updateDots(index = 0) {
+    // ドットの位置を正確に合わせるための計算
+    const normalized = (visualAngle % 360 + 360) % 360;
+    const dotIndex = Math.round(normalized / SNAP) % COUNT;
+
+    dots.forEach((dot, i) => {
+      dot.classList.toggle("active", i === dotIndex);
+    });
   }
 
   /* =====================
@@ -81,14 +100,8 @@ export function initCarousel3D(options = {}) {
       angle = visualAngle;
     }
 
-    /* ===== 正面 index 判定（dots 用） ===== */
-    const normalized = ((visualAngle % 360) + 360) % 360;
-    const index = Math.round(normalized / SNAP) % COUNT;
-
-    if (index !== currentIndex) {
-      currentIndex = index;
-      options.onIndexChange?.(currentIndex);
-    }
+    // ドットの更新
+    updateDots();
 
     /* ===== transform ===== */
     const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
@@ -240,5 +253,4 @@ export function initCarousel3D(options = {}) {
     startAutoTransition
   };
 }
-
 
