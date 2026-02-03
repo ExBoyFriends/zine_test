@@ -28,7 +28,7 @@ const dotsWrap = document.querySelector(".dots");
 const dots     = [...document.querySelectorAll(".dot")];
 
 /* =====================
-   長押し bind（初回のみ）
+   長押し bind（1回だけ）
 ===================== */
 function bindHoldOnce() {
   if (scene && !scene.__holdBound) {
@@ -58,7 +58,7 @@ const carousel = initCarousel3D({
 
 if (carousel) {
   initDragInput(carousel);
-  updateDots(0); // 初期dot保証
+  updateDots(0);
 }
 
 /* =====================
@@ -75,57 +75,4 @@ function goChapter25() {
 
   playExitTransition({
     onFinish() {
-      location.href = "chapter2_5.html";
-    }
-  });
-}
-
-/* =====================
-   Loader 完了
-===================== */
-initLoader(loader, () => {
-  dotsWrap?.classList.add("visible");
-  updateDots(0);
-  startAutoTransition?.(goChapter25);
-});
-
-/* =====================
-   長押し演出
-===================== */
-setHoldEffects({
-  glitchStart() {
-    startGlitch();
-    carousel?.setExtraSpeed?.(1.5);
-  },
-  glitchEnd() {
-    stopGlitch();
-    carousel?.setExtraSpeed?.(0);
-  }
-});
-
-/* =====================
-   強制遷移
-===================== */
-window.addEventListener("force-exit", goChapter25);
-
-/* =====================
-   pageshow（bfcache）
-===================== */
-window.addEventListener("pageshow", e => {
-  if (!e.persisted) return;
-
-  resetTransitionState?.();
-  goChapter25._done = false;
-
-  stopGlitch();
-  carousel?.setHolding?.(false);
-  carousel?.setExtraSpeed?.(0);
-
-  fadeLayer?.classList.add("hide");
-
-  dotsWrap?.classList.add("visible");
-  updateDots(carousel?.getIndex?.() ?? 0);
-
-  startAutoTransition?.(goChapter25);
-  bindHoldOnce();
-});
+      location.href = "chapt
