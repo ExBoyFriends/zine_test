@@ -125,3 +125,15 @@ window.addEventListener("pageshow", e => {
   setVh();
 });
 
+
+/* =====================
+   Chapter Visibility Init
+===================== */
+
+window.addEventListener("DOMContentLoaded", () => {
+  const chapter = document.querySelector(".chapter");
+  if (chapter) {
+    chapter.classList.add("visible");
+  }
+});
+
