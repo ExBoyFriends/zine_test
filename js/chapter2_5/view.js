@@ -1,4 +1,4 @@
-// view.js
+// chapter2_5/view.js
 import { state } from "./state.js";
 
 let dualFlipped = false;
@@ -11,7 +11,7 @@ export function getPages() {
 }
 
 /* =====================
-   Dots update (chapter1準拠)
+   Dots update（chapter1準拠）
 ===================== */
 function updateDots(index) {
   dots.forEach((dot, i) => {
@@ -23,6 +23,8 @@ function updateDots(index) {
    Page control
 ===================== */
 export function showPage(index) {
+  if (!pages.length) return;
+
   pages.forEach(p => {
     p.classList.remove("active", "show-text");
   });
@@ -30,19 +32,34 @@ export function showPage(index) {
   const page = pages[index];
   if (!page) return;
 
-  // ---- joker（dual）反転は active 前に確定 ----
+  /* ---- dual（joker）反転 ----
+     ・同じ index の再表示では反転しない
+     ・bfcache 復帰時も破綻しない
+  -------------------------------- */
   if (page.classList.contains("dual") && state.prevIndex !== index) {
     dualFlipped = !dualFlipped;
+  }
+
+  // dual 以外では flipped を残さない
+  pages.forEach(p => {
+    if (!p.classList.contains("dual")) {
+      p.classList.remove("flipped");
+    }
+  });
+
+  if (page.classList.contains("dual")) {
     page.classList.toggle("flipped", dualFlipped);
   }
 
-  // ---- dots 更新 ----
+  /* ---- dots ---- */
   updateDots(index);
 
+  /* ---- active ---- */
   page.classList.add("active");
 
-  state.prevIndex = index;
-  state.index = index;
+  /* ---- state ---- */
+  state.prevIndex   = index;
+  state.index       = index;
   state.showingText = false;
 }
 
@@ -54,6 +71,7 @@ export function showText(index) {
   if (!page) return;
 
   page.classList.add("show-text");
+  state.showingText = true;
 }
 
 export function hideText(index) {
@@ -61,6 +79,5 @@ export function hideText(index) {
   if (!page) return;
 
   page.classList.remove("show-text");
+  state.showingText = false;
 }
-
-
