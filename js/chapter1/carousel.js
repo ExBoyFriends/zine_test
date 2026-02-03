@@ -119,6 +119,8 @@ export function initCarousel(wrapper, pages) {
     });
   }
 
+  normalize();
+
   return {
     getCurrentPage: () => currentPage
   };
