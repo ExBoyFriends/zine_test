@@ -25,7 +25,7 @@ export function initCarousel3D(options = {}) {
   let transitionStarted = false;
 
   let extraSpeed = 0;
-  let targetExtraSpeed = 3;  // 初期スピード（通常回転スピード）
+  let targetExtraSpeed = 1;  // 初期スピード（通常回転スピード）
 
   let rafId = null;
   let currentIndex = 0;
@@ -55,7 +55,7 @@ export function initCarousel3D(options = {}) {
     transitionStarted = false;
 
     extraSpeed = 0;
-    targetExtraSpeed = 4;  // 通常回転に戻す
+    targetExtraSpeed = 1;  // 通常回転に戻す
 
     currentIndex = 0;
     options.onIndexChange?.(0);
@@ -82,7 +82,16 @@ export function initCarousel3D(options = {}) {
     });
   }
 
-
+/* =====================
+     イージング関数：時間の経過に応じて加速を変化させる
+  ===================== */
+  function easeInOut(t, b, c, d) {
+    t /= d / 2;
+    if (t < 1) return (c / 2) * t * t + b;
+    t--;
+    return (-c / 2) * (t * (t - 2) - 1) + b;
+  }
+  
   /* =====================
      アニメーション
   ===================== */
@@ -179,23 +188,35 @@ export function initCarousel3D(options = {}) {
     }, 500); // ゆっくり減速
   }
 
-  /* =====================
-     8秒後の自動加速（オートスピード）
+ /* =====================
+     8秒後から加速開始、最後の2秒で最大スピードに到達するように
   ===================== */
   function startAutoTransition(callback) {
     const startTime = performance.now();
 
     function tick() {
       const elapsed = performance.now() - startTime;
+      const totalDuration = 13000; // 13秒
+      const accelDuration = 8000;  // 8秒
 
-      if (elapsed >= 8000 && elapsed <= 13000) {
-        // 8秒後から自動加速
-        const speed = Math.min(10, 5 + (elapsed - 8000) / 500);
-        targetExtraSpeed = speed;
+      let speed = 0;
+
+      if (elapsed < accelDuration) {
+        // 加速（イージング関数を使用して滑らかに）
+        speed = easeInOut(elapsed, 0, 5, accelDuration);
+      } else if (elapsed >= accelDuration && elapsed <= totalDuration - 2000) {
+        // 徐々に一定スピードに到達
+        speed = 5;
+      } else {
+        // 最後の2秒で最大スピードに
+        const remaining = totalDuration - elapsed;
+        speed = 5 + (remaining / 2000) * 5; // 最後の2秒で最大10になる
       }
 
-      if (elapsed >= 13000) {
-        // 13秒後に自動遷移
+      targetExtraSpeed = Math.min(speed, 10);
+
+      // 13秒後に自動遷移
+      if (elapsed >= totalDuration) {
         callback();
         return;
       }
