@@ -45,10 +45,10 @@ export function initLoader(loader, onComplete) {
     setTimeout(finish, 4200);
   };
 
-  if (document.readyState === "complete") {
-    start();
+    if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
   } else {
-    window.addEventListener("load", start, { once: true });
+    start();
   }
 
   // bfcache
