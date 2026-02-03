@@ -57,6 +57,7 @@ const carousel = initCarousel3D({
 });
 
 if (carousel) {
+  window.__carousel__ = carousel; 
   initDragInput(carousel);
   updateDots(0); // 初期ドット
 }
