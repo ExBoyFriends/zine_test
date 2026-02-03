@@ -47,7 +47,7 @@ function goChapter25() {
 
   playExitTransition({
     onFinish() {
-      location.href = "../chapter2_5/index.html";
+      location.href = "../HTML/chapter2_5.html"; 
     }
   });
 }
