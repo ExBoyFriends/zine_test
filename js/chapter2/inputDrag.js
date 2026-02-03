@@ -1,4 +1,4 @@
-// inputDrag.js
+// chapter2/inputDrag.js
 export function initDragInput(carousel) {
   const scene = document.querySelector(".scene");
   if (!scene || !carousel) return;
