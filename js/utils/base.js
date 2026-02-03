@@ -92,6 +92,11 @@ window.addEventListener("pageshow", e => {
   setVh();
 });
 
+
+
+
+
+
 // iOS関連の動作に対応
 function setVh() {
   document.documentElement.style.setProperty(
