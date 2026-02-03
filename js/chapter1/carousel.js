@@ -2,19 +2,11 @@
 
 export function initCarousel(wrapper, pages) {
   let currentPage = 0;
-  let isDragging = false;
-  let startX = 0;
-  let currentX = 0;
-
-  const threshold = () => wrapper.clientWidth * 0.25;
 
   function getInner(page) {
     return page.querySelector(".carousel-inner");
   }
 
-  /* =====================
-     dots
-  ===================== */
   function updateDots() {
     const dots = document.querySelectorAll(".dot");
     dots.forEach((dot, i) => {
@@ -22,18 +14,15 @@ export function initCarousel(wrapper, pages) {
     });
   }
 
-  /* =====================
-     pointer down
-  ===================== */
   wrapper.addEventListener("pointerdown", e => {
     if (e.button !== 0) return;
 
     const inner = getInner(pages[currentPage]);
     if (!inner) return;
 
-    isDragging = true;
-    startX = e.clientX;
-    currentX = 0;
+    let isDragging = true;
+    let startX = e.clientX;
+    let currentX = 0;
 
     pages.forEach(p => {
       p.style.transition = "none";
@@ -44,9 +33,6 @@ export function initCarousel(wrapper, pages) {
     wrapper.setPointerCapture(e.pointerId);
   });
 
-  /* =====================
-     pointer move
-  ===================== */
   wrapper.addEventListener("pointermove", e => {
     if (!isDragging) return;
 
@@ -67,21 +53,16 @@ export function initCarousel(wrapper, pages) {
     if (dx < 0 && pages[currentPage + 1]) {
       const next = pages[currentPage + 1];
       next.style.opacity = r;
-      getInner(next).style.transform =
-        `translateX(${dx + width}px)`;
+      getInner(next).style.transform = `translateX(${dx + width}px)`;
     }
 
     if (dx > 0 && pages[currentPage - 1]) {
       const prev = pages[currentPage - 1];
       prev.style.opacity = r;
-      getInner(prev).style.transform =
-        `translateX(${dx - width}px)`;
+      getInner(prev).style.transform = `translateX(${dx - width}px)`;
     }
   });
 
-  /* =====================
-     pointer up / cancel
-  ===================== */
   wrapper.addEventListener("pointerup", finish);
   wrapper.addEventListener("pointercancel", finish);
 
@@ -102,9 +83,6 @@ export function initCarousel(wrapper, pages) {
     wrapper.releasePointerCapture(e.pointerId);
   }
 
-  /* =====================
-     normalize（操作後のみ）
-  ===================== */
   function normalize() {
     pages.forEach((p, i) => {
       p.style.transition = "opacity .8s ease";
