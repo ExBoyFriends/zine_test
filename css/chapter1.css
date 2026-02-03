@@ -187,3 +187,16 @@ body {
     background: url("../image/eye.jpg") center / cover no-repeat;
   }
 }
+
+
+/* =====================
+   Safety: 初期表示保証
+===================== */
+.chapter {
+  opacity: 1;
+}
+
+.carousel-page:first-child {
+  opacity: 1;
+  pointer-events: auto;
+}
