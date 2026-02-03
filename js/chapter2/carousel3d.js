@@ -59,7 +59,7 @@ export function initCarousel3D(options = {}) {
     inners.forEach(p => (p.style.transform = ""));
 
     // ドットのリセット
-    updateDots(0);
+    updateDots();
   }
 
   /* =====================
@@ -108,18 +108,13 @@ export function initCarousel3D(options = {}) {
     outers.forEach(p => {
       const base = +p.dataset.base;
       p.style.transform =
-        `translate(-50%, -50%)
-         rotateY(${base + angle}deg)
-         translateZ(${R_FRONT}px)`;
+        `translate(-50%, -50%) rotateY(${base + angle}deg) translateZ(${R_FRONT}px)`;
     });
 
     inners.forEach(p => {
       const base = +p.dataset.base;
       p.style.transform =
-        `translate(-50%, -50%)
-         rotateY(${base + angle + 180}deg)
-         translateZ(${R_BACK}px)
-         rotateY(180deg)`;
+        `translate(-50%, -50%) rotateY(${base + angle + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
     });
 
     rafId = requestAnimationFrame(animate);
@@ -260,4 +255,3 @@ export function initCarousel3D(options = {}) {
     startAutoTransition
   };
 }
-
