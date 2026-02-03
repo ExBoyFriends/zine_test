@@ -38,19 +38,15 @@ initLastPage(
 ===================== */
 initLoader(loader, () => {
   // 初期状態でstate.indexをリセット（0にする）
-  state.index = 0;  // 必要であれば、stateの初期化もここで行う
+  state.index = 0; // 必要であれば、stateの初期化もここで行う
 
   startChapter({
     chapter,
     dots,
     onStart() {
+      // showPageが重複していないか確認
       showPage(state.index);
-      initCarousel(document.querySelector(".carousel-wrapper"), document.querySelectorAll(".carousel-page"));
-      initLastPage(document.querySelector(".carousel-wrapper"), state.getCurrentPage, document.querySelectorAll(".carousel-page").length);
-      
       updateDotsState(); // 初期状態でドットを更新
-
-      showPage(state.index);
     }
   });
 });
