@@ -1,6 +1,6 @@
 // chapter1/main.js
 
-import { initBase } from "../base.js";
+import "../base.js";
 import { initLoader } from "../loader.js";
 import { startChapter } from "../chapterStart.js";
 import { state } from "./state.js";
