@@ -1,4 +1,5 @@
 // chapter2/carousel3d.js
+// chapter2/carousel3d.js
 
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
@@ -25,11 +26,15 @@ export function initCarousel3D(options = {}) {
   let transitionStarted = false;
 
   let extraSpeed = 0;
-  let targetExtraSpeed = 0;
+  let targetExtraSpeed = 5;  // 初期スピード（通常回転スピード）
 
   let rafId = null;
-
   let currentIndex = 0;
+
+  let startTime = 0;
+  let pressStartTime = 0;
+  let holdTime = 0;
+  let speedingUp = false;
 
   // 各パネルの基準角
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
@@ -47,7 +52,7 @@ export function initCarousel3D(options = {}) {
     transitionStarted = false;
 
     extraSpeed = 0;
-    targetExtraSpeed = 0;
+    targetExtraSpeed = 5;  // 通常回転に戻す
 
     currentIndex = 0;
     options.onIndexChange?.(0);
@@ -68,11 +73,6 @@ export function initCarousel3D(options = {}) {
     // target に滑らかに追従
     extraSpeed += (targetExtraSpeed - extraSpeed) * ACCEL_FOLLOW;
 
-    // 遷移前の上限
-    if (!transitionStarted && !isHolding && extraSpeed > 8) {
-      extraSpeed = 8;
-    }
-
     // 常に時間で回す
     visualAngle += BASE_AUTO_SPEED + extraSpeed;
 
@@ -82,11 +82,8 @@ export function initCarousel3D(options = {}) {
     }
 
     /* ===== 正面 index 判定（dots 用） ===== */
-    const normalized =
-      ((visualAngle % 360) + 360) % 360;
-
-    const index =
-      Math.round(normalized / SNAP) % COUNT;
+    const normalized = ((visualAngle % 360) + 360) % 360;
+    const index = Math.round(normalized / SNAP) % COUNT;
 
     if (index !== currentIndex) {
       currentIndex = index;
@@ -94,8 +91,7 @@ export function initCarousel3D(options = {}) {
     }
 
     /* ===== transform ===== */
-    const cylTransform =
-      `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+    const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
     front.style.transform = cylTransform;
     back.style.transform  = cylTransform;
@@ -138,6 +134,72 @@ export function initCarousel3D(options = {}) {
   start();
 
   /* =====================
+     長押しの処理
+  ===================== */
+  function startPress() {
+    if (isHolding) return;
+
+    isHolding = true;
+    pressStartTime = performance.now();
+
+    // 長押しによる加速開始
+    window.__carousel__?.setHolding(true);
+    window.__carousel__?.setExtraSpeed(6); // 最大8まで加速
+
+    // タイマー（加速）
+    speedingUp = true;
+    setTimeout(() => {
+      if (!isHolding) return;
+      targetExtraSpeed = Math.min(targetExtraSpeed + 1, 8); // 最大スピードは8
+    }, 500);
+  }
+
+  function endPress() {
+    if (!isHolding) return;
+
+    isHolding = false;
+    speedingUp = false;
+
+    // 長押し解除時、通常回転に戻す
+    window.__carousel__?.setHolding(false);
+    window.__carousel__?.setExtraSpeed(5);
+
+    // 減速処理
+    setTimeout(() => {
+      if (!isHolding && !speedingUp) {
+        targetExtraSpeed = 5; // 通常回転速度に戻す
+      }
+    }, 500); // ゆっくり減速
+  }
+
+  /* =====================
+     8秒後の自動加速（オートスピード）
+  ===================== */
+  function startAutoTransition(callback) {
+    startTime = performance.now();
+
+    function tick() {
+      const elapsed = performance.now() - startTime;
+
+      if (elapsed >= 8000 && elapsed <= 13000) {
+        // 8秒後から自動加速
+        const speed = Math.min(10, 5 + (elapsed - 8000) / 500);
+        targetExtraSpeed = speed;
+      }
+
+      if (elapsed >= 13000) {
+        // 13秒後に自動遷移
+        callback();
+        return;
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  /* =====================
      bfcache 対応
   ===================== */
   window.addEventListener("pageshow", e => {
@@ -158,9 +220,8 @@ export function initCarousel3D(options = {}) {
     setHolding(v) {
       isHolding = v;
 
-      // 長押し解除時だけ減速を許可
       if (!v && !transitionStarted) {
-        targetExtraSpeed = 0;
+        targetExtraSpeed = 5;
       }
     },
     startTransition() {
@@ -176,38 +237,8 @@ export function initCarousel3D(options = {}) {
     endDrag() {
       dragging = false;
     },
-
-    // ====================
-    // 追加: 減速処理（長押し解除後）
-    // ====================
-    smoothDeceleration() {
-      // 現在の extraSpeed を取得
-      const currentSpeed = targetExtraSpeed;
-
-      // 高速回転中の場合、そのスピードを超えないように減速
-      const maxSpeed = Math.max(currentSpeed, BASE_AUTO_SPEED);
-
-      // 減速処理
-      let startTime = performance.now();
-      function decelerate() {
-        const elapsed = performance.now() - startTime;
-        const transitionDuration = 500; // 500ms以内にスムーズに戻す
-
-        if (elapsed < transitionDuration) {
-          const speed = Math.max(
-            maxSpeed - (maxSpeed - BASE_AUTO_SPEED) * (elapsed / transitionDuration),
-            BASE_AUTO_SPEED
-          );
-          targetExtraSpeed = speed;
-          requestAnimationFrame(decelerate);
-        } else {
-          // 完了したら最終的に BASE_AUTO_SPEED に設定
-          targetExtraSpeed = BASE_AUTO_SPEED;
-        }
-      }
-
-      decelerate();
-    }
+    startAutoTransition
   };
 }
+
 
