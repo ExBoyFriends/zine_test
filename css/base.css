@@ -33,3 +33,19 @@ img {
   user-select: none;
   -webkit-touch-callout: none;
 }
+
+
+/* =====================
+   Chapter (World) Control
+===================== */
+.chapter {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2.8s cubic-bezier(.22,.61,.36,1);
+}
+
+.chapter.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
