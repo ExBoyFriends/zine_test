@@ -1,4 +1,4 @@
-//chapter2/main.js
+// chapter2/main.js
 
 import "../base.js";
 import { initLoader } from "../loader.js";
@@ -30,15 +30,18 @@ const dots     = [...document.querySelectorAll(".dot")];
 /* =====================
    長押し bind（初回のみ）
 ===================== */
-if (scene && !scene.__holdBound) {
-  bindLongPressEvents(scene);
-  scene.__holdBound = true;
+function bindHoldOnce() {
+  if (scene && !scene.__holdBound) {
+    bindLongPressEvents(scene);
+    scene.__holdBound = true;
+  }
 }
+bindHoldOnce();
 
 /* =====================
    Dots
 ===================== */
-function updateDots(index) {
+function updateDots(index = 0) {
   dots.forEach((dot, i) => {
     dot.classList.toggle("active", i === index);
   });
@@ -55,21 +58,13 @@ const carousel = initCarousel3D({
 
 if (carousel) {
   initDragInput(carousel);
-  updateDots(0);
+  updateDots(0); // 初期dot保証
 }
 
 /* =====================
    Glitch
 ===================== */
 initGlitchLayer?.();
-
-/* =====================
-   Loader 完了
-===================== */
-initLoader(loader, () => {
-  dotsWrap?.classList.add("visible");
-  startAutoTransition?.(goChapter25);
-});
 
 /* =====================
    Chapter2 → 2.5
@@ -84,6 +79,15 @@ function goChapter25() {
     }
   });
 }
+
+/* =====================
+   Loader 完了
+===================== */
+initLoader(loader, () => {
+  dotsWrap?.classList.add("visible");
+  updateDots(0);
+  startAutoTransition?.(goChapter25);
+});
 
 /* =====================
    長押し演出
@@ -118,11 +122,10 @@ window.addEventListener("pageshow", e => {
   carousel?.setExtraSpeed?.(0);
 
   fadeLayer?.classList.add("hide");
-  dotsWrap?.classList.add("visible");
-  startAutoTransition?.(goChapter25);
 
-  if (scene && !scene.__holdBound) {
-    bindLongPressEvents(scene);
-    scene.__holdBound = true;
-  }
+  dotsWrap?.classList.add("visible");
+  updateDots(carousel?.getIndex?.() ?? 0);
+
+  startAutoTransition?.(goChapter25);
+  bindHoldOnce();
 });
