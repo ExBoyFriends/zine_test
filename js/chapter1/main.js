@@ -19,22 +19,20 @@ const pages   = document.querySelectorAll(".page");
    Loader 完了
 ===================== */
 initLoader(loader, () => {
+  dots?.classList.add("visible");
+
   startChapter({
     chapter,
     dots,
     onStart() {
-      // 初期ページ
       pages[0]?.classList.add("active");
-
-      // 初期ドット状態
       document.querySelectorAll(".dot")[0]?.classList.add("active");
-
-      // 表示ロジック
       showPage(state.index);
       initTapInteraction();
     }
   });
 });
+
 
 /* =====================
    Init（既存ロジック）
