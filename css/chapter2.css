@@ -177,8 +177,6 @@ img {
 }
 
 /* =====================
-   Exit Fade
-===================== */
 #fadeout {
   position: fixed;
   inset: 0;
@@ -192,6 +190,7 @@ img {
 #fadeout.active {
   opacity: 1;
 }
+===================== */
 
 /* =====================
    Animations
