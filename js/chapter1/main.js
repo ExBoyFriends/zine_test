@@ -44,9 +44,8 @@ initLoader(loader, () => {
     chapter,
     dots,
     onStart() {
-      // showPageが重複していないか確認
-      showPage(state.index);
       updateDotsState(); // 初期状態でドットを更新
+      showPage(state.index); // showPageは一度だけ
     }
   });
 });
