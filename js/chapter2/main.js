@@ -24,10 +24,10 @@ window.addEventListener("pageshow", e => {
 /* =====================
    DOM
 ===================== */
-const scene  = document.querySelector(".scene");
-const loader = document.getElementById("loader");
-
-const dots = [...document.querySelectorAll(".dot")];
+const scene    = document.querySelector(".scene");
+const loader   = document.getElementById("loader");
+const dotsWrap = document.querySelector(".dots");
+const dots     = [...document.querySelectorAll(".dot")];
 
 /* =====================
    Dots
@@ -63,6 +63,9 @@ initLoader(loader, () => {
     scene.__holdBound = true;
   }
 
+  /* ---- dots 表示 ---- */
+  dotsWrap?.classList.add("visible");
+
   /* ---- 自動遷移（完全放置対策） ---- */
   startAutoTransition(() => {
     goChapter25();
@@ -79,7 +82,7 @@ const carousel = initCarousel3D({
 });
 
 if (carousel) {
-  // 🔑 他モジュール（holdTransition / transitionOut）用
+  // 🔑 holdTransition / transitionOut 用
   window.__carousel__ = carousel;
 
   initDragInput(carousel);
