@@ -91,6 +91,10 @@ export function initCarousel(wrapper, pages) {
     updateDots();
     normalize();
 
+ // state.index の更新とドットの状態更新
+  state.index = currentPage; // 現在のページをstate.indexに設定
+  updateDotsState(); // ドットの状態を更新
+    
     wrapper.releasePointerCapture(e.pointerId);
   }
 
