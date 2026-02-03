@@ -17,7 +17,7 @@ import { initLastPage } from "./lastPage.js";
 const loader       = document.getElementById("loader");
 const chapter      = document.querySelector(".chapter");
 const dots         = document.querySelector(".dots");
-const pages        = document.querySelectorAll(".page");
+const pages = document.querySelectorAll(".carousel-page");
 
 const wrapper      = document.querySelector(".carousel-wrapper");
 const lastWrapper  = document.getElementById("last-page");
