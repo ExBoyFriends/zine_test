@@ -1,65 +1,67 @@
-// loader.js（完全安定版）
+// loader.js（全章共通・最終版）
+
 export function initLoader(loader, onComplete) {
-  if (!loader) {
+  let finished = false;
+
+  const fadeLayer =
+    document.getElementById("fadeLayer") ||
+    document.getElementById("fadeout") ||
+    null;
+
+  const safeComplete = () => {
+    if (finished) return;
+    finished = true;
     onComplete?.();
-    return;
-  }
-
-  const fadeLayer = document.getElementById("fadeLayer");
-  let isLoadingComplete = false;
-
-  // 完了処理
-  const finish = () => {
-    if (isLoadingComplete) return;
-    isLoadingComplete = true;
-
-    // ローダーのアニメーション停止と非表示化
-    loader.style.animation = "none";
-    loader.style.opacity  = "0";
-    loader.style.display  = "none";
-
-    // フェードレイヤーの非表示化
-    fadeLayer?.classList.add("hide");
-
-    // 次の処理を少し遅れて実行
-    setTimeout(() => {
-      onComplete?.();
-    }, 60);
   };
 
-  // 開始処理（初回）
-  const start = () => {
-    // すでに開始されている場合は何もしない
-    if (isLoadingComplete) return;
+  const finish = () => {
+    if (finished) return;
 
-    // 初期化
-    loader.style.display = "block";
-    loader.style.opacity = "1";
-    loader.style.animation = "siren 2s linear infinite";
+    if (loader) {
+      loader.style.animation = "none";
+      loader.style.opacity = "0";
+      loader.style.display = "none";
+    }
+
+    if (fadeLayer) {
+      fadeLayer.classList.add("hide");
+      fadeLayer.style.pointerEvents = "none";
+    }
+
+    requestAnimationFrame(safeComplete);
+  };
+
+  const start = () => {
+    if (finished) return;
+
+    if (loader) {
+      loader.style.display = "block";
+      loader.style.opacity = "1";
+      loader.style.animation = "siren 2s linear infinite";
+    }
 
     fadeLayer?.classList.remove("hide");
 
-    // 演出時間後に完了処理を実行
-    setTimeout(finish, 4200);  // 演出時間の後に必ず完了処理を行う
+    setTimeout(finish, 4200);
   };
 
-  // 初回ロード
   if (document.readyState === "complete") {
     start();
   } else {
     window.addEventListener("load", start, { once: true });
   }
 
-  // bfcache 復帰（即スキップ）
+  // bfcache
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
 
-    loader.style.display = "none";
-    loader.style.opacity = "0";
-    loader.style.animation = "none";
+    if (loader) {
+      loader.style.display = "none";
+      loader.style.opacity = "0";
+      loader.style.animation = "none";
+    }
 
     fadeLayer?.classList.add("hide");
-
-    onComplete?.();
+    safeComplete();
   });
 }
