@@ -10,12 +10,8 @@ export function initCarousel3D(options = {}) {
   if (!COUNT) return;
 
   const SNAP = 360 / COUNT;
-
   const R_FRONT = 185;
   const R_BACK  = 170;
-
-  const BASE_AUTO_SPEED = 0.25;
-  const ACCEL_FOLLOW    = 0.06;
 
   let angle = 0;
   let visualAngle = 0;
@@ -25,14 +21,11 @@ export function initCarousel3D(options = {}) {
   let transitionStarted = false;
 
   let extraSpeed = 0;
-  let targetExtraSpeed = 1;  // 初期スピード（通常回転スピード）
+  let targetExtraSpeed = 0;
 
   let rafId = null;
   let currentIndex = 0;
 
-  let startTime = 0;
-  let pressStartTime = 0;
-  let holdTime = 0;
   let speedingUp = false;
 
   // ドット要素の取得
@@ -55,7 +48,7 @@ export function initCarousel3D(options = {}) {
     transitionStarted = false;
 
     extraSpeed = 0;
-    targetExtraSpeed = 1;  // 通常回転に戻す
+    targetExtraSpeed = 0;
 
     currentIndex = 0;
     options.onIndexChange?.(0);
@@ -73,7 +66,7 @@ export function initCarousel3D(options = {}) {
   /* =====================
      ドットの更新
   ===================== */
- function updateDots() {
+  function updateDots() {
     const normalized = (visualAngle % 360 + 360) % 360;
     const dotIndex = Math.round(normalized / SNAP) % COUNT;
 
@@ -82,7 +75,7 @@ export function initCarousel3D(options = {}) {
     });
   }
 
-/* =====================
+  /* =====================
      イージング関数：時間の経過に応じて加速を変化させる
   ===================== */
   function easeInOut(t, b, c, d) {
@@ -91,7 +84,7 @@ export function initCarousel3D(options = {}) {
     t--;
     return (-c / 2) * (t * (t - 2) - 1) + b;
   }
-  
+
   /* =====================
      アニメーション
   ===================== */
@@ -188,83 +181,25 @@ export function initCarousel3D(options = {}) {
     }, 500); // ゆっくり減速
   }
 
- /* =====================
-     8秒後から加速開始、最後の2秒で最大スピードに到達するように
+  /* =====================
+     20秒後の自動遷移、最後の2秒で最大速度に
   ===================== */
   function startAutoTransition(callback) {
     const startTime = performance.now();
 
     function tick() {
       const elapsed = performance.now() - startTime;
-      const totalDuration = 13000; // 13秒
-      const accelDuration = 8000;  // 8秒
+      const totalDuration = 20000; // 20秒
+      const accelDuration = 12000;  // 12秒
 
       let speed = 0;
 
       if (elapsed < accelDuration) {
         // 加速（イージング関数を使用して滑らかに）
-        speed = easeInOut(elapsed, 0, 5, accelDuration);
+        speed = easeInOut(elapsed, 0, 7, accelDuration); // 最初の12秒で加速
       } else if (elapsed >= accelDuration && elapsed <= totalDuration - 2000) {
         // 徐々に一定スピードに到達
-        speed = 5;
+        speed = 7; // 加速後、スピード維持
       } else {
         // 最後の2秒で最大スピードに
-        const remaining = totalDuration - elapsed;
-        speed = 5 + (remaining / 2000) * 5; // 最後の2秒で最大10になる
-      }
-
-      targetExtraSpeed = Math.min(speed, 10);
-
-      // 13秒後に自動遷移
-      if (elapsed >= totalDuration) {
-        callback();
-        return;
-      }
-
-      requestAnimationFrame(tick);
-    }
-
-    requestAnimationFrame(tick);
-  }
-
-  /* =====================
-     bfcache 対応
-  ===================== */
-  window.addEventListener("pageshow", e => {
-    if (e.persisted) {
-      stop();
-      resetState();
-      start();
-    }
-  });
-
-  /* =====================
-     外部 API
-  ===================== */
-  return {
-    setExtraSpeed(v) {
-      targetExtraSpeed = Math.min(Math.max(v, 0), 10);
-    },
-    setHolding(v) {
-      isHolding = v;
-
-      if (!v && !transitionStarted) {
-        targetExtraSpeed = 0.25;
-      }
-    },
-    startTransition() {
-      transitionStarted = true;
-    },
-    startDrag() {
-      dragging = true;
-    },
-    moveDrag(dx) {
-      angle += dx * 0.35;
-      visualAngle = angle;
-    },
-    endDrag() {
-      dragging = false;
-    },
-    startAutoTransition
-  };
-}
+        const remaining = totalDuratio
