@@ -1,11 +1,12 @@
 // chapter1/main.js
 
 import "../utils/base.js";
+import "../utils/state.js";
 import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
 import { initCarousel } from "./carousel.js";
 import { initLastPage } from "./lastPage.js";
-import { state } from "./state.js";
+
 
 /* =====================
    DOM
@@ -48,6 +49,8 @@ initLoader(loader, () => {
       initLastPage(document.querySelector(".carousel-wrapper"), state.getCurrentPage, document.querySelectorAll(".carousel-page").length);
       
       updateDotsState(); // 初期状態でドットを更新
+
+      showPage(state.index);
     }
   });
 });
