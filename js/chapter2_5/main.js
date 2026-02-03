@@ -21,6 +21,8 @@ function updateDots(index = 0) {
 
 /* ===================== Loader 完了 ===================== */
 initLoader(loader, () => {
+  state.index = 0;  // 初期化
+
   startChapter({
     chapter,
     dots,
@@ -37,6 +39,7 @@ initLoader(loader, () => {
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
 
+  // ページが再表示されるときに、現在の状態でページとドットを更新
   showPage(state.index);
   updateDots(state.index);
 });
