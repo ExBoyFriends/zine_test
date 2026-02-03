@@ -1,4 +1,4 @@
-// effects.js
+// chapter2/effects.js
 
 // 見た目のグリッチ状態だけを管理する（入力・時間管理は一切しない）
 
