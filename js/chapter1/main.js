@@ -3,11 +3,6 @@
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
-
-import { state } from "./state.js";
-import { showPage } from "./view.js";
-import { initTapInteraction } from "./interaction.js";
-
 import { initCarousel } from "./carousel.js";
 import { initLastPage } from "./lastPage.js";
 
@@ -43,12 +38,10 @@ initLoader(loader, () => {
   startChapter({
     chapter,
     dots,
-    onStart() {
-      pages[0]?.classList.add("active");
-      document.querySelectorAll(".dot")[0]?.classList.add("active");
-
+     onStart() {
       showPage(state.index);
-      initTapInteraction();
+      initCarousel(document.querySelector(".carousel-wrapper"), document.querySelectorAll(".carousel-page"));
+      initLastPage(document.querySelector(".carousel-wrapper"), state.getCurrentPage, document.querySelectorAll(".carousel-page").length);
     }
   });
 });
