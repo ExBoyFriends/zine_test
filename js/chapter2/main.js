@@ -18,15 +18,15 @@ import {
 /* =====================
    DOM
 ===================== */
-const scene   = document.querySelector(".scene");
-const loader  = document.getElementById("loader");
+const scene     = document.querySelector(".scene");
+const loader    = document.getElementById("loader");
 const fadeLayer = document.getElementById("fadeLayer");
 
 const dotsWrap = document.querySelector(".dots");
-const dots = [...document.querySelectorAll(".dot")];
+const dots     = [...document.querySelectorAll(".dot")];
 
 /* =====================
-   長押し bind（初回ロード用）
+   長押し bind（初回のみ）
 ===================== */
 if (scene && !scene.__holdBound) {
   bindLongPressEvents(scene);
@@ -34,7 +34,7 @@ if (scene && !scene.__holdBound) {
 }
 
 /* =====================
-   Dots update
+   Dots
 ===================== */
 function updateDots(index) {
   dots.forEach((dot, i) => {
@@ -52,13 +52,12 @@ const carousel = initCarousel3D({
 });
 
 if (carousel) {
-  window.__carousel__ = carousel;
   initDragInput(carousel);
   updateDots(0);
 }
 
 /* =====================
-   Glitch 初期化
+   Glitch
 ===================== */
 initGlitchLayer?.();
 
@@ -117,58 +116,6 @@ window.addEventListener("pageshow", e => {
   carousel?.setExtraSpeed?.(0);
 
   fadeLayer?.classList.add("hide");
-  dotsWrap?.classList.add("visible");
-  startAutoTransition?.(goChapter25);
-});
-
-
-/* =====================
-   Chapter2 → 2.5
-===================== */
-function goChapter25() {
-  if (goChapter25._done) return;
-  goChapter25._done = true;
-
-  playExitTransition({
-    onFinish() {
-      location.href = "chapter2_5.html";
-    }
-  });
-}
-
-/* =====================
-   長押し演出
-===================== */
-setHoldEffects({
-  glitchStart() {
-    startGlitch();
-    carousel?.setExtraSpeed?.(1.5);
-  },
-  glitchEnd() {
-    stopGlitch();
-    carousel?.setExtraSpeed?.(0);
-  }
-});
-
-/* =====================
-   強制遷移
-===================== */
-window.addEventListener("force-exit", goChapter25);
-
-/* =====================
-   pageshow（bfcache）
-===================== */
-window.addEventListener("pageshow", e => {
-  if (!e.persisted) return;
-
-  resetTransitionState?.();
-  goChapter25._done = false;
-
-  stopGlitch();
-  carousel?.setHolding?.(false);
-  carousel?.setExtraSpeed?.(0);
-
-  fadeLayer?.classList.add("hide");   // ★ 闇は即開く
   dotsWrap?.classList.add("visible");
   startAutoTransition?.(goChapter25);
 
