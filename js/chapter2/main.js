@@ -1,7 +1,11 @@
 // chapter2/main.js
 
+// chapter2/main.js
+
 import "../base.js";
 import { initLoader } from "../loader.js";
+import { startChapter } from "../chapterStart.js";
+
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
 import {
@@ -25,6 +29,7 @@ window.addEventListener("pageshow", e => {
    DOM
 ===================== */
 const scene    = document.querySelector(".scene");
+const chapter  = document.querySelector(".chapter");
 const loader   = document.getElementById("loader");
 const dotsWrap = document.querySelector(".dots");
 const dots     = [...document.querySelectorAll(".dot")];
@@ -53,23 +58,28 @@ function goChapter25() {
 }
 
 /* =====================
-   Loader 完了
+   Loader 完了 → Chapter 開始
 ===================== */
 initLoader(loader, () => {
 
-  /* ---- 長押し bind（1回だけ） ---- */
-  if (scene && !scene.__holdBound) {
-    bindLongPressEvents(scene);
-    scene.__holdBound = true;
-  }
+  startChapter({
+    chapter,
+    dots: dotsWrap,
+    onStart() {
 
-  /* ---- dots 表示 ---- */
-  dotsWrap?.classList.add("visible");
+      /* ---- 長押し bind（1回だけ） ---- */
+      if (scene && !scene.__holdBound) {
+        bindLongPressEvents(scene);
+        scene.__holdBound = true;
+      }
 
-  /* ---- 自動遷移（完全放置対策） ---- */
-  startAutoTransition(() => {
-    goChapter25();
+      /* ---- 自動遷移（完全放置対策） ---- */
+      startAutoTransition(() => {
+        goChapter25();
+      });
+    }
   });
+
 });
 
 /* =====================
