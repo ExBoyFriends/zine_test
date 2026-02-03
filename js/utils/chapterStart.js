@@ -4,15 +4,10 @@ export function startChapter({ chapter, dots, onStart }) {
   const fadeLayer = document.getElementById("fadeLayer");
 
   // chapter 表示
-  if (chapter) {
-    chapter.style.opacity = "1";
-    chapter.style.pointerEvents = "auto";
-  }
+  chapter?.classList.add("visible");
 
-  // dots 表示
-  if (dots) {
-    dots.style.opacity = "1";
-  }
+  // dots 表示（必要ならCSS側で制御）
+  dots?.classList.add("visible");
 
   // fade 消す
   if (fadeLayer) {
@@ -23,3 +18,4 @@ export function startChapter({ chapter, dots, onStart }) {
 
   onStart?.();
 }
+
