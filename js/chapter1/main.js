@@ -38,7 +38,7 @@ initLastPage(
 ===================== */
 initLoader(loader, () => {
   // 初期状態でstate.indexをリセット（0にする）
-  state.index = 0; // 必要であれば、stateの初期化もここで行う
+  state.index = 0;
 
   startChapter({
     chapter,
@@ -51,7 +51,7 @@ initLoader(loader, () => {
 });
 
 function updateDotsState() {
-  // 初期状態でドットを更新
+  // ドットの状態を初期化
   const dots = document.querySelectorAll(".dot");
   dots.forEach((dot, i) => {
     dot.classList.toggle("active", i === state.index);
