@@ -1,5 +1,4 @@
 // chapter2/carousel3d.js
-
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -202,4 +201,63 @@ export function initCarousel3D(options = {}) {
         speed = 7; // 加速後、スピード維持
       } else {
         // 最後の2秒で最大スピードに
-        const remaining = totalDuratio
+        const remaining = totalDuration - elapsed;
+        speed = 7 + (remaining / 2000) * 8; // 最後の2秒で最大15になる
+      }
+
+      targetExtraSpeed = Math.min(speed, 15);
+
+      // 20秒後に自動遷移
+      if (elapsed >= totalDuration) {
+        callback();
+        return;
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  /* =====================
+     bfcache 対応
+  ===================== */
+  window.addEventListener("pageshow", e => {
+    if (e.persisted) {
+      stop();
+      resetState();
+      start();
+    }
+  });
+
+  /* =====================
+     外部 API
+  ===================== */
+  return {
+    setExtraSpeed(v) {
+      targetExtraSpeed = Math.min(Math.max(v, 0), 15);
+    },
+    setHolding(v) {
+      isHolding = v;
+
+      if (!v && !transitionStarted) {
+        targetExtraSpeed = 0.25;
+      }
+    },
+    startTransition() {
+      transitionStarted = true;
+    },
+    startDrag() {
+      dragging = true;
+    },
+    moveDrag(dx) {
+      angle += dx * 0.35;
+      visualAngle = angle;
+    },
+    endDrag() {
+      dragging = false;
+    },
+    startAutoTransition
+  };
+}
+
