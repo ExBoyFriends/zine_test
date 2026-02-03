@@ -1,3 +1,4 @@
+
 /* base.js */
 
 /* =====================
@@ -109,11 +110,11 @@ window.addEventListener("pageshow", e => {
   // Reset fade-out state
   document.body.classList.remove("fade-out");
 
-  const fade = document.getElementById("fadeout");
+  const fade = document.getElementById("fadeLayer");
 
   if (fade) {
-    fade.classList.remove("active");
-    fade.style.opacity = "0";
+    // Correctly hide the fade layer (open it)
+    fade.classList.add("hide");
     fade.style.pointerEvents = "none";
   }
 
@@ -122,7 +123,5 @@ window.addEventListener("pageshow", e => {
 
   // Recalculate viewport height
   setVh();
-
-  // Force full reload if needed
-  // location.reload();
 });
+
