@@ -137,3 +137,13 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+
+
+
+
+const fade = document.getElementById("fadeLayer");
+
+if (fade) {
+  fade.classList.add("hide");
+  fade.style.pointerEvents = "none";
+}
