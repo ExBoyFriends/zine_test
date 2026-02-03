@@ -1,98 +1,58 @@
-/* loader.js */
+/* ===============================
+   Loader / Fade 共通CSS
+   =============================== */
 
-export function initLoader(loader, onComplete) {
-  let finished = false;
-
-  const fadeLayer =
-    document.getElementById("fadeLayer") ||
-    document.getElementById("fadeout") ||
-    null;
-
-  const safeComplete = () => {
-    if (finished) return;
-    finished = true;
-    onComplete?.();
-  };
-
-  const finish = () => {
-    if (finished) return;
-
-    // loaderを確実に消す
-    if (loader) {
-      loader.style.animation = "none";
-      loader.style.opacity = "0";
-      loader.style.display = "none";
-    }
-
-    // fadeLayerがあれば開く
-    if (fadeLayer) {
-      fadeLayer.classList.add("hide");
-      fadeLayer.style.pointerEvents = "none";
-    }
-
-    // 次フレームで確実に進行
-    requestAnimationFrame(safeComplete);
-  };
-
-  const start = () => {
-    if (finished) return;
-
-    if (loader) {
-      loader.style.display = "block";
-      loader.style.opacity = "1";
-      loader.style.animation = "siren 2s linear infinite";
-    }
-
-    if (fadeLayer) {
-      fadeLayer.classList.remove("hide");
-      fadeLayer.style.pointerEvents = "auto";
-    }
-
-    // 演出時間後は必ず終了
-    setTimeout(finish, 4200);
-  };
-
-  /* ===== 初回ロード ===== */
-  if (document.readyState === "complete") {
-    start();
-  } else {
-    window.addEventListener("load", start, { once: true });
-  }
-
-  /* ===== bfcache復帰 ===== */
-  window.addEventListener("pageshow", e => {
-    if (!e.persisted) return;
-
-    if (loader) {
-      loader.style.display = "none";
-      loader.style.opacity = "0";
-      loader.style.animation = "none";
-    }
-
-    if (fadeLayer) {
-      fadeLayer.classList.add("hide");
-      fadeLayer.style.pointerEvents = "none";
-    }
-
-    safeComplete();
-  });
-}
-  
-  /* =====================
-   Fade Layer
-===================== */
+/* 画面全体を覆うフェードレイヤー */
 #fadeLayer {
   position: fixed;
   inset: 0;
   background: #000;
-  z-index: 9998;
+  z-index: 9999;
+
+  /* 初期状態：表示（黒） */
   opacity: 1;
-  transition: opacity 1.2s ease;
   pointer-events: auto;
+
+  transition: opacity 1.2s ease;
 }
 
+/* フェードアウト後（表示解除） */
 #fadeLayer.hide {
   opacity: 0;
   pointer-events: none;
 }
 
+/* ===============================
+   Loader 本体
+   =============================== */
+
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  pointer-events: none;
+}
+
+/* ローディング中のテキスト／アイコン（必要なら） */
+#loader .loader-inner {
+  color: #fff;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+
+/* ===============================
+   bfcache / 強制復帰対策
+   =============================== */
+
+/* JS が走らない事故を防ぐ最低保証 */
+html:not(.js-ready) #fadeLayer {
+  opacity: 1;
+  pointer-events: auto;
+}
