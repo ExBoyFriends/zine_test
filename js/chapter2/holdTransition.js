@@ -1,168 +1,76 @@
-//chapter2/hodTransition.js
-
+// chapter2/holdTransition.js
 import { startGlitch, stopGlitch } from "./effects.js";
 
-/* =====================
-   内部状態
-===================== */
+let pressing = false;
+let committed = false;
 
-let isPressing = false;
-let exited = false;
-let commitExit = false;   // ★ 追加：出口にコミットしたか
-
-let startTime = 0;
-let rafId = null;
-
-let longPressTimer = null;
 let glitchTimer = null;
 let accelTimer = null;
+let exitTimer = null;
 
-/* =====================
-   外部エフェクトフック
-===================== */
-
-let effects = {};
-
-export function setHoldEffects(e) {
-  effects = e || {};
-}
-
-/* =====================
-   時間定義
-===================== */
-
-const LONG_PRESS_DURATION = 3000;
-const AUTO_TRANSITION_DURATION = 10000;
-const GLITCH_TRIGGER = 700;
-const FINAL_ACCEL_TRIGGER = 1700;
-
-/* =====================
-   回転スピード
-===================== */
-
-const BASE_HOLD_SPEED = 0.8;
-const GLITCH_SPEED = 3.5;
-const PRE_EXIT_MAX = 8;
-const EXIT_SPEED = 10;
-
-/* =====================
-   外部API
-===================== */
+const GLITCH_TIME = 700;
+const COMMIT_TIME = 1500;
+const EXIT_TIME   = 3000;
 
 export function resetTransitionState() {
-  clearAllTimers();
-  isPressing = false;
-  exited = false;
-  commitExit = false;   // ★ リセット必須
-  startTime = performance.now();
-  cancelAnimationFrame(rafId);
-  rafId = null;
+  pressing = false;
+  committed = false;
+  clearAll();
 }
 
-export function startAutoTransition(callback) {
-  cancelAnimationFrame(rafId);
-  startTime = performance.now();
+export function bindLongPressEvents(el) {
+  if (!el) return;
 
-  function tick(now) {
-    if (exited) return;
-
-    const elapsed = now - startTime;
-
-    // ⏱ 絶対時間で必ず遷移
-    if (elapsed >= AUTO_TRANSITION_DURATION) {
-      exited = true;
-      callback();
-      return;
-    }
-
-    rafId = requestAnimationFrame(tick);
-  }
-
-  rafId = requestAnimationFrame(tick);
-}
-
-export function bindLongPressEvents(element) {
-  if (!element) return;
-
-  element.addEventListener("pointerdown", e => {
-    element.setPointerCapture?.(e.pointerId);
-    window.__startDragCheck__?.(e);
+  el.addEventListener("pointerdown", e => {
+    el.setPointerCapture?.(e.pointerId);
     startPress();
   });
 
-  element.addEventListener("pointermove", e => {
-    window.__moveDragCheck__?.(e);
-  });
-
-  ["pointerup", "pointercancel", "pointerleave"].forEach(type => {
-    element.addEventListener(type, endPress);
-  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(t =>
+    el.addEventListener(t, endPress)
+  );
 }
 
-/* =====================
-   内部処理
-===================== */
-
 function startPress() {
-  if (isPressing || exited) return;
-  isPressing = true;
+  if (pressing) return;
+  pressing = true;
 
-  window.__carousel__?.setHolding(true);
-  window.__carousel__?.setExtraSpeed(BASE_HOLD_SPEED);
+  window.__carousel__?.setExtraSpeed(1);
 
-  // グリッチ開始
   glitchTimer = setTimeout(() => {
-    if (!isPressing || exited) return;
-
+    if (!pressing) return;
     startGlitch();
-    effects.glitchStart?.();
-    window.__carousel__?.setExtraSpeed(GLITCH_SPEED);
-  }, GLITCH_TRIGGER);
+    window.__carousel__?.setExtraSpeed(4);
+  }, GLITCH_TIME);
 
-  // 🔥 最終加速（ここで戻れなくする）
   accelTimer = setTimeout(() => {
-    if (!isPressing || exited) return;
+    if (!pressing) return;
+    committed = true;
+    window.__carousel__?.setExtraSpeed(8);
+  }, COMMIT_TIME);
 
-    commitExit = true; // ★ ここが核心
-    window.__carousel__?.setExtraSpeed(PRE_EXIT_MAX);
-  }, FINAL_ACCEL_TRIGGER);
-
-  // 🚀 長押し完遂 → 即遷移
-  longPressTimer = setTimeout(() => {
-    if (exited) return;
-
-    exited = true;
-    window.__carousel__?.setExtraSpeed(EXIT_SPEED);
+  exitTimer = setTimeout(() => {
+    if (!pressing) return;
     window.dispatchEvent(new Event("force-exit"));
-  }, LONG_PRESS_DURATION);
+  }, EXIT_TIME);
 }
 
 function endPress() {
-  if (!isPressing || exited) return;
+  if (!pressing) return;
+  pressing = false;
 
-  isPressing = false;
-  clearPressTimers();
-
+  clearAll();
   stopGlitch();
-  effects.glitchEnd?.();
 
-  // ★ commit していない場合のみ解除
-  if (!commitExit) {
-    window.__carousel__?.setHolding(false);
+  // commit前なら減速して通常へ
+  if (!committed) {
+    window.__carousel__?.setExtraSpeed(0);
   }
 }
 
-/* =====================
-   タイマー管理
-===================== */
-
-function clearPressTimers() {
-  clearTimeout(longPressTimer);
+function clearAll() {
   clearTimeout(glitchTimer);
   clearTimeout(accelTimer);
+  clearTimeout(exitTimer);
 }
 
-function clearAllTimers() {
-  clearPressTimers();
-  cancelAnimationFrame(rafId);
-}
