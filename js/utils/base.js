@@ -95,9 +95,9 @@ window.addEventListener("pageshow", e => {
 
 
 
+/* =====================
 
-
-// iOS関連の動作に対応
+iOS関連の動作に対応
 function setVh() {
   document.documentElement.style.setProperty(
     "--vh",
@@ -120,3 +120,4 @@ const hideURLBar = () => {
     window.scrollTo(0, 1);
   }
 };
+===================== */
