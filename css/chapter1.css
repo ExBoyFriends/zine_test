@@ -49,6 +49,7 @@ body {
   width: 88vw;
   max-width: 540px;
   -webkit-user-drag: none;
+  display: block; 
 }
 
 /* =====================
