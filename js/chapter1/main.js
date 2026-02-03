@@ -46,3 +46,11 @@ initLoader(loader, () => {
      }
   });
 });
+
+function updateDotsState() {
+  // 初期状態でドットを更新
+  const dots = document.querySelectorAll(".dot");
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("active", i === state.index);
+  });
+}
