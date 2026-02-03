@@ -1,4 +1,4 @@
-// loader.js（全章共通・最終版）
+/*  loader.js */
 
 export function initLoader(loader, onComplete) {
   let finished = false;
