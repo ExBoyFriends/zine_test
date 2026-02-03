@@ -1,49 +1,80 @@
-/* loader.css */
-/* =====================
-   Loader（演出のみ）
-===================== */
+// loader.js（最終完成・全ページ安定版）
 
-#loader {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
+export function initLoader(loader, onComplete) {
+  let finished = false;
 
-  background: url("../image/background.jpg") center / cover no-repeat;
+  const fadeLayer =
+    document.getElementById("fadeLayer") ||
+    document.getElementById("fadeout") ||
+    null;
 
-  animation: siren 2s linear infinite;
+  const safeComplete = () => {
+    if (finished) return;
+    finished = true;
+    onComplete?.();
+  };
 
-  transition: opacity 0.6s ease;
-  opacity: 1;
+  const finish = () => {
+    if (finished) return;
+
+    // loaderを確実に消す
+    if (loader) {
+      loader.style.animation = "none";
+      loader.style.opacity = "0";
+      loader.style.display = "none";
+    }
+
+    // fadeLayerがあれば開く
+    if (fadeLayer) {
+      fadeLayer.classList.add("hide");
+      fadeLayer.style.pointerEvents = "none";
+    }
+
+    // 次フレームで確実に進行
+    requestAnimationFrame(safeComplete);
+  };
+
+  const start = () => {
+    if (finished) return;
+
+    if (loader) {
+      loader.style.display = "block";
+      loader.style.opacity = "1";
+      loader.style.animation = "siren 2s linear infinite";
+    }
+
+    if (fadeLayer) {
+      fadeLayer.classList.remove("hide");
+      fadeLayer.style.pointerEvents = "auto";
+    }
+
+    // 演出時間後は必ず終了
+    setTimeout(finish, 4200);
+  };
+
+  /* ===== 初回ロード ===== */
+  if (document.readyState === "complete") {
+    start();
+  } else {
+    window.addEventListener("load", start, { once: true });
+  }
+
+  /* ===== bfcache復帰 ===== */
+  window.addEventListener("pageshow", e => {
+    if (!e.persisted) return;
+
+    if (loader) {
+      loader.style.display = "none";
+      loader.style.opacity = "0";
+      loader.style.animation = "none";
+    }
+
+    if (fadeLayer) {
+      fadeLayer.classList.add("hide");
+      fadeLayer.style.pointerEvents = "none";
+    }
+
+    safeComplete();
+  });
 }
 
-/* 明滅演出 */
-@keyframes siren {
-  0%   { filter: brightness(1); }
-  35%  { filter: brightness(0.3); }
-  55%  { filter: brightness(0.12); }
-  100% { filter: brightness(1); }
-}
-
-/* =====================
-   初回フェード（世界を覆う闇）
-===================== */
-
-#fadeLayer {
-  position: fixed;
-  inset: 0;
-  z-index: 900;
-
-  background: #000;
-  pointer-events: none;
-
-  /* ★ 初期は完全に暗い */
-  opacity: 1;
-
-  /* ★ 初回フェード速度（統一） */
-  transition: opacity 4s cubic-bezier(.22,.61,.36,1);
-}
-
-/* 闇が開く */
-#fadeLayer.hide {
-  opacity: 0;
-}
