@@ -131,6 +131,7 @@ img {
 
 .dots.visible {
   opacity: 1;
+    pointer-events: auto;
 }
 
 .dot {
