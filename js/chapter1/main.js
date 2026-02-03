@@ -5,6 +5,7 @@ import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
 import { initCarousel } from "./carousel.js";
 import { initLastPage } from "./lastPage.js";
+import { state } from "./state.js";
 
 /* =====================
    DOM
@@ -35,15 +36,19 @@ initLastPage(
    Loader 完了
 ===================== */
 initLoader(loader, () => {
+  // 初期状態でstate.indexをリセット（0にする）
+  state.index = 0;  // 必要であれば、stateの初期化もここで行う
+
   startChapter({
     chapter,
     dots,
-     onStart() {
+    onStart() {
       showPage(state.index);
       initCarousel(document.querySelector(".carousel-wrapper"), document.querySelectorAll(".carousel-page"));
       initLastPage(document.querySelector(".carousel-wrapper"), state.getCurrentPage, document.querySelectorAll(".carousel-page").length);
-      updateDotsState(); 
-     }
+      
+      updateDotsState(); // 初期状態でドットを更新
+    }
   });
 });
 
