@@ -1,3 +1,5 @@
+//transitionOut.js
+
 let startTime = null;
 let rafId = null;
 
