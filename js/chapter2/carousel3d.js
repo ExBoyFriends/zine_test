@@ -1,4 +1,4 @@
-// carousel3d.js
+// chapter2/carousel3d.js
 
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
