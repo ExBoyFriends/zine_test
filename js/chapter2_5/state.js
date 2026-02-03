@@ -1,4 +1,4 @@
-// js/chapter2_5/state.js
+// chapter2_5/state.js
 
 export const state = {
   index: 0,
