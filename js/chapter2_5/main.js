@@ -15,7 +15,7 @@ const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
 
 /* =====================
-   dot 初期化
+   dots
 ===================== */
 function updateDots(index = 0) {
   document.querySelectorAll(".dot").forEach((dot, i) => {
