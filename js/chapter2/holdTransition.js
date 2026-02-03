@@ -2,38 +2,24 @@
 
 import { startGlitch, stopGlitch } from "./effects.js";
 
-let isPressing = false;
+let pressing = false;
 let exited = false;
-let rafId = null;
+let timer = null;
 
-const AUTO_TOTAL_TIME = 20000;
-const GLITCH_TIME = 700;
+const AUTO_DELAY = 8000;
 
 export function resetTransitionState() {
-  isPressing = false;
+  pressing = false;
   exited = false;
-  cancelAnimationFrame(rafId);
-  rafId = null;
+  clearTimeout(timer);
 }
 
 export function startAutoTransition(onExit) {
-  const start = performance.now();
-
-  window.__carousel__?.startAutoPhase();
-
-  function tick(now) {
+  timer = setTimeout(() => {
     if (exited) return;
-
-    if (now - start >= AUTO_TOTAL_TIME) {
-      exited = true;
-      onExit?.();
-      return;
-    }
-
-    rafId = requestAnimationFrame(tick);
-  }
-
-  rafId = requestAnimationFrame(tick);
+    window.__carousel__?.startAuto();
+    onExit?.();
+  }, AUTO_DELAY);
 }
 
 export function bindLongPressEvents(el) {
@@ -44,28 +30,27 @@ export function bindLongPressEvents(el) {
     startPress();
   });
 
-  ["pointerup", "pointercancel", "pointerleave"].forEach(t =>
+  ["pointerup", "pointerleave", "pointercancel"].forEach(t =>
     el.addEventListener(t, endPress)
   );
 }
 
 function startPress() {
-  if (isPressing || exited) return;
-  isPressing = true;
+  if (pressing || exited) return;
+  pressing = true;
 
   window.__carousel__?.startHold();
 
   setTimeout(() => {
-    if (!isPressing) return;
+    if (!pressing) return;
     startGlitch();
-  }, GLITCH_TIME);
+  }, 700);
 }
 
 function endPress() {
-  if (!isPressing || exited) return;
+  if (!pressing) return;
+  pressing = false;
 
-  isPressing = false;
   stopGlitch();
   window.__carousel__?.endHold();
 }
-
