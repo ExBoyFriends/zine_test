@@ -1,5 +1,4 @@
 // loader.js（完全安定版）
-
 export function initLoader(loader, onComplete) {
   if (!loader) {
     onComplete?.();
@@ -7,31 +6,41 @@ export function initLoader(loader, onComplete) {
   }
 
   const fadeLayer = document.getElementById("fadeLayer");
-  let done = false;
+  let isLoadingComplete = false;
 
+  // 完了処理
   const finish = () => {
-    if (done) return;
-    done = true;
+    if (isLoadingComplete) return;
+    isLoadingComplete = true;
 
+    // ローダーのアニメーション停止と非表示化
     loader.style.animation = "none";
-    loader.style.opacity = "0";
-    loader.style.display = "none";
+    loader.style.opacity  = "0";
+    loader.style.display  = "none";
 
+    // フェードレイヤーの非表示化
     fadeLayer?.classList.add("hide");
 
-    onComplete?.();
+    // 次の処理を少し遅れて実行
+    setTimeout(() => {
+      onComplete?.();
+    }, 60);
   };
 
+  // 開始処理（初回）
   const start = () => {
-    // 初期状態
+    // すでに開始されている場合は何もしない
+    if (isLoadingComplete) return;
+
+    // 初期化
     loader.style.display = "block";
     loader.style.opacity = "1";
     loader.style.animation = "siren 2s linear infinite";
 
     fadeLayer?.classList.remove("hide");
 
-    // ⏱ 演出時間で必ず終了（絶対止まらない）
-    setTimeout(finish, 4200);
+    // 演出時間後に完了処理を実行
+    setTimeout(finish, 4200);  // 演出時間の後に必ず完了処理を行う
   };
 
   // 初回ロード
@@ -54,73 +63,3 @@ export function initLoader(loader, onComplete) {
     onComplete?.();
   });
 }
-
-
-  /* =====================
-     完了処理
-  ===================== */
-  const finish = () => {
-    if (finished) return;
-    finished = true;
-
-    /* ローダーを「明」で止める */
-    loader.style.animation = "none";
-    loader.style.filter   = "brightness(1)";
-    loader.style.opacity  = "0";
-
-    requestAnimationFrame(() => {
-      loader.style.display = "none";
-
-      /* 黒フェード解除 */
-      fadeLayer?.classList.add("hide");
-
-      /* 闇がわずかに残る瞬間に次へ */
-      setTimeout(() => {
-        onComplete?.();
-      }, 60);
-    });
-  };
-
-  /* =====================
-     開始処理（初回）
-  ===================== */
-  const start = () => {
-    if (started) return;
-    started = true;
-
-    resetVisualState();
-
-    /* 演出時間 */
-    setTimeout(() => {
-      loader.addEventListener("transitionend", finish, { once: true });
-      setTimeout(finish, 1200); // 念のため保険
-    }, 4000);
-  };
-
-  /* ===== 初回ロード ===== */
-  if (document.readyState === "complete") {
-    start();
-  } else {
-    window.addEventListener("load", start, { once: true });
-  }
-
-  /* =====================
-     bfcache 復帰対応（★重要）
-  ===================== */
-  window.addEventListener("pageshow", e => {
-    if (!e.persisted) return;
-
-    /* 🔑 演出は一切しない。即、世界を見せる */
-    finished = true;
-    started  = true;
-
-    loader.style.display   = "none";
-    loader.style.opacity   = "0";
-    loader.style.animation = "none";
-
-    fadeLayer?.classList.add("hide");
-
-    onComplete?.();
-  });
-}
-
