@@ -36,12 +36,13 @@ export function initLoader(loader, onComplete) {
     setTimeout(finish, 4200);
   };
 
-  // 初回ロード
-  if (document.readyState === "complete") {
-    start();
-  } else {
-    window.addEventListener("load", start, { once: true });
-  }
+ // 初回ロード
+if (document.readyState !== "loading") {
+  start();
+} else {
+  window.addEventListener("load", start, { once: true });
+}
+
 
   // bfcache 復帰（即スキップ）
   window.addEventListener("pageshow", e => {
