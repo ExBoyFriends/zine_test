@@ -1,4 +1,4 @@
-//lastPage.js
+//chapter1/lastPage.js
 
 export function initLastPage(wrapper, getCurrentPage, totalPages) {
   let opened = false;
