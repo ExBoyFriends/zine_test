@@ -1,5 +1,5 @@
 // chapter1/main.js
-import { initCarousel } from "../carousel.js";  // carousel.js をインポート
+import { initCarousel } from "./carousel.js";  // carousel.js をインポート
 
 // ここで `state` を定義する (もし未定義の場合)
 let state = {
