@@ -1,4 +1,4 @@
-
+import "../base.js";
 import { initLoader } from "../loader.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
@@ -20,15 +20,10 @@ import {
 ===================== */
 const scene   = document.querySelector(".scene");
 const loader  = document.getElementById("loader");
-const fadeout = document.getElementById("fadeout");
+const fadeLayer = document.getElementById("fadeLayer");
 
 const dotsWrap = document.querySelector(".dots");
 const dots = [...document.querySelectorAll(".dot")];
-
-/* =====================
-   Base 初期化（必須）
-===================== */
-initBase();
 
 /* =====================
    長押し bind（初回ロード用）
@@ -39,7 +34,7 @@ if (scene && !scene.__holdBound) {
 }
 
 /* =====================
-   Dots update（chapter1準拠）
+   Dots update
 ===================== */
 function updateDots(index) {
   dots.forEach((dot, i) => {
@@ -57,9 +52,9 @@ const carousel = initCarousel3D({
 });
 
 if (carousel) {
-  window.__carousel__ = carousel; 
+  window.__carousel__ = carousel;
   initDragInput(carousel);
-  updateDots(0); // 初期ドット
+  updateDots(0);
 }
 
 /* =====================
@@ -71,9 +66,61 @@ initGlitchLayer?.();
    Loader 完了
 ===================== */
 initLoader(loader, () => {
-  dotsWrap?.classList.add("visible");   // ★ ここで必ず表示
+  dotsWrap?.classList.add("visible");
   startAutoTransition?.(goChapter25);
 });
+
+/* =====================
+   Chapter2 → 2.5
+===================== */
+function goChapter25() {
+  if (goChapter25._done) return;
+  goChapter25._done = true;
+
+  playExitTransition({
+    onFinish() {
+      location.href = "chapter2_5.html";
+    }
+  });
+}
+
+/* =====================
+   長押し演出
+===================== */
+setHoldEffects({
+  glitchStart() {
+    startGlitch();
+    carousel?.setExtraSpeed?.(1.5);
+  },
+  glitchEnd() {
+    stopGlitch();
+    carousel?.setExtraSpeed?.(0);
+  }
+});
+
+/* =====================
+   強制遷移
+===================== */
+window.addEventListener("force-exit", goChapter25);
+
+/* =====================
+   pageshow（bfcache）
+===================== */
+window.addEventListener("pageshow", e => {
+  if (!e.persisted) return;
+
+  resetTransitionState?.();
+  goChapter25._done = false;
+
+  stopGlitch();
+  carousel?.setHolding?.(false);
+  carousel?.setExtraSpeed?.(0);
+
+  fadeLayer?.classList.add("hide");
+  dotsWrap?.classList.add("visible");
+  startAutoTransition?.(goChapter25);
+});
+
 
 /* =====================
    Chapter2 → 2.5
