@@ -175,8 +175,39 @@ export function initCarousel3D(options = {}) {
     },
     endDrag() {
       dragging = false;
+    },
+
+    // ====================
+    // 追加: 減速処理（長押し解除後）
+    // ====================
+    smoothDeceleration() {
+      // 現在の extraSpeed を取得
+      const currentSpeed = targetExtraSpeed;
+
+      // 高速回転中の場合、そのスピードを超えないように減速
+      const maxSpeed = Math.max(currentSpeed, BASE_AUTO_SPEED);
+
+      // 減速処理
+      let startTime = performance.now();
+      function decelerate() {
+        const elapsed = performance.now() - startTime;
+        const transitionDuration = 500; // 500ms以内にスムーズに戻す
+
+        if (elapsed < transitionDuration) {
+          const speed = Math.max(
+            maxSpeed - (maxSpeed - BASE_AUTO_SPEED) * (elapsed / transitionDuration),
+            BASE_AUTO_SPEED
+          );
+          targetExtraSpeed = speed;
+          requestAnimationFrame(decelerate);
+        } else {
+          // 完了したら最終的に BASE_AUTO_SPEED に設定
+          targetExtraSpeed = BASE_AUTO_SPEED;
+        }
+      }
+
+      decelerate();
     }
   };
 }
-
 
