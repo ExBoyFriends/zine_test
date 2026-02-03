@@ -1,4 +1,4 @@
-//transitionOut.js
+//chapter2/transitionOut.js
 
 let startTime = null;
 let rafId = null;
