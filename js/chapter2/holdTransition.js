@@ -1,76 +1,113 @@
 // chapter2/holdTransition.js
+
 import { startGlitch, stopGlitch } from "./effects.js";
 
-let pressing = false;
+/* =====================
+   内部状態
+===================== */
+
+let isPressing = false;
+let exited = false;
 let committed = false;
 
-let glitchTimer = null;
-let accelTimer = null;
-let exitTimer = null;
+let pressStartTime = 0;
+let autoStartTime = 0;
+let rafId = null;
 
-const GLITCH_TIME = 700;
-const COMMIT_TIME = 1500;
-const EXIT_TIME   = 3000;
+let glitchTimer = null;
+
+/* =====================
+   時間定義
+===================== */
+
+const AUTO_TOTAL_TIME = 20000;   // 自動遷移まで 20秒
+const FINAL_TIME      = 2000;    // 最後の2秒
+const GLITCH_TIME     = 700;     // グリッチ開始
+
+/* =====================
+   外部 API
+===================== */
 
 export function resetTransitionState() {
-  pressing = false;
+  isPressing = false;
+  exited = false;
   committed = false;
-  clearAll();
+
+  clearTimeout(glitchTimer);
+  cancelAnimationFrame(rafId);
+  rafId = null;
+
+  pressStartTime = 0;
+  autoStartTime = performance.now();
 }
 
-export function bindLongPressEvents(el) {
-  if (!el) return;
+export function startAutoTransition(onExit) {
+  autoStartTime = performance.now();
 
-  el.addEventListener("pointerdown", e => {
-    el.setPointerCapture?.(e.pointerId);
+  function tick(now) {
+    if (exited) return;
+
+    const elapsed = now - autoStartTime;
+
+    if (elapsed >= AUTO_TOTAL_TIME) {
+      exited = true;
+      window.__carousel__?.forceCommit();
+      onExit?.();
+      return;
+    }
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  rafId = requestAnimationFrame(tick);
+}
+
+export function bindLongPressEvents(element) {
+  if (!element) return;
+
+  element.addEventListener("pointerdown", e => {
+    element.setPointerCapture?.(e.pointerId);
     startPress();
   });
 
-  ["pointerup", "pointercancel", "pointerleave"].forEach(t =>
-    el.addEventListener(t, endPress)
-  );
+  ["pointerup", "pointercancel", "pointerleave"].forEach(type => {
+    element.addEventListener(type, endPress);
+  });
 }
 
-function startPress() {
-  if (pressing) return;
-  pressing = true;
+/* =====================
+   内部処理
+===================== */
 
-  window.__carousel__?.setExtraSpeed(1);
+function startPress() {
+  if (isPressing || exited || committed) return;
+
+  isPressing = true;
+  pressStartTime = performance.now();
+
+  window.__carousel__?.startHold();
 
   glitchTimer = setTimeout(() => {
-    if (!pressing) return;
+    if (!isPressing || committed) return;
     startGlitch();
-    window.__carousel__?.setExtraSpeed(4);
   }, GLITCH_TIME);
-
-  accelTimer = setTimeout(() => {
-    if (!pressing) return;
-    committed = true;
-    window.__carousel__?.setExtraSpeed(8);
-  }, COMMIT_TIME);
-
-  exitTimer = setTimeout(() => {
-    if (!pressing) return;
-    window.dispatchEvent(new Event("force-exit"));
-  }, EXIT_TIME);
 }
 
 function endPress() {
-  if (!pressing) return;
-  pressing = false;
+  if (!isPressing || exited || committed) return;
 
-  clearAll();
-  stopGlitch();
-
-  // commit前なら減速して通常へ
-  if (!committed) {
-    window.__carousel__?.setExtraSpeed(0);
-  }
-}
-
-function clearAll() {
+  isPressing = false;
   clearTimeout(glitchTimer);
-  clearTimeout(accelTimer);
-  clearTimeout(exitTimer);
+
+  stopGlitch();
+  window.__carousel__?.endHold();
 }
 
+/* =====================
+   強制遷移（carousel 側から）
+===================== */
+
+window.addEventListener("force-exit", () => {
+  if (exited) return;
+  exited = true;
+});
