@@ -14,22 +14,22 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  const BASE_SPEED = 0.08;      // 通常回転
+  /* ===== スピード定義 ===== */
+  const BASE_SPEED = 0.18;      // 通常回転（少し速く）
   const HOLD_MAX   = 8;         // 長押し最大
-  const EXIT_MAX   = 16;        // 最終最大
+  const AUTO_MAX   = 12;        // 自動加速最大
+  const EXIT_MAX   = 16;        // 最終
 
-  const TOTAL_TIME = 20000;     // 自動遷移 20s
-  const FINAL_TIME = 2000;      // 最後の2秒
+  const TOTAL_TIME = 20000;
+  const FINAL_TIME = 2000;
 
-  let angle = 0;
   let visualAngle = 0;
-
   let extraSpeed = 0;
   let targetExtraSpeed = 0;
 
   let isHolding = false;
-  let isCommitted = false;
-  let exited = false;
+  let autoPhase = false;
+  let committed = false;
 
   let rafId = null;
   let startTime = performance.now();
@@ -47,23 +47,24 @@ export function initCarousel3D(options = {}) {
   function animate(now) {
     const elapsed = now - startTime;
 
-    extraSpeed += (targetExtraSpeed - extraSpeed) * 0.05;
+    /* ===== 自動遷移フェーズ ===== */
+    if (autoPhase && !committed) {
+      const remain = TOTAL_TIME - elapsed;
 
-    let autoSpeed = BASE_SPEED;
-
-    if (!isCommitted) {
-      if (elapsed > TOTAL_TIME - FINAL_TIME) {
-        const t = (elapsed - (TOTAL_TIME - FINAL_TIME)) / FINAL_TIME;
-        autoSpeed += t * EXIT_MAX;
-        isCommitted = true;
+      if (remain <= FINAL_TIME) {
+        const t = 1 - remain / FINAL_TIME;
+        targetExtraSpeed = AUTO_MAX + t * (EXIT_MAX - AUTO_MAX);
+        committed = true;
+      } else {
+        const t = elapsed / (TOTAL_TIME - FINAL_TIME);
+        targetExtraSpeed = t * AUTO_MAX;
       }
     }
 
-    if (!isHolding && !isCommitted) {
-      targetExtraSpeed = 0;
-    }
+    /* ===== 追従（グラデーション） ===== */
+    extraSpeed += (targetExtraSpeed - extraSpeed) * 0.05;
 
-    visualAngle += autoSpeed + extraSpeed;
+    visualAngle += BASE_SPEED + extraSpeed;
 
     updateDots();
 
@@ -90,8 +91,7 @@ export function initCarousel3D(options = {}) {
          rotateY(180deg)`;
     });
 
-    if (!exited && elapsed >= TOTAL_TIME) {
-      exited = true;
+    if (elapsed >= TOTAL_TIME) {
       options.onExit?.();
       return;
     }
@@ -110,38 +110,37 @@ export function initCarousel3D(options = {}) {
     rafId = null;
   }
 
-  function startHold() {
-    if (isCommitted) return;
-    isHolding = true;
-    targetExtraSpeed = HOLD_MAX;
-  }
-
-  function endHold() {
-    if (isCommitted) return;
-    isHolding = false;
-    targetExtraSpeed = 0;
-  }
-
+  /* ===== bfcache 戻り演出 ===== */
   window.addEventListener("pageshow", e => {
-    if (e.persisted) {
-      stop();
-      angle = visualAngle = 0;
-      extraSpeed = targetExtraSpeed = 0;
-      isHolding = false;
-      isCommitted = false;
-      exited = false;
-      start();
-    }
+    if (!e.persisted) return;
+
+    stop();
+    visualAngle = 0;
+    extraSpeed = EXIT_MAX;
+    targetExtraSpeed = 0;
+    isHolding = false;
+    autoPhase = false;
+    committed = false;
+
+    startTime = performance.now();
+    start();
   });
 
   start();
 
   return {
-    startHold,
-    endHold,
-    forceCommit() {
-      isCommitted = true;
-      targetExtraSpeed = EXIT_MAX;
+    startHold() {
+      if (committed) return;
+      isHolding = true;
+      targetExtraSpeed = HOLD_MAX;
+    },
+    endHold() {
+      if (committed) return;
+      isHolding = false;
+      targetExtraSpeed = 0;
+    },
+    startAutoPhase() {
+      autoPhase = true;
     }
   };
 }
