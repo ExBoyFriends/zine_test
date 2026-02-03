@@ -7,6 +7,8 @@
 
 document.addEventListener("contextmenu", e => e.preventDefault());
 
+document.documentElement.classList.add("js-ready");
+
 document.addEventListener("dragstart", e => {
   if (e.target.tagName === "IMG") e.preventDefault();
 });
