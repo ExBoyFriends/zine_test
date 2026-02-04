@@ -22,8 +22,8 @@ export function initCarousel3D(options = {}) {
   const IDLE_MAX  = 1.6;
   const IDLE_TIME = 25000;
 
-  const AUTO_TOTAL = 35000;
-  const AUTO_FINAL = 6000;
+  const AUTO_TOTAL = 35000; //自動回転の総時間
+  const AUTO_FINAL = 6000; //最終加速フェーズの時間
 
   let visualAngle = 0;
   let baseSpeed  = BASE_SPEED;
@@ -96,7 +96,6 @@ export function initCarousel3D(options = {}) {
 
  /* ===== 正面画像の index を計算（スナップ） ===== */
     let index = Math.round(visualAngle / SNAP) % COUNT;
-    if (index < 0) index += COUNT; // 負の角度対応
 
     // ドット更新
     options.onIndexChange?.(index);
