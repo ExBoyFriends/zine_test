@@ -1,4 +1,5 @@
 // chapter2_5/main.js
+
 import "../utils/base.js";
 import { state } from "../utils/state.js";
 import { initLoader } from "../utils/loader.js";
@@ -11,17 +12,24 @@ const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
 
+/* ===================== dots ===================== */
+function updateDots(index = 0) {
+  document.querySelectorAll(".dot").forEach((dot, i) => {
+    dot.classList.toggle("active", i === index);
+  });
+}
+
 /* ===================== Loader 完了 ===================== */
 initLoader(loader, () => {
-  // 初期ページインデックスをリセット
-  state.index = 0;
+  state.index = 0;  // 初期化
 
   startChapter({
     chapter,
     dots,
     onStart() {
-      // 初回表示は showPage のみ。ドットは showPage 内で同期される
+      // 初回表示は showPage でページとドットを同期
       showPage(state.index);
+      updateDots(state.index);
 
       // インタラクションを初期化
       initTapInteraction();
@@ -33,8 +41,9 @@ initLoader(loader, () => {
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
 
-  // フェード同期を壊さないよう、showPage のみ呼ぶ
+  // 現在のページ状態で同期
   showPage(state.index);
+  updateDots(state.index);
 });
 
 
