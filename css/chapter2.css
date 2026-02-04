@@ -57,6 +57,9 @@ img {
   transform-style: preserve-3d;
   /* GPUレイヤーを強制生成して軽くするおまじないを追加 */
   transform: translate(-50%, -50%) translateZ(0);
+
+   -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .outer,
