@@ -1,4 +1,5 @@
 // chapter2_5/interaction.js
+
 import { state, resetTextState } from "../utils/state.js";
 import { showPage, showText, hideText, getPages } from "./view.js";
 
@@ -59,4 +60,6 @@ function goPrev() {
   state.index--;
   resetTextState();
   showPage(state.index);  // 前のページを表示
-}
+}　　　
+
+
