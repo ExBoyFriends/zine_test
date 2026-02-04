@@ -35,7 +35,7 @@ export function bindLongPressEvents(el) {
   if (!el) return;
 
   el.addEventListener("pointerdown", e => {
-    el.setPointerCapture?.(e.pointerId);
+   
     startPress();
   });
 
