@@ -104,6 +104,7 @@ export function initCarousel3D(options = {}) {
 
     // ===== 正面 index 更新（ドット同期） =====
     const index = getFrontIndex();
+    index = (COUNT - index) % COUNT;
     options.onIndexChange?.(index);
 
     // cylinder transform
