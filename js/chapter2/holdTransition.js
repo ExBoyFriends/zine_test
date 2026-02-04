@@ -3,11 +3,23 @@
 import { startGlitch, stopGlitch } from "./effects.js";
 
 let pressing = false;
-let glitchTimer = null;
+let exited = false;
+let timer = null;
+
+const AUTO_DELAY = 8000;
 
 export function resetTransitionState() {
   pressing = false;
-  clearTimeout(glitchTimer);
+  exited = false;
+  clearTimeout(timer);
+}
+
+export function startAutoTransition(onExit) {
+  timer = setTimeout(() => {
+    if (exited) return;
+    window.__carousel__?.startAuto();
+    onExit?.();
+  }, AUTO_DELAY);
 }
 
 export function bindLongPressEvents(el) {
@@ -18,19 +30,18 @@ export function bindLongPressEvents(el) {
     startPress();
   });
 
-  ["pointerup", "pointercancel", "pointerleave"].forEach(type =>
-    el.addEventListener(type, endPress)
+  ["pointerup", "pointerleave", "pointercancel"].forEach(t =>
+    el.addEventListener(t, endPress)
   );
 }
 
 function startPress() {
-  if (pressing) return;
-  if (!window.__carousel__?.isFreePhase()) return;
-
+  if (pressing || exited) return;
   pressing = true;
+
   window.__carousel__?.startHold();
 
-  glitchTimer = setTimeout(() => {
+  setTimeout(() => {
     if (!pressing) return;
     startGlitch();
   }, 700);
@@ -38,9 +49,7 @@ function startPress() {
 
 function endPress() {
   if (!pressing) return;
-
   pressing = false;
-  clearTimeout(glitchTimer);
 
   stopGlitch();
   window.__carousel__?.endHold();
