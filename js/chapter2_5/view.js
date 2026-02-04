@@ -1,4 +1,5 @@
 // chapter2_5/view.js
+
 import { state } from "../utils/state.js";
 
 let dualFlipped = false;
@@ -20,44 +21,44 @@ function updateDots(index) {
 
 /* ===================== Page control ===================== */
 export function showPage(index) {
-  if (!pages.length) return;  // フェード中でも index が不正なら無視
-  if (isFading) return;       // フェード中は切り替えを無視
+  if (!pages.length || isFading) return;
 
   const prevPage = pages[state.index];
   const nextPage = pages[index];
   if (!nextPage) return;
 
-  isFading = true;  // フェード中フラグ
+  isFading = true;
 
-  // dualページの左右反転処理
+  // dual ページの反転処理
   if (nextPage.classList.contains("dual") && state.prevIndex !== index) {
     dualFlipped = !dualFlipped;
     nextPage.classList.toggle("flipped", dualFlipped);
   }
 
-  // 前ページは即時非表示
-  prevPage?.classList.remove("active");
+  // 前ページを非表示＆操作不可に
+  if (prevPage && prevPage !== nextPage) {
+    prevPage.classList.remove("active");
+    prevPage.style.opacity = 0;
+    prevPage.style.pointerEvents = "none";
+  }
 
-  // 次ページをフェードイン
+  // 次ページフェードイン
   nextPage.classList.add("active");
   nextPage.style.opacity = 0;
-  nextPage.style.transition = "opacity 0.5s ease"; // フェード時間
-
+  nextPage.style.transition = "opacity 0.5s ease";
+  nextPage.style.pointerEvents = "auto";
   requestAnimationFrame(() => {
     nextPage.style.opacity = 1;
   });
 
-  // transitionend でフラグ解除 & ドット更新
-  nextPage.addEventListener(
-    "transitionend",
-    function onEnd() {
-      nextPage.removeEventListener("transitionend", onEnd);
-      nextPage.style.transition = "";
-      nextPage.style.opacity = "";
-      updateDots(index);
-      isFading = false;
-    }
-  );
+  // フェード終了でフラグ解除 & ドット更新
+  nextPage.addEventListener("transitionend", function onEnd() {
+    nextPage.removeEventListener("transitionend", onEnd);
+    nextPage.style.transition = "";
+    nextPage.style.opacity = "";
+    updateDots(index);
+    isFading = false;
+  });
 
   // 状態更新
   state.prevIndex = index;
