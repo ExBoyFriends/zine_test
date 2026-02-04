@@ -1,5 +1,4 @@
 // chapter2/main.js
-
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
 import { initCarousel3D } from "./carousel3d.js";
@@ -17,14 +16,8 @@ import { initGlitchLayer } from "./effects.js";
 ===================== */
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
-
-  // hold / auto 状態をリセット
   resetTransitionState();
-
-  // ★ これが致命的に足りなかった
   goChapter25._done = false;
-
-  // ★ 自動遷移を必ず再スタート
   startAutoTransition(goChapter25);
 });
 
@@ -32,7 +25,7 @@ window.addEventListener("pageshow", e => {
    DOM
 ===================== */
 const scene    = document.querySelector(".scene");
-const chapter  = document.querySelector(".chapter"); // ★ 追加
+const chapter  = document.querySelector(".chapter");
 const loader   = document.getElementById("loader");
 const dotsWrap = document.querySelector(".dots");
 const dots     = [...document.querySelectorAll(".dot")];
@@ -55,15 +48,11 @@ function goChapter25() {
 
   playExitTransition({
     onFinish() {
-      import("./holdTransition.js").then(m => {
-        m.markExited();
-      });
+      import("./holdTransition.js").then(m => m.markExited());
       location.href = "../HTML/chapter2_5.html";
     }
   });
 }
-
-// ★ 初期化
 goChapter25._done = false;
 
 /* =====================
@@ -78,10 +67,8 @@ initLoader(loader, () => {
   }
 
   dotsWrap?.classList.add("visible");
-
   startAutoTransition(goChapter25);
 });
-
 
 /* =====================
    Carousel
@@ -90,15 +77,13 @@ const carousel = initCarousel3D({
   onIndexChange(index) {
     updateDots(index);
   },
-   onExit() {
+  onExit() {
     goChapter25();
   }
 });
 
 if (carousel) {
-  // holdTransition / transitionOut 用
   window.__carousel__ = carousel;
-
   initDragInput(carousel);
   updateDots(0);
 }
