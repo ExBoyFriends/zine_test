@@ -9,7 +9,7 @@ export function initCarousel3D(options = {}) {
   const COUNT = outers.length;
   if (!COUNT) return;
 
-  const SNAP = 360 / COUNT;
+  const SNAP = 360 / COUNT;   // パネル間角度
   const R_FRONT = 185;
   const R_BACK  = 170;
 
@@ -39,13 +39,23 @@ export function initCarousel3D(options = {}) {
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
   /* =====================
-     正面パネル index を取得
-     visualAngle の符号を反転して順序を正しく同期
+     正面パネル index を取得（パネル中央 ± SNAP/2）
   ===================== */
   function getFrontIndex() {
-    let index = Math.round(-visualAngle / SNAP) % COUNT;
-    if (index < 0) index += COUNT;
-    return index;
+    let frontIndex = 0;
+    let minDiff = 180; // 最小差
+    outers.forEach((p, i) => {
+      const base = +p.dataset.base;
+      let angle = (base + visualAngle) % 360;
+      // -180〜180 に正規化
+      angle = ((angle + 180) % 360) - 180;
+      const diff = Math.abs(angle);
+      if (diff < minDiff) {
+        minDiff = diff;
+        frontIndex = i;
+      }
+    });
+    return frontIndex;
   }
 
   function animate(now) {
