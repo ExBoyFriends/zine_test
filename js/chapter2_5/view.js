@@ -2,7 +2,7 @@
 import { state } from "../utils/state.js";
 
 let dualFlipped = false;
-let isFading = false;
+let isFading = false; // フェード中フラグ
 
 const pages = Array.from(document.querySelectorAll(".page"));
 const dots  = Array.from(document.querySelectorAll(".dot"));
@@ -11,7 +11,7 @@ export function getPages() {
   return pages;
 }
 
-/* ===================== Dots update（chapter1準拠） ===================== */
+/* ===================== Dots update ===================== */
 function updateDots(index) {
   dots.forEach((dot, i) => {
     dot.classList.toggle("active", i === index);
@@ -79,3 +79,4 @@ export function hideText(index) {
   page.classList.remove("show-text");
   state.showingText = false;
 }
+
