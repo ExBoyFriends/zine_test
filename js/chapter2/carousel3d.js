@@ -1,11 +1,11 @@
 // chapter2/carousel3d.js
 
+
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
   const outers = document.querySelectorAll(".outer");
   const inners = document.querySelectorAll(".inner");
-  
 
   const COUNT = outers.length;
   if (!COUNT) return;
@@ -21,18 +21,16 @@ export function initCarousel3D(options = {}) {
   const EXIT_MAX   = 16;
 
   const IDLE_MAX  = 1.6;
-  const IDLE_TIME = 25000; // 放置フェーズ
+  const IDLE_TIME = 25000;
 
-  const AUTO_TOTAL = 35000; // 自動遷移準備に入る
-  const AUTO_FINAL = 6000;  // 最後の崩壊
+  const AUTO_TOTAL = 35000;
+  const AUTO_FINAL = 6000;
 
   let visualAngle = 0;
-
   let baseSpeed  = BASE_SPEED;
   let dragSpeed  = 0;
   let extraSpeed = 0;
-
-  let mode = "normal"; // normal | hold | auto | exit
+  let mode = "normal";
 
   let rafId = null;
   let idleStartTime = performance.now();
@@ -41,40 +39,28 @@ export function initCarousel3D(options = {}) {
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
-
-
-
   function animate(now) {
-    /* ===== 破綻率（後半から効く） ===== */
-    const chaos = Math.min(
-      Math.max((baseSpeed - 4) / 6, 0),
-      1
-    );
+    const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
-    /* ===== normal / idle ===== */
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
       baseSpeed += (target - baseSpeed) * 0.05;
     }
 
-    /* ===== hold ===== */
     if (mode === "hold") {
       baseSpeed += (HOLD_SPEED - baseSpeed) * 0.12;
     }
 
-    /* ===== auto ===== */
     if (mode === "auto") {
       const elapsed = now - autoStartTime;
       const remain  = AUTO_TOTAL - elapsed;
 
       if (remain <= AUTO_FINAL) {
         const t = 1 - remain / AUTO_FINAL;
-        const target = AUTO_MAX + t * (EXIT_MAX - AUTO_MAX);
-        baseSpeed += (target - baseSpeed) * 0.09;
+        baseSpeed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - baseSpeed) * 0.09;
       } else {
-        const tRaw = elapsed / (AUTO_TOTAL - AUTO_FINAL);
-        const t = Math.pow(tRaw, 3.0); // 強く後ろ倒し
+        const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
         baseSpeed += (AUTO_MAX * t - baseSpeed) * 0.05;
       }
 
@@ -84,34 +70,27 @@ export function initCarousel3D(options = {}) {
       }
     }
 
-    /* ===== exit ===== */
     if (mode === "exit") {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
-
-    /* ===== 🧨 意図されたバグ合成 ===== */
 
     const dragNoise =
       Math.sin(now * (0.018 + chaos * 0.04)) *
       Math.sin(now * 0.11) *
       chaos;
 
-    const unstableDrag =
-      dragSpeed * (1 - chaos * 0.6) +
-      dragSpeed * dragNoise * 0.6;
-
-    const unstableBase =
-      baseSpeed * (1 + chaos * 0.18 * Math.sin(now * 0.012));
-
     const speed =
-      unstableBase +
-      unstableDrag +
+      baseSpeed * (1 + chaos * 0.18 * Math.sin(now * 0.012)) +
+      (dragSpeed * (1 - chaos * 0.6) + dragSpeed * dragNoise * 0.6) +
       extraSpeed;
 
     dragSpeed *= 0.85;
-
     visualAngle += speed;
-    updateDots();
+
+    /* ===== ★ ドット index 正規化 ===== */
+    const index =
+      ((Math.round(visualAngle / SNAP) % COUNT) + COUNT) % COUNT;
+    options.onIndexChange?.(index);
 
     const cyl =
       `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
@@ -120,18 +99,16 @@ export function initCarousel3D(options = {}) {
     back.style.transform  = cyl;
 
     outers.forEach(p => {
-      const base = +p.dataset.base;
       p.style.transform =
         `translate(-50%, -50%)
-         rotateY(${base + visualAngle}deg)
+         rotateY(${+p.dataset.base + visualAngle}deg)
          translateZ(${R_FRONT}px)`;
     });
 
     inners.forEach(p => {
-      const base = +p.dataset.base;
       p.style.transform =
         `translate(-50%, -50%)
-         rotateY(${base + visualAngle + 180}deg)
+         rotateY(${+p.dataset.base + visualAngle + 180}deg)
          translateZ(${R_BACK}px)
          rotateY(180deg)`;
     });
@@ -149,27 +126,22 @@ export function initCarousel3D(options = {}) {
     rafId = null;
   }
 
-  /* ===== bfcache ===== */
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
-
     stop();
     visualAngle = 0;
-    baseSpeed = EXIT_MAX; // 一瞬だけ暴走
+    baseSpeed = EXIT_MAX;
     dragSpeed = 0;
     extraSpeed = 0;
     mode = "normal";
-    idleStartTime = performance.now();
     start();
   });
 
   start();
 
   return {
-    /* ===== hold ===== */
     startHold() {
-      if (mode === "auto" || mode === "exit") return;
-      mode = "hold";
+      if (mode !== "auto" && mode !== "exit") mode = "hold";
     },
     endHold() {
       if (mode === "hold") {
@@ -177,26 +149,14 @@ export function initCarousel3D(options = {}) {
         idleStartTime = performance.now();
       }
     },
-
-    /* ===== auto ===== */
     startAuto() {
       mode = "auto";
       autoStartTime = performance.now();
     },
-
-    /* ===== drag ===== */
-    startDrag() {
-      dragSpeed = 0;
-    },
-    moveDrag(dx) {
-      dragSpeed += dx * 0.05;
-    },
+    startDrag() { dragSpeed = 0; },
+    moveDrag(dx) { dragSpeed += dx * 0.05; },
     endDrag() {},
-
-    /* ===== transitionOut ===== */
-    setExtraSpeed(v) {
-      extraSpeed = v;
-    }
+    setExtraSpeed(v) { extraSpeed = v; }
   };
 }
 
