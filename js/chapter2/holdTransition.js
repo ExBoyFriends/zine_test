@@ -7,10 +7,12 @@ let exited = false;
 let timer = null;
 let holding = false;
 
-const AUTO_DELAY = 20000;　//＋　const AUTO_TOTAL = 35000;　　 ≒ 　全体の尺
-//↑遷移確定前の時間　20秒後に自動高速回転開始(35秒)
-
-const HOLD_DELAY = 380; // 長押し判定
+/*
+  全体尺 ≒ AUTO_DELAY + carousel.AUTO_TOTAL
+  20s 放置 → 自動崩壊開始 → 約35s で exit
+*/
+const AUTO_DELAY = 20000;
+const HOLD_DELAY = 380;
 
 export function resetTransitionState() {
   pressing = false;
