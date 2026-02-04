@@ -1,6 +1,5 @@
 // chapter2_5/main.js
 
-
 import "../utils/base.js";
 import { state } from "../utils/state.js";
 import { initLoader } from "../utils/loader.js";
