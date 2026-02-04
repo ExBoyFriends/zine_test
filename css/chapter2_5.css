@@ -4,7 +4,8 @@ body {
   background: #000;
   color: #fff;
 }
-/* ===================== ページの表示 ===================== */
+
+/* ===================== ページ ===================== */
 .chapter {
   opacity: 1;
   transition: opacity 1.3s ease;
@@ -18,16 +19,13 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* 初期状態：完全に隠して背面に送る */
   opacity: 0;
   visibility: hidden;
   z-index: 1;
   pointer-events: none;
-  /* フェード時間を調整。消える時も居座らないように同期 */
-  transition: opacity 1.0s cubic-bezier(.22, .61, .36, 1), visibility 1.0s;
+  transition: opacity 2.6s cubic-bezier(.22,.61,.36,1), visibility 0s linear 2.6s;
 }
 .page.active {
-  /* アクティブなページを最前面に */
   opacity: 1;
   visibility: visible;
   z-index: 10;
@@ -39,7 +37,8 @@ body {
   object-fit: contain;
   transition: opacity 0.6s ease;
 }
-/* ===================== Dual Page (4枚目) ===================== */
+
+/* ===================== Dual ページ (4,5枚目) ===================== */
 .page.dual .dual-images {
   position: relative;
   width: 100%;
@@ -49,17 +48,16 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  max-width: 45vw;
+  max-width: 80vw;
   max-height: 80vh;
   object-fit: contain;
-  transition: transform 0.8s cubic-bezier(.22, .61, .36, 1), opacity 0.6s ease;
+  transition: transform 0.8s cubic-bezier(.22,.61,.36,1), opacity 0.6s ease;
 }
-/* 通常配置：重ならないよう左右に振り分け */
-.page.dual img:nth-child(1) { transform: translate(-105%, -50%); }
-.page.dual img:nth-child(2) { transform: translate(5%, -50%); }
-/* 反転状態 */
-.page.dual.flipped img:nth-child(1) { transform: translate(5%, -50%); }
-.page.dual.flipped img:nth-child(2) { transform: translate(-105%, -50%); }
+.page.dual img:nth-child(1) { transform: translate(-80%, -50%); }
+.page.dual img:nth-child(2) { transform: translate(-20%, -50%); }
+.page.dual.flipped img:nth-child(1) { transform: translate(-20%, -50%); }
+.page.dual.flipped img:nth-child(2) { transform: translate(-80%, -50%); }
+
 /* ===================== ドット ===================== */
 .dots {
   position: fixed;
@@ -68,7 +66,7 @@ body {
   text-align: center;
   z-index: 20;
   opacity: 0;
-  transition: opacity 1.0s ease;
+  transition: opacity 2.8s cubic-bezier(.22,.61,.36,1);
 }
 .dots.visible { opacity: 1; }
 .dot {
@@ -80,6 +78,7 @@ body {
   transition: background 0.3s ease;
 }
 .dot.active { background: rgba(240, 240, 240, .9); }
+
 /* ===================== テキスト ===================== */
 .poem {
   position: absolute;
@@ -88,7 +87,7 @@ body {
   transform: translate(-50%, -50%);
   min-width: 60%;
   padding: 1.2em 1.6em;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.55);
   text-align: center;
   line-height: 1.8;
   opacity: 0;
@@ -96,9 +95,6 @@ body {
   pointer-events: none;
   transition: opacity 0.6s ease;
 }
-.page.show-text .poem {
-  opacity: 1;
-}
-.page.show-text img {
-  opacity: 0.3; /* テキスト表示時は背景画像を暗くして重なりを防ぐ */
-}
+.page.show-text .poem { opacity: 1; }
+.page.show-text img { opacity: 0.75; } /* テキスト表示時に少し暗くする */
+
