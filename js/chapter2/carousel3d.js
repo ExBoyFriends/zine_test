@@ -1,5 +1,4 @@
 // chapter2/carousel3d.js
-
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -21,7 +20,6 @@ export function initCarousel3D(options = {}) {
 
   const IDLE_MAX  = 1.6;
   const IDLE_TIME = 25000;
-
   const AUTO_TOTAL = 35000;
   const AUTO_FINAL = 6000;
 
@@ -86,10 +84,20 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    /* ===== ★ ドット index 正規化 ===== */
-    const index =
-      ((Math.round(visualAngle / SNAP) % COUNT) + COUNT) % COUNT;
-    options.onIndexChange?.(index);
+    /* ===== ★ ドット index 正確化 ===== */
+    let closestIndex = 0;
+    let minDiff = Infinity;
+
+    outers.forEach((p, i) => {
+      const base = +p.dataset.base;
+      const diff = Math.abs(((base + visualAngle + 180) % 360) - 180);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = i;
+      }
+    });
+
+    options.onIndexChange?.(closestIndex);
 
     const cyl =
       `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
@@ -99,17 +107,12 @@ export function initCarousel3D(options = {}) {
 
     outers.forEach(p => {
       p.style.transform =
-        `translate(-50%, -50%)
-         rotateY(${+p.dataset.base + visualAngle}deg)
-         translateZ(${R_FRONT}px)`;
+        `translate(-50%, -50%) rotateY(${+p.dataset.base + visualAngle}deg) translateZ(${R_FRONT}px)`;
     });
 
     inners.forEach(p => {
       p.style.transform =
-        `translate(-50%, -50%)
-         rotateY(${+p.dataset.base + visualAngle + 180}deg)
-         translateZ(${R_BACK}px)
-         rotateY(180deg)`;
+        `translate(-50%, -50%) rotateY(${+p.dataset.base + visualAngle + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
     });
 
     rafId = requestAnimationFrame(animate);
@@ -139,23 +142,14 @@ export function initCarousel3D(options = {}) {
   start();
 
   return {
-    startHold() {
-      if (mode !== "auto" && mode !== "exit") mode = "hold";
-    },
-    endHold() {
-      if (mode === "hold") {
-        mode = "normal";
-        idleStartTime = performance.now();
-      }
-    },
-    startAuto() {
-      mode = "auto";
-      autoStartTime = performance.now();
-    },
+    startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
+    endHold() { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
+    startAuto() { mode = "auto"; autoStartTime = performance.now(); },
     startDrag() { dragSpeed = 0; },
     moveDrag(dx) { dragSpeed += dx * 0.05; },
     endDrag() {},
     setExtraSpeed(v) { extraSpeed = v; }
   };
 }
+
 
