@@ -1,5 +1,4 @@
 // chapter2/carousel3d.js
-
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -13,7 +12,7 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  /* ★ 高速化：DOMからではなく、メモリ上の配列から角度を読み込む */
+  // ★ 改善点：datasetの代わりにメモリに保持（二列化を防ぐ鍵）
   const baseAngles = Array.from({ length: COUNT }, (_, i) => i * SNAP);
 
   /* ===== 回転定数 ===== */
@@ -37,14 +36,11 @@ export function initCarousel3D(options = {}) {
   let autoStartTime = 0;
   let prevIndex = -1; 
 
-  /**
-   * 正面判定：メモリ上の baseAngles を使って Cos 比較を行う
-   */
   function getFrontIndex() {
     let maxZ = -2;
     let closestIndex = 0;
     for (let i = 0; i < COUNT; i++) {
-      // 以前のコードと同じ計算式
+      // 正常だった時と同じ計算式（baseAnglesを使用）
       const currentRad = ((baseAngles[i] + visualAngle) * Math.PI) / 180;
       const z = Math.cos(currentRad);
       if (z > maxZ) {
@@ -55,12 +51,14 @@ export function initCarousel3D(options = {}) {
     return closestIndex;
   }
 
-  /* ★ 初期配置：ここも dataset ではなく baseAngles を使う */
+  // ★ 初期配置（一回だけでOK）
   outers.forEach((p, i) => {
     p.style.transform = `translate(-50%, -50%) rotateY(${baseAngles[i]}deg) translateZ(${R_FRONT}px)`;
   });
   inners.forEach((p, i) => {
-    p.style.transform = `translate(-50%, -50%) rotateY(${baseAngles[i] + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
+    // 正常だった時の「一列」に見える配置を再現
+    // 表面と同じ角度で配置し、その場で180度反転させて内側に押し出す
+    p.style.transform = `translate(-50%, -50%) rotateY(${baseAngles[i]}deg) rotateY(180deg) translateZ(${R_BACK}px)`;
   });
 
   function animate(now) {
@@ -101,8 +99,7 @@ export function initCarousel3D(options = {}) {
       prevIndex = currentIndex;
     }
 
-    // --- ★ 以前の見え方を復活させるためのポイント ---
-    // 親（cylinder）を rotateY で回すことで、以前のダイナミックなパースを再現します
+    // --- ★ 正常だった時と同じ「シリンダー回転」を適用 ---
     const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     front.style.transform = cylTransform;
     back.style.transform  = cylTransform;
@@ -113,7 +110,6 @@ export function initCarousel3D(options = {}) {
   function start() {
     idleStartTime = performance.now();
     rafId = requestAnimationFrame(animate);
-
   }
   function stop() { cancelAnimationFrame(rafId); rafId = null; }
 
