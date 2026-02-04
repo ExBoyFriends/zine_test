@@ -1,4 +1,5 @@
 // chapter2/main.js
+
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
 import { initCarousel3D } from "./carousel3d.js";
@@ -11,9 +12,7 @@ import {
 import { playExitTransition } from "./transitionOut.js";
 import { initGlitchLayer } from "./effects.js";
 
-/* =====================
-   bfcache 対応
-===================== */
+/* ===================== bfcache 対応 ===================== */
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
   resetTransitionState();
@@ -21,27 +20,21 @@ window.addEventListener("pageshow", e => {
   startAutoTransition(goChapter25);
 });
 
-/* =====================
-   DOM
-===================== */
+/* ===================== DOM ===================== */
 const scene    = document.querySelector(".scene");
 const chapter  = document.querySelector(".chapter");
 const loader   = document.getElementById("loader");
 const dotsWrap = document.querySelector(".dots");
 const dots     = [...document.querySelectorAll(".dot")];
 
-/* =====================
-   Dots
-===================== */
+/* ===================== Dots ===================== */
 function updateDots(index = 0) {
   dots.forEach((dot, i) => {
     dot.classList.toggle("active", i === index);
   });
 }
 
-/* =====================
-   Chapter2 → 2.5
-===================== */
+/* ===================== Chapter2 → 2.5 ===================== */
 function goChapter25() {
   if (goChapter25._done) return;
   goChapter25._done = true;
@@ -55,9 +48,7 @@ function goChapter25() {
 }
 goChapter25._done = false;
 
-/* =====================
-   Loader 完了
-===================== */
+/* ===================== Loader 完了 ===================== */
 initLoader(loader, () => {
   chapter?.classList.add("visible");
 
@@ -70,9 +61,7 @@ initLoader(loader, () => {
   startAutoTransition(goChapter25);
 });
 
-/* =====================
-   Carousel
-===================== */
+/* ===================== Carousel ===================== */
 const carousel = initCarousel3D({
   onIndexChange(index) {
     updateDots(index);
@@ -88,14 +77,10 @@ if (carousel) {
   updateDots(0);
 }
 
-/* =====================
-   Glitch 初期化
-===================== */
+/* ===================== Glitch 初期化 ===================== */
 initGlitchLayer?.();
 
-/* =====================
-   強制 exit（長押し完遂）
-===================== */
+/* ===================== 強制 exit（長押し完遂） ===================== */
 window.addEventListener("force-exit", () => {
   goChapter25();
 });
