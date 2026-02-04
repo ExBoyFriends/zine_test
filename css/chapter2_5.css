@@ -53,14 +53,23 @@ body {
   transition: none;
 }
 
+/* 通常配置 */ 
+
+.page.dual img:nth-child(1) {
+ transform: translate(-80%, -50%);
+}
+.page.dual img:nth-child(2) {
+ transform: translate(-20%, -50%); 
+} 
+
+/* 反転状態 */ 
+
 .page.dual.flipped img:nth-child(1) {
-  transform: translate(-50%, -50%);
-}
-
+ transform: translate(-20%, -50%); 
+} 
 .page.dual.flipped img:nth-child(2) {
-  transform: translate(-50%, -50%);
+ transform: translate(-80%, -50%); 
 }
-
 /* ===================== ドット ===================== */
 .dots {
   position: fixed;
