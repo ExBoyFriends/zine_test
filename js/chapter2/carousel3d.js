@@ -20,11 +20,11 @@ export function initCarousel3D(options = {}) {
   const AUTO_MAX   = 12;
   const EXIT_MAX   = 16;
 
-  const IDLE_MAX  = 1.4;
-  const IDLE_TIME = 12000; // 放置フェーズ
+  const IDLE_MAX  = 1.6;
+  const IDLE_TIME = 25000; // 放置フェーズ
 
-  const AUTO_TOTAL = 32000; // 自動遷移準備に入る
-  const AUTO_FINAL = 3500;  // 最後の崩壊
+  const AUTO_TOTAL = 35000; // 自動遷移準備に入る
+  const AUTO_FINAL = 6000;  // 最後の崩壊
 
   let visualAngle = 0;
 
