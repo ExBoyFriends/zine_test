@@ -62,8 +62,6 @@ img {
 .outer,
 .inner {
   will-change: transform;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
 }
 
 /* =====================
