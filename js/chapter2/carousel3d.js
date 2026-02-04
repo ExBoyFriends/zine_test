@@ -12,7 +12,7 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  // ★ 改善点：datasetの代わりにメモリに保持（二列化を防ぐ鍵）
+  /* ★ 高速化：DOMアクセスを排除し、数値をメモリ上に保持 */
   const baseAngles = Array.from({ length: COUNT }, (_, i) => i * SNAP);
 
   /* ===== 回転定数 ===== */
@@ -34,13 +34,17 @@ export function initCarousel3D(options = {}) {
   let rafId = null;
   let idleStartTime = performance.now();
   let autoStartTime = 0;
+  
   let prevIndex = -1; 
 
+  /**
+   * 正面判定：最も手前に来たパネルを Cos で特定
+   */
   function getFrontIndex() {
     let maxZ = -2;
     let closestIndex = 0;
     for (let i = 0; i < COUNT; i++) {
-      // 正常だった時と同じ計算式（baseAnglesを使用）
+      // 角度をラジアンに変換して手前方向の距離(z)を計算
       const currentRad = ((baseAngles[i] + visualAngle) * Math.PI) / 180;
       const z = Math.cos(currentRad);
       if (z > maxZ) {
@@ -51,19 +55,22 @@ export function initCarousel3D(options = {}) {
     return closestIndex;
   }
 
-  // ★ 初期配置（一回だけでOK）
+  /* ★ 初期配置：手前と奥の「半円構造」を厳密に構築 */
   outers.forEach((p, i) => {
+    // 手前の半円（画像パネル）
     p.style.transform = `translate(-50%, -50%) rotateY(${baseAngles[i]}deg) translateZ(${R_FRONT}px)`;
   });
+
   inners.forEach((p, i) => {
-    // 正常だった時の「一列」に見える配置を再現
-    // 表面と同じ角度で配置し、その場で180度反転させて内側に押し出す
-    p.style.transform = `translate(-50%, -50%) rotateY(${baseAngles[i]}deg) rotateY(180deg) translateZ(${R_BACK}px)`;
+    // 奥の半円（壁パネル）：
+    // baseAngles[i] + 180 で円の真裏に配置し、rotateY(180deg) で内側を向かせる
+    p.style.transform = `translate(-50%, -50%) rotateY(${baseAngles[i] + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
   });
 
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
+    // --- モード別速度計算 ---
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
@@ -80,11 +87,15 @@ export function initCarousel3D(options = {}) {
         const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
         baseSpeed += (Math.max(baseSpeed, AUTO_MAX * t) - baseSpeed) * 0.05;
       }
-      if (elapsed >= AUTO_TOTAL) { mode = "exit"; options.onExit?.(); }
+      if (elapsed >= AUTO_TOTAL) {
+        mode = "exit";
+        options.onExit?.();
+      }
     } else if (mode === "exit") {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
+    // --- ドラッグ & ノイズ処理 ---
     const dragNoise = Math.sin(now * (0.018 + chaos * 0.04)) * Math.sin(now * 0.11) * chaos;
     const speed = baseSpeed * (1 + chaos * 0.18 * Math.sin(now * 0.012)) +
                   (dragSpeed * (1 - chaos * 0.6) + dragSpeed * dragNoise * 0.6) +
@@ -93,13 +104,14 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
+    // --- 正面判定とドット更新 ---
     const currentIndex = getFrontIndex();
     if (currentIndex !== prevIndex) {
       options.onIndexChange?.(currentIndex);
       prevIndex = currentIndex;
     }
 
-    // --- ★ 正常だった時と同じ「シリンダー回転」を適用 ---
+    // --- シリンダー全体の回転（これが以前の見え方の肝） ---
     const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     front.style.transform = cylTransform;
     back.style.transform  = cylTransform;
@@ -107,16 +119,24 @@ export function initCarousel3D(options = {}) {
     rafId = requestAnimationFrame(animate);
   }
 
+  // --- 制御系 ---
   function start() {
     idleStartTime = performance.now();
     rafId = requestAnimationFrame(animate);
   }
-  function stop() { cancelAnimationFrame(rafId); rafId = null; }
+
+  function stop() {
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
 
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
     stop();
-    visualAngle = 0; baseSpeed = EXIT_MAX; mode = "normal"; prevIndex = -1;
+    visualAngle = 0;
+    baseSpeed = EXIT_MAX;
+    mode = "normal";
+    prevIndex = -1;
     start();
   });
 
