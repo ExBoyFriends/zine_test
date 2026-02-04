@@ -44,7 +44,7 @@ export function initCarousel3D(options = {}) {
   ===================== */
   function getFrontIndex() {
     let index = Math.round(-visualAngle / SNAP) % COUNT;
-    if (index < 0) index += COUNT;
+ 
     return index;
   }
 
