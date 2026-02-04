@@ -10,6 +10,20 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.outer, .inner {
+  width: 230px;
+  height: 300px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* 常に中央起点にし、JSでの配置を正確に反映させる */
+  transform-style: preserve-3d;
+  /* 描画を軽くするおまじない */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
 /* =====================
    HTML / Body
 ===================== */
@@ -57,17 +71,6 @@ img {
   top: 50%;
   transform-style: preserve-3d;
   transform: translate(-50%, -50%);
-
-   will-change: transform;
-  /* 3Dレンダリングをハードウェア加速させるおまじない */
-  transform: translateZ(0); 
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.outer,
-.inner {
-  will-change: transform;
 }
 
 /* =====================
@@ -112,6 +115,8 @@ img {
   height: 420px;
   transform-style: preserve-3d;
   transform: translate(-50%, -50%);
+
+   will-change: transform;
 }
 
 .cylinder-front {
