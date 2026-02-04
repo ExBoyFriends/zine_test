@@ -96,6 +96,7 @@ export function initCarousel3D(options = {}) {
 
  /* ===== 正面画像の index を計算（スナップ） ===== */
     let index = Math.round(visualAngle / SNAP) % COUNT;
+    if (index < 0) index += COUNT; // 負の角度対応
 
     // ドット更新
     options.onIndexChange?.(index);
