@@ -13,7 +13,7 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  /* ===== 高速化の鍵: メモリ上に角度を保持（DOMアクセス排除） ===== */
+  /* ★ 高速化：DOMからではなく、メモリ上の配列から角度を読み込む */
   const baseAngles = Array.from({ length: COUNT }, (_, i) => i * SNAP);
 
   /* ===== 回転定数 ===== */
@@ -35,18 +35,16 @@ export function initCarousel3D(options = {}) {
   let rafId = null;
   let idleStartTime = performance.now();
   let autoStartTime = 0;
-  
   let prevIndex = -1; 
 
   /**
-   * 最も正面（Z軸手前）に近いパネルのインデックスを返す
-   * ※メモリ上の baseAngles を使用するため超高速
+   * 正面判定：メモリ上の baseAngles を使って Cos 比較を行う
    */
   function getFrontIndex() {
     let maxZ = -2;
     let closestIndex = 0;
-
     for (let i = 0; i < COUNT; i++) {
+      // 以前のコードと同じ計算式
       const currentRad = ((baseAngles[i] + visualAngle) * Math.PI) / 180;
       const z = Math.cos(currentRad);
       if (z > maxZ) {
@@ -57,10 +55,17 @@ export function initCarousel3D(options = {}) {
     return closestIndex;
   }
 
+  /* ★ 初期配置：ここも dataset ではなく baseAngles を使う */
+  outers.forEach((p, i) => {
+    p.style.transform = `translate(-50%, -50%) rotateY(${baseAngles[i]}deg) translateZ(${R_FRONT}px)`;
+  });
+  inners.forEach((p, i) => {
+    p.style.transform = `translate(-50%, -50%) rotateY(${baseAngles[i] + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
+  });
+
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
-    // --- モード別速度計算 ---
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
@@ -77,15 +82,11 @@ export function initCarousel3D(options = {}) {
         const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
         baseSpeed += (Math.max(baseSpeed, AUTO_MAX * t) - baseSpeed) * 0.05;
       }
-      if (elapsed >= AUTO_TOTAL) {
-        mode = "exit";
-        options.onExit?.();
-      }
+      if (elapsed >= AUTO_TOTAL) { mode = "exit"; options.onExit?.(); }
     } else if (mode === "exit") {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
-    // --- ドラッグ & ノイズ処理 ---
     const dragNoise = Math.sin(now * (0.018 + chaos * 0.04)) * Math.sin(now * 0.11) * chaos;
     const speed = baseSpeed * (1 + chaos * 0.18 * Math.sin(now * 0.012)) +
                   (dragSpeed * (1 - chaos * 0.6) + dragSpeed * dragNoise * 0.6) +
@@ -94,50 +95,32 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // --- 正面判定とドット更新 ---
     const currentIndex = getFrontIndex();
     if (currentIndex !== prevIndex) {
       options.onIndexChange?.(currentIndex);
       prevIndex = currentIndex;
     }
 
-    // --- Transform 適応（シリンダー本体は回さず、パネルを配置） ---
-    // もしシリンダー全体を傾けたい場合はここだけ残す
-    const cylTransform = `translate(-50%, -50%) rotateX(-22deg)`;
+    // --- ★ 以前の見え方を復活させるためのポイント ---
+    // 親（cylinder）を rotateY で回すことで、以前のダイナミックなパースを再現します
+    const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     front.style.transform = cylTransform;
     back.style.transform  = cylTransform;
 
-    outers.forEach((p, i) => {
-      const angle = baseAngles[i] + visualAngle;
-      p.style.transform = `translate(-50%, -50%) rotateY(${angle}deg) translateZ(${R_FRONT}px)`;
-    });
-
-    inners.forEach((p, i) => {
-      const angle = baseAngles[i] + visualAngle + 180;
-      p.style.transform = `translate(-50%, -50%) rotateY(${angle}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
-    });
-
     rafId = requestAnimationFrame(animate);
   }
 
-  // --- 制御系 ---
   function start() {
     idleStartTime = performance.now();
     rafId = requestAnimationFrame(animate);
-  }
 
-  function stop() {
-    cancelAnimationFrame(rafId);
-    rafId = null;
   }
+  function stop() { cancelAnimationFrame(rafId); rafId = null; }
 
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
     stop();
-    visualAngle = 0;
-    baseSpeed = EXIT_MAX;
-    mode = "normal";
-    prevIndex = -1;
+    visualAngle = 0; baseSpeed = EXIT_MAX; mode = "normal"; prevIndex = -1;
     start();
   });
 
