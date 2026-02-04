@@ -95,21 +95,20 @@ if (mode === "auto") {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    /* ===== ★ 正面に最も近いスライド index 判定 ===== */
-    let closestIndex = 0;
-    let minDiff = Infinity;
-    outers.forEach((p, i) => {
-      const base = +p.dataset.base;
-      // 0〜360 正規化
-      const diff = ((base + visualAngle) % 360 + 360) % 360;
-      // 正面からの最短距離
-      const dist = Math.min(diff, 360 - diff);
-      if (dist < minDiff) {
-        minDiff = dist;
-        closestIndex = i;
-      }
-    });
-    options.onIndexChange?.(closestIndex);
+    /* ===== 正面に最も近いスライド index 判定（正確化） ===== */
+let closestIndex = 0;
+let minDiff = Infinity;
+outers.forEach((p, i) => {
+  const base = +p.dataset.base;
+  // 画像の正面角度を計算
+  const angle = (base + visualAngle) % 360;
+  const dist = Math.min(Math.abs(angle), Math.abs(360 - angle));
+  if (dist < minDiff) {
+    minDiff = dist;
+    closestIndex = i;
+  }
+});
+options.onIndexChange?.(closestIndex);
 
     // cylinder transform
     const cyl = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
