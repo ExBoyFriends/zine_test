@@ -20,6 +20,9 @@ export function initCarousel3D(options = {}) {
   const AUTO_MAX   = 12;
   const EXIT_MAX   = 16;
 
+  const IDLE_MAX  = 1.4;   // 放置時の最大速度
+  const IDLE_TIME = 8000;  // 何msでそこまで行くか
+  
   const TOTAL_TIME = 20000;
   const FINAL_TIME = 2000;
 
@@ -45,7 +48,10 @@ export function initCarousel3D(options = {}) {
 
     /* ===== モード別スピード ===== */
     if (mode === "normal") {
-      speed += (BASE_SPEED - speed) * 0.08;
+      // ★ 放置中はゆっくり BASE → IDLE_MAX へ
+      const t = Math.min(elapsed / IDLE_TIME, 1);
+      const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
+      speed += (target - speed) * 0.06;
     }
 
     if (mode === "hold") {
@@ -118,7 +124,7 @@ export function initCarousel3D(options = {}) {
 
     stop();
     visualAngle = 0;
-    speed = EXIT_MAX;
+    speed = EXIT_MAX;   // 一瞬だけ爆速（想定どおり）
     mode = "normal";
     start();
   });
@@ -135,7 +141,7 @@ export function initCarousel3D(options = {}) {
     },
     startAuto() {
       mode = "auto";
-      startTime = performance.now();
+      startTime = performance.now(); // auto 専用の時間軸に切り替え
     }
   };
 }
