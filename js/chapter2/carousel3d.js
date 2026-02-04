@@ -54,23 +54,27 @@ export function initCarousel3D(options = {}) {
     }
 
     // auto
-    if (mode === "auto") {
-      const elapsed = now - autoStartTime;
-      const remain  = AUTO_TOTAL - elapsed;
+if (mode === "auto") {
+  const elapsed = now - autoStartTime;
+  const remain  = AUTO_TOTAL - elapsed;
 
-      if (remain <= AUTO_FINAL) {
-        const t = 1 - remain / AUTO_FINAL;
-        baseSpeed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - baseSpeed) * 0.09;
-      } else {
-        const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
-        baseSpeed += (AUTO_MAX * t - baseSpeed) * 0.05;
-      }
+  if (remain <= AUTO_FINAL) {
+    // 最終加速フェーズ
+    const t = 1 - remain / AUTO_FINAL;
+    baseSpeed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - baseSpeed) * 0.09;
+  } else {
+    // 通常加速フェーズ
+    // ★ ここを修正: 減速を避けるために target = Math.max(baseSpeed, AUTO_MAX*t)
+    const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
+    const target = Math.max(baseSpeed, AUTO_MAX * t);
+    baseSpeed += (target - baseSpeed) * 0.05;
+  }
 
-      if (elapsed >= AUTO_TOTAL) {
-        mode = "exit";
-        options.onExit?.();
-      }
-    }
+  if (elapsed >= AUTO_TOTAL) {
+    mode = "exit";
+    options.onExit?.();
+  }
+}
 
     // exit
     if (mode === "exit") {
