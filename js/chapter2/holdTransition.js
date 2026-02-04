@@ -17,14 +17,17 @@ export function resetTransitionState() {
 
 export function startAutoTransition(onExit) {
   clearTimeout(timer);
-  
+
   timer = setTimeout(() => {
     if (exited) return;
 
-    exited = true;
     window.__carousel__?.startAuto();
-    onExit?.();
+    onExit?.(); // ← 遷移開始
   }, AUTO_DELAY);
+}
+
+export function markExited() {
+  exited = true;
 }
 
 
