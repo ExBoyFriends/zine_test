@@ -1,5 +1,7 @@
 // chapter2/carousel3d.js
 
+// chapter2/carousel3d.js
+
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -22,9 +24,9 @@ export function initCarousel3D(options = {}) {
   const IDLE_MAX  = 1.6;
   const IDLE_TIME = 25000;
 
-  const AUTO_TOTAL = 35000; //自動回転の総時間
-  const AUTO_FINAL = 6000; //最終加速フェーズの時間
-  
+  const AUTO_TOTAL = 35000;
+  const AUTO_FINAL = 6000;
+
   let visualAngle = 0;
   let baseSpeed  = BASE_SPEED;
   let dragSpeed  = 0;
@@ -38,23 +40,6 @@ export function initCarousel3D(options = {}) {
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
- function getFrontIndex() {
-    // 正面（0°に最も近い）画像の index を計算
-    let minDiff = 360;
-    let frontIndex = 0;
-
-    outers.forEach((p, i) => {
-      const angle = (visualAngle + +p.dataset.base) % 360;
-      const diff = Math.min(Math.abs(angle), Math.abs(360 - angle));
-      if (diff < minDiff) {
-        minDiff = diff;
-        frontIndex = i;
-      }
-    });
-
-    return frontIndex;
-  }
-  
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
@@ -109,8 +94,8 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // 正面画像 index
-    let index = Math.round(visualAngle / SNAP) % COUNT;
+    // 正面画像 index（安定化）
+    let index = Math.floor((visualAngle + SNAP / 2) / SNAP) % COUNT;
     if (index < 0) index += COUNT;
 
     options.onIndexChange?.(index);
@@ -166,7 +151,7 @@ export function initCarousel3D(options = {}) {
     startAuto() { mode = "auto"; autoStartTime = performance.now(); },
     startDrag() { dragSpeed = 0; },
     moveDrag(dx){ dragSpeed += dx * 0.05; },
-    endDrag() {},
+    endDrag() {} ,
     setExtraSpeed(v){ extraSpeed = v; }
   };
 }
