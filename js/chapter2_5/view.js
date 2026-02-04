@@ -11,7 +11,7 @@ export function getPages() {
   return pages;
 }
 
-/* ===================== Dots update（chapter1準拠） ===================== */
+/* ===================== Dots update ===================== */
 function updateDots(index) {
   dots.forEach((dot, i) => {
     dot.classList.toggle("active", i === index);
@@ -20,27 +20,29 @@ function updateDots(index) {
 
 /* ===================== Page control ===================== */
 export function showPage(index) {
-  if (!pages.length || isFading) return;  // フェード中は無視
+  if (!pages.length) return;  // フェード中でも index が不正なら無視
+  if (isFading) return;       // フェード中は切り替えを無視
 
   const prevPage = pages[state.index];
   const nextPage = pages[index];
   if (!nextPage) return;
 
-  isFading = true;  // フェード開始
+  isFading = true;  // フェード中フラグ
 
-  // dualページの場合は反転処理
+  // dualページの左右反転処理
   if (nextPage.classList.contains("dual") && state.prevIndex !== index) {
     dualFlipped = !dualFlipped;
     nextPage.classList.toggle("flipped", dualFlipped);
   }
 
-  // 前ページは非アクティブ化（即時）
+  // 前ページは即時非表示
   prevPage?.classList.remove("active");
 
-  // フェードイン
+  // 次ページをフェードイン
   nextPage.classList.add("active");
   nextPage.style.opacity = 0;
   nextPage.style.transition = "opacity 0.5s ease"; // フェード時間
+
   requestAnimationFrame(() => {
     nextPage.style.opacity = 1;
   });
@@ -57,7 +59,7 @@ export function showPage(index) {
     }
   );
 
-  // 状態を更新
+  // 状態更新
   state.prevIndex = index;
   state.index = index;
   state.showingText = false;
