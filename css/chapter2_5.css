@@ -1,14 +1,12 @@
 /* chapter2_5.css */
 
-
-/* ===================== ページの表示 ===================== */
 .chapter {
-  opacity: 1;  /* 最初に表示される */
+  opacity: 1;
   transition: opacity 1.3s ease;
 }
 
 .page {
-  position: fixed; 
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -18,11 +16,10 @@
   align-items: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 2.6s cubic-bezier(.22, .61, .36, 1);
+  transition: opacity 0.5s ease;
 }
 
 .page.active {
-  opacity: 1;
   pointer-events: auto;
 }
 
@@ -49,24 +46,13 @@
   transition: none;
 }
 
-/* 通常配置 */ 
+.page.dual img:nth-child(1) { transform: translate(-80%, -50%); }
+.page.dual img:nth-child(2) { transform: translate(-20%, -50%); }
 
-.page.dual img:nth-child(1) {
- transform: translate(-80%, -50%);
-}
-.page.dual img:nth-child(2) {
- transform: translate(-20%, -50%); 
-} 
+.page.dual.flipped img:nth-child(1) { transform: translate(-20%, -50%); }
+.page.dual.flipped img:nth-child(2) { transform: translate(-80%, -50%); }
 
-/* 反転状態 */ 
-
-.page.dual.flipped img:nth-child(1) {
- transform: translate(-20%, -50%); 
-} 
-.page.dual.flipped img:nth-child(2) {
- transform: translate(-80%, -50%); 
-}
-/* ===================== ドット ===================== */
+/* Dots */
 .dots {
   position: fixed;
   bottom: calc(40px + env(safe-area-inset-bottom));
@@ -93,19 +79,15 @@
   background: rgba(240, 240, 240, .9);
 }
 
-
-/* ===================== テキスト ===================== */
-
+/* Text */
 .poem {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-
   min-width: 60%;
   padding: 1.2em 1.6em;
   background: rgba(0,0,0,0.55);
-
   text-align: center;
   line-height: 1.8;
   opacity: 0;
@@ -119,4 +101,3 @@
 .page.show-text img {
   opacity: 0.75;
 }
-
