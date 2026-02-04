@@ -42,7 +42,7 @@ export function initCarousel3D(options = {}) {
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
  function updateDots() {
-  const angle = ((visualAngle % 360) + 360) % 360;
+  const angle = ((-visualAngle % 360) + 360) % 360;
 
   let closestIndex = 0;
   let minDiff = Infinity;
