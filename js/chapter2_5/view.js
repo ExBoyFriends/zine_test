@@ -29,15 +29,20 @@ export function showPage(index) {
 
   isFading = true;
 
-  // dual ページは反転処理
+  // dual ページは反転
   if (nextPage.classList.contains("dual") && state.prevIndex !== index) {
     dualFlipped = !dualFlipped;
     nextPage.classList.toggle("flipped", dualFlipped);
   }
 
-  // 前ページを非アクティブ化
-  // 前ページを完全に非表示
-prevPage?.classList.remove("active");
+  // 前ページを非表示に
+  if (prevPage && prevPage !== nextPage) {
+    prevPage.classList.remove("active");
+    prevPage.querySelectorAll("img").forEach(img => {
+      img.style.opacity = ""; // CSSに戻す
+    });
+    prevPage.classList.remove("show-text");
+  }
 
   // フェードイン
   nextPage.classList.add("active");
@@ -47,7 +52,6 @@ prevPage?.classList.remove("active");
     nextPage.style.opacity = 1;
   });
 
-  // transitionend でフラグ解除 & ドット更新
   nextPage.addEventListener(
     "transitionend",
     function onEnd() {
@@ -79,4 +83,3 @@ export function hideText(index) {
   page.classList.remove("show-text");
   state.showingText = false;
 }
-
