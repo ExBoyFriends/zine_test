@@ -34,9 +34,8 @@ const dots     = [...document.querySelectorAll(".dot")];
    Dots
 ===================== */
 function updateDots(index = 0) {
-  const reversedIndex = (dots.length - index) % dots.length;
   dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === reversedIndex);
+    dot.classList.toggle("active", i === index);
   });
 }
 
