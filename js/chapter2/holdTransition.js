@@ -7,7 +7,7 @@ let exited = false;
 let timer = null;
 let holding = false;
 
-const AUTO_DELAY = 8000;
+const AUTO_DELAY = 28000;
 const HOLD_DELAY = 350; // ★ ドラッグ猶予
 
 export function resetTransitionState() {
