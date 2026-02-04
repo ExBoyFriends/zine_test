@@ -1,7 +1,4 @@
 // chapter2/carousel3d.js
-
-// chapter2/carousel3d.js
-
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -39,6 +36,28 @@ export function initCarousel3D(options = {}) {
 
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
+
+  /* =====================
+     正面画像 index を取得
+     ===================== */
+  function getFrontIndex() {
+    let minDiff = Infinity;
+    let frontIndex = 0;
+
+    outers.forEach((p, i) => {
+      const base = +p.dataset.base;
+      // 0度に最も近い画像を正面と判定
+      let diff = ((base + visualAngle) % 360 + 360) % 360; // 0~360
+      if (diff > 180) diff = 360 - diff; // 180度以上は反転して近い方を取る
+
+      if (diff < minDiff) {
+        minDiff = diff;
+        frontIndex = i;
+      }
+    });
+
+    return frontIndex;
+  }
 
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
@@ -94,10 +113,8 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // 正面画像 index（安定化）
-    let index = Math.floor((visualAngle + SNAP / 2) / SNAP) % COUNT;
-    if (index < 0) index += COUNT;
-
+    // 正面画像 index 更新
+    const index = getFrontIndex();
     options.onIndexChange?.(index);
 
     // cylinder transform
@@ -106,13 +123,13 @@ export function initCarousel3D(options = {}) {
     back.style.transform  = cyl;
 
     // outers / inners transform
-    outers.forEach((p, i) => {
+    outers.forEach((p) => {
       const base = +p.dataset.base;
       p.style.transform =
         `translate(-50%, -50%) rotateY(${base + visualAngle}deg) translateZ(${R_FRONT}px)`;
     });
 
-    inners.forEach((p, i) => {
+    inners.forEach((p) => {
       const base = +p.dataset.base;
       p.style.transform =
         `translate(-50%, -50%) rotateY(${base + visualAngle + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
