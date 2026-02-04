@@ -1,421 +1,172 @@
-　/* chapter2.css */
-
-
-
+/* chapter2.css */
 /* =====================
-
    Reset
-
 ===================== */
-
 * {
-
   margin: 0;
-
   padding: 0;
-
   box-sizing: border-box;
-
   -webkit-tap-highlight-color: transparent;
-
 }
-
-
-
 /* =====================
-
    HTML / Body
-
 ===================== */
-
 html,
-
 body {
-
   width: 100%;
-
   height: 100%;
-
   overflow: hidden;
-
   background: #000;
-
-
-
   overscroll-behavior: none;
-
   user-select: none;
-
   -webkit-user-select: none;
-
   -webkit-touch-callout: none;
-
 }
-
-
-
 /* =====================
-
    Image Lock
-
 ===================== */
-
 img {
-
   pointer-events: none;
-
   -webkit-user-drag: none;
-
 }
-
-
-
 /* =====================
-
    Scene
-
 ===================== */
-
 .scene {
-
   position: fixed;
-
   inset: 0;
-
   perspective: 1200px;
-
   perspective-origin: 50% 45%;
-
   touch-action: none;
-
   z-index: 1;
-
 }
-
-
-
 /* =====================
-
    Panel Common
-
 ===================== */
-
 .panel,
-
 .outer,
-
 .inner {
-
   position: absolute;
-
   left: 50%;
-
   top: 50%;
-
   transform-style: preserve-3d;
-
   transform: translate(-50%, -50%);
-
 }
-
-
-
 .outer,
-
 .inner {
-
   will-change: transform;
-
 }
-
-
-
 /* =====================
-
    Front Card
-
 ===================== */
-
 .outer {
-
   width: 230px;
-
   height: 300px;
-
   backface-visibility: hidden;
-
 }
-
-
-
 .outer img {
-
   width: 100%;
-
   height: 100%;
-
   object-fit: contain;
-
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
-
 }
-
-
-
 /* =====================
-
    Back Card
-
 ===================== */
-
 .inner {
-
   width: 220px;
-
   height: 290px;
-
   backface-visibility: hidden;
-
   background: url("../image/top_b.png") center / contain no-repeat;
-
   filter: brightness(0.45);
-
   opacity: 0.85;
-
 }
-
-
-
 /* =====================
-
    Cylinder
-
 ===================== */
-
 .cylinder {
-
   position: absolute;
-
   left: 50%;
-
   top: 50%;
-
   width: 420px;
-
   height: 420px;
-
   transform-style: preserve-3d;
-
   transform: translate(-50%, -50%);
-
 }
-
-
-
 .cylinder-front {
-
   z-index: 2;
-
 }
-
-
-
 .cylinder-back {
-
   z-index: 1;
-
   pointer-events: none;
-
 }
-
-
-
 /* =====================
-
    Dots
-
 ===================== */
-
 .dots {
-
   position: fixed;
-
   bottom: calc(40px + env(safe-area-inset-bottom));
-
   width: 100%;
-
   text-align: center;
-
   z-index: 20;
-
-
-
   opacity: 0;
-
   pointer-events: none;
-
-  transition: 0.3s cubic-bezier(.22,.61,.36,1);;
-
+  transition: 0.3s cubic-bezier(.22,.61,.36,1);
 }
-
-
-
 .dots.visible {
-
   opacity: 1;
-
   pointer-events: auto;
-
 }
-
-
-
 .dot {
-
   display: inline-block;
-
   width: 5px;
-
   height: 8px;
-
   margin: 0 5px;
-
   background: rgba(200, 200, 200, 0.25);
-
   transition: background 0.08s linear;
-
 }
-
-
-
 .dot.active {
-
   background: rgba(240, 240, 240, 0.9);
-
 }
-
-
-
 /* =====================
-
    Glitch Overlay
-
 ===================== */
-
 .glitch-overlay {
-
   position: fixed;
-
   inset: 0;
-
   pointer-events: none;
-
   z-index: 30;
-
   background:
-
     repeating-linear-gradient(
-
       0deg,
-
       rgba(255,255,255,0.06),
-
       rgba(255,255,255,0.06) 1px,
-
       transparent 1px,
-
       transparent 3px
-
     );
-
   opacity: 0;
-
   mix-blend-mode: overlay;
-
 }
-
-
-
 .glitch-active .scene {
-
   animation: glitchShake 0.15s infinite linear;
-
   filter: contrast(1.3) saturate(1.2);
-
 }
-
-
-
 .glitch-active .glitch-overlay {
-
   opacity: 1;
-
   animation: glitchFlash 0.12s infinite steps(2);
-
 }
-
-
-
 /* =====================
-
-#fadeout {
-
-  position: fixed;
-
-  inset: 0;
-
-  background: #000;
-
-  z-index: 40;
-
-  opacity: 0;
-
-  pointer-events: none;
-
-  transition: opacity 2.5s cubic-bezier(.25,.1,.15,1);
-
-}
-
-
-
-#fadeout.active {
-
-  opacity: 1;
-
-}
-
-===================== */
-
-
-
-/* =====================
-
    Animations
-
 ===================== */
-
 @keyframes glitchShake {
-
   0%   { transform: translate(0,0); }
-
   25%  { transform: translate(-1px,1px); }
-
   50%  { transform: translate(2px,-1px); }
-
   75%  { transform: translate(-2px,2px); }
-
   100% { transform: translate(0,0); }
-
 }
-
-
-
 @keyframes glitchFlash {
-
   0%   { opacity: 0.05; }
-
   50%  { opacity: 0.18; }
-
   100% { opacity: 0.1; }
-
-}　　
+}
