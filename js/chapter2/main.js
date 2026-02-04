@@ -34,11 +34,12 @@ const dots     = [...document.querySelectorAll(".dot")];
    Dots
 ===================== */
 function updateDots(index = 0) {
+  // index を逆順にして反映
+  const reversedIndex = (dots.length - index) % dots.length;
   dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === index);
+    dot.classList.toggle("active", i === reversedIndex);
   });
 }
-
 /* =====================
    Chapter2 → 2.5
 ===================== */
