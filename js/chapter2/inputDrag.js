@@ -1,4 +1,5 @@
 // chapter2/inputDrag.js
+
 export function initDragInput(carousel) {
   const scene = document.querySelector(".scene");
   if (!scene || !carousel) return;
@@ -9,13 +10,12 @@ export function initDragInput(carousel) {
 
   const DRAG_THRESHOLD = 6;
 
-  // holdTransition から呼ばれる
-  window.__startDragCheck__ = e => {
+  scene.addEventListener("pointerdown", e => {
     startX = lastX = e.clientX;
     isDragging = false;
-  };
+  });
 
-  window.__moveDragCheck__ = e => {
+  scene.addEventListener("pointermove", e => {
     const x = e.clientX;
     const dx = x - lastX;
     const totalDx = x - startX;
@@ -23,28 +23,24 @@ export function initDragInput(carousel) {
     if (!isDragging) {
       if (Math.abs(totalDx) < DRAG_THRESHOLD) return;
       isDragging = true;
-      carousel.startDrag();
+      carousel.startDrag?.();
     }
 
-    carousel.moveDrag(dx);
+    carousel.moveDrag?.(dx);
     lastX = x;
-  };
-
-  window.__endDragCheck__ = () => {
-    if (isDragging) {
-      carousel.endDrag();
-      isDragging = false;
-    }
-  };
+  });
 
   scene.addEventListener("pointerup", () => {
-    window.__endDragCheck__();
+    if (isDragging) {
+      carousel.endDrag?.();
+      isDragging = false;
+    }
   });
 
   scene.addEventListener("pointercancel", () => {
-    window.__endDragCheck__();
+    if (isDragging) {
+      carousel.endDrag?.();
+      isDragging = false;
+    }
   });
 }
-
-
-
