@@ -43,5 +43,3 @@ window.addEventListener("pageshow", e => {
   showPage(state.index);
   updateDots(state.index);
 });　　　
-
-
