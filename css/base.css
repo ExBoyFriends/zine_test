@@ -33,9 +33,3 @@ body {
   height: 100%;
   z-index: 1;
 }
-
-.is-3d-scene {
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
