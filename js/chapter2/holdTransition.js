@@ -26,7 +26,7 @@ export function startAutoTransition(onExit) {
   timer = setTimeout(() => {
     if (exited) return;
     window.__carousel__?.startAuto();
-    onExit?.();
+   
   }, AUTO_DELAY);
 }
 
