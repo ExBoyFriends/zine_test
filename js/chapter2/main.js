@@ -34,12 +34,12 @@ const dots     = [...document.querySelectorAll(".dot")];
    Dots
 ===================== */
 function updateDots(index = 0) {
-  // 逆順に光らせる
-  const corrected = (dots.length - index) % dots.length;
+  const reversedIndex = (dots.length - index) % dots.length;
   dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === corrected);
+    dot.classList.toggle("active", i === reversedIndex);
   });
 }
+
 /* =====================
    Chapter2 → 2.5
 ===================== */
