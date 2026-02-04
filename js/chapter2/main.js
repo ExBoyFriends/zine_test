@@ -1,4 +1,5 @@
 // chapter2/main.js
+
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
 import { initCarousel3D } from "./carousel3d.js";
