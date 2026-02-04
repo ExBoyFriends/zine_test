@@ -29,35 +29,56 @@ export function showPage(index) {
 
   isFading = true;
 
-  // dual ページは反転
+  // dual ページの反転処理
   if (nextPage.classList.contains("dual") && state.prevIndex !== index) {
     dualFlipped = !dualFlipped;
     nextPage.classList.toggle("flipped", dualFlipped);
   }
 
-  // 前ページを非表示に
+  // ===================== 前ページのリセット =====================
   if (prevPage && prevPage !== nextPage) {
-    prevPage.classList.remove("active");
-    prevPage.querySelectorAll("img").forEach(img => {
-      img.style.opacity = ""; // CSSに戻す
+    prevPage.classList.remove("active", "show-text");
+    
+    // dual 内の画像も初期状態に戻す
+    const prevDualImgs = prevPage.querySelectorAll(".dual img");
+    prevDualImgs.forEach((img, i) => {
+      img.style.opacity = "";
+      img.style.transform = ""; // CSS初期状態に戻す
     });
-    prevPage.classList.remove("show-text");
+
+    // 通常ページの画像も opacity をリセット
+    prevPage.querySelectorAll("> img").forEach(img => {
+      img.style.opacity = "";
+    });
   }
 
-  // フェードイン
+  // ===================== 次ページのフェードイン =====================
   nextPage.classList.add("active");
+
+  // dual ページなら画像を透明にしてフェードさせる
+  const nextImgs = nextPage.querySelectorAll("img");
+  nextImgs.forEach(img => img.style.opacity = 0);
+
   nextPage.style.opacity = 0;
-  nextPage.style.transition = "opacity 2.6s cubic-bezier(.22,.61,.36,1)";
+  nextPage.style.transition = "opacity 0.5s ease"; // ページ全体のフェード
   requestAnimationFrame(() => {
     nextPage.style.opacity = 1;
+
+    // dual 画像は順次フェード
+    nextImgs.forEach(img => {
+      img.style.transition = "opacity 0.5s ease";
+      img.style.opacity = 1;
+    });
   });
 
+  // transitionend でフラグ解除 & ドット更新
   nextPage.addEventListener(
     "transitionend",
     function onEnd() {
       nextPage.removeEventListener("transitionend", onEnd);
       nextPage.style.transition = "";
       nextPage.style.opacity = "";
+      nextImgs.forEach(img => img.style.transition = ""); // img の transition 解除
       updateDots(index);
       isFading = false;
     }
@@ -73,6 +94,7 @@ export function showPage(index) {
 export function showText(index) {
   const page = pages[index];
   if (!page) return;
+
   page.classList.add("show-text");
   state.showingText = true;
 }
@@ -80,6 +102,8 @@ export function showText(index) {
 export function hideText(index) {
   const page = pages[index];
   if (!page) return;
+
   page.classList.remove("show-text");
   state.showingText = false;
 }
+
