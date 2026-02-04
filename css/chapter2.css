@@ -16,12 +16,6 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  /* 常に中央起点にし、JSでの配置を正確に反映させる */
-  transform-style: preserve-3d;
-  /* 描画を軽くするおまじない */
-  will-change: transform;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 }
 
 /* =====================
