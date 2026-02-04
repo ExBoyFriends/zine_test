@@ -45,3 +45,6 @@ export function initDragInput(carousel) {
     window.__endDragCheck__();
   });
 }
+
+
+
