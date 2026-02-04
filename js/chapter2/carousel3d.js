@@ -1,4 +1,5 @@
 // chapter2/carousel3d.js
+
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -12,12 +13,15 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
+  /* ===== 回転定数 ===== */
   const BASE_SPEED = 0.22;
   const HOLD_SPEED = 8;
   const AUTO_MAX   = 12;
   const EXIT_MAX   = 16;
-  const IDLE_MAX   = 1.6;
-  const IDLE_TIME  = 25000;
+
+  const IDLE_MAX  = 1.6;
+  const IDLE_TIME = 25000;
+
   const AUTO_TOTAL = 35000;
   const AUTO_FINAL = 6000;
 
@@ -37,16 +41,23 @@ export function initCarousel3D(options = {}) {
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
+    // normal / idle
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
       baseSpeed += (target - baseSpeed) * 0.05;
     }
 
-    if (mode === "hold") baseSpeed += (HOLD_SPEED - baseSpeed) * 0.12;
+    // hold
+    if (mode === "hold") {
+      baseSpeed += (HOLD_SPEED - baseSpeed) * 0.12;
+    }
+
+    // auto
     if (mode === "auto") {
       const elapsed = now - autoStartTime;
       const remain  = AUTO_TOTAL - elapsed;
+
       if (remain <= AUTO_FINAL) {
         const t = 1 - remain / AUTO_FINAL;
         baseSpeed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - baseSpeed) * 0.09;
@@ -54,11 +65,19 @@ export function initCarousel3D(options = {}) {
         const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
         baseSpeed += (AUTO_MAX * t - baseSpeed) * 0.05;
       }
-      if (elapsed >= AUTO_TOTAL) { mode = "exit"; options.onExit?.(); }
+
+      if (elapsed >= AUTO_TOTAL) {
+        mode = "exit";
+        options.onExit?.();
+      }
     }
 
-    if (mode === "exit") baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
+    // exit
+    if (mode === "exit") {
+      baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
+    }
 
+    // drag & chaos
     const dragNoise =
       Math.sin(now * (0.018 + chaos * 0.04)) *
       Math.sin(now * 0.11) *
@@ -72,39 +91,54 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // ★ 正面に最も近いスライドの index を計算
+    /* ===== ★ 正面に最も近いスライド index 判定 ===== */
     let closestIndex = 0;
     let minDiff = Infinity;
     outers.forEach((p, i) => {
       const base = +p.dataset.base;
-      const diff = Math.abs(((base + visualAngle + 180) % 360) - 180);
-      if (diff < minDiff) {
-        minDiff = diff;
+      // 0〜360 正規化
+      const diff = ((base + visualAngle) % 360 + 360) % 360;
+      // 正面からの最短距離
+      const dist = Math.min(diff, 360 - diff);
+      if (dist < minDiff) {
+        minDiff = dist;
         closestIndex = i;
       }
     });
     options.onIndexChange?.(closestIndex);
 
+    // cylinder transform
     const cyl = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     front.style.transform = cyl;
     back.style.transform  = cyl;
 
+    // outers / inners
     outers.forEach(p => {
+      const base = +p.dataset.base;
       p.style.transform =
-        `translate(-50%, -50%) rotateY(${+p.dataset.base + visualAngle}deg) translateZ(${R_FRONT}px)`;
+        `translate(-50%, -50%) rotateY(${base + visualAngle}deg) translateZ(${R_FRONT}px)`;
     });
 
     inners.forEach(p => {
+      const base = +p.dataset.base;
       p.style.transform =
-        `translate(-50%, -50%) rotateY(${+p.dataset.base + visualAngle + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
+        `translate(-50%, -50%) rotateY(${base + visualAngle + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
     });
 
     rafId = requestAnimationFrame(animate);
   }
 
-  function start() { idleStartTime = performance.now(); rafId = requestAnimationFrame(animate); }
-  function stop() { cancelAnimationFrame(rafId); rafId = null; }
+  function start() {
+    idleStartTime = performance.now();
+    rafId = requestAnimationFrame(animate);
+  }
 
+  function stop() {
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+
+  // bfcache 対応
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
     stop();
@@ -119,9 +153,19 @@ export function initCarousel3D(options = {}) {
   start();
 
   return {
-    startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
-    endHold() { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
-    startAuto() { mode = "auto"; autoStartTime = performance.now(); },
+    startHold() {
+      if (mode !== "auto" && mode !== "exit") mode = "hold";
+    },
+    endHold() {
+      if (mode === "hold") {
+        mode = "normal";
+        idleStartTime = performance.now();
+      }
+    },
+    startAuto() {
+      mode = "auto";
+      autoStartTime = performance.now();
+    },
     startDrag() { dragSpeed = 0; },
     moveDrag(dx) { dragSpeed += dx * 0.05; },
     endDrag() {},
