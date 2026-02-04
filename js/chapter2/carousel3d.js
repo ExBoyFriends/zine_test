@@ -23,8 +23,8 @@ export function initCarousel3D(options = {}) {
   const IDLE_MAX  = 1.4;
   const IDLE_TIME = 8000;
 
-  const AUTO_TOTAL = 20000;
-  const AUTO_FINAL = 2000;
+  const AUTO_TOTAL = 30000;
+  const AUTO_FINAL = 4000;
 
   let visualAngle = 0;
 
