@@ -36,7 +36,12 @@ export function showPage(index) {
   }
 
   // 前ページを非アクティブ化
-  prevPage?.classList.remove("active");
+  // 前ページを完全に非表示
+prevPage?.classList.remove("active");
+prevPage?.querySelectorAll("img").forEach(img => {
+  img.style.opacity = 0;
+});
+
 
   // フェードイン
   nextPage.classList.add("active");
