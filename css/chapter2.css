@@ -90,7 +90,6 @@ img {
 .inner {
   width: 220px;
   height: 290px;
-　z-index: 1;
   background: url("../image/top_b.png") center / contain no-repeat;
   filter: brightness(0.45);
   opacity: 0.85;
