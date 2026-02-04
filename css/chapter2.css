@@ -57,6 +57,12 @@ img {
   top: 50%;
   transform-style: preserve-3d;
   transform: translate(-50%, -50%);
+
+   will-change: transform;
+  /* 3Dレンダリングをハードウェア加速させるおまじない */
+  transform: translateZ(0); 
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .outer,
@@ -78,6 +84,9 @@ img {
   height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+
+   will-change: transform;
+  transform: translateZ(0);
 }
 
 /* =====================
