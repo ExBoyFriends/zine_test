@@ -89,6 +89,9 @@ initLoader(loader, () => {
 const carousel = initCarousel3D({
   onIndexChange(index) {
     updateDots(index);
+  },
+   onExit() {
+    goChapter25();
   }
 });
 
