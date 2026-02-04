@@ -1,4 +1,5 @@
 // chapter2/carousel3d.js
+
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -38,25 +39,15 @@ export function initCarousel3D(options = {}) {
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
   /* =====================
-     正面画像 index を取得
+     正面画像 index を取得（SNAP 中心角で round）
      ===================== */
   function getFrontIndex() {
-    let minDiff = Infinity;
-    let frontIndex = 0;
-
-    outers.forEach((p, i) => {
-      const base = +p.dataset.base;
-      // 0度に最も近い画像を正面と判定
-      let diff = ((base + visualAngle) % 360 + 360) % 360; // 0~360
-      if (diff > 180) diff = 360 - diff; // 180度以上は反転して近い方を取る
-
-      if (diff < minDiff) {
-        minDiff = diff;
-        frontIndex = i;
-      }
-    });
-
-    return frontIndex;
+    // visualAngle を正規化して 0～360
+    const normAngle = ((visualAngle % 360) + 360) % 360;
+    // SNAP の中心を基準に round
+    let index = Math.round(normAngle / SNAP) % COUNT;
+    if (index < 0) index += COUNT;
+    return index;
   }
 
   function animate(now) {
@@ -113,7 +104,7 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // 正面画像 index 更新
+    // ===== 正面 index 更新（ドット用） =====
     const index = getFrontIndex();
     options.onIndexChange?.(index);
 
@@ -148,7 +139,7 @@ export function initCarousel3D(options = {}) {
     rafId = null;
   }
 
-  // bfcache 対応
+  // bfcache 復帰対応
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
     stop();
@@ -172,4 +163,3 @@ export function initCarousel3D(options = {}) {
     setExtraSpeed(v){ extraSpeed = v; }
   };
 }
-
