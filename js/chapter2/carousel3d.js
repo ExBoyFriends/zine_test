@@ -1,4 +1,5 @@
 // chapter2/carousel3d.js
+
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -11,9 +12,6 @@ export function initCarousel3D(options = {}) {
   const SNAP = 360 / COUNT;
   const R_FRONT = 185;
   const R_BACK  = 170;
-
-  /* ★ 高速化：DOMアクセスを排除し、数値をメモリ上に保持 */
-  const baseAngles = Array.from({ length: COUNT }, (_, i) => i * SNAP);
 
   /* ===== 回転定数 ===== */
   const BASE_SPEED = 0.22;
@@ -35,37 +33,34 @@ export function initCarousel3D(options = {}) {
   let idleStartTime = performance.now();
   let autoStartTime = 0;
   
+  // 初期インデックスを保持
   let prevIndex = -1; 
 
+  // 各パネルに初期角度をデータ属性として保持
+  outers.forEach((p, i) => (p.dataset.base = i * SNAP));
+  inners.forEach((p, i) => (p.dataset.base = i * SNAP));
+
   /**
-   * 正面判定：最も手前に来たパネルを Cos で特定
+   * 最も正面（Z軸手前）に近いパネルのインデックスを返す
    */
   function getFrontIndex() {
     let maxZ = -2;
     let closestIndex = 0;
-    for (let i = 0; i < COUNT; i++) {
-      // 角度をラジアンに変換して手前方向の距離(z)を計算
-      const currentRad = ((baseAngles[i] + visualAngle) * Math.PI) / 180;
+
+    outers.forEach((p, i) => {
+      const base = parseFloat(p.dataset.base);
+      // パネルの現在の合計角度をラジアンに変換
+      const currentRad = ((base + visualAngle) * Math.PI) / 180;
+      // Z値（奥行き）を計算。Math.cos(0) = 1 なので、1に近いほど正面。
       const z = Math.cos(currentRad);
+
       if (z > maxZ) {
         maxZ = z;
         closestIndex = i;
       }
-    }
+    });
     return closestIndex;
   }
-
-  /* ★ 初期配置：手前と奥の「半円構造」を厳密に構築 */
-  outers.forEach((p, i) => {
-    // 手前の半円（画像パネル）
-    p.style.transform = `translate(-50%, -50%) rotateY(${baseAngles[i]}deg) translateZ(${R_FRONT}px)`;
-  });
-
-  inners.forEach((p, i) => {
-    // 奥の半円（壁パネル）：
-    // baseAngles[i] + 180 で円の真裏に配置し、rotateY(180deg) で内側を向かせる
-    p.style.transform = `translate(-50%, -50%) rotateY(${baseAngles[i] + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
-  });
 
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
@@ -104,17 +99,28 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // --- 正面判定とドット更新 ---
+    // --- ★ 正面判定とドット更新 ---
     const currentIndex = getFrontIndex();
     if (currentIndex !== prevIndex) {
       options.onIndexChange?.(currentIndex);
       prevIndex = currentIndex;
     }
 
-    // --- シリンダー全体の回転（これが以前の見え方の肝） ---
+    // --- Transform 適応 ---
     const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     front.style.transform = cylTransform;
     back.style.transform  = cylTransform;
+
+    outers.forEach((p) => {
+      const base = parseFloat(p.dataset.base);
+      p.style.transform = `translate(-50%, -50%) rotateY(${base}deg) translateZ(${R_FRONT}px)`;
+    });
+
+    inners.forEach((p) => {
+      const base = parseFloat(p.dataset.base);
+      // 背面パネルは内側を向くように調整
+      p.style.transform = `translate(-50%, -50%) rotateY(${base + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
+    });
 
     rafId = requestAnimationFrame(animate);
   }
@@ -151,4 +157,4 @@ export function initCarousel3D(options = {}) {
     endDrag() {},
     setExtraSpeed(v){ extraSpeed = v; }
   };
-}
+}　　　　
