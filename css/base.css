@@ -6,6 +6,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* タップ時の青い枠を消す（モバイルの描画更新を減らす） */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* =====================
@@ -17,30 +19,47 @@ body {
   height: 100%;
   overflow: hidden;
   background: #000;
-
   overscroll-behavior: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
+  
+  /* [おまじない1] 全体の描画品質を整える（フォントのガタつき防止） */
+  -webkit-font-smoothing: antialiased;
 }
 
-
-
 /* =====================
-   Scene
+   Scene (3D共通)
 ===================== */
 .scene {
   position: relative;
   z-index: 1;
+  /* [おまじない2] 3D空間の奥行きを描画する際の計算ミス（チラつき）を防ぐ */
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* =====================
    Chapter Control
 ===================== */
-
 .chapter {
   position: relative;
   width: 100%;
   height: 100%;
   z-index: 1;
+  
+  /* [おまじない3] コンテンツが切り替わる際のカクつきを抑える */
+  will-change: opacity, transform;
+}
+
+/* =====================
+   GPU Acceleration Helper
+   今後、重い要素が出てきたらこのクラスをHTMLでつけるだけで軽くなります
+===================== */
+.gpu-prime {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
