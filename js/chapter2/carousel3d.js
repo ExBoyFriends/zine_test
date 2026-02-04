@@ -9,7 +9,7 @@ export function initCarousel3D(options = {}) {
   const COUNT = outers.length;
   if (!COUNT) return;
 
-  const SNAP = 360 / COUNT;   // パネル間角度
+  const SNAP = 360 / COUNT;
   const R_FRONT = 185;
   const R_BACK  = 170;
 
@@ -22,9 +22,9 @@ export function initCarousel3D(options = {}) {
   const IDLE_MAX  = 1.6;
   const IDLE_TIME = 25000;
 
-  const AUTO_TOTAL = 35000;
-  const AUTO_FINAL = 6000;
-
+  const AUTO_TOTAL = 35000; //自動回転の総時間
+  const AUTO_FINAL = 6000; //最終加速フェーズの時間
+  
   let visualAngle = 0;
   let baseSpeed  = BASE_SPEED;
   let dragSpeed  = 0;
@@ -38,19 +38,26 @@ export function initCarousel3D(options = {}) {
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
- /* =====================
-     正面パネル index を取得
-     visualAngle を SNAP 単位で丸めて正確に同期
-  ===================== */
-  function getFrontIndex() {
-    let index = Math.round(-visualAngle / SNAP) % COUNT;
- 
-    return index;
-  }
+ function getFrontIndex() {
+    // 正面（0°に最も近い）画像の index を計算
+    let minDiff = 360;
+    let frontIndex = 0;
 
+    outers.forEach((p, i) => {
+      const angle = (visualAngle + +p.dataset.base) % 360;
+      const diff = Math.min(Math.abs(angle), Math.abs(360 - angle));
+      if (diff < minDiff) {
+        minDiff = diff;
+        frontIndex = i;
+      }
+    });
+
+    return frontIndex;
+  }
+  
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
-    
+
     // normal / idle
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
@@ -102,9 +109,10 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // ===== 正面 index 更新（ドット同期） =====
-    const index = getFrontIndex();
-    index = (COUNT - index) % COUNT;
+    // 正面画像 index
+    let index = Math.round(visualAngle / SNAP) % COUNT;
+    if (index < 0) index += COUNT;
+
     options.onIndexChange?.(index);
 
     // cylinder transform
@@ -113,13 +121,13 @@ export function initCarousel3D(options = {}) {
     back.style.transform  = cyl;
 
     // outers / inners transform
-    outers.forEach((p) => {
+    outers.forEach((p, i) => {
       const base = +p.dataset.base;
       p.style.transform =
         `translate(-50%, -50%) rotateY(${base + visualAngle}deg) translateZ(${R_FRONT}px)`;
     });
 
-    inners.forEach((p) => {
+    inners.forEach((p, i) => {
       const base = +p.dataset.base;
       p.style.transform =
         `translate(-50%, -50%) rotateY(${base + visualAngle + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
@@ -138,7 +146,7 @@ export function initCarousel3D(options = {}) {
     rafId = null;
   }
 
-  // bfcache 復帰対応
+  // bfcache 対応
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
     stop();
@@ -158,7 +166,7 @@ export function initCarousel3D(options = {}) {
     startAuto() { mode = "auto"; autoStartTime = performance.now(); },
     startDrag() { dragSpeed = 0; },
     moveDrag(dx){ dragSpeed += dx * 0.05; },
-    endDrag() {} ,
+    endDrag() {},
     setExtraSpeed(v){ extraSpeed = v; }
   };
 }
