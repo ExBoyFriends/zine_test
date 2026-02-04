@@ -60,4 +60,3 @@ function goPrev() {
   resetTextState();
   showPage(state.index);  // 前のページを表示
 }
-
