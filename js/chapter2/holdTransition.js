@@ -37,7 +37,7 @@ export function bindLongPressEvents(el) {
   });
 
   ["pointerup", "pointerleave", "pointercancel"].forEach(t =>
-    el.addEventListener(type, endPress)
+    el.addEventListener(t, endPress)
   );
 }
 
