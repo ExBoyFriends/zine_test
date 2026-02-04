@@ -14,39 +14,27 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  /* ===== 時間設計 ===== */
+  /* ===== 回転定数 ===== */
+  const BASE_SPEED = 0.22;
+  const HOLD_SPEED = 8;
+  const AUTO_MAX   = 12;
+  const EXIT_MAX   = 16;
+
   const TOTAL_TIME = 20000;
-  const FREE_TIME  = 13000;
   const FINAL_TIME = 2000;
 
-  /* ===== 速度設計 ===== */
-  const BASE_SPEED = 0.45;
-  const HOLD_MAX   = 8;
-  const AUTO_MAX   = 10;
-  const EXIT_MAX   = 14;
-
-  let angle = 0;
+  let visualAngle = 0;
   let speed = BASE_SPEED;
 
-  let mode = "free"; // free | auto | exit
-  let hold = false;
-
-  let startTime = performance.now();
+  let mode = "normal"; // normal | hold | auto | exit
   let rafId = null;
+  let startTime = 0;
 
-  /* ===== 初期配置 ===== */
-  outers.forEach((p, i) => {
-    p.style.transform =
-      `translate(-50%, -50%) rotateY(${i * SNAP}deg) translateZ(${R_FRONT}px)`;
-  });
-
-  inners.forEach((p, i) => {
-    p.style.transform =
-      `translate(-50%, -50%) rotateY(${i * SNAP + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
-  });
+  outers.forEach((p, i) => (p.dataset.base = i * SNAP));
+  inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
   function updateDots() {
-    const normalized = ((angle % 360) + 360) % 360;
+    const normalized = ((visualAngle % 360) + 360) % 360;
     const index = Math.round(normalized / SNAP) % COUNT;
     dots.forEach((d, i) => d.classList.toggle("active", i === index));
     options.onIndexChange?.(index);
@@ -55,23 +43,13 @@ export function initCarousel3D(options = {}) {
   function animate(now) {
     const elapsed = now - startTime;
 
-    /* ===== フェーズ遷移 ===== */
-    if (mode === "free" && elapsed >= FREE_TIME) {
-      mode = "auto";
+    /* ===== モード別スピード ===== */
+    if (mode === "normal") {
+      speed += (BASE_SPEED - speed) * 0.08;
     }
 
-    if (mode === "auto" && elapsed >= TOTAL_TIME) {
-      mode = "exit";
-      options.onExit?.();
-    }
-
-    /* ===== スピード制御 ===== */
-    if (mode === "free") {
-      if (hold) {
-        speed += (HOLD_MAX - speed) * 0.15;
-      } else {
-        speed += (BASE_SPEED - speed) * 0.08;
-      }
+    if (mode === "hold") {
+      speed += (HOLD_SPEED - speed) * 0.1;
     }
 
     if (mode === "auto") {
@@ -79,10 +57,10 @@ export function initCarousel3D(options = {}) {
 
       if (remain <= FINAL_TIME) {
         const t = 1 - remain / FINAL_TIME;
-        const target = AUTO_MAX + t * (EXIT_MAX - AUTO_MAX);
-        speed += (target - speed) * 0.12;
+        speed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - speed) * 0.08;
       } else {
-        speed += (AUTO_MAX - speed) * 0.05;
+        const t = elapsed / (TOTAL_TIME - FINAL_TIME);
+        speed += (AUTO_MAX * t - speed) * 0.06;
       }
     }
 
@@ -90,14 +68,36 @@ export function initCarousel3D(options = {}) {
       speed += (EXIT_MAX - speed) * 0.15;
     }
 
-    angle += speed;
+    visualAngle += speed;
     updateDots();
 
-    const rot =
-      `translate(-50%, -50%) rotateX(-22deg) rotateY(${angle}deg)`;
+    const cyl =
+      `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
-    front.style.transform = rot;
-    back.style.transform  = rot;
+    front.style.transform = cyl;
+    back.style.transform  = cyl;
+
+    outers.forEach(p => {
+      const base = +p.dataset.base;
+      p.style.transform =
+        `translate(-50%, -50%)
+         rotateY(${base + visualAngle}deg)
+         translateZ(${R_FRONT}px)`;
+    });
+
+    inners.forEach(p => {
+      const base = +p.dataset.base;
+      p.style.transform =
+        `translate(-50%, -50%)
+         rotateY(${base + visualAngle + 180}deg)
+         translateZ(${R_BACK}px)
+         rotateY(180deg)`;
+    });
+
+    if (elapsed >= TOTAL_TIME && mode === "auto") {
+      mode = "exit";
+      options.onExit?.();
+    }
 
     rafId = requestAnimationFrame(animate);
   }
@@ -112,30 +112,30 @@ export function initCarousel3D(options = {}) {
     rafId = null;
   }
 
-  /* ===== 戻った時の急減速 ===== */
+  /* ===== bfcache ===== */
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
 
     stop();
-    angle = 0;
+    visualAngle = 0;
     speed = EXIT_MAX;
-    mode = "free";
-    hold = false;
+    mode = "normal";
     start();
   });
 
   start();
 
   return {
-    isFreePhase() {
-      return mode === "free";
-    },
     startHold() {
-      if (mode !== "free") return;
-      hold = true;
+      if (mode === "auto" || mode === "exit") return;
+      mode = "hold";
     },
     endHold() {
-      hold = false;
+      if (mode === "hold") mode = "normal";
+    },
+    startAuto() {
+      mode = "auto";
+      startTime = performance.now();
     }
   };
 }
