@@ -38,6 +38,23 @@ export function initCarousel3D(options = {}) {
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
+ function getFrontIndex() {
+    // 正面（0°に最も近い）画像の index を計算
+    let minDiff = 360;
+    let frontIndex = 0;
+
+    outers.forEach((p, i) => {
+      const angle = (visualAngle + +p.dataset.base) % 360;
+      const diff = Math.min(Math.abs(angle), Math.abs(360 - angle));
+      if (diff < minDiff) {
+        minDiff = diff;
+        frontIndex = i;
+      }
+    });
+
+    return frontIndex;
+  }
+  
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
