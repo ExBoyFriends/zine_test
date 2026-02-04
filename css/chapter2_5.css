@@ -54,11 +54,11 @@ body {
 }
 
 .page.dual.flipped img:nth-child(1) {
-  transform: translate(-20%, -50%);
+  transform: translate(-50%, -50%);
 }
 
 .page.dual.flipped img:nth-child(2) {
-  transform: translate(-80%, -50%);
+  transform: translate(-50%, -50%);
 }
 
 /* ===================== ドット ===================== */
