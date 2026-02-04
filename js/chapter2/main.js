@@ -34,8 +34,15 @@ const dots     = [...document.querySelectorAll(".dot")];
    Dots
 ===================== */
 function updateDots(index = 0) {
+  const COUNT = dots.length; // 5
+  
+  // インデックスを反転させる (0->4, 1->3, 2->2, 3->1, 4->0)
+  // これにより、シリンダーの回転に対してドットが右へ進むようになります
+  const reversedIndex = (COUNT - 1) - index;
+
   dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === index);
+    // reversedIndex を使って active クラスを切り替える
+    dot.classList.toggle("active", i === reversedIndex);
   });
 }
 
