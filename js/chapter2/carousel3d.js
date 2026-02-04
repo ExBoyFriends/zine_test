@@ -24,7 +24,7 @@ export function initCarousel3D(options = {}) {
 
   const AUTO_TOTAL = 35000; //自動回転の総時間
   const AUTO_FINAL = 6000; //最終加速フェーズの時間
-
+  
   let visualAngle = 0;
   let baseSpeed  = BASE_SPEED;
   let dragSpeed  = 0;
@@ -59,11 +59,9 @@ export function initCarousel3D(options = {}) {
       const remain  = AUTO_TOTAL - elapsed;
 
       if (remain <= AUTO_FINAL) {
-        // 最終加速フェーズ
         const t = 1 - remain / AUTO_FINAL;
         baseSpeed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - baseSpeed) * 0.09;
       } else {
-        // 通常加速フェーズ
         const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
         const target = Math.max(baseSpeed, AUTO_MAX * t);
         baseSpeed += (target - baseSpeed) * 0.05;
@@ -94,11 +92,10 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
- /* ===== 正面画像の index を計算（スナップ） ===== */
+    // 正面画像 index
     let index = Math.round(visualAngle / SNAP) % COUNT;
-    if (index < 0) index += COUNT; // 負の角度対応
+    if (index < 0) index += COUNT;
 
-    // ドット更新
     options.onIndexChange?.(index);
 
     // cylinder transform
@@ -106,7 +103,7 @@ export function initCarousel3D(options = {}) {
     front.style.transform = cyl;
     back.style.transform  = cyl;
 
-    // outers / inners
+    // outers / inners transform
     outers.forEach((p, i) => {
       const base = +p.dataset.base;
       p.style.transform =
@@ -114,29 +111,6 @@ export function initCarousel3D(options = {}) {
     });
 
     inners.forEach((p, i) => {
-      const base = +p.dataset.base;
-      p.style.transform =
-        `translate(-50%, -50%) rotateY(${base + visualAngle + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
-    });
-
-    rafId = requestAnimationFrame(animate);
-  }
-
-
-
-    // cylinder transform
-    const cyl = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
-    front.style.transform = cyl;
-    back.style.transform  = cyl;
-
-    // outers / inners
-    outers.forEach(p => {
-      const base = +p.dataset.base;
-      p.style.transform =
-        `translate(-50%, -50%) rotateY(${base + visualAngle}deg) translateZ(${R_FRONT}px)`;
-    });
-
-    inners.forEach(p => {
       const base = +p.dataset.base;
       p.style.transform =
         `translate(-50%, -50%) rotateY(${base + visualAngle + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
@@ -170,22 +144,13 @@ export function initCarousel3D(options = {}) {
   start();
 
   return {
-    startHold() {
-      if (mode !== "auto" && mode !== "exit") mode = "hold";
-    },
-    endHold() {
-      if (mode === "hold") {
-        mode = "normal";
-        idleStartTime = performance.now();
-      }
-    },
-    startAuto() {
-      mode = "auto";
-      autoStartTime = performance.now();
-    },
+    startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
+    endHold()   { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
+    startAuto() { mode = "auto"; autoStartTime = performance.now(); },
     startDrag() { dragSpeed = 0; },
-    moveDrag(dx) { dragSpeed += dx * 0.05; },
+    moveDrag(dx){ dragSpeed += dx * 0.05; },
     endDrag() {},
-    setExtraSpeed(v) { extraSpeed = v; }
+    setExtraSpeed(v){ extraSpeed = v; }
   };
 }
+
