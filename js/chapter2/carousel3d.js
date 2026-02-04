@@ -41,12 +41,33 @@ export function initCarousel3D(options = {}) {
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
-  function updateDots() {
-    const normalized = ((visualAngle % 360) + 360) % 360;
-    const index = Math.round(normalized / SNAP) % COUNT;
-    dots.forEach((d, i) => d.classList.toggle("active", i === index));
-    options.onIndexChange?.(index);
-  }
+ function updateDots() {
+  const angle = ((visualAngle % 360) + 360) % 360;
+
+  let closestIndex = 0;
+  let minDiff = Infinity;
+
+  outers.forEach((p, i) => {
+    const base = +p.dataset.base;
+
+    // base + visualAngle が 0deg（正面）に一番近いもの
+    const diff = Math.abs(
+      ((base + angle + 180) % 360) - 180
+    );
+
+    if (diff < minDiff) {
+      minDiff = diff;
+      closestIndex = i;
+    }
+  });
+
+  dots.forEach((d, i) =>
+    d.classList.toggle("active", i === closestIndex)
+  );
+
+  options.onIndexChange?.(closestIndex);
+}
+
 
   function animate(now) {
     /* ===== 破綻率（後半から効く） ===== */
