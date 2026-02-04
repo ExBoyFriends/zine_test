@@ -1,5 +1,6 @@
 // chapter2/carousel3d.js
 
+
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -21,24 +22,22 @@ export function initCarousel3D(options = {}) {
   const EXIT_MAX   = 16;
 
   const IDLE_MAX  = 1.4;
-  const IDLE_TIME = 8000;
+  const IDLE_TIME = 12000; // ← 放置時間を後ろ倒し
 
-  const AUTO_TOTAL = 30000;
-  const AUTO_FINAL = 4000;
+  const AUTO_TOTAL = 28000; // ← 自動遷移まで長く
+  const AUTO_FINAL = 3500;  // ← 直前だけ一気に壊す
 
   let visualAngle = 0;
 
   let baseSpeed  = BASE_SPEED;
   let extraSpeed = 0;
+  let dragSpeed  = 0;
 
   let mode = "normal"; // normal | hold | auto | exit
 
   let rafId = null;
-
   let idleStartTime = performance.now();
   let autoStartTime = 0;
-
-  let dragSpeed = 0;
 
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
@@ -51,11 +50,15 @@ export function initCarousel3D(options = {}) {
   }
 
   function animate(now) {
-    /* ===== idle ===== */
+    /* ===== chaos（破綻率）===== */
+    const chaos = Math.min(baseSpeed / 6, 1); 
+    // 0 → 正常 / 1 → 完全に壊れる
+
+    /* ===== normal / idle ===== */
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
-      baseSpeed += (target - baseSpeed) * 0.06;
+      baseSpeed += (target - baseSpeed) * 0.05;
     }
 
     /* ===== hold ===== */
@@ -71,10 +74,10 @@ export function initCarousel3D(options = {}) {
       if (remain <= AUTO_FINAL) {
         const t = 1 - remain / AUTO_FINAL;
         const target = AUTO_MAX + t * (EXIT_MAX - AUTO_MAX);
-        baseSpeed += (target - baseSpeed) * 0.08;
+        baseSpeed += (target - baseSpeed) * 0.09;
       } else {
         const t = elapsed / (AUTO_TOTAL - AUTO_FINAL);
-        baseSpeed += (AUTO_MAX * t - baseSpeed) * 0.06;
+        baseSpeed += (AUTO_MAX * t - baseSpeed) * 0.05;
       }
 
       if (elapsed >= AUTO_TOTAL) {
@@ -88,8 +91,22 @@ export function initCarousel3D(options = {}) {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
-    /* ===== 合成 ===== */
-    const speed = baseSpeed + extraSpeed + dragSpeed;
+    /* ===== 🧨 意図されたバグ合成 ===== */
+
+    // drag が壊れ始める
+    const unstableDrag =
+      dragSpeed * (1 - chaos) +
+      dragSpeed * Math.sin(now * 0.025) * chaos * 0.4;
+
+    // baseSpeed も裏切る
+    const unstableBase =
+      baseSpeed * (1 + chaos * 0.18 * Math.sin(now * 0.012));
+
+    const speed =
+      unstableBase +
+      unstableDrag +
+      extraSpeed;
+
     dragSpeed *= 0.85;
 
     visualAngle += speed;
@@ -137,9 +154,9 @@ export function initCarousel3D(options = {}) {
 
     stop();
     visualAngle = 0;
-    baseSpeed = EXIT_MAX; // 一瞬爆速
-    extraSpeed = 0;
+    baseSpeed = EXIT_MAX; // 一瞬だけ暴走
     dragSpeed = 0;
+    extraSpeed = 0;
     mode = "normal";
     idleStartTime = performance.now();
     start();
@@ -148,7 +165,6 @@ export function initCarousel3D(options = {}) {
   start();
 
   return {
-    /* ===== hold ===== */
     startHold() {
       if (mode === "auto" || mode === "exit") return;
       mode = "hold";
@@ -159,8 +175,6 @@ export function initCarousel3D(options = {}) {
         idleStartTime = performance.now();
       }
     },
-
-    /* ===== auto ===== */
     startAuto() {
       mode = "auto";
       autoStartTime = performance.now();
