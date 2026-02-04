@@ -42,6 +42,7 @@ img {
   perspective-origin: 50% 45%;
   touch-action: none;
   z-index: 1;
+  transform-style: preserve-3d;
 }
 
 /* =====================
@@ -61,7 +62,6 @@ img {
 .outer,
 .inner {
   will-change: transform;
-  /* Safari/Chromeで裏面を確実に隠すための接頭辞を追加 */
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
