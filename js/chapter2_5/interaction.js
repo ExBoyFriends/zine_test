@@ -25,11 +25,11 @@ export function initTapInteraction() {
     const dt = performance.now() - startTime;
 
     if (moved && Math.abs(dx) > 40 && dt < 500) {
-      dx < 0 ? goNext() : goPrev();  // スワイプ検出
+      dx < 0 ? goNext() : goPrev();
       return;
     }
 
-    if (!moved && dt < 300) handleTap();  // タップ検出
+    if (!moved && dt < 300) handleTap();
   });
 }
 
@@ -39,12 +39,10 @@ function handleTap() {
 
   if (!state.showingText) {
     showText(state.index);
-    state.showingText = true;
     return;
   }
 
   hideText(state.index);
-  state.showingText = false;
   goNext();
 }
 
@@ -52,14 +50,13 @@ function goNext() {
   if (state.index >= pages.length - 1) return;
   state.index++;
   resetTextState();
-  showPage(state.index);  // 次のページを表示
+  showPage(state.index);
 }
 
 function goPrev() {
   if (state.index <= 0) return;
   state.index--;
   resetTextState();
-  showPage(state.index);  // 前のページを表示
-}　　　
-
+  showPage(state.index);
+}
 
