@@ -22,9 +22,9 @@ export function initCarousel3D(options = {}) {
   const IDLE_MAX  = 1.6;
   const IDLE_TIME = 25000;
 
-  const AUTO_TOTAL = 35000; //自動回転の総時間
-  const AUTO_FINAL = 6000; //最終加速フェーズの時間
-  
+  const AUTO_TOTAL = 35000;
+  const AUTO_FINAL = 6000;
+
   let visualAngle = 0;
   let baseSpeed  = BASE_SPEED;
   let dragSpeed  = 0;
@@ -38,23 +38,17 @@ export function initCarousel3D(options = {}) {
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
- function getFrontIndex() {
-    // 正面（0°に最も近い）画像の index を計算
-    let minDiff = 360;
-    let frontIndex = 0;
+  let prevIndex = 0; // 前フレームのドット index
 
-    outers.forEach((p, i) => {
-      const angle = (visualAngle + +p.dataset.base) % 360;
-      const diff = Math.min(Math.abs(angle), Math.abs(360 - angle));
-      if (diff < minDiff) {
-        minDiff = diff;
-        frontIndex = i;
-      }
-    });
-
-    return frontIndex;
+  /* =====================
+       正面パネル index を取得
+  ===================== */
+  function getFrontIndex() {
+    let index = Math.round(visualAngle / SNAP) % COUNT;
+    if (index < 0) index += COUNT;
+    return index;
   }
-  
+
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
@@ -109,11 +103,16 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // 正面画像 index
-    let index = Math.round(visualAngle / SNAP) % COUNT;
-    if (index < 0) index += COUNT;
+    // ===== 正面 index 更新（飛ばし防止付き） =====
+    let currentIndex = getFrontIndex();
 
-    options.onIndexChange?.(index);
+    // 前フレームから飛ばされた index も順番に通す
+    let diff = (currentIndex - prevIndex + COUNT) % COUNT;
+    for (let i = 1; i <= diff; i++) {
+      options.onIndexChange?.((prevIndex + i) % COUNT);
+    }
+
+    prevIndex = currentIndex;
 
     // cylinder transform
     const cyl = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
@@ -121,13 +120,13 @@ export function initCarousel3D(options = {}) {
     back.style.transform  = cyl;
 
     // outers / inners transform
-    outers.forEach((p, i) => {
+    outers.forEach((p) => {
       const base = +p.dataset.base;
       p.style.transform =
         `translate(-50%, -50%) rotateY(${base + visualAngle}deg) translateZ(${R_FRONT}px)`;
     });
 
-    inners.forEach((p, i) => {
+    inners.forEach((p) => {
       const base = +p.dataset.base;
       p.style.transform =
         `translate(-50%, -50%) rotateY(${base + visualAngle + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
@@ -155,6 +154,7 @@ export function initCarousel3D(options = {}) {
     dragSpeed = 0;
     extraSpeed = 0;
     mode = "normal";
+    prevIndex = 0;
     start();
   });
 
@@ -170,3 +170,4 @@ export function initCarousel3D(options = {}) {
     setExtraSpeed(v){ extraSpeed = v; }
   };
 }
+
