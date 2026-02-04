@@ -1,5 +1,4 @@
 // chapter2_5/view.js
-
 import { state } from "../utils/state.js";
 
 let dualFlipped = false;
@@ -12,7 +11,7 @@ export function getPages() {
   return pages;
 }
 
-/* ===================== Dots update ===================== */
+/* ===================== Dots update（chapter1準拠） ===================== */
 function updateDots(index) {
   dots.forEach((dot, i) => {
     dot.classList.toggle("active", i === index);
@@ -21,46 +20,44 @@ function updateDots(index) {
 
 /* ===================== Page control ===================== */
 export function showPage(index) {
-  if (!pages.length || isFading) return;
+  if (!pages.length || isFading) return;  // フェード中は無視
 
   const prevPage = pages[state.index];
   const nextPage = pages[index];
   if (!nextPage) return;
 
-  isFading = true;
+  isFading = true;  // フェード開始
 
-  // dual ページの反転処理
+  // dualページの場合は反転処理
   if (nextPage.classList.contains("dual") && state.prevIndex !== index) {
     dualFlipped = !dualFlipped;
     nextPage.classList.toggle("flipped", dualFlipped);
   }
 
-  // 前ページを非表示＆操作不可に
-  if (prevPage && prevPage !== nextPage) {
-    prevPage.classList.remove("active");
-    prevPage.style.opacity = 0;
-    prevPage.style.pointerEvents = "none";
-  }
+  // 前ページは非アクティブ化（即時）
+  prevPage?.classList.remove("active");
 
-  // 次ページフェードイン
+  // フェードイン
   nextPage.classList.add("active");
   nextPage.style.opacity = 0;
-  nextPage.style.transition = "opacity 0.5s ease";
-  nextPage.style.pointerEvents = "auto";
+  nextPage.style.transition = "opacity 0.5s ease"; // フェード時間
   requestAnimationFrame(() => {
     nextPage.style.opacity = 1;
   });
 
-  // フェード終了でフラグ解除 & ドット更新
-  nextPage.addEventListener("transitionend", function onEnd() {
-    nextPage.removeEventListener("transitionend", onEnd);
-    nextPage.style.transition = "";
-    nextPage.style.opacity = "";
-    updateDots(index);
-    isFading = false;
-  });
+  // transitionend でフラグ解除 & ドット更新
+  nextPage.addEventListener(
+    "transitionend",
+    function onEnd() {
+      nextPage.removeEventListener("transitionend", onEnd);
+      nextPage.style.transition = "";
+      nextPage.style.opacity = "";
+      updateDots(index);
+      isFading = false;
+    }
+  );
 
-  // 状態更新
+  // 状態を更新
   state.prevIndex = index;
   state.index = index;
   state.showingText = false;
