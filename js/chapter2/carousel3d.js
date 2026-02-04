@@ -1,6 +1,5 @@
 // chapter2/carousel3d.js
 
-
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -22,16 +21,16 @@ export function initCarousel3D(options = {}) {
   const EXIT_MAX   = 16;
 
   const IDLE_MAX  = 1.4;
-  const IDLE_TIME = 12000; // ← 放置時間を後ろ倒し
+  const IDLE_TIME = 12000; // 放置フェーズを長めに
 
-  const AUTO_TOTAL = 28000; // ← 自動遷移まで長く
-  const AUTO_FINAL = 3500;  // ← 直前だけ一気に壊す
+  const AUTO_TOTAL = 32000; // 自動遷移までかなり長く
+  const AUTO_FINAL = 3500;  // 最後だけ一気に壊す
 
   let visualAngle = 0;
 
   let baseSpeed  = BASE_SPEED;
-  let extraSpeed = 0;
   let dragSpeed  = 0;
+  let extraSpeed = 0;
 
   let mode = "normal"; // normal | hold | auto | exit
 
@@ -50,9 +49,11 @@ export function initCarousel3D(options = {}) {
   }
 
   function animate(now) {
-    /* ===== chaos（破綻率）===== */
-    const chaos = Math.min(baseSpeed / 6, 1); 
-    // 0 → 正常 / 1 → 完全に壊れる
+    /* ===== 破綻率（後半から効く） ===== */
+    const chaos = Math.min(
+      Math.max((baseSpeed - 4) / 6, 0),
+      1
+    );
 
     /* ===== normal / idle ===== */
     if (mode === "normal") {
@@ -76,7 +77,8 @@ export function initCarousel3D(options = {}) {
         const target = AUTO_MAX + t * (EXIT_MAX - AUTO_MAX);
         baseSpeed += (target - baseSpeed) * 0.09;
       } else {
-        const t = elapsed / (AUTO_TOTAL - AUTO_FINAL);
+        const tRaw = elapsed / (AUTO_TOTAL - AUTO_FINAL);
+        const t = Math.pow(tRaw, 3.0); // 強く後ろ倒し
         baseSpeed += (AUTO_MAX * t - baseSpeed) * 0.05;
       }
 
@@ -93,12 +95,15 @@ export function initCarousel3D(options = {}) {
 
     /* ===== 🧨 意図されたバグ合成 ===== */
 
-    // drag が壊れ始める
-    const unstableDrag =
-      dragSpeed * (1 - chaos) +
-      dragSpeed * Math.sin(now * 0.025) * chaos * 0.4;
+    const dragNoise =
+      Math.sin(now * (0.018 + chaos * 0.04)) *
+      Math.sin(now * 0.11) *
+      chaos;
 
-    // baseSpeed も裏切る
+    const unstableDrag =
+      dragSpeed * (1 - chaos * 0.6) +
+      dragSpeed * dragNoise * 0.6;
+
     const unstableBase =
       baseSpeed * (1 + chaos * 0.18 * Math.sin(now * 0.012));
 
@@ -165,6 +170,7 @@ export function initCarousel3D(options = {}) {
   start();
 
   return {
+    /* ===== hold ===== */
     startHold() {
       if (mode === "auto" || mode === "exit") return;
       mode = "hold";
@@ -175,6 +181,8 @@ export function initCarousel3D(options = {}) {
         idleStartTime = performance.now();
       }
     },
+
+    /* ===== auto ===== */
     startAuto() {
       mode = "auto";
       autoStartTime = performance.now();
@@ -195,3 +203,4 @@ export function initCarousel3D(options = {}) {
     }
   };
 }
+
