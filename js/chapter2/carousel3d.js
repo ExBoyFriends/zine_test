@@ -1,5 +1,5 @@
 // chapter2/carousel3d.js
-// chapter2/carousel3d.js
+
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -39,24 +39,13 @@ export function initCarousel3D(options = {}) {
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
   /* =====================
-     正面画像 index を取得（-180°～180° で最短距離を判定）
-     ===================== */
+     正面パネル index を取得
+     visualAngle の符号を反転して順序を正しく同期
+  ===================== */
   function getFrontIndex() {
-    let minDiff = 180;
-    let frontIndex = 0;
-
-    outers.forEach((p, i) => {
-      const base = +p.dataset.base;
-      let angle = (base + visualAngle) % 360;
-      // -180～180 に正規化
-      let diff = Math.abs(((angle + 180) % 360) - 180);
-      if (diff < minDiff) {
-        minDiff = diff;
-        frontIndex = i;
-      }
-    });
-
-    return frontIndex;
+    let index = Math.round(-visualAngle / SNAP) % COUNT;
+    if (index < 0) index += COUNT;
+    return index;
   }
 
   function animate(now) {
