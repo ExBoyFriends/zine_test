@@ -20,18 +20,25 @@ export function initCarousel3D(options = {}) {
   const AUTO_MAX   = 12;
   const EXIT_MAX   = 16;
 
-  const IDLE_MAX  = 1.4;   // 放置時の最大速度
-  const IDLE_TIME = 8000;  // 何msでそこまで行くか
-  
-  const TOTAL_TIME = 20000;
-  const FINAL_TIME = 2000;
+  const IDLE_MAX  = 1.4;
+  const IDLE_TIME = 8000;
+
+  const AUTO_TOTAL = 20000;
+  const AUTO_FINAL = 2000;
 
   let visualAngle = 0;
-  let speed = BASE_SPEED;
+
+  let baseSpeed  = BASE_SPEED;
+  let extraSpeed = 0;
 
   let mode = "normal"; // normal | hold | auto | exit
+
   let rafId = null;
-  let startTime = 0;
+
+  let idleStartTime = performance.now();
+  let autoStartTime = 0;
+
+  let dragSpeed = 0;
 
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
@@ -44,35 +51,46 @@ export function initCarousel3D(options = {}) {
   }
 
   function animate(now) {
-    const elapsed = now - startTime;
-
-    /* ===== モード別スピード ===== */
+    /* ===== idle ===== */
     if (mode === "normal") {
-      // ★ 放置中はゆっくり BASE → IDLE_MAX へ
-      const t = Math.min(elapsed / IDLE_TIME, 1);
+      const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
-      speed += (target - speed) * 0.06;
+      baseSpeed += (target - baseSpeed) * 0.06;
     }
 
+    /* ===== hold ===== */
     if (mode === "hold") {
-      speed += (HOLD_SPEED - speed) * 0.1;
+      baseSpeed += (HOLD_SPEED - baseSpeed) * 0.12;
     }
 
+    /* ===== auto ===== */
     if (mode === "auto") {
-      const remain = TOTAL_TIME - elapsed;
+      const elapsed = now - autoStartTime;
+      const remain  = AUTO_TOTAL - elapsed;
 
-      if (remain <= FINAL_TIME) {
-        const t = 1 - remain / FINAL_TIME;
-        speed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - speed) * 0.08;
+      if (remain <= AUTO_FINAL) {
+        const t = 1 - remain / AUTO_FINAL;
+        const target = AUTO_MAX + t * (EXIT_MAX - AUTO_MAX);
+        baseSpeed += (target - baseSpeed) * 0.08;
       } else {
-        const t = elapsed / (TOTAL_TIME - FINAL_TIME);
-        speed += (AUTO_MAX * t - speed) * 0.06;
+        const t = elapsed / (AUTO_TOTAL - AUTO_FINAL);
+        baseSpeed += (AUTO_MAX * t - baseSpeed) * 0.06;
+      }
+
+      if (elapsed >= AUTO_TOTAL) {
+        mode = "exit";
+        options.onExit?.();
       }
     }
 
+    /* ===== exit ===== */
     if (mode === "exit") {
-      speed += (EXIT_MAX - speed) * 0.15;
+      baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
+
+    /* ===== 合成 ===== */
+    const speed = baseSpeed + extraSpeed + dragSpeed;
+    dragSpeed *= 0.85;
 
     visualAngle += speed;
     updateDots();
@@ -100,16 +118,11 @@ export function initCarousel3D(options = {}) {
          rotateY(180deg)`;
     });
 
-    if (elapsed >= TOTAL_TIME && mode === "auto") {
-      mode = "exit";
-      options.onExit?.();
-    }
-
     rafId = requestAnimationFrame(animate);
   }
 
   function start() {
-    startTime = performance.now();
+    idleStartTime = performance.now();
     rafId = requestAnimationFrame(animate);
   }
 
@@ -124,24 +137,47 @@ export function initCarousel3D(options = {}) {
 
     stop();
     visualAngle = 0;
-    speed = EXIT_MAX;   // 一瞬だけ爆速（想定どおり）
+    baseSpeed = EXIT_MAX; // 一瞬爆速
+    extraSpeed = 0;
+    dragSpeed = 0;
     mode = "normal";
+    idleStartTime = performance.now();
     start();
   });
 
   start();
 
   return {
+    /* ===== hold ===== */
     startHold() {
       if (mode === "auto" || mode === "exit") return;
       mode = "hold";
     },
     endHold() {
-      if (mode === "hold") mode = "normal";
+      if (mode === "hold") {
+        mode = "normal";
+        idleStartTime = performance.now();
+      }
     },
+
+    /* ===== auto ===== */
     startAuto() {
       mode = "auto";
-      startTime = performance.now(); // auto 専用の時間軸に切り替え
+      autoStartTime = performance.now();
+    },
+
+    /* ===== drag ===== */
+    startDrag() {
+      dragSpeed = 0;
+    },
+    moveDrag(dx) {
+      dragSpeed += dx * 0.05;
+    },
+    endDrag() {},
+
+    /* ===== transitionOut ===== */
+    setExtraSpeed(v) {
+      extraSpeed = v;
     }
   };
 }
