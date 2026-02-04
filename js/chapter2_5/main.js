@@ -27,10 +27,9 @@ initLoader(loader, () => {
     chapter,
     dots,
     onStart() {
-      // 表示同期
       showPage(state.index);  // 最初のページを表示
-      updateDots(state.index);  // ドットを更新
-      initTapInteraction();  // インタラクションを初期化
+      updateDots(state.index);
+      initTapInteraction();   // タップ/スワイプ操作を初期化
     }
   });
 });
@@ -39,7 +38,8 @@ initLoader(loader, () => {
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
 
-  // ページが再表示されるときに、現在の状態でページとドットを更新
+  // 再表示時も現在のページ状態を復元
   showPage(state.index);
   updateDots(state.index);
 });
+
