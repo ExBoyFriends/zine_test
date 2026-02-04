@@ -1,16 +1,12 @@
 /* chapter2.css */
-/* =====================
-   Reset
-===================== */
+/* ===================== Reset ===================== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
-/* =====================
-   HTML / Body
-===================== */
+/* ===================== HTML / Body ===================== */
 html,
 body {
   width: 100%;
@@ -22,16 +18,12 @@ body {
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
-/* =====================
-   Image Lock
-===================== */
+/* ===================== Image Lock ===================== */
 img {
   pointer-events: none;
   -webkit-user-drag: none;
 }
-/* =====================
-   Scene
-===================== */
+/* ===================== Scene ===================== */
 .scene {
   position: fixed;
   inset: 0;
@@ -40,9 +32,7 @@ img {
   touch-action: none;
   z-index: 1;
 }
-/* =====================
-   Panel Common
-===================== */
+/* ===================== Panel Common ===================== */
 .panel,
 .outer,
 .inner {
@@ -56,9 +46,7 @@ img {
 .inner {
   will-change: transform;
 }
-/* =====================
-   Front Card
-===================== */
+/* ===================== Front Card ===================== */
 .outer {
   width: 230px;
   height: 300px;
@@ -70,9 +58,7 @@ img {
   object-fit: contain;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
 }
-/* =====================
-   Back Card
-===================== */
+/* ===================== Back Card ===================== */
 .inner {
   width: 220px;
   height: 290px;
@@ -81,9 +67,7 @@ img {
   filter: brightness(0.45);
   opacity: 0.85;
 }
-/* =====================
-   Cylinder
-===================== */
+/* ===================== Cylinder ===================== */
 .cylinder {
   position: absolute;
   left: 50%;
@@ -100,9 +84,7 @@ img {
   z-index: 1;
   pointer-events: none;
 }
-/* =====================
-   Dots
-===================== */
+/* ===================== Dots ===================== */
 .dots {
   position: fixed;
   bottom: calc(40px + env(safe-area-inset-bottom));
@@ -128,22 +110,13 @@ img {
 .dot.active {
   background: rgba(240, 240, 240, 0.9);
 }
-/* =====================
-   Glitch Overlay
-===================== */
+/* ===================== Glitch Overlay ===================== */
 .glitch-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 30;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      rgba(255,255,255,0.06),
-      rgba(255,255,255,0.06) 1px,
-      transparent 1px,
-      transparent 3px
-    );
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06) 1px, transparent 1px, transparent 3px);
   opacity: 0;
   mix-blend-mode: overlay;
 }
@@ -155,9 +128,7 @@ img {
   opacity: 1;
   animation: glitchFlash 0.12s infinite steps(2);
 }
-/* =====================
-   Animations
-===================== */
+/* ===================== Animations ===================== */
 @keyframes glitchShake {
   0%   { transform: translate(0,0); }
   25%  { transform: translate(-1px,1px); }
