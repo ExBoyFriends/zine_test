@@ -103,6 +103,7 @@ img {
   top: 50%;
   width: 420px;
   height: 420px;
+  transform-style: preserve-3d;
   transform: translate(-50%, -50%);
   will-change: transform;
 }
