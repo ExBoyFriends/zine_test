@@ -115,7 +115,7 @@ img {
 }
 
 /* =====================
-   Dots（chapter1 準拠）
+   Dots
 ===================== */
 .dots {
   position: fixed;
@@ -126,12 +126,12 @@ img {
 
   opacity: 0;
   pointer-events: none;
-  transition: opacity 2.8s cubic-bezier(.22,.61,.36,1);
+  transition: 0.3s cubic-bezier(.22,.61,.36,1);;
 }
 
 .dots.visible {
   opacity: 1;
-    pointer-events: auto;
+  pointer-events: auto;
 }
 
 .dot {
@@ -140,6 +140,7 @@ img {
   height: 8px;
   margin: 0 5px;
   background: rgba(200, 200, 200, 0.25);
+  transition: background 0.08s linear;
 }
 
 .dot.active {
