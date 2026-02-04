@@ -94,27 +94,33 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
- /* ===== 正面に最も近いスライド index 判定（確実に1枚ずつ） ===== */
-    let closestIndex = 0;
-    let minDist = Infinity;
+ /* ===== 正面画像の index を計算（スナップ） ===== */
+    let index = Math.round(visualAngle / SNAP) % COUNT;
+    if (index < 0) index += COUNT; // 負の角度対応
 
+    // ドット更新
+    options.onIndexChange?.(index);
+
+    // cylinder transform
+    const cyl = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+    front.style.transform = cyl;
+    back.style.transform  = cyl;
+
+    // outers / inners
     outers.forEach((p, i) => {
-      const base = +p.dataset.base;       // 画像の配置角度
-      const angle = (base + visualAngle) % 360;
-
-      // 各画像の正面は 0°, 72°, 144°, 216°, 288°
-      const expected = i * SNAP;
-      let diff = Math.abs(angle - expected);
-      if (diff > 180) diff = 360 - diff;
-
-      if (diff < minDist) {
-        minDist = diff;
-        closestIndex = i;
-      }
+      const base = +p.dataset.base;
+      p.style.transform =
+        `translate(-50%, -50%) rotateY(${base + visualAngle}deg) translateZ(${R_FRONT}px)`;
     });
 
-// ドットコールバック（逆順に光らせたい場合は main.js の updateDots に任せる）
-options.onIndexChange?.(closestIndex);
+    inners.forEach((p, i) => {
+      const base = +p.dataset.base;
+      p.style.transform =
+        `translate(-50%, -50%) rotateY(${base + visualAngle + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
+    });
+
+    rafId = requestAnimationFrame(animate);
+  }
 
 
 
