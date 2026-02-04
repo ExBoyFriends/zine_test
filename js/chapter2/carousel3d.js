@@ -54,27 +54,26 @@ export function initCarousel3D(options = {}) {
     }
 
     // auto
-if (mode === "auto") {
-  const elapsed = now - autoStartTime;
-  const remain  = AUTO_TOTAL - elapsed;
+    if (mode === "auto") {
+      const elapsed = now - autoStartTime;
+      const remain  = AUTO_TOTAL - elapsed;
 
-  if (remain <= AUTO_FINAL) {
-    // 最終加速フェーズ
-    const t = 1 - remain / AUTO_FINAL;
-    baseSpeed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - baseSpeed) * 0.09;
-  } else {
-    // 通常加速フェーズ
-    // ★ ここを修正: 減速を避けるために target = Math.max(baseSpeed, AUTO_MAX*t)
-    const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
-    const target = Math.max(baseSpeed, AUTO_MAX * t);
-    baseSpeed += (target - baseSpeed) * 0.05;
-  }
+      if (remain <= AUTO_FINAL) {
+        // 最終加速フェーズ
+        const t = 1 - remain / AUTO_FINAL;
+        baseSpeed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - baseSpeed) * 0.09;
+      } else {
+        // 通常加速フェーズ
+        const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
+        const target = Math.max(baseSpeed, AUTO_MAX * t);
+        baseSpeed += (target - baseSpeed) * 0.05;
+      }
 
-  if (elapsed >= AUTO_TOTAL) {
-    mode = "exit";
-    options.onExit?.();
-  }
-}
+      if (elapsed >= AUTO_TOTAL) {
+        mode = "exit";
+        options.onExit?.();
+      }
+    }
 
     // exit
     if (mode === "exit") {
@@ -95,20 +94,21 @@ if (mode === "auto") {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    /* ===== 正面に最も近いスライド index 判定（正確化） ===== */
-let closestIndex = 0;
-let minDiff = Infinity;
-outers.forEach((p, i) => {
-  const base = +p.dataset.base;
-  // 画像の正面角度を計算
-  const angle = (base + visualAngle) % 360;
-  const dist = Math.min(Math.abs(angle), Math.abs(360 - angle));
-  if (dist < minDiff) {
-    minDiff = dist;
-    closestIndex = i;
-  }
-});
-options.onIndexChange?.(closestIndex);
+    /* ===== 正面に最も近いスライド index 判定（高速回転対応） ===== */
+    let closestIndex = 0;
+    let minDiff = Infinity;
+    outers.forEach((p, i) => {
+      const base = +p.dataset.base;
+      const angle = (base + visualAngle) % 360;
+      const dist  = Math.min(Math.abs(angle), Math.abs(360 - angle));
+      if (dist < minDiff) {
+        minDiff = dist;
+        closestIndex = i;
+      }
+    });
+
+    // 正面に最も近いスライド index をコールバック
+    options.onIndexChange?.(closestIndex);
 
     // cylinder transform
     const cyl = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
@@ -175,4 +175,3 @@ options.onIndexChange?.(closestIndex);
     setExtraSpeed(v) { extraSpeed = v; }
   };
 }
-
