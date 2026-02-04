@@ -5,7 +5,7 @@ export function initCarousel3D(options = {}) {
   const back   = document.querySelector(".cylinder-back");
   const outers = document.querySelectorAll(".outer");
   const inners = document.querySelectorAll(".inner");
-  const dots   = document.querySelectorAll(".dot");
+  
 
   const COUNT = outers.length;
   if (!COUNT) return;
@@ -41,32 +41,7 @@ export function initCarousel3D(options = {}) {
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
- function updateDots() {
-  const angle = ((-visualAngle % 360) + 360) % 360;
 
-  let closestIndex = 0;
-  let minDiff = Infinity;
-
-  outers.forEach((p, i) => {
-    const base = +p.dataset.base;
-
-    // base + visualAngle が 0deg（正面）に一番近いもの
-    const diff = Math.abs(
-      ((base + angle + 180) % 360) - 180
-    );
-
-    if (diff < minDiff) {
-      minDiff = diff;
-      closestIndex = i;
-    }
-  });
-
-  dots.forEach((d, i) =>
-    d.classList.toggle("active", i === closestIndex)
-  );
-
-  options.onIndexChange?.(closestIndex);
-}
 
 
   function animate(now) {
