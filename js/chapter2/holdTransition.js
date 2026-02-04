@@ -12,7 +12,7 @@ let holding = false;
   20s 放置 → 自動崩壊開始 → 約35s で exit
 */
 const AUTO_DELAY = 20000;
-const HOLD_DELAY = 380;
+const HOLD_DELAY = 3800;
 
 export function resetTransitionState() {
   pressing = false;
