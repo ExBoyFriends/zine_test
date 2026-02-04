@@ -12,14 +12,12 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  /* ===== 回転定数 ===== */
   const BASE_SPEED = 0.22;
   const HOLD_SPEED = 8;
   const AUTO_MAX   = 12;
   const EXIT_MAX   = 16;
-
-  const IDLE_MAX  = 1.6;
-  const IDLE_TIME = 25000;
+  const IDLE_MAX   = 1.6;
+  const IDLE_TIME  = 25000;
   const AUTO_TOTAL = 35000;
   const AUTO_FINAL = 6000;
 
@@ -45,14 +43,10 @@ export function initCarousel3D(options = {}) {
       baseSpeed += (target - baseSpeed) * 0.05;
     }
 
-    if (mode === "hold") {
-      baseSpeed += (HOLD_SPEED - baseSpeed) * 0.12;
-    }
-
+    if (mode === "hold") baseSpeed += (HOLD_SPEED - baseSpeed) * 0.12;
     if (mode === "auto") {
       const elapsed = now - autoStartTime;
       const remain  = AUTO_TOTAL - elapsed;
-
       if (remain <= AUTO_FINAL) {
         const t = 1 - remain / AUTO_FINAL;
         baseSpeed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - baseSpeed) * 0.09;
@@ -60,16 +54,10 @@ export function initCarousel3D(options = {}) {
         const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
         baseSpeed += (AUTO_MAX * t - baseSpeed) * 0.05;
       }
-
-      if (elapsed >= AUTO_TOTAL) {
-        mode = "exit";
-        options.onExit?.();
-      }
+      if (elapsed >= AUTO_TOTAL) { mode = "exit"; options.onExit?.(); }
     }
 
-    if (mode === "exit") {
-      baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
-    }
+    if (mode === "exit") baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
 
     const dragNoise =
       Math.sin(now * (0.018 + chaos * 0.04)) *
@@ -84,10 +72,9 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    /* ===== ★ ドット index 正確化 ===== */
+    // ★ 正面に最も近いスライドの index を計算
     let closestIndex = 0;
     let minDiff = Infinity;
-
     outers.forEach((p, i) => {
       const base = +p.dataset.base;
       const diff = Math.abs(((base + visualAngle + 180) % 360) - 180);
@@ -96,12 +83,9 @@ export function initCarousel3D(options = {}) {
         closestIndex = i;
       }
     });
-
     options.onIndexChange?.(closestIndex);
 
-    const cyl =
-      `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
-
+    const cyl = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     front.style.transform = cyl;
     back.style.transform  = cyl;
 
@@ -118,15 +102,8 @@ export function initCarousel3D(options = {}) {
     rafId = requestAnimationFrame(animate);
   }
 
-  function start() {
-    idleStartTime = performance.now();
-    rafId = requestAnimationFrame(animate);
-  }
-
-  function stop() {
-    cancelAnimationFrame(rafId);
-    rafId = null;
-  }
+  function start() { idleStartTime = performance.now(); rafId = requestAnimationFrame(animate); }
+  function stop() { cancelAnimationFrame(rafId); rafId = null; }
 
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
@@ -151,5 +128,4 @@ export function initCarousel3D(options = {}) {
     setExtraSpeed(v) { extraSpeed = v; }
   };
 }
-
 
