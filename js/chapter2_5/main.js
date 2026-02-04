@@ -12,34 +12,28 @@ const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
 
-/* ===================== dots ===================== */
-function updateDots(index = 0) {
-  document.querySelectorAll(".dot").forEach((dot, i) => {
-    dot.classList.toggle("active", i === index);
-  });
-}
-
 /* ===================== Loader 完了 ===================== */
 initLoader(loader, () => {
-  state.index = 0;  // 初期化
+  // 初期ページインデックスをリセット
+  state.index = 0;
 
   startChapter({
     chapter,
     dots,
     onStart() {
-      // 表示同期
-      showPage(state.index);  // 最初のページを表示
-      updateDots(state.index);  // ドットを更新
-      initTapInteraction();  // インタラクションを初期化
+      // 初回表示は showPage のみ。ドットは showPage 内で同期される
+      showPage(state.index);
+      
+      // インタラクションを初期化
+      initTapInteraction();
     }
   });
 });
 
-/* ===================== pageshow（bfcache） ===================== */
-window.addEventListener("pageshow", e => {
+/* ===================== pageshow（bfcache復帰） ===================== */
+window.addEventListener("pageshow", (e) => {
   if (!e.persisted) return;
 
-  // ページが再表示されるときに、現在の状態でページとドットを更新
+  // フェード同期を壊さないよう、showPage のみ呼ぶ
   showPage(state.index);
-  updateDots(state.index);
 });
