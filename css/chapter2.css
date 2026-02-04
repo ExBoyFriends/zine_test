@@ -90,6 +90,7 @@ img {
 .inner {
   width: 220px;
   height: 290px;
+　z-index: 1;
   background: url("../image/top_b.png") center / contain no-repeat;
   filter: brightness(0.45);
   opacity: 0.85;
@@ -106,7 +107,6 @@ img {
   height: 420px;
   transform-style: preserve-3d;
   transform: translate(-50%, -50%);
-  /* 親の回転を滑らかにする */
   will-change: transform;
 }
 
