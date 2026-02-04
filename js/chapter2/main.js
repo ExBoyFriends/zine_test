@@ -15,12 +15,8 @@ import { initGlitchLayer } from "./effects.js";
    bfcache 対応
 ===================== */
 window.addEventListener("pageshow", e => {
-  if (e.persisted) {
-    resetTransitionState();
-    startAutoTransition(() => {
-      goChapter25();  // 自動遷移を再度トリガー
-    });
-  }
+  if (!e.persisted) return;
+  resetTransitionState();
 });
 
 /* =====================
@@ -59,24 +55,18 @@ function goChapter25() {
    Loader 完了
 ===================== */
 initLoader(loader, () => {
-
-  // ★ 世界を表示（これが無かった）
   chapter?.classList.add("visible");
 
-  // ---- 長押し bind（1回だけ） ----
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
   }
 
-  // ---- dots 表示 ----
   dotsWrap?.classList.add("visible");
 
-  // ---- 自動遷移（放置対策） ----
-  startAutoTransition(() => {
-    goChapter25();
-  });
+  startAutoTransition(goChapter25);
 });
+
 
 /* =====================
    Carousel
