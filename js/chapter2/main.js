@@ -16,7 +16,15 @@ import { initGlitchLayer } from "./effects.js";
 ===================== */
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
+
+  // hold / auto 状態をリセット
   resetTransitionState();
+
+  // ★ これが致命的に足りなかった
+  goChapter25._done = false;
+
+  // ★ 自動遷移を必ず再スタート
+  startAutoTransition(goChapter25);
 });
 
 /* =====================
@@ -54,6 +62,8 @@ function goChapter25() {
   });
 }
 
+// ★ 初期化
+goChapter25._done = false;
 
 /* =====================
    Loader 完了
