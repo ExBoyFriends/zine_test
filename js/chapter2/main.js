@@ -46,10 +46,14 @@ function goChapter25() {
 
   playExitTransition({
     onFinish() {
-      location.href = "../HTML/chapter2_5.html"; 
+      import("./holdTransition.js").then(m => {
+        m.markExited();
+      });
+      location.href = "../HTML/chapter2_5.html";
     }
   });
 }
+
 
 /* =====================
    Loader 完了
