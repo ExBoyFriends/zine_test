@@ -94,24 +94,24 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-/* ===== 正面に最も近いスライド index 判定（全スライド対応） ===== */
-let closestIndex = 0;
-let minDiff = Infinity;
+ /* ===== 正面に最も近いスライド index 判定（確実に1枚ずつ） ===== */
+    let closestIndex = 0;
+    let minDist = Infinity;
 
-const FRONT_ANGLE = 0; // 正面基準
+    outers.forEach((p, i) => {
+      const base = +p.dataset.base;       // 画像の配置角度
+      const angle = (base + visualAngle) % 360;
 
-outers.forEach((p, i) => {
-  const base = +p.dataset.base;
-  let angle = (base + visualAngle) % 360;
+      // 各画像の正面は 0°, 72°, 144°, 216°, 288°
+      const expected = i * SNAP;
+      let diff = Math.abs(angle - expected);
+      if (diff > 180) diff = 360 - diff;
 
-  // 0〜180 に正規化
-  let diff = Math.min(Math.abs(angle), 360 - Math.abs(angle));
-
-  if (diff < minDiff) {
-    minDiff = diff;
-    closestIndex = i;
-  }
-});
+      if (diff < minDist) {
+        minDist = diff;
+        closestIndex = i;
+      }
+    });
 
 // ドットコールバック（逆順に光らせたい場合は main.js の updateDots に任せる）
 options.onIndexChange?.(closestIndex);
