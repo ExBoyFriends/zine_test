@@ -39,10 +39,10 @@ export function initGlitchLayer() {
     console.warn("[glitch] .glitch-overlay not found");
   }
 
-  // 🔑 初回ロード時は必ずクリーンに
+  // 初回ロード時は必ずクリーンに
   resetGlitchState();
 
-  // 🔑 bfcache 復帰対応
+  // bfcache 復帰対応
   window.addEventListener("pageshow", e => {
     if (e.persisted) {
       resetGlitchState();
