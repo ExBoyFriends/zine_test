@@ -13,6 +13,9 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
+  /* ===== 高速化の鍵: メモリ上に角度を保持（DOMアクセス排除） ===== */
+  const baseAngles = Array.from({ length: COUNT }, (_, i) => i * SNAP);
+
   /* ===== 回転定数 ===== */
   const BASE_SPEED = 0.22;
   const HOLD_SPEED = 8;
@@ -33,32 +36,24 @@ export function initCarousel3D(options = {}) {
   let idleStartTime = performance.now();
   let autoStartTime = 0;
   
-  // 初期インデックスを保持
   let prevIndex = -1; 
-
-  // 各パネルに初期角度をデータ属性として保持
-  outers.forEach((p, i) => (p.dataset.base = i * SNAP));
-  inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
   /**
    * 最も正面（Z軸手前）に近いパネルのインデックスを返す
+   * ※メモリ上の baseAngles を使用するため超高速
    */
   function getFrontIndex() {
     let maxZ = -2;
     let closestIndex = 0;
 
-    outers.forEach((p, i) => {
-      const base = parseFloat(p.dataset.base);
-      // パネルの現在の合計角度をラジアンに変換
-      const currentRad = ((base + visualAngle) * Math.PI) / 180;
-      // Z値（奥行き）を計算。Math.cos(0) = 1 なので、1に近いほど正面。
+    for (let i = 0; i < COUNT; i++) {
+      const currentRad = ((baseAngles[i] + visualAngle) * Math.PI) / 180;
       const z = Math.cos(currentRad);
-
       if (z > maxZ) {
         maxZ = z;
         closestIndex = i;
       }
-    });
+    }
     return closestIndex;
   }
 
@@ -99,27 +94,27 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // --- ★ 正面判定とドット更新 ---
+    // --- 正面判定とドット更新 ---
     const currentIndex = getFrontIndex();
     if (currentIndex !== prevIndex) {
       options.onIndexChange?.(currentIndex);
       prevIndex = currentIndex;
     }
 
-    // --- Transform 適応 ---
-    const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+    // --- Transform 適応（シリンダー本体は回さず、パネルを配置） ---
+    // もしシリンダー全体を傾けたい場合はここだけ残す
+    const cylTransform = `translate(-50%, -50%) rotateX(-22deg)`;
     front.style.transform = cylTransform;
     back.style.transform  = cylTransform;
 
-    outers.forEach((p) => {
-      const base = parseFloat(p.dataset.base);
-      p.style.transform = `translate(-50%, -50%) rotateY(${base}deg) translateZ(${R_FRONT}px)`;
+    outers.forEach((p, i) => {
+      const angle = baseAngles[i] + visualAngle;
+      p.style.transform = `translate(-50%, -50%) rotateY(${angle}deg) translateZ(${R_FRONT}px)`;
     });
 
-    inners.forEach((p) => {
-      const base = parseFloat(p.dataset.base);
-      // 背面パネルは内側を向くように調整
-      p.style.transform = `translate(-50%, -50%) rotateY(${base + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
+    inners.forEach((p, i) => {
+      const angle = baseAngles[i] + visualAngle + 180;
+      p.style.transform = `translate(-50%, -50%) rotateY(${angle}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
     });
 
     rafId = requestAnimationFrame(animate);
