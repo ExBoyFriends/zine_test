@@ -38,29 +38,19 @@ export function initCarousel3D(options = {}) {
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
-  /* =====================
-     正面パネル index を取得（パネル中央 ± SNAP/2）
+ /* =====================
+     正面パネル index を取得
+     visualAngle を SNAP 単位で丸めて正確に同期
   ===================== */
   function getFrontIndex() {
-    let frontIndex = 0;
-    let minDiff = 180; // 最小差
-    outers.forEach((p, i) => {
-      const base = +p.dataset.base;
-      let angle = (base + visualAngle) % 360;
-      // -180〜180 に正規化
-      angle = ((angle + 180) % 360) - 180;
-      const diff = Math.abs(angle);
-      if (diff < minDiff) {
-        minDiff = diff;
-        frontIndex = i;
-      }
-    });
-    return frontIndex;
+    let index = Math.round(-visualAngle / SNAP) % COUNT;
+    if (index < 0) index += COUNT;
+    return index;
   }
 
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
-
+    
     // normal / idle
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
