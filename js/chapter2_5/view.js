@@ -2,6 +2,7 @@
 import { state } from "../utils/state.js";
 
 let dualFlipped = false;
+let isFading = false;
 
 const pages = Array.from(document.querySelectorAll(".page"));
 const dots  = Array.from(document.querySelectorAll(".dot"));
@@ -19,32 +20,48 @@ function updateDots(index) {
 
 /* ===================== Page control ===================== */
 export function showPage(index) {
-  if (!pages.length) return;
+  if (!pages.length || isFading) return;  // フェード中は無視
 
-  pages.forEach(p => {
-    p.classList.remove("active", "show-text", "flipped");
-  });
+  const prevPage = pages[state.index];
+  const nextPage = pages[index];
+  if (!nextPage) return;
 
-  const page = pages[index];
-  if (!page) return;
+  isFading = true;  // フェード開始
 
-  // dualページの場合、反転処理
-  if (page.classList.contains("dual") && state.prevIndex !== index) {
+  // dualページの場合は反転処理
+  if (nextPage.classList.contains("dual") && state.prevIndex !== index) {
     dualFlipped = !dualFlipped;
-    page.classList.toggle("flipped", dualFlipped);
+    nextPage.classList.toggle("flipped", dualFlipped);
   }
 
-  // activeクラスを追加して表示
-  page.classList.add("active");
+  // 前ページは非アクティブ化（即時）
+  prevPage?.classList.remove("active");
 
-  // ドットの更新
-  updateDots(index);
+  // フェードイン
+  nextPage.classList.add("active");
+  nextPage.style.opacity = 0;
+  nextPage.style.transition = "opacity 0.5s ease"; // フェード時間
+  requestAnimationFrame(() => {
+    nextPage.style.opacity = 1;
+  });
+
+  // transitionend でフラグ解除 & ドット更新
+  nextPage.addEventListener(
+    "transitionend",
+    function onEnd() {
+      nextPage.removeEventListener("transitionend", onEnd);
+      nextPage.style.transition = "";
+      nextPage.style.opacity = "";
+      updateDots(index);
+      isFading = false;
+    }
+  );
 
   // 状態を更新
   state.prevIndex = index;
   state.index = index;
   state.showingText = false;
-}
+};
 
 /* ===================== Text control ===================== */
 export function showText(index) {
