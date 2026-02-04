@@ -27,23 +27,19 @@ initLoader(loader, () => {
     chapter,
     dots,
     onStart() {
-      // 初回表示は showPage でページとドットを同期
-      showPage(state.index);
-      updateDots(state.index);
-
-      // インタラクションを初期化
-      initTapInteraction();
+      // 表示同期
+      showPage(state.index);  // 最初のページを表示
+      updateDots(state.index);  // ドットを更新
+      initTapInteraction();  // インタラクションを初期化
     }
   });
 });
 
-/* ===================== pageshow（bfcache復帰） ===================== */
+/* ===================== pageshow（bfcache） ===================== */
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
 
-  // 現在のページ状態で同期
+  // ページが再表示されるときに、現在の状態でページとドットを更新
   showPage(state.index);
   updateDots(state.index);
 });
-
-
