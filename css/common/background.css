@@ -23,8 +23,7 @@
   animation: slowFade 18s ease-in-out infinite alternate;
   pointer-events: none;
 
-  z-index: 1; /* 背景の上、他のコンテンツの下 */
-}
+  z-index: 1;
 
 @keyframes slowFade {
   0%   { opacity: 0.25; }
