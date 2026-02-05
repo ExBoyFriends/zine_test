@@ -84,30 +84,16 @@ img {
 }
 /* ===================== Dots ===================== */
 .dots {
-  position: fixed;
-  bottom: calc(40px + env(safe-area-inset-bottom));
-  width: 100%;
-  text-align: center;
-  z-index: 20;
-  opacity: 0;
   pointer-events: none;
   transition: 0.3s cubic-bezier(.22,.61,.36,1);
 }
 .dots.visible {
-  opacity: 1;
   pointer-events: auto;
 }
 .dot {
-  display: inline-block;
-  width: 5px;
-  height: 8px;
-  margin: 0 5px;
-  background: rgba(200, 200, 200, 0.25);
   transition: background 0.08s linear;
 }
-.dot.active {
-  background: rgba(240, 240, 240, 0.9);
-}
+
 /* ===================== Glitch Overlay ===================== */
 .glitch-overlay {
   position: fixed;
