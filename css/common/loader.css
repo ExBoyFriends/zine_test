@@ -1,29 +1,4 @@
-/*loader.css*/
-
-#fadeLayer {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  /* 左上(15% 15%)から広がる柔らかな光 */
-  background: radial-gradient(circle at 15% 15%, 
-    rgba(255, 255, 255, 0.5) 0%, 
-    rgba(0, 0, 0, 0) 75%);
-  
-  mix-blend-mode: screen;
-  filter: blur(15px);
-  opacity: 0;
-  animation: lightWave 5.5s ease-in-out infinite;
-}
-
-/* 押し寄せては引く、波のような鼓動 */
-@keyframes lightWave {
-  0%   { opacity: 0;   transform: scale(1.0); }
-  35%  { opacity: 0.9; transform: scale(1.12); } 
-  50%  { opacity: 0.3; transform: scale(1.0); }  
-  75%  { opacity: 0.7; transform: scale(1.05); } 
-  100% { opacity: 0;   transform: scale(1.0); }
-}
+/* loader.css 
 
 #loader {
   position: fixed;
@@ -34,16 +9,43 @@
   justify-content: center;
 }
 
+#fadeLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  /* 光の芯を少しハッキリさせ、広がりすぎないように調整 */
+  background: radial-gradient(circle at 10% 10%, 
+    rgba(255, 255, 255, 0.7) 0%, 
+    rgba(255, 255, 255, 0.1) 40%, 
+    rgba(0, 0, 0, 0) 65%);
+  
+  mix-blend-mode: screen;
+  filter: blur(8px); /* ボカシを少し弱めて「ぼやけ」を解消 */
+  opacity: 0;
+  /* サイレンのような少し速めの周期（3秒） */
+  animation: sirenWave 3s ease-in-out infinite;
+}
+
+@keyframes sirenWave {
+  0%   { opacity: 0; transform: scale(1.0); }
+  30%  { opacity: 1; transform: scale(1.15); } /* ふぁ〜ん（最大） */
+  40%  { opacity: 0; transform: scale(0.95); } /* ッ（一気に引く！） */
+  55%  { opacity: 0.8; transform: scale(1.08); } /* ふぁん（二段目） */
+  70%  { opacity: 0; transform: scale(1.0); }   /* ッ（引く） */
+  100% { opacity: 0; }
+}
+
 #loader img.loader-inner {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
   opacity: 0.2;
-  /* 画像も光に照らされて微かに呼吸する */
-  animation: imgSoftBreath 5.5s ease-in-out infinite;
+  /* 画像も光の強烈な引きに同期させる */
+  animation: imgSirenSync 3s ease-in-out infinite;
 }
 
-@keyframes imgSoftBreath {
-  0%, 50%, 100% { opacity: 0.15; }
-  35%, 75%      { opacity: 0.35; }
+@keyframes imgSirenSync {
+  0%, 40%, 70%, 100% { opacity: 0.1; }
+  30%, 55%           { opacity: 0.4; }
 }
