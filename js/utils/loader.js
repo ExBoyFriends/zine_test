@@ -15,17 +15,20 @@ export function initLoader(loader, onComplete) {
     if (loader) loader.style.display = "none";
     onComplete?.();
   };
-
+///////////////////////////////////////////////////////////////
   const finish = () => {
-    if (finished) return;
+  if (finished) return;
 
-    if (fadeLayer) {
-      fadeLayer.style.animation = "none";
-      fadeLayer.classList.add("hide");
-      fadeLayer.style.pointerEvents = "none";
-    }
-    safeComplete();
-  };
+  if (fadeLayer) {
+    // 動きは止めるが、真っ黒な状態(opacity:1)をキープする
+    fadeLayer.style.animation = "none";
+    fadeLayer.style.opacity = "1"; 
+  }
+  
+  if (loader) loader.style.display = "none";
+  
+  safeComplete(); // これで main.js の処理が始まる
+};
 
   const start = () => {
     if (finished) return;
