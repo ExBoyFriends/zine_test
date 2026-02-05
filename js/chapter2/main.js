@@ -53,32 +53,27 @@ goChapter25._done = false;
    Loader & 初期化
 ===================== */
 initLoader(loader, () => {
+  // 1. 本編パーツを「表示可能」な状態にする
+  // chapterStart を使わず、ここで直接 visible クラスを付与します
   chapter?.classList.add("visible");
   dotsWrap?.classList.add("visible");
 
-
-if (scene && !scene.__holdBound) {
-    bindLongPressEvents(scene);
-    scene.__holdBound = true;
-  }
-  
-  fadeInStart(1500);
-
-  // 冒頭フェードインだけ
- // fadeOutAndGo(() => {}, 800); // onFinishは空。durationは体感合わせ
-
-  
-  startAutoTransition(goChapter25);
-});
-
-  
+  // 2. 3Dシーンのイベント設定
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
   }
 
+  // 3. 【重要】黒い幕（fadeLayer）をじわ〜っと開ける
+  // これを忘れると真っ暗なままになります
+  setTimeout(() => {
+    fadeInStart(1500); // 1.5秒かけて幕を開ける
+  }, 100);
+
+  // 4. 自動遷移のタイマー開始
   startAutoTransition(goChapter25);
 });
+
 
 /* =====================
    Carousel 3D
