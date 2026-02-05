@@ -8,9 +8,8 @@ import {
   startAutoTransition,
   resetTransitionState
 } from "./holdTransition.js";
-import { playExitTransition } from "./transitionOut.js";
+import { fadeOutAndGo, fadeInStart } from "../utils/fade.js";
 import { initGlitchLayer } from "./effects.js";
-import { fadeOutAndGo } from "../utils/fade.js";
 
 /* =====================
    bfcache 対応
@@ -56,10 +55,6 @@ function goChapter25() {
 }
 goChapter25._done = false;
 
-fadeInStart();
-
-// 自動遷移の呼び出し
-setTimeout(goChapter25, 6000); // 例：6秒後に自動遷移
 
 /* =====================
    Loader 完了 chapter2専用
@@ -71,8 +66,13 @@ initLoader(loader, () => {
     scene.__holdBound = true;
   }
   dotsWrap?.classList.add("visible");
+   // 冒頭フェードイン
+  fadeInStart();
+
+  // 自動遷移開始
   startAutoTransition(goChapter25);
 });
+
 
 /* =====================
    Carousel
