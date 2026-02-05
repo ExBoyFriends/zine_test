@@ -1,5 +1,4 @@
 /*  loader.js */
-
 export function initLoader(loader, onComplete) {
   let finished = false;
 
@@ -8,62 +7,40 @@ export function initLoader(loader, onComplete) {
     document.getElementById("fadeout") ||
     null;
 
+  // すべての幕を閉じて本編へ渡す
   const safeComplete = () => {
     if (finished) return;
-    
-    if (loader) {
-    loader.style.transition = "opacity 1.2s ease"; // 少し長めに余韻を残して消す
-    loader.style.opacity = "0";
-  }
-
-    if (fadeLayer) {
-    fadeLayer.style.animation = "none";
-    fadeLayer.style.opacity = "0"; // 激しい光を完全に消し去る
-  }
-
-    setTimeout(safeComplete, 800); 
-};
-    
-
+    finished = true;
     if (loader) loader.style.display = "none";
     onComplete?.();
   };
 
+  // 終了演出：光をゆっくり消しながら本編を準備
   const finish = () => {
     if (finished) return;
 
-    // 1. ローディング画像を 0.8秒かけて透明にする
     if (loader) {
-      loader.style.transition = "opacity 0.8s ease";
+      loader.style.transition = "opacity 1.2s ease";
       loader.style.opacity = "0";
     }
 
-    // 2. 黒い幕(fadeLayer)の呼吸アニメーションを止めて「真っ黒(1)」で固定
     if (fadeLayer) {
-      fadeLayer.style.animation = "none";
-
-      // 鼓動を止めたとき、中途半端な透明度にならないよう「1(真っ黒)」にする
-    fadeLayer.style.opacity = "1";
+      fadeLayer.style.animation = "none"; // 鼓動を止める
+      fadeLayer.style.transition = "opacity 1.5s ease";
+      fadeLayer.style.opacity = "0"; // 静かに闇へ
     }
 
-    // 3. 画像が消え始めた 0.4秒後に、本編開始(onComplete)を呼ぶ
-    // これにより黒い幕が残った状態で、裏で本編の準備が始まる
-    setTimeout(safeComplete, 400); 
+    // 1秒待ってから本編の fadeInStart を呼び出す
+    setTimeout(safeComplete, 1000);
   };
 
   const start = () => {
     if (finished) return;
-
-    if (loader) {
-      loader.style.display = "flex";
-    }
-
+    if (loader) loader.style.display = "flex";
     if (fadeLayer) {
       fadeLayer.classList.remove("hide");
-      // opacity は CSS の animation（呼吸）に任せるためここでは指定しない
     }
-
-    // 5.4秒後に終了シーケンス開始
+    // 5.4秒間、光の鼓動を見せる
     setTimeout(finish, 5400);
   };
 
@@ -75,11 +52,6 @@ export function initLoader(loader, onComplete) {
 
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
-    if (loader) loader.style.display = "none";
-    if (fadeLayer) {
-      fadeLayer.style.animation = "none";
-      fadeLayer.classList.add("hide");
-    }
     safeComplete();
   });
 }
