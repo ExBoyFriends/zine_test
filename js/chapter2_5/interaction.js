@@ -24,18 +24,18 @@ export function initTapInteraction() {
     const dx = e.clientX - startX;
     const dt = performance.now() - startTime;
 
-    // --- スワイプ判定 ---
+    // スワイプ優先
     if (moved && Math.abs(dx) > 40 && dt < 500) {
       dx < 0 ? goNext() : goPrev();
       return;
     }
 
-    // --- タップ判定 ---
+    // タップ
     if (!moved && dt < 300) handleTap();
   });
 }
 
-/* ===================== タップ処理 ===================== */
+/* ===================== Tap ===================== */
 function handleTap() {
   if (!state.showingText) {
     showText(state.index);
@@ -44,14 +44,13 @@ function handleTap() {
   }
 
   hideText(state.index);
-  state.showingText = false;
   goNext();
 }
 
-
-/* ===================== ページ遷移 ===================== */
+/* ===================== Page ===================== */
 function goNext() {
   if (state.index >= pages.length - 1) return;
+
   state.index++;
   resetTextState();
   showPage(state.index);
@@ -59,8 +58,8 @@ function goNext() {
 
 function goPrev() {
   if (state.index <= 0) return;
+
   state.index--;
   resetTextState();
   showPage(state.index);
 }
-
