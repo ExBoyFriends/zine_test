@@ -40,3 +40,10 @@ initLoader(loader, () => {
     }
   });
 });
+
+// bfcache 復帰対応
+window.addEventListener("pageshow", e => {
+  if (!e.persisted) return;
+  // 再表示時も現在ページを復元
+  state.index = state.index ?? 0;
+});
