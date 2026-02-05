@@ -9,15 +9,15 @@
   background: #000;
   z-index: 9999;
 
-  opacity: 0;
-  pointer-events: none;
+  opacity: 1;
+  pointer-events: auto;
 
-  transition: opacity 1.2s ease;
+  transition: opacity 1.8s ease;
 }
 
 #fadeLayer.show {
-  opacity: 1;
-  pointer-events: auto;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* ================ Loader 本体================ */
