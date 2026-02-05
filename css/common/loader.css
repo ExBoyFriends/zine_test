@@ -1,4 +1,32 @@
 /* loader.css 
+/* ================ Loader / Fade ================ */
+
+#fadeLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  /* 左上からの光の芯をハッキリさせる */
+  background: radial-gradient(circle at 10% 10%, 
+    rgba(255, 255, 255, 0.7) 0%, 
+    rgba(255, 255, 255, 0.1) 45%, 
+    rgba(0, 0, 0, 0) 65%);
+  
+  mix-blend-mode: screen;
+  filter: blur(8px); /* ボカシを抑えてキレを出す */
+  opacity: 0;
+  /* 3秒周期。30%で最大、42%で消える「鋭い引き」 */
+  animation: sirenWave 3s ease-in-out infinite;
+}
+
+@keyframes sirenWave {
+  0%   { opacity: 0; transform: scale(1.0); }
+  30%  { opacity: 1; transform: scale(1.15); } /* ふぁ〜ん（ピーク） */
+  42%  { opacity: 0; transform: scale(0.95); } /* ッ（一気に引く！） */
+  55%  { opacity: 0.8; transform: scale(1.08); } /* ふぁん（第2波） */
+  70%  { opacity: 0; transform: scale(1.0); }   /* ッ（引く） */
+  100% { opacity: 0; }
+}
 
 #loader {
   position: fixed;
@@ -7,45 +35,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-#fadeLayer {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  /* 光の芯を少しハッキリさせ、広がりすぎないように調整 */
-  background: radial-gradient(circle at 10% 10%, 
-    rgba(255, 255, 255, 0.7) 0%, 
-    rgba(255, 255, 255, 0.1) 40%, 
-    rgba(0, 0, 0, 0) 65%);
-  
-  mix-blend-mode: screen;
-  filter: blur(8px); /* ボカシを少し弱めて「ぼやけ」を解消 */
-  opacity: 0;
-  /* サイレンのような少し速めの周期（3秒） */
-  animation: sirenWave 3s ease-in-out infinite;
-}
-
-@keyframes sirenWave {
-  0%   { opacity: 0; transform: scale(1.0); }
-  30%  { opacity: 1; transform: scale(1.15); } /* ふぁ〜ん（最大） */
-  40%  { opacity: 0; transform: scale(0.95); } /* ッ（一気に引く！） */
-  55%  { opacity: 0.8; transform: scale(1.08); } /* ふぁん（二段目） */
-  70%  { opacity: 0; transform: scale(1.0); }   /* ッ（引く） */
-  100% { opacity: 0; }
+  background: transparent;
 }
 
 #loader img.loader-inner {
+  position: fixed;
+  inset: 0;
   width: 100vw;
   height: 100vh;
   object-fit: cover;
   opacity: 0.2;
-  /* 画像も光の強烈な引きに同期させる */
+  /* 画像も光のリズムに同期 */
   animation: imgSirenSync 3s ease-in-out infinite;
 }
 
 @keyframes imgSirenSync {
-  0%, 40%, 70%, 100% { opacity: 0.1; }
+  0%, 42%, 70%, 100% { opacity: 0.1; }
   30%, 55%           { opacity: 0.4; }
+}
+
+#fadeLayer.hide {
+  opacity: 0;
+  pointer-events: none;
 }
