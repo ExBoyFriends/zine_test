@@ -56,11 +56,22 @@ initLoader(loader, () => {
   chapter?.classList.add("visible");
   dotsWrap?.classList.add("visible");
 
+
+if (scene && !scene.__holdBound) {
+    bindLongPressEvents(scene);
+    scene.__holdBound = true;
+  }
+  
   fadeInStart(1500);
 
   // 冒頭フェードインだけ
  // fadeOutAndGo(() => {}, 800); // onFinishは空。durationは体感合わせ
 
+  
+  startAutoTransition(goChapter25);
+});
+
+  
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
