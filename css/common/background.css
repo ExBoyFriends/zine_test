@@ -19,7 +19,7 @@ position: fixed; /* relative ではなく fixed にする */
   bottom: 0;
 
   background: rgba(0, 0, 0, 0.30);
-  animation: slowFade 13s ease-in-out infinite alternate;
+  animation: slowFade 10s ease-in-out infinite alternate;
   pointer-events: none;
 
   z-index: 1;
