@@ -1,5 +1,7 @@
 //chapter1/lastPage.js
 
+import { fadeOutAndGo } from "../utils/fade.js";
+
 export function initLastPage(wrapper, getCurrentPage, totalPages) {
   let opened = false;
   let startX = 0;
@@ -17,8 +19,11 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
     "transform 1.4s cubic-bezier(.16,1.3,.3,1)";
 
   const goChapter2 = () => {
+  fadeOutAndGo(() => {
     location.href = "chapter2.html";
-  };
+  });
+};
+
 
   const topLayer = lastPage.querySelector(".top-layer");
 
