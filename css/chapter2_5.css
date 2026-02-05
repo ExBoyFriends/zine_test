@@ -73,13 +73,14 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  min-width: 60%;
+  min-width: 100%;
   padding: 1.2em 1.6em;
   background: rgba(0,0,0,0.55);
   text-align: center;
   line-height: 1.8;
   opacity: 0;
   transition: opacity 0.6s ease;
+  z-index: 10; 
 }
 
 .page.show-text .poem { opacity: 1; }
