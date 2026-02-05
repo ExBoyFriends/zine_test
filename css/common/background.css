@@ -8,6 +8,7 @@
   display: block;
   background: url('../../image/background.jpg') center / cover no-repeat;
   z-index: 0;
+  display: block;
 }
 
 /* 暗転用レイヤー */
