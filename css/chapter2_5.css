@@ -62,7 +62,6 @@ body {
   transform: translate(-50%, -50%);
   transition: none;
    opacity: 1;
-  transition: opacity none;
 }
 
 .page.dual.active img {
