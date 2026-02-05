@@ -1,6 +1,6 @@
 /**
  * loader.js
- * 役割：8.4秒間のサイレン風・光演出と、本編へのスムーズなリレー
+ * 役割：8.4秒間の琥珀色の光演出と、本編へのスムーズなリレー
  */
 export function initLoader(loader, onComplete) {
   let finished = false;
@@ -10,12 +10,18 @@ export function initLoader(loader, onComplete) {
     document.getElementById("fadeout") ||
     null;
 
-  // 本編へ移行する最終処理
+  // 本編を開始する最終処理
   const safeComplete = () => {
     if (finished) return;
     finished = true;
-    if (loader) loader.style.display = "none";
-    if (typeof onComplete === "function") onComplete();
+
+    if (loader) {
+      loader.style.display = "none";
+    }
+
+    if (typeof onComplete === "function") {
+      onComplete();
+    }
   };
 
   // 終了演出：光をゆっくり消しながら本編を準備
@@ -41,25 +47,31 @@ export function initLoader(loader, onComplete) {
 
   const start = () => {
     if (finished) return;
+
     if (loader) {
       loader.style.display = "flex";
       loader.style.opacity = "1";
     }
+
     if (fadeLayer) {
       fadeLayer.classList.remove("hide");
     }
-    // 8.4秒間、世界観に浸らせる
+
+    // 8.4秒間、琥珀色の光の演出を見せる
     setTimeout(finish, 8400);
   };
 
+  // 実行タイミングの制御
   if (document.readyState === "complete") {
     start();
   } else {
     window.addEventListener("load", start, { once: true });
   }
 
-  // bfcache（戻るボタン）対策
+  // ブラウザの戻るボタン（bfcache）対策
   window.addEventListener("pageshow", (e) => {
-    if (e.persisted) safeComplete();
+    if (e.persisted) {
+      safeComplete();
+    }
   });
 }
