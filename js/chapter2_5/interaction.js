@@ -1,4 +1,5 @@
 // chapter2_5/interaction.js
+
 import { state, resetTextState } from "../utils/state.js";
 import { showPage, showText, hideText, getPages } from "./view.js";
 
@@ -40,17 +41,13 @@ function handleTap() {
   if (!page) return;
 
   if (!state.showingText) {
-    // テキスト表示
     showText(state.index);
     state.showingText = true;
     return;
   }
 
-  // テキスト非表示
   hideText(state.index);
   state.showingText = false;
-
-  // テキスト消えたら次ページへ
   goNext();
 }
 
