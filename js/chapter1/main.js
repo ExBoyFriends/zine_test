@@ -22,7 +22,8 @@ initLoader(loader, () => {
   state.index = 0; // 初期化
 //////////////////////////////////////////////////////////////////
 // startChapter の前に実行して、準備ができたら幕を開ける
-  fadeInStart(2000); // 2秒かけてじわ〜っと表示
+  fadeInStart(1800); // 1.8秒かけてじわ〜っと表示
+}, 200);
 
   startChapter({
     chapter,
