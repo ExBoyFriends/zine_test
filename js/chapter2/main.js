@@ -10,6 +10,7 @@ import {
 } from "./holdTransition.js";
 import { playExitTransition } from "./transitionOut.js";
 import { initGlitchLayer } from "./effects.js";
+import { fadeOutAndGo } from "../utils/fade.js";
 
 /* =====================
    bfcache 対応
@@ -48,10 +49,12 @@ function updateDots(index = 0) {
 function goChapter25() {
   if (goChapter25._done) return;
   goChapter25._done = true;
+  
   playExitTransition({
     onFinish() {
-      import("./holdTransition.js").then(m => m.markExited());
-      location.href = "../HTML/chapter2_5.html";
+      fadeOutAndGo(() => {
+        location.href = "../HTML/chapter2_5.html";
+      });
     }
   });
 }
