@@ -1,17 +1,21 @@
-// フェードアウトして次の処理へ
-// onFinish: フェードアウト完了後に実行する関数
-// duration: フェードアウトにかかる時間（ms）
-export function fadeOutAndGo(onFinish, duration = 1200) {
+// 冒頭フェードイン
+export function fadeInStart(duration = 1200) {
   const fade = document.getElementById("fadeLayer");
   if (!fade) return;
 
-  fade.classList.add("show");
+  // 初期は黒
+  fade.style.opacity = "1";
+  fade.style.pointerEvents = "auto";
 
- setTimeout(() => {
+  // 少し遅らせて透明にする
+  requestAnimationFrame(() => {
+    fade.style.transition = `opacity ${duration}ms ease`;
+    fade.style.opacity = "0";
     fade.style.pointerEvents = "none";
-  }, duration);
+  });
 }
 
+// フェードアウトして次の処理へ
 export function fadeOutAndGo(onFinish, duration = 1200) {
   const fade = document.getElementById("fadeLayer");
   if (!fade) {
@@ -19,8 +23,10 @@ export function fadeOutAndGo(onFinish, duration = 1200) {
     return;
   }
 
- fade.classList.remove("show");  // フェードアウト開始
+  // フェードアウト（暗くする）
+  fade.style.opacity = "1";
   fade.style.pointerEvents = "auto";
+  fade.style.transition = `opacity ${duration}ms ease`;
 
   setTimeout(() => {
     onFinish?.();
