@@ -6,6 +6,7 @@ import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
 import { showPage } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
+import { fadeInStart, fadeOutAndGo } from "../utils/fade.js";
 
 /* ===================== DOM ===================== */
 const loader  = document.getElementById("loader");
@@ -22,6 +23,9 @@ function updateDots(index = 0) {
 /* ===================== Loader 完了 ===================== */
 initLoader(loader, () => {
   state.index = 0;  // 初期化
+
+  // 冒頭フェードイン
+  fadeInStart(); 
 
   startChapter({
     chapter,
