@@ -1,21 +1,14 @@
 // utils/chapterStart.js
 
+
 export function startChapter({ chapter, dots, onStart }) {
-  const fadeLayer = document.getElementById("fadeLayer");
-
-  // chapter 表示
+  // 1. 本編のコンテナやドットを表示状態にする（透明度などのフラグ）
   chapter?.classList.add("visible");
-
-  // dots 表示（必要ならCSS側で制御）
   dots?.classList.add("visible");
 
-  // fade 消す
-  if (fadeLayer) {
-    requestAnimationFrame(() => {
-      fadeLayer.classList.add("hide");
-    });
-  }
+  // 2. フェードレイヤーをここで勝手に消さない（fade.js に任せるため削除）
+  // 以前の requestAnimationFrame(() => { ... hide }) は削除します。
 
+  // 3. 準備が整ったことを通知して、次に進む
   onStart?.();
 }
-
