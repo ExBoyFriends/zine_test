@@ -10,7 +10,20 @@ export function initLoader(loader, onComplete) {
 
   const safeComplete = () => {
     if (finished) return;
-    finished = true;
+    
+    if (loader) {
+    loader.style.transition = "opacity 1.2s ease"; // 少し長めに余韻を残して消す
+    loader.style.opacity = "0";
+  }
+
+    if (fadeLayer) {
+    fadeLayer.style.animation = "none";
+    fadeLayer.style.opacity = "0"; // 激しい光を完全に消し去る
+  }
+
+    setTimeout(safeComplete, 800); 
+};
+    
 
     if (loader) loader.style.display = "none";
     onComplete?.();
