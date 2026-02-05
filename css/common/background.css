@@ -9,24 +9,25 @@ position: fixed; /* relative ではなく fixed にする */
   z-index: 0;
 }
 
-/* 暗転用レイヤー */
 .background::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
+  inset: 0;
   z-index: 1;
-  background: rgba(0, 0, 0, 0.30);
+  /* 非常に薄い光。一見真っ暗に見える程度の差にします */
+  background: radial-gradient(circle at 5% 5%, 
+    rgba(255, 255, 255, 0.15) 0%, 
+    rgba(0, 0, 0, 0) 60%);
 
 
-  animation: heartBeat 2.9s ease-in-out infinite;
+  mix-blend-mode: screen;
+  pointer-events: none;
+
+  /* 20秒かけて1往復。止まっているように見えるほど低速 */
+  animation: superSlowBreath 20s ease-in-out infinite alternate;
 }
 
-@keyframes slowFade {
-  0%   { opacity: 0.25; }
-  50%  { opacity: 0.46; }
-  100% { opacity: 0.25; }
+@keyframes superSlowBreath {
+  0%   { opacity: 0.1; } /* ほぼ見えない */
+  100% { opacity: 0.4; } /* わずかに「あ、光が差してる？」と感じる程度 */
 }
