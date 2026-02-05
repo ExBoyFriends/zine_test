@@ -53,35 +53,6 @@ body {
 }
 
 /* =====================
-   Dots
-===================== */
-.dots {
-  position: fixed;
-  bottom: calc(40px + env(safe-area-inset-bottom));
-  width: 100%;
-  text-align: center;
-  z-index: 20;
-  opacity: 0;
-  transition: opacity 2.8s cubic-bezier(.22,.61,.36,1);
-}
-
-.dots.visible {
-  opacity: 1;
-}
-
-.dot {
-  display: inline-block;
-  width: 5px;
-  height: 8px;
-  margin: 0 5px;
-  background: rgba(200, 200, 200, .25);
-}
-
-.dot.active {
-  background: rgba(240, 240, 240, .9);
-}
-
-/* =====================
    Last Page
 ===================== */
 #last-page .carousel-inner.single {
