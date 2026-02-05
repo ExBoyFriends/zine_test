@@ -54,7 +54,6 @@ body {
   background: rgba(200, 200, 200, .25);
   transition: background 0.08s linear;
 }
-}
 
 .dot.active {
   background: rgba(240, 240, 240, .9);
