@@ -20,26 +20,20 @@ const last    = document.getElementById("last-page");
 // ローダー表示 → フェードイン → チャプター開始
 initLoader(loader, () => {
   state.index = 0; // 初期化
-
-  // 冒頭フェードイン
-  fadeInStart();
+//////////////////////////////////////////////////////////////////
+// startChapter の前に実行して、準備ができたら幕を開ける
+  fadeInStart(2000); // 2秒かけてじわ〜っと表示
 
   startChapter({
     chapter,
     dots,
     onStart() {
-      // カルーセル初期化
       const carousel = initCarousel(wrapper, pages);
-
-      // 最後のページのタップ操作（フェードアウト遷移含む）
-      initLastPage(
-        last,
-        () => carousel.getCurrentPage(),
-        pages.length
-      );
+      initLastPage(last, () => carousel.getCurrentPage(), pages.length);
     }
   });
 });
+
 
 // bfcache 復帰対応
 window.addEventListener("pageshow", e => {
