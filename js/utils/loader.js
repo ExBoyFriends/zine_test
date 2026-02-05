@@ -69,7 +69,7 @@ export function initLoader(loader, onComplete) {
     blink(); // 画像点滅開始
 
     // ローディング表示時間（例: 2.5秒）後に finish
-    setTimeout(finish, 2500);
+    setTimeout(finish, 4800);
   };
 
   // ページロード完了時
