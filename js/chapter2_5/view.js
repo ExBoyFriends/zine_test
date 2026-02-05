@@ -21,29 +21,25 @@ function updateDots(index) {
 
 /* ===================== Page control ===================== */
 export function showPage(index) {
-  if (!pages.length || isFading) return;
+  pages.forEach((p, i) => {
+    p.classList.toggle("active", i === index);
+    if (i !== index) {
+      p.classList.remove("show-text");
+      p.style.pointerEvents = "none";
+    }
+  });
 
-  const oldIndex = state.prevIndex ?? index;
-  const prevPage = pages[oldIndex];
-  const nextPage = pages[index];
-  if (!nextPage) return;
+  const page = pages[index];
+  if (!page) return;
 
-  isFading = true;
-
-  if (prevPage && prevPage !== nextPage) {
-    prevPage.classList.remove("active", "show-text");
-    prevPage.style.pointerEvents = "none";
-  }
-
-  if (nextPage.classList.contains("dual") && oldIndex !== index) {
+  if (page.classList.contains("dual")) {
     dualFlipped = !dualFlipped;
-    nextPage.classList.toggle("flipped", dualFlipped);
+    page.classList.toggle("flipped", dualFlipped);
   }
 
-  nextPage.classList.add("active");
-  nextPage.style.pointerEvents = "auto";
-
+  page.style.pointerEvents = "auto";
   updateDots(index);
+}
 
   state.prevIndex = index;
   state.index = index;
