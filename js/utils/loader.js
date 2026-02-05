@@ -3,7 +3,6 @@
 
 export function initLoader(loader, onComplete) {
   let finished = false;
-  let blinkTimeout = null;
 
   const fadeLayer =
     document.getElementById("fadeLayer") ||
@@ -16,7 +15,6 @@ export function initLoader(loader, onComplete) {
 
     // loader を完全非表示
     if (loader) loader.style.display = "none";
-    cancelAnimationFrame(blinkTimeout);
 
     // fadeLayer を非表示に
     if (fadeLayer) {
@@ -28,17 +26,7 @@ export function initLoader(loader, onComplete) {
     onComplete?.();
   };
 
-  // ローディング画像点滅ループ
-  const blink = () => {
-    if (finished) return;
-    if (!loader) return;
-
-    const img = loader.querySelector("img");
-    if (!img) return;
-
-    img.style.opacity = img.style.opacity === "1" ? "0.2" : "1";
-    blinkTimeout = setTimeout(() => requestAnimationFrame(blink), 150);
-  };
+ 
 
   // ローディング終了
   const finish = () => {
@@ -46,9 +34,11 @@ export function initLoader(loader, onComplete) {
 
     // fadeLayer フェードアウト
     if (fadeLayer) {
+     fadeLayer.style.animation = "none";
       fadeLayer.classList.add("hide");
       fadeLayer.style.pointerEvents = "none";
     }
+  
 
     safeComplete();
   };
@@ -65,8 +55,8 @@ export function initLoader(loader, onComplete) {
 
     // fadeLayer 表示
     if (fadeLayer) fadeLayer.classList.remove("hide");
-
-    blink(); // 画像点滅開始
+    fadeLayer.style.opacity = "1";
+    }
 
     // ローディング表示時間（例: 9.6秒）後に finish
     setTimeout(finish, 9400);
@@ -82,13 +72,14 @@ export function initLoader(loader, onComplete) {
   // bfcache 復帰時
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
-
     if (loader) {
       loader.style.display = "none";
       loader.style.opacity = "0";
     }
-
-    if (fadeLayer) fadeLayer.classList.add("hide");
+    if (fadeLayer) {
+      fadeLayer.style.animation = "none";
+      fadeLayer.classList.add("hide");
+    }
     safeComplete();
   });
 }
