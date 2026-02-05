@@ -28,7 +28,6 @@ export function initLoader(loader, onComplete) {
     // 2. 黒い幕(fadeLayer)の呼吸アニメーションを止めて「真っ黒(1)」で固定
     if (fadeLayer) {
       fadeLayer.style.animation = "none";
-      fadeLayer.style.opacity = "1";
     }
 
     // 3. 画像が消え始めた 0.4秒後に、本編開始(onComplete)を呼ぶ
@@ -41,7 +40,6 @@ export function initLoader(loader, onComplete) {
 
     if (loader) {
       loader.style.display = "flex";
-      loader.style.opacity = "1"; // 最初は表示
     }
 
     if (fadeLayer) {
