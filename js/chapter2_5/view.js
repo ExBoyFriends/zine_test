@@ -1,5 +1,4 @@
 // chapter2_5/view.js
-
 import { state } from "../utils/state.js";
 
 let dualFlipped = false;
@@ -12,7 +11,7 @@ export function getPages() {
   return pages;
 }
 
-/* ===================== Dots update ===================== */
+/* ===================== Dots update（chapter1準拠） ===================== */
 function updateDots(index) {
   dots.forEach((dot, i) => {
     dot.classList.toggle("active", i === index);
@@ -21,54 +20,29 @@ function updateDots(index) {
 
 /* ===================== Page control ===================== */
 export function showPage(index) {
-  if (!pages.length || isFading) return;
+  if (!pages.length || isFading) return;  // フェード中は無視
 
   const prevPage = pages[state.index];
   const nextPage = pages[index];
   if (!nextPage) return;
 
-  isFading = true;
+  isFading = true;  // フェード開始
 
-  // dual ページの反転処理
+  // dualページの場合は反転処理
   if (nextPage.classList.contains("dual") && state.prevIndex !== index) {
     dualFlipped = !dualFlipped;
     nextPage.classList.toggle("flipped", dualFlipped);
   }
 
-  // ===================== 前ページのリセット =====================
-  if (prevPage && prevPage !== nextPage) {
-    prevPage.classList.remove("active", "show-text");
-    
-    // dual 内の画像も初期状態に戻す
-    const prevDualImgs = prevPage.querySelectorAll(".dual img");
-    prevDualImgs.forEach((img, i) => {
-      img.style.opacity = "";
-      img.style.transform = ""; // CSS初期状態に戻す
-    });
+  // 前ページは非アクティブ化（即時）
+  prevPage?.classList.remove("active");
 
-    // 通常ページの画像も opacity をリセット
-    prevPage.querySelectorAll("> img").forEach(img => {
-      img.style.opacity = "";
-    });
-  }
-
-  // ===================== 次ページのフェードイン =====================
+  // フェードイン
   nextPage.classList.add("active");
-
-  // dual ページなら画像を透明にしてフェードさせる
-  const nextImgs = nextPage.querySelectorAll("img");
-  nextImgs.forEach(img => img.style.opacity = 0);
-
   nextPage.style.opacity = 0;
-  nextPage.style.transition = "opacity 0.5s ease"; // ページ全体のフェード
+  nextPage.style.transition = "opacity 0.5s ease"; // フェード時間
   requestAnimationFrame(() => {
     nextPage.style.opacity = 1;
-
-    // dual 画像は順次フェード
-    nextImgs.forEach(img => {
-      img.style.transition = "opacity 0.5s ease";
-      img.style.opacity = 1;
-    });
   });
 
   // transitionend でフラグ解除 & ドット更新
@@ -78,17 +52,16 @@ export function showPage(index) {
       nextPage.removeEventListener("transitionend", onEnd);
       nextPage.style.transition = "";
       nextPage.style.opacity = "";
-      nextImgs.forEach(img => img.style.transition = ""); // img の transition 解除
       updateDots(index);
       isFading = false;
     }
   );
 
-  // 状態更新
+  // 状態を更新
   state.prevIndex = index;
   state.index = index;
   state.showingText = false;
-}
+};
 
 /* ===================== Text control ===================== */
 export function showText(index) {
@@ -106,4 +79,3 @@ export function hideText(index) {
   page.classList.remove("show-text");
   state.showingText = false;
 }
-
