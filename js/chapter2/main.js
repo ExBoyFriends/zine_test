@@ -52,12 +52,13 @@ goChapter25._done = false;
 /* =====================
    Loader & 初期化
 ===================== */
+// Loader & 初期化
 initLoader(loader, () => {
   chapter?.classList.add("visible");
   dotsWrap?.classList.add("visible");
 
-  // 冒頭フェードインだけ
-  fadeOutAndGo(() => {}, 800); // onFinishは空。durationは体感合わせ
+  // ★冒頭フェードイン
+  fadeInStart(800);
 
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
@@ -66,6 +67,7 @@ initLoader(loader, () => {
 
   startAutoTransition(goChapter25);
 });
+
 
 /* =====================
    Carousel 3D
