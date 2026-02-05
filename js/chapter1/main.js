@@ -6,6 +6,7 @@ import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
 import { initCarousel } from "./carousel.js";
 import { initLastPage } from "./lastPage.js";
+import { fadeInStart, fadeOutAndGo } from "../utils/fade.js";
 
 const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
@@ -17,6 +18,8 @@ const last    = document.getElementById("last-page");
 
 initLoader(loader, () => {
   state.index = 0;
+
+  fadeInStart();
 
   startChapter({
     chapter,
