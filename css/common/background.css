@@ -1,7 +1,8 @@
 /*common/background.css*/
 
+
 .background {
-position: fixed; /* relative ではなく fixed にする */
+  position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
@@ -9,12 +10,13 @@ position: fixed; /* relative ではなく fixed にする */
   z-index: 0;
 }
 
+/* 本編の静かな光の差し込み */
 .background::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
-  /* 本編は左上(5% 5%)からさらに控えめな光 */
+  /* 左上からの非常に控えめな光 */
   background: radial-gradient(circle at 5% 5%, 
     rgba(255, 255, 255, 0.15) 0%, 
     rgba(0, 0, 0, 0) 65%);
@@ -22,7 +24,7 @@ position: fixed; /* relative ではなく fixed にする */
   mix-blend-mode: screen;
   pointer-events: none;
 
-  /* 20秒かけて「じわぁ……」と変化。一見動いていないように見える速度 */
+  /* 20秒かけて「じわぁ……」と変化 */
   animation: superSlowBreath 20s ease-in-out infinite alternate;
 }
 
