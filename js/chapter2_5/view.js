@@ -29,33 +29,43 @@ export function showPage(index) {
 
   isFading = true;
 
-  // --- 前ページリセット ---
+  // --- 前ページフェードアウト ---
   if (prevPage) {
-    prevPage.classList.remove("active", "show-text", "flipped");
-    prevPage.style.opacity = "";
-    prevPage.style.transition = "";
+    prevPage.style.transition = "opacity 0.4s ease";
+    prevPage.style.opacity = 0;
+    prevPage.style.pointerEvents = "none";
+
+    prevPage.addEventListener(
+      "transitionend",
+      function onFadeOut() {
+        prevPage.removeEventListener("transitionend", onFadeOut);
+        prevPage.classList.remove("active", "show-text", "flipped");
+        prevPage.style.transition = "";
+        prevPage.style.opacity = "";
+      }
+    );
   }
 
-  // --- dualページの flipped 状態 ---
-  if (nextPage.classList.contains("dual")) {
+  // --- dualページの flipped 設定 ---
+  if (nextPage.classList.contains("dual") && state.prevIndex !== index) {
     dualFlipped = !dualFlipped;
     nextPage.classList.toggle("flipped", dualFlipped);
   }
 
-  // --- 次ページをアクティブ化 ---
+  // --- 次ページフェードイン ---
   nextPage.classList.add("active");
   nextPage.style.opacity = 0;
+  nextPage.style.pointerEvents = "auto";
   nextPage.style.transition = "opacity 0.5s ease";
 
   requestAnimationFrame(() => {
     nextPage.style.opacity = 1;
   });
 
-  // --- フェード終了処理 ---
   nextPage.addEventListener(
     "transitionend",
-    function onEnd() {
-      nextPage.removeEventListener("transitionend", onEnd);
+    function onFadeIn() {
+      nextPage.removeEventListener("transitionend", onFadeIn);
       nextPage.style.transition = "";
       nextPage.style.opacity = "";
       updateDots(index);
@@ -63,10 +73,11 @@ export function showPage(index) {
     }
   );
 
+  // 状態更新
   state.prevIndex = index;
   state.index = index;
   state.showingText = false;
-}
+};
 
 /* ===================== Text control ===================== */
 export function showText(index) {
