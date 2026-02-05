@@ -23,6 +23,7 @@ export function showPage(index) {
 
     page.classList.toggle("active", isActive);
     page.style.pointerEvents = isActive ? "auto" : "none";
+    page.style.zIndex = isActive ? 2 : 1;
 
     if (!isActive) {
       page.classList.remove("show-text");
@@ -33,12 +34,14 @@ export function showPage(index) {
   if (!page) return;
 
   if (page.classList.contains("dual")) {
-    dualFlipped = !dualFlipped;
-    page.classList.toggle("flipped", dualFlipped);
+    const flipped = page.dataset.flipped === "true";
+    page.dataset.flipped = (!flipped).toString();
+    page.classList.toggle("flipped", !flipped);
   }
 
   updateDots(index);
 }
+
 
 /* ===================== Text ===================== */
 export function showText(index) {
@@ -48,3 +51,4 @@ export function showText(index) {
 export function hideText(index) {
   pages[index]?.classList.remove("show-text");
 }
+
