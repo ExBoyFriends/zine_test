@@ -82,16 +82,13 @@ img {
   z-index: 1;
   pointer-events: none;
 }
+
 /* ===================== Dots ===================== */
 .dots {
   pointer-events: none;
-  transition: 0.3s cubic-bezier(.22,.61,.36,1);
 }
 .dots.visible {
   pointer-events: auto;
-}
-.dot {
-  transition: background 0.08s linear;
 }
 
 /* ===================== Glitch Overlay ===================== */
