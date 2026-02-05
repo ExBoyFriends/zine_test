@@ -32,11 +32,12 @@ initLoader(loader, () => {
       const carousel = initCarousel(wrapper, pages);
       initLastPage(last, () => carousel.getCurrentPage(), pages.length);
 
-      fadeInStart(2000);
+      setTimeout(() => {
+        fadeInStart(2000); 
+      }, 100);
     }
   });
 });
-
 
 // bfcache 復帰対応
 window.addEventListener("pageshow", e => {
