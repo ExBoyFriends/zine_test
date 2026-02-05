@@ -14,20 +14,19 @@ position: fixed; /* relative ではなく fixed にする */
   position: absolute;
   inset: 0;
   z-index: 1;
-  /* 非常に薄い光。一見真っ暗に見える程度の差にします */
+  /* 本編は左上(5% 5%)からさらに控えめな光 */
   background: radial-gradient(circle at 5% 5%, 
     rgba(255, 255, 255, 0.15) 0%, 
-    rgba(0, 0, 0, 0) 60%);
-
-
+    rgba(0, 0, 0, 0) 65%);
+  
   mix-blend-mode: screen;
   pointer-events: none;
 
-  /* 20秒かけて1往復。止まっているように見えるほど低速 */
+  /* 20秒かけて「じわぁ……」と変化。一見動いていないように見える速度 */
   animation: superSlowBreath 20s ease-in-out infinite alternate;
 }
 
 @keyframes superSlowBreath {
-  0%   { opacity: 0.1; } /* ほぼ見えない */
-  100% { opacity: 0.4; } /* わずかに「あ、光が差してる？」と感じる程度 */
+  0%   { opacity: 0.1; }
+  100% { opacity: 0.4; }
 }
