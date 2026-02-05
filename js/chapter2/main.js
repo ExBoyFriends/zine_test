@@ -56,8 +56,10 @@ initLoader(loader, () => {
   chapter?.classList.add("visible");
   dotsWrap?.classList.add("visible");
 
+  fadeInStart(1500);
+
   // 冒頭フェードインだけ
-  fadeOutAndGo(() => {}, 800); // onFinishは空。durationは体感合わせ
+ // fadeOutAndGo(() => {}, 800); // onFinishは空。durationは体感合わせ
 
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
