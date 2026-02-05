@@ -16,7 +16,7 @@
   bottom: 0;
 
   background: rgba(0, 0, 0, 0.4);
-  animation: slowFade 20s ease-in-out infinite alternate;
+  animation: slowFade 15s ease-in-out infinite alternate;
   pointer-events: none;
 
   z-index: 1; /* 背景の上、他のコンテンツの下 */
