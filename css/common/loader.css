@@ -1,49 +1,30 @@
 /*loader.css*/
 
-
-/* ================Loader / Fade 共通CSS================ */
-
 #fadeLayer {
   position: fixed;
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-　background: radial-gradient(circle at 15% 15%, 
+  /* 左上(15% 15%)から広がる柔らかな光 */
+  background: radial-gradient(circle at 15% 15%, 
     rgba(255, 255, 255, 0.5) 0%, 
-    rgba(0, 0, 0, 0) 70%);
+    rgba(0, 0, 0, 0) 75%);
   
   mix-blend-mode: screen;
-  filter: blur(15px); /* より広く、柔らかく */
+  filter: blur(15px);
   opacity: 0;
-  /* 1周期 5.5秒程度。少し落ち着いた「ふぁ〜んん」 */
   animation: lightWave 5.5s ease-in-out infinite;
 }
 
+/* 押し寄せては引く、波のような鼓動 */
 @keyframes lightWave {
   0%   { opacity: 0;   transform: scale(1.0); }
-  35%  { opacity: 0.9; transform: scale(1.15); } /* ぐわっと広がる光 */
-  50%  { opacity: 0.3; transform: scale(1.0); }  /* 一度引く */
-  75%  { opacity: 0.7; transform: scale(1.08); } /* 小さな波 */
+  35%  { opacity: 0.9; transform: scale(1.12); } 
+  50%  { opacity: 0.3; transform: scale(1.0); }  
+  75%  { opacity: 0.7; transform: scale(1.05); } 
   100% { opacity: 0;   transform: scale(1.0); }
 }
 
-#fadeLayer.show {
-  opacity: 1; /* 黒 */
-}
-
-#fadeLayer.hide {
-  opacity: 0;
-  pointer-events: none;
-}
-
-
-#loader img.loader-inner,
-#fadeLayer {
-  animation: heartBeat 2.9s ease-in-out infinite;
-  transition: opacity 1.5s ease; 
-}
-
-/* ================ Loader 本体　================ */
 #loader {
   position: fixed;
   inset: 0;
@@ -51,26 +32,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  pointer-events: none;
 }
 
 #loader img.loader-inner {
- position: fixed;
-  inset: 0;
-  width: 100vw;   /* 画面幅いっぱい */
-  height: 100vh;  /* 画面高さいっぱい */
+  width: 100vw;
+  height: 100vh;
   object-fit: cover;
-  object-position: center; /* 中心固定 */
-  opacity: 0.3;
+  opacity: 0.2;
+  /* 画像も光に照らされて微かに呼吸する */
+  animation: imgSoftBreath 5.5s ease-in-out infinite;
 }
-  
-/*=====================================
-ローディング中のテキスト／アイコン（必要なら） 
-#loader .loader-inner {
-  color: #fff;
-  font-size: 14px;
-  letter-spacing: 0.1em;
-  opacity: 0.8;
+
+@keyframes imgSoftBreath {
+  0%, 50%, 100% { opacity: 0.15; }
+  35%, 75%      { opacity: 0.35; }
 }
-==========================================*/
