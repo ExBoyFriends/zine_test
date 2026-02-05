@@ -68,8 +68,8 @@ export function initLoader(loader, onComplete) {
 
     blink(); // 画像点滅開始
 
-    // ローディング表示時間（例: 6.6秒）後に finish
-    setTimeout(finish, 6400);
+    // ローディング表示時間（例: 9.6秒）後に finish
+    setTimeout(finish, 9400);
   };
 
   // ページロード完了時
