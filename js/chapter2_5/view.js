@@ -23,42 +23,35 @@ function updateDots(index) {
 export function showPage(index) {
   if (!pages.length || isFading) return;
 
-  const oldIndex = state.index;
+  const oldIndex = state.prevIndex ?? index;
   const prevPage = pages[oldIndex];
   const nextPage = pages[index];
   if (!nextPage) return;
 
   isFading = true;
 
-  /* ===== 前ページ：消す ===== */
-  if (prevPage) {
+  if (prevPage && prevPage !== nextPage) {
     prevPage.classList.remove("active", "show-text");
     prevPage.style.pointerEvents = "none";
   }
 
-  /* ===== dual flipped 制御 ===== */
-  if (
-    nextPage.classList.contains("dual") &&
-    oldIndex !== index
-  ) {
+  if (nextPage.classList.contains("dual") && oldIndex !== index) {
     dualFlipped = !dualFlipped;
     nextPage.classList.toggle("flipped", dualFlipped);
   }
 
-  /* ===== 次ページ：表示 ===== */
   nextPage.classList.add("active");
   nextPage.style.pointerEvents = "auto";
 
   updateDots(index);
 
-  state.prevIndex = oldIndex;
+  state.prevIndex = index;
   state.index = index;
 
   setTimeout(() => {
     isFading = false;
-  }, 600);
+  }, 2600);
 }
-
 
 /* ===================== Text control ===================== */
 export function showText(index) {
