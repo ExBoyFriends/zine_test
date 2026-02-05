@@ -1,7 +1,7 @@
 // utils/fade.js
 
 
-export function fadeInStart(duration = 1200) {
+export function fadeInStart(duration = 1500) {　　//フェード1.5秒
   const fade = document.getElementById("fadeLayer");
   if (!fade) return;
 
@@ -19,7 +19,7 @@ export function fadeInStart(duration = 1200) {
   }, duration);
 }
 
-export function fadeOutAndGo(onFinish, duration = 1200) {
+export function fadeOutAndGo(onFinish, duration = 1500) {  //フェード1.5秒
   const fade = document.getElementById("fadeLayer");
   if (!fade) {
     onFinish?.();
