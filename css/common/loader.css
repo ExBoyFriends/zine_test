@@ -11,8 +11,8 @@
   opacity: 1;
   pointer-events: auto;
 
-  animation: loaderFade 3.6s ease-in-out infinite alternate;//////////////////
-  transition: opacity 3s ease; /* デフォルト時間と合わせる */
+  animation: loaderFade 1.5s ease-in-out infinite alternate;//////////////////
+  transition: opacity 2.0s ease; /* デフォルト時間と合わせる */
 }
 
 #fadeLayer.show {
@@ -53,8 +53,8 @@
   object-position: center;/* 中心を揃える */
   display: block;
 ///////////////////////////////////////
-   animation: loaderFade 3.6s infinite ease-in-out; //3.6秒かけて1周
-}
+   animation: loaderFade 1.5s infinite ease-in-out; //3.6秒かけて1周
+}/////////////////////////////////////////////
 
 /*=====================================
 ローディング中のテキスト／アイコン（必要なら） 
