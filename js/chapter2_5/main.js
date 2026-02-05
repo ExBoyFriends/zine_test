@@ -12,12 +12,12 @@ const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
 
-/* ===================== dots ===================== */
+/* ===================== dots 
 function updateDots(index = 0) {
   document.querySelectorAll(".dot").forEach((dot, i) => {
     dot.classList.toggle("active", i === index);
   });
-}
+}===================== */
 
 /* ===================== Loader 完了 ===================== */
 initLoader(loader, () => {
