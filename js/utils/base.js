@@ -91,33 +91,3 @@ window.addEventListener("pageshow", e => {
   window.scrollTo(0, 0);
   setVh();
 });
-
-
-
-
-/* =====================
-
-iOS関連の動作に対応
-function setVh() {
-  document.documentElement.style.setProperty(
-    "--vh",
-    `${window.innerHeight * 0.01}px`
-  );
-}
-
-setVh();
-window.addEventListener("resize", setVh);
-window.addEventListener("orientationchange", setVh);
-
-if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-  window.addEventListener("orientationchange", hideURLBar);
-  window.addEventListener("resize", hideURLBar);
-}
-
-// ページが読み込まれた後にURLバーを非表示
-const hideURLBar = () => {
-  if (window.matchMedia("(orientation: landscape)").matches) {
-    window.scrollTo(0, 1);
-  }
-};
-===================== */
