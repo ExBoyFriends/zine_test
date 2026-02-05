@@ -1,8 +1,9 @@
 /*  loader.js */
 
+
 export function initLoader(loader, onComplete) {
   let finished = false;
-  let animId = null;
+  let blinkTimeout = null;
 
   const fadeLayer =
     document.getElementById("fadeLayer") ||
@@ -13,29 +14,37 @@ export function initLoader(loader, onComplete) {
     if (finished) return;
     finished = true;
 
+    // loader を完全非表示
     if (loader) loader.style.display = "none";
-    cancelAnimationFrame(animId);
+    cancelAnimationFrame(blinkTimeout);
 
-    fadeLayer?.classList.add("hide");
-    fadeLayer.style.pointerEvents = "none";
+    // fadeLayer を非表示に
+    if (fadeLayer) {
+      fadeLayer.classList.add("hide");
+      fadeLayer.style.pointerEvents = "none";
+      fadeLayer.style.opacity = "1"; // 次回フェード用にリセット
+    }
 
     onComplete?.();
   };
 
-  // 画像点滅ループ
+  // ローディング画像点滅ループ
   const blink = () => {
     if (finished) return;
+    if (!loader) return;
+
     const img = loader.querySelector("img");
     if (!img) return;
 
     img.style.opacity = img.style.opacity === "1" ? "0.2" : "1";
-    animId = requestAnimationFrame(() => setTimeout(blink, 150)); // 150ms周期
+    blinkTimeout = setTimeout(() => requestAnimationFrame(blink), 150);
   };
 
+  // ローディング終了
   const finish = () => {
     if (finished) return;
 
-    // fadeLayer をフェードアウト
+    // fadeLayer フェードアウト
     if (fadeLayer) {
       fadeLayer.classList.add("hide");
       fadeLayer.style.pointerEvents = "none";
@@ -44,21 +53,22 @@ export function initLoader(loader, onComplete) {
     safeComplete();
   };
 
+  // ローディング開始
   const start = () => {
     if (finished) return;
 
-    // ローディング表示
+    // loader 表示
     if (loader) {
       loader.style.display = "flex";
       loader.style.opacity = "1";
     }
 
     // fadeLayer 表示
-    fadeLayer?.classList.remove("hide");
+    if (fadeLayer) fadeLayer.classList.remove("hide");
 
-    blink(); // 点滅開始
+    blink(); // 画像点滅開始
 
-    // ローディング表示時間（例：2.5秒）
+    // ローディング表示時間（例: 2.5秒）後に finish
     setTimeout(finish, 2500);
   };
 
@@ -78,7 +88,8 @@ export function initLoader(loader, onComplete) {
       loader.style.opacity = "0";
     }
 
-    fadeLayer?.classList.add("hide");
+    if (fadeLayer) fadeLayer.classList.add("hide");
     safeComplete();
   });
 }
+
