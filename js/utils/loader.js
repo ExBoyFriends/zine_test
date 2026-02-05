@@ -35,12 +35,12 @@ export function initLoader(loader, onComplete) {
 
     if (loader) {
       loader.style.display = "flex";
-      loader.style.opacity = "1";
+     
     }
 
     if (fadeLayer) {
       fadeLayer.classList.remove("hide");
-      fadeLayer.style.opacity = "1";
+      
     }
 
     // 9.4秒後に本編へ
