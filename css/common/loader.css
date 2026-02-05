@@ -44,7 +44,7 @@
   object-fit: cover; /* 画面いっぱいにフィット */
   display: block;
 
-   animation: blinkGradient 1s infinite ease-in-out;
+   animation: blinkGradient 2.8s infinite ease-in-out;
 }
 
 @keyframes blinkGradient {
