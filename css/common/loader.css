@@ -7,9 +7,24 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-　background-color: #000;
-  opacity: 1;
-  pointer-events: auto;
+  pointer-events: none;
+　background: radial-gradient(circle at 15% 15%, 
+    rgba(255, 255, 255, 0.5) 0%, 
+    rgba(0, 0, 0, 0) 70%);
+  
+  mix-blend-mode: screen;
+  filter: blur(15px); /* より広く、柔らかく */
+  opacity: 0;
+  /* 1周期 5.5秒程度。少し落ち着いた「ふぁ〜んん」 */
+  animation: lightWave 5.5s ease-in-out infinite;
+}
+
+@keyframes lightWave {
+  0%   { opacity: 0;   transform: scale(1.0); }
+  35%  { opacity: 0.9; transform: scale(1.15); } /* ぐわっと広がる光 */
+  50%  { opacity: 0.3; transform: scale(1.0); }  /* 一度引く */
+  75%  { opacity: 0.7; transform: scale(1.08); } /* 小さな波 */
+  100% { opacity: 0;   transform: scale(1.0); }
 }
 
 #fadeLayer.show {
@@ -48,13 +63,6 @@
   object-fit: cover;
   object-position: center; /* 中心固定 */
   opacity: 0.3;
-
-  animation: imgBreath 4.5s ease-in-out infinite;
-}
-
-@keyframes imgBreath {
-  0%, 45%, 100% { opacity: 0.2; }
-  30%, 70% { opacity: 0.5; } /* 光が強いときに少しだけ濃くなる */
 }
   
 /*=====================================
