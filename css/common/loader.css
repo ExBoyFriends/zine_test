@@ -47,38 +47,16 @@
   height: 100vh;  /* 画面高さいっぱい */
   object-fit: cover;
   object-position: center; /* 中心固定 */
+  opacity: 0.3;
+
+  animation: imgBreath 4.5s ease-in-out infinite;
 }
 
-
-/* 左斜め上から漏れる、鋭い光の質感 */
-  background: radial-gradient(circle at 10% 10%, 
-    rgba(255, 255, 240, 0.5) 0%, 
-    rgba(255, 255, 255, 0.1) 30%, 
-    rgba(0, 0, 0, 0.9) 80%);
-  
-  /* スクリーン合成にすることで、ライトが当たったような白飛び感を出す */
-  mix-blend-mode: screen; 
-  opacity: 0;
-  animation: flickeringLight 4s infinite;
+@keyframes imgBreath {
+  0%, 45%, 100% { opacity: 0.2; }
+  30%, 70% { opacity: 0.5; } /* 光が強いときに少しだけ濃くなる */
 }
-
-@keyframes flickeringLight {
-  0%, 100% { opacity: 0; filter: blur(2px); }
   
-  /* 1回目の鼓動：鋭く光ってスッと引く */
-  10% { opacity: 0.8; filter: blur(0px); } 
-  12% { opacity: 0.2; }
-  14% { opacity: 0.7; }
-  25% { opacity: 0; }
-  
-  /* 2回目の鼓動：余韻のような小さな瞬き */
-  35% { opacity: 0.4; }
-  40% { opacity: 0; }
-  
-  /* 街灯が切れかかっているような、一瞬のチカチカ */
-  70% { opacity: 0.05; }
-  72% { opacity: 0; }
-}
 /*=====================================
 ローディング中のテキスト／アイコン（必要なら） 
 #loader .loader-inner {
