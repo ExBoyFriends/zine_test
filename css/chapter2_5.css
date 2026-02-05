@@ -61,8 +61,8 @@ body {
   object-fit: contain;
   transform: translate(-50%, -50%);
   transition: none;
-   opacity: 0;
-  transition: opacity 0.6s ease;
+   opacity: 1;
+  transition: opacity none;
 }
 
 .page.dual.active img {
