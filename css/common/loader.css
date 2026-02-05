@@ -38,6 +38,14 @@
   pointer-events: none;
 }
 
+#loader img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  opacity: 1;
+  transition: opacity 0.15s linear;
+}
+
 /* ローディング中のテキスト／アイコン（必要なら） */
 #loader .loader-inner {
   color: #fff;
