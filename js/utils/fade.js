@@ -1,21 +1,22 @@
-// 冒頭フェードイン
+// utils/fade.js
 export function fadeInStart(duration = 1200) {
   const fade = document.getElementById("fadeLayer");
   if (!fade) return;
 
-  // 初期は黒
+  fade.classList.remove("hide"); // 黒 → 表示
   fade.style.opacity = "1";
-  fade.style.pointerEvents = "auto";
 
-  // 少し遅らせて透明にする
   requestAnimationFrame(() => {
     fade.style.transition = `opacity ${duration}ms ease`;
     fade.style.opacity = "0";
-    fade.style.pointerEvents = "none";
   });
+
+  setTimeout(() => {
+    fade.classList.add("hide");
+    fade.style.pointerEvents = "none";
+  }, duration);
 }
 
-// フェードアウトして次の処理へ
 export function fadeOutAndGo(onFinish, duration = 1200) {
   const fade = document.getElementById("fadeLayer");
   if (!fade) {
@@ -23,10 +24,12 @@ export function fadeOutAndGo(onFinish, duration = 1200) {
     return;
   }
 
-  // フェードアウト（暗くする）
-  fade.style.opacity = "1";
-  fade.style.pointerEvents = "auto";
-  fade.style.transition = `opacity ${duration}ms ease`;
+  fade.classList.remove("hide");
+  fade.style.opacity = "0";
+  requestAnimationFrame(() => {
+    fade.style.transition = `opacity ${duration}ms ease`;
+    fade.style.opacity = "1";
+  });
 
   setTimeout(() => {
     onFinish?.();
