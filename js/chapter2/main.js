@@ -50,15 +50,16 @@ function goChapter25() {
   if (goChapter25._done) return;
   goChapter25._done = true;
   
-  playExitTransition({
-    onFinish() {
-      fadeOutAndGo(() => {
-        location.href = "../HTML/chapter2_5.html";
-      });
-    }
+  fadeOutAndGo(() => {
+    location.href = "../HTML/chapter2_5.html";
   });
 }
 goChapter25._done = false;
+
+fadeInStart();
+
+// 自動遷移の呼び出し
+setTimeout(goChapter25, 6000); // 例：6秒後に自動遷移
 
 /* =====================
    Loader 完了 chapter2専用
