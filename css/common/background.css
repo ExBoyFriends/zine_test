@@ -1,7 +1,7 @@
 /* background.css */
 
 .background {
-  position: fixed;
+  position: relative;
   inset: 0;
   background: url('../../image/background.jpg') center / cover no-repeat;
   z-index: 0;
