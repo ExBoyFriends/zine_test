@@ -1,8 +1,6 @@
 /* base.css */
 /* ===================== Reset ===================== */
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
@@ -20,16 +18,14 @@ body {
   -webkit-touch-callout: none;
 }
 
-/* ===================== Scene ===================== */
-.scene {
-  position: relative;
-  z-index: 1;
-}
 
 /* ===================== Chapter Control ===================== */
 .chapter {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2.8s cubic-bezier(.22,.61,.36,1);
+}
+.chapter.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
