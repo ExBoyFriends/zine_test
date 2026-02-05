@@ -51,13 +51,12 @@
 }
 
 #loader img.loader-inner {
-  position: fixed;
+ position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
-/*  object-fit: cover;      /* cover で画面いっぱい */
-/*  object-position: center;/* 中心を揃える */
-  display: block;
+  width: 100vw;   /* 画面幅いっぱい */
+  height: 100vh;  /* 画面高さいっぱい */
+  object-fit: cover;
+  object-position: center; /* 中心固定 */
 ///////////////////////////////////////
    animation: loaderFade 1.5s infinite ease-in-out; //3.6秒かけて1周
 }/////////////////////////////////////////////
