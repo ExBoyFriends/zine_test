@@ -1,4 +1,5 @@
 // chapter2/main.js
+
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
 import { initCarousel3D } from "./carousel3d.js";
@@ -8,18 +9,9 @@ import {
   startAutoTransition,
   resetTransitionState
 } from "./holdTransition.js";
-import { fadeOutAndGo, fadeInStart } from "../utils/fade.js";
+import { playExitTransition } from "./transitionOut.js";
 import { initGlitchLayer } from "./effects.js";
-
-/* =====================
-   bfcache 対応
-===================== */
-window.addEventListener("pageshow", e => {
-  if (!e.persisted) return;
-  resetTransitionState();
-  goChapter25._done = false;
-  startAutoTransition(goChapter25);
-});
+import { fadeOutAndGo, fadeInStart } from "../utils/fade.js";
 
 /* =====================
    DOM
@@ -35,7 +27,6 @@ const dots     = [...document.querySelectorAll(".dot")];
 ===================== */
 function updateDots(index = 0) {
   const COUNT = dots.length;
-  // インデックスを反転させる (0->4, 1->3, 2->2, 3->1, 4->0)
   const reversedIndex = (COUNT - 1) - index;
   dots.forEach((dot, i) => {
     dot.classList.toggle("active", i === reversedIndex);
@@ -43,39 +34,41 @@ function updateDots(index = 0) {
 }
 
 /* =====================
-   Chapter2 → 2.5
+   Chapter2 → 2.5 自動遷移
 ===================== */
 function goChapter25() {
   if (goChapter25._done) return;
   goChapter25._done = true;
-  
-  fadeOutAndGo(() => {
-    location.href = "../HTML/chapter2_5.html";
+
+  // 独自 exit アニメーションで遷移
+  playExitTransition({
+    onFinish() {
+      location.href = "../HTML/chapter2_5.html";
+    }
   });
 }
 goChapter25._done = false;
 
-
 /* =====================
-   Loader 完了 chapter2専用
+   Loader & 初期化
 ===================== */
 initLoader(loader, () => {
   chapter?.classList.add("visible");
+  dotsWrap?.classList.add("visible");
+
+  // 冒頭フェードインだけ
+  fadeOutAndGo(() => {}, 800); // onFinishは空。durationは体感合わせ
+
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
   }
-  dotsWrap?.classList.add("visible");
-   // 冒頭フェードイン
-  fadeInStart();
 
-  // 自動遷移開始
   startAutoTransition(goChapter25);
 });
 
-
 /* =====================
-   Carousel
+   Carousel 3D
 ===================== */
 const carousel = initCarousel3D({
   onIndexChange(index) {
@@ -95,6 +88,16 @@ if (carousel) {
    Glitch 初期化
 ===================== */
 initGlitchLayer?.();
+
+/* =====================
+   bfcache / 戻ったとき
+===================== */
+window.addEventListener("pageshow", e => {
+  if (!e.persisted) return;
+  resetTransitionState();
+  goChapter25._done = false;
+  window.__carousel__?.stop?.();
+});
 
 /* =====================
    強制 exit（長押し完遂）
