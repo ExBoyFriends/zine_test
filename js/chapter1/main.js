@@ -31,6 +31,8 @@ initLoader(loader, () => {
     onStart() {
       const carousel = initCarousel(wrapper, pages);
       initLastPage(last, () => carousel.getCurrentPage(), pages.length);
+
+      fadeInStart(2000);
     }
   });
 });
