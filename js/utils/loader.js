@@ -44,7 +44,7 @@ export function initLoader(loader, onComplete) {
     }
 
     // 9.4秒後に本編へ
-    setTimeout(finish, 9400);
+    setTimeout(finish, 5400);/////////////////////////////////////////////////
   };
 
   if (document.readyState === "complete") {
