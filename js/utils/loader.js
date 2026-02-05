@@ -28,6 +28,9 @@ export function initLoader(loader, onComplete) {
     // 2. 黒い幕(fadeLayer)の呼吸アニメーションを止めて「真っ黒(1)」で固定
     if (fadeLayer) {
       fadeLayer.style.animation = "none";
+
+      // 鼓動を止めたとき、中途半端な透明度にならないよう「1(真っ黒)」にする
+    fadeLayer.style.opacity = "1";
     }
 
     // 3. 画像が消え始めた 0.4秒後に、本編開始(onComplete)を呼ぶ
