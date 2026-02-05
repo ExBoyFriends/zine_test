@@ -1,11 +1,6 @@
 /* chapter2_5.css */
 
 /* ===================== ページ ===================== */
-.chapter {
-  opacity: 1;
-  transition: opacity 1.3s ease;
-}
-
 .page {
   position: fixed; 
   top: 0;
