@@ -5,16 +5,25 @@
   inset: 0;
   background: url('../image/background.jpg') center / cover no-repeat;
   z-index: 0;
+
+  /* ::before の基準を相対に */
+  position: relative;
 }
 
 /* 暗転用レイヤー */
 .background::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: rgba(0, 0, 0, 0.4);
   animation: slowFade 20s ease-in-out infinite alternate;
   pointer-events: none;
+
+  z-index: 1; /* 背景の上、他のコンテンツの下 */
 }
 
 @keyframes slowFade {
