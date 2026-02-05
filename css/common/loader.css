@@ -1,41 +1,28 @@
 /* loader.css 
 /* ================ Loader / Fade ================ */
 
+/* 光の層：画像の上から琥珀色で照らす */
 #fadeLayer {
   position: fixed;
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  /* 色：白すぎない琥珀色（アンバー）で高級感と温かみを演出 */
   background: radial-gradient(circle at 10% 10%, 
-    rgba(255, 230, 180, 0.4) 0%, 
-    rgba(200, 150, 50, 0.05) 45%, 
+    rgba(255, 220, 150, 0.5) 0%, 
+    rgba(150, 100, 20, 0.1) 45%, 
     rgba(0, 0, 0, 0) 75%);
   
   mix-blend-mode: screen;
-  filter: blur(12px); 
+  filter: blur(12px);
   opacity: 0;
-  /* 3.5秒周期：後退しながら消えるアニメーション */
-  animation: goldWave 3.5s ease-in-out infinite;
+  animation: goldSiren 3.5s ease-in-out infinite;
 }
 
-@keyframes goldWave {
-  0% { 
-    opacity: 0; 
-    transform: scale(1.1); /* 最初は少し内側から */
-  }
-  25% { 
-    opacity: 1; 
-    transform: scale(1.25); /* さっと広がる */
-  }
-  60% { 
-    opacity: 0; 
-    transform: scale(0.9); /* スーッと後退（縮小）しながら消える */
-  }
-  100% { 
-    opacity: 0;
-    transform: scale(0.9); /* 停止感を防ぐための余白時間 */
-  }
+@keyframes goldSiren {
+  0%   { opacity: 0;   transform: scale(1.1); }
+  25%  { opacity: 1;   transform: scale(1.3); } /* さっと広がる光 */
+  60%  { opacity: 0;   transform: scale(0.9); } /* スーッと闇へ引く */
+  100% { opacity: 0; }
 }
 
 #loader {
@@ -46,6 +33,8 @@
   align-items: center;
   justify-content: center;
   background: transparent;
+  background-color: #000; 
+  pointer-events: none;
 }
 
 #loader img.loader-inner {
@@ -54,16 +43,17 @@
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  opacity: 0.2;
+  z-index: 9998;
+  opacity: 0.05;
   /* 画像も光の後退に同期させて奥行き感を出す */
   animation: imgGoldSync 3.5s ease-in-out infinite;
 }
 
 @keyframes imgGoldSync {
-  0%   { opacity: 0.1; transform: scale(1.0); }
-  25%  { opacity: 0.35; transform: scale(1.03); }
-  60%  { opacity: 0.1; transform: scale(1.0); }
-  100% { opacity: 0.1; }
+0%   { opacity: 0.05; transform: scale(1.0); }
+  25%  { opacity: 0.6;  transform: scale(1.05); } /* 光と共に浮かび上がる */
+  60%  { opacity: 0.05; transform: scale(0.95); } /* 闇に溶けながら後退 */
+  100% { opacity: 0.05; }
 }
 
 #fadeLayer.hide {
