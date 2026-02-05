@@ -6,26 +6,36 @@
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  /* 左上からの光の芯をハッキリさせる */
+  /* 色：白すぎない琥珀色（アンバー）で高級感と温かみを演出 */
   background: radial-gradient(circle at 10% 10%, 
-    rgba(255, 255, 255, 0.7) 0%, 
-    rgba(255, 255, 255, 0.1) 45%, 
-    rgba(0, 0, 0, 0) 65%);
+    rgba(255, 230, 180, 0.4) 0%, 
+    rgba(200, 150, 50, 0.05) 45%, 
+    rgba(0, 0, 0, 0) 75%);
   
   mix-blend-mode: screen;
-  filter: blur(8px); /* ボカシを抑えてキレを出す */
+  filter: blur(12px); 
   opacity: 0;
-  /* 3秒周期。30%で最大、42%で消える「鋭い引き」 */
-  animation: sirenWave 3s ease-in-out infinite;
+  /* 3.5秒周期：後退しながら消えるアニメーション */
+  animation: goldWave 3.5s ease-in-out infinite;
 }
 
-@keyframes sirenWave {
-  0%   { opacity: 0; transform: scale(1.0); }
-  30%  { opacity: 1; transform: scale(1.15); } /* ふぁ〜ん（ピーク） */
-  42%  { opacity: 0; transform: scale(0.95); } /* ッ（一気に引く！） */
-  55%  { opacity: 0.8; transform: scale(1.08); } /* ふぁん（第2波） */
-  70%  { opacity: 0; transform: scale(1.0); }   /* ッ（引く） */
-  100% { opacity: 0; }
+@keyframes goldWave {
+  0% { 
+    opacity: 0; 
+    transform: scale(1.1); /* 最初は少し内側から */
+  }
+  25% { 
+    opacity: 1; 
+    transform: scale(1.25); /* さっと広がる */
+  }
+  60% { 
+    opacity: 0; 
+    transform: scale(0.9); /* スーッと後退（縮小）しながら消える */
+  }
+  100% { 
+    opacity: 0;
+    transform: scale(0.9); /* 停止感を防ぐための余白時間 */
+  }
 }
 
 #loader {
@@ -45,13 +55,15 @@
   height: 100vh;
   object-fit: cover;
   opacity: 0.2;
-  /* 画像も光のリズムに同期 */
-  animation: imgSirenSync 3s ease-in-out infinite;
+  /* 画像も光の後退に同期させて奥行き感を出す */
+  animation: imgGoldSync 3.5s ease-in-out infinite;
 }
 
-@keyframes imgSirenSync {
-  0%, 42%, 70%, 100% { opacity: 0.1; }
-  30%, 55%           { opacity: 0.4; }
+@keyframes imgGoldSync {
+  0%   { opacity: 0.1; transform: scale(1.0); }
+  25%  { opacity: 0.35; transform: scale(1.03); }
+  60%  { opacity: 0.1; transform: scale(1.0); }
+  100% { opacity: 0.1; }
 }
 
 #fadeLayer.hide {
