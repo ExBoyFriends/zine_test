@@ -1,5 +1,6 @@
 // chapter2_5/view.js
-import { state } from "../utils/state.js";
+
+import { state, resetTextState } from "../utils/state.js";
 
 let dualFlipped = false;
 let isFading = false;
@@ -11,7 +12,7 @@ export function getPages() {
   return pages;
 }
 
-/* ===================== Dots update（chapter1準拠） ===================== */
+/* ===================== Dots update ===================== */
 function updateDots(index) {
   dots.forEach((dot, i) => {
     dot.classList.toggle("active", i === index);
@@ -20,32 +21,37 @@ function updateDots(index) {
 
 /* ===================== Page control ===================== */
 export function showPage(index) {
-  if (!pages.length || isFading) return;  // フェード中は無視
+  if (!pages.length || isFading) return;
 
   const prevPage = pages[state.index];
   const nextPage = pages[index];
   if (!nextPage) return;
 
-  isFading = true;  // フェード開始
+  isFading = true;
 
-  // dualページの場合は反転処理
-  if (nextPage.classList.contains("dual") && state.prevIndex !== index) {
+  // --- 前ページリセット ---
+  if (prevPage) {
+    prevPage.classList.remove("active", "show-text", "flipped");
+    prevPage.style.opacity = "";
+    prevPage.style.transition = "";
+  }
+
+  // --- dualページの flipped 状態 ---
+  if (nextPage.classList.contains("dual")) {
     dualFlipped = !dualFlipped;
     nextPage.classList.toggle("flipped", dualFlipped);
   }
 
-  // 前ページは非アクティブ化（即時）
-  prevPage?.classList.remove("active");
-
-  // フェードイン
+  // --- 次ページをアクティブ化 ---
   nextPage.classList.add("active");
   nextPage.style.opacity = 0;
-  nextPage.style.transition = "opacity 0.5s ease"; // フェード時間
+  nextPage.style.transition = "opacity 0.5s ease";
+
   requestAnimationFrame(() => {
     nextPage.style.opacity = 1;
   });
 
-  // transitionend でフラグ解除 & ドット更新
+  // --- フェード終了処理 ---
   nextPage.addEventListener(
     "transitionend",
     function onEnd() {
@@ -57,11 +63,10 @@ export function showPage(index) {
     }
   );
 
-  // 状態を更新
   state.prevIndex = index;
   state.index = index;
   state.showingText = false;
-};
+}
 
 /* ===================== Text control ===================== */
 export function showText(index) {
