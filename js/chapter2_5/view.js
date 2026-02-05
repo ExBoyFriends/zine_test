@@ -23,61 +23,42 @@ function updateDots(index) {
 export function showPage(index) {
   if (!pages.length || isFading) return;
 
-  const prevPage = pages[state.index];
+  const oldIndex = state.index;
+  const prevPage = pages[oldIndex];
   const nextPage = pages[index];
   if (!nextPage) return;
 
   isFading = true;
 
-  // --- 前ページフェードアウト ---
+  /* ===== 前ページ：消す ===== */
   if (prevPage) {
-    prevPage.style.transition = "opacity 0.4s ease";
-    prevPage.style.opacity = 0;
+    prevPage.classList.remove("active", "show-text");
     prevPage.style.pointerEvents = "none";
-
-    prevPage.addEventListener(
-      "transitionend",
-      function onFadeOut() {
-        prevPage.removeEventListener("transitionend", onFadeOut);
-        prevPage.classList.remove("active", "show-text", "flipped");
-        prevPage.style.transition = "";
-        prevPage.style.opacity = "";
-      }
-    );
   }
 
-  // --- dualページの flipped 設定 ---
-  if (nextPage.classList.contains("dual") && state.prevIndex !== index) {
+  /* ===== dual flipped 制御 ===== */
+  if (
+    nextPage.classList.contains("dual") &&
+    oldIndex !== index
+  ) {
     dualFlipped = !dualFlipped;
     nextPage.classList.toggle("flipped", dualFlipped);
   }
 
-  // --- 次ページフェードイン ---
+  /* ===== 次ページ：表示 ===== */
   nextPage.classList.add("active");
-  nextPage.style.opacity = 0;
   nextPage.style.pointerEvents = "auto";
-  nextPage.style.transition = "opacity 0.5s ease";
 
-  requestAnimationFrame(() => {
-    nextPage.style.opacity = 1;
-  });
+  updateDots(index);
 
-  nextPage.addEventListener(
-    "transitionend",
-    function onFadeIn() {
-      nextPage.removeEventListener("transitionend", onFadeIn);
-      nextPage.style.transition = "";
-      nextPage.style.opacity = "";
-      updateDots(index);
-      isFading = false;
-    }
-  );
-
-  // 状態更新
-  state.prevIndex = index;
+  state.prevIndex = oldIndex;
   state.index = index;
-  state.showingText = false;
-};
+
+  setTimeout(() => {
+    isFading = false;
+  }, 600);
+}
+
 
 /* ===================== Text control ===================== */
 export function showText(index) {
