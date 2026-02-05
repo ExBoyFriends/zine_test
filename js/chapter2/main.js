@@ -58,7 +58,7 @@ function goChapter25() {
 goChapter25._done = false;
 
 /* =====================
-   Loader 完了
+   Loader 完了 chapter2専用
 ===================== */
 initLoader(loader, () => {
   chapter?.classList.add("visible");
