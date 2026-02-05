@@ -38,6 +38,13 @@
   pointer-events: none;
 }
 
+#loader img.loader-inner {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 画面いっぱいにフィット */
+  display: block;
+}
+
 /* ローディング中のテキスト／アイコン（必要なら） */
 #loader .loader-inner {
   color: #fff;
