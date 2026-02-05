@@ -37,9 +37,6 @@ export function initTapInteraction() {
 
 /* ===================== タップ処理 ===================== */
 function handleTap() {
-  const page = pages[state.index];
-  if (!page) return;
-
   if (!state.showingText) {
     showText(state.index);
     state.showingText = true;
@@ -50,6 +47,7 @@ function handleTap() {
   state.showingText = false;
   goNext();
 }
+
 
 /* ===================== ページ遷移 ===================== */
 function goNext() {
