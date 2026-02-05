@@ -43,6 +43,16 @@
   height: 100%;
   object-fit: cover; /* 画面いっぱいにフィット */
   display: block;
+
+   animation: blinkGradient 1s infinite ease-in-out;
+}
+
+@keyframes blinkGradient {
+  0%   { opacity: 0.3; }
+  25%  { opacity: 0.8; }
+  50%  { opacity: 1; }
+  75%  { opacity: 0.8; }
+  100% { opacity: 0.3; }
 }
 
 /* ローディング中のテキスト／アイコン（必要なら） */
