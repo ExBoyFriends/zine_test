@@ -6,12 +6,13 @@
 #fadeLayer {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
   z-index: 9999;
-
+　background-color: rgba(0,0,0,0.8);
   opacity: 1;
   pointer-events: auto;
-  transition: opacity 1.2s ease; /* デフォルト時間と合わせる */
+
+  animation: fadeLayerFade 3.6s ease-in-out infinite alternate;
+  transition: opacity 3s ease; /* デフォルト時間と合わせる */
 }
 
 #fadeLayer.show {
@@ -21,6 +22,15 @@
 #fadeLayer.hide {
   opacity: 0;
   pointer-events: none;
+}
+
+@keyframes fadeLayerFade {
+ 0%   { opacity: 0.3; }
+  20%  { opacity: 0.5; }
+  40%  { opacity: 0.7; }
+  60%  { opacity: 0.5; }
+  80%  { opacity: 0.3; }
+  100% { opacity: 0.2; }
 }
 
 /* ================ Loader 本体================ */
@@ -47,7 +57,7 @@
   object-position: center;/* 中心を揃える */
   display: block;
 
-   animation: blinkGradient 1.8s infinite ease-in-out; //1.8秒かけて1周
+   animation: blinkGradient 3.6s infinite ease-in-out; //1.8秒かけて1周
 }
 
 @keyframes loaderFade {
