@@ -1,8 +1,7 @@
 /**
  * loader.js
- 
+
  * 役割：忍び寄る闇の演出。最後は画面を完全に飲み込み、本編へ繋ぐ。
- * 戻るボタン（bfcache）での再訪時も演出を再実行する。
  */
 export function initLoader(loader, onComplete) {
   let finished = false;
@@ -18,55 +17,53 @@ export function initLoader(loader, onComplete) {
   const finish = () => {
     if (finished) return;
 
+    // 1. 闇を巨大化させ、完全に塗りつぶす
     if (loader) {
       loader.classList.add("swallow-darkness");
     }
 
-    // 闇が広がりきった直後（1.0秒後）にフェードアウト開始
+    // 2. 塗りつぶしが完了したタイミング（1.2秒後）
     setTimeout(() => {
-      if (fadeLayer) {
-        // 残像防止のためレイヤーを物理的に隠す
-        fadeLayer.style.display = "none";
-      }
-
+      // カクつきを避けるため、一気に opacity 変化へ
       if (loader) {
-        loader.style.transition = "opacity 0.6s ease-out";
+        loader.style.transition = "opacity 0.7s cubic-bezier(0.2, 1, 0.3, 1)";
         loader.style.opacity = "0";
       }
 
-      // ローダーが完全に消えきる直前に背後で本編（背景アニメ）を起動
-      setTimeout(safeComplete, 200); 
-    }, 1000); 
+      // 3. ローダーが消える途中（0.4s後）で、背後の準備を整える
+      setTimeout(safeComplete, 400);
+    }, 1200);
   };
 
   const start = () => {
-    finished = false; // フラグのリセット
+    finished = false; 
 
     if (loader) {
       loader.style.display = "flex";
       loader.style.opacity = "1";
       loader.classList.remove("swallow-darkness");
-      loader.style.transition = "none"; // 前回のtransitionをクリア
+      loader.style.transition = "none";
     }
     if (fadeLayer) {
+      // 初期化：ローディング中の設定に戻す
       fadeLayer.style.display = "block";
+      fadeLayer.style.mixBlendMode = "multiply";
     }
 
-    // 8.4秒間の演出。終了後にfinishへ
+    // 8.4秒間の演出
     setTimeout(finish, 8400);
   };
 
-  // ページロード時
   if (document.readyState === "complete") {
     start();
   } else {
     window.addEventListener("load", start, { once: true });
   }
 
-  // ★戻るボタン（bfcache）対策
+  // 戻るボタン（bfcache）対策
   window.addEventListener("pageshow", (e) => {
     if (e.persisted) {
-      start(); // 戻ってきたときも、再び闇の演出から始める
+      start(); 
     }
   });
 }
