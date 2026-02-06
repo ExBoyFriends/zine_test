@@ -118,12 +118,13 @@ body {
   top: 50%;
   left: 56%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 5;
   pointer-events: none;
 }
 
 #last-page.opened .tap-cover {
   z-index: 5;
+  opacity: 1; /* 見えるようにする（デバッグ用なら。不要なら0のままでもOK） */
   pointer-events: auto;
 }
 
