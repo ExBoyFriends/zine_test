@@ -31,12 +31,13 @@
     rgba(0, 0, 0, 0) 96%);
   mix-blend-mode: multiply;
   filter: blur(80px);
-  animation: fastLooming 2.5s ease-in-out infinite alternate;
+ /* 周期を1.6秒に加速。より鋭い鼓動に */
+  animation: fastLooming 1.6s ease-in-out infinite alternate;
   will-change: transform, opacity;
 }
 
 @keyframes fastLooming {
-  0%   { opacity: 0; transform: scale(1.4) translateZ(0); }
+  0%   { opacity: 0; transform: scale(1.8) translateZ(0); }
   100% { opacity: 1.0; transform: scale(1.0) translateZ(0); }
 }
 
