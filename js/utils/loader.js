@@ -14,33 +14,40 @@ export function initLoader(loader, onComplete) {
     if (typeof onComplete === "function") onComplete();
   };
 
-  const finish = () => {
+ const finish = () => {
     if (finished) return;
     
-    // 1. 【暗転開始】右下から楕円が中央へ広がり、画面を飲み込む
     if (loader) {
       loader.classList.add("swallow-darkness");
     }
 
-    // わずかに遅らせて本編の準備（カード等の描画）を裏で開始
+    // 200ms後に本編準備（カード表示など）を開始
     setTimeout(safeComplete, 200); 
 
-    // 2. 【1.0秒後：真っ暗な瞬間】夜明け（引き波）を開始
+    // 1.0秒後：真っ暗になった瞬間
     setTimeout(() => {
       if (loader) {
-        // 右下へ引き返すアニメーションを起動
+        // [修正ポイント] 
+        // 1. reveal-startを付与して「引き」のアニメを開始
         loader.classList.add("reveal-start");
         
-        // ローダー全体の透明度も下げていく
+        // 2. loader全体をじわじわ消す
         loader.style.transition = "opacity 2.8s cubic-bezier(0.2, 1, 0.2, 1)";
         loader.style.opacity = "0";
+
+        // [カクつき・残像対策] 
+        // 影の計算（blurとradial-gradient）をこの瞬間に裏側で殺す
+        if (fadeLayer) {
+           // 0.1秒だけ待ってから、影の描画計算をOFFにする
+           setTimeout(() => {
+             fadeLayer.style.visibility = "hidden"; 
+           }, 100);
+        }
       }
       
-      // 3. 【3.8秒後（1.0+2.8s）】すべてが明けきったら要素を完全に消去
+      // 全体が消え去るタイミング
       setTimeout(() => {
-        if (loader) {
-          loader.style.display = "none";
-        }
+        if (loader) loader.style.display = "none";
       }, 2800); 
     }, 1000); 
   };
