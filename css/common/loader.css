@@ -1,6 +1,5 @@
 
 /* loader.css */
-
 #loader {
   position: fixed;
   inset: 0;
@@ -16,14 +15,14 @@
   width: 100vw;
   height: 100vh;
   background: url('../../image/background.jpg') center / cover no-repeat;
-  z-index: 10000; /* 画像 */
+  z-index: 10000;
   transform: translateZ(0);
 }
 
 #fadeLayer {
   position: absolute;
   inset: -100%; 
-  z-index: 10002; /* 最前面：影 */
+  z-index: 10002;
   background: radial-gradient(ellipse at 85% 105%, 
     rgba(0, 0, 0, 1.0) 0%, 
     rgba(0, 0, 0, 0.8) 25%, 
@@ -31,39 +30,34 @@
     rgba(0, 0, 0, 0) 96%);
   mix-blend-mode: multiply;
   filter: blur(80px);
-/* 周期を1.0秒に。cubic-bezier で「攻め」の瞬間をより鋭く */
   animation: fastLooming 1.0s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
   will-change: transform, opacity;
 }
 
 @keyframes fastLooming {
-  0%   { opacity: 0; transform: scale(2.2) translateZ(0); }
+  0% { opacity: 0; transform: scale(2.2) translateZ(0); }
   100% { opacity: 1.0; transform: scale(1.0) translateZ(0); }
 }
 
-/* 終了時：闇が満ちるアニメーション */
 #loader.swallow-darkness #fadeLayer {
   animation: none;
-  transition: 
-    transform 2.0s cubic-bezier(0.4, 0, 0.2, 1), 
-    opacity 1.5s ease-in;
+  transition: transform 2.0s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.5s ease-in;
   transform: scale(3.5) translate(-15%, -15%) translateZ(0);
   opacity: 1;
 }
 
-/* 最後のひと押し：徐々に画面を塗りつぶす黒幕 */
 #loader.swallow-darkness::after {
   content: "";
   position: absolute;
   inset: 0;
   background: #000;
-  z-index: 10001; /* 画像(10000)と影(10002)の間：画像だけを消す */
+  z-index: 10001;
   opacity: 0;
   pointer-events: none;
   animation: finalBlackout 2.0s forwards;
 }
 
 @keyframes finalBlackout {
-  0%   { opacity: 0; }
+  0% { opacity: 0; }
   100% { opacity: 1; }
 }
