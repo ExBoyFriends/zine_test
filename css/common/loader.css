@@ -1,5 +1,6 @@
 
 /* loader.css */
+
 #loader {
   position: fixed;
   inset: 0;
@@ -9,6 +10,7 @@
   overflow: hidden;
 }
 
+/* 本編 background.css の .background と完全に一致させる */
 .loader-bg-image {
   position: absolute;
   inset: 0;
@@ -16,6 +18,7 @@
   height: 100vh;
   background: url('../../image/background.jpg') center / cover no-repeat;
   z-index: 10000;
+  /* GPUアクセラレーションを有効にしてカクつきを防止 */
   transform: translateZ(0);
 }
 
@@ -30,15 +33,23 @@
     rgba(0, 0, 0, 0) 96%);
   mix-blend-mode: multiply;
   filter: blur(80px);
+  /* 1.0秒周期：激しい鼓動 */
   animation: fastLooming 1.0s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
   will-change: transform, opacity;
 }
 
 @keyframes fastLooming {
-  0% { opacity: 0; transform: scale(2.2) translateZ(0); }
-  100% { opacity: 1.0; transform: scale(1.0) translateZ(0); }
+  0% { 
+    opacity: 0; 
+    transform: scale(2.2) translateZ(0); 
+  }
+  100% { 
+    opacity: 1.0; 
+    transform: scale(1.0) translateZ(0); 
+  }
 }
 
+/* 終了時：闇を巨大化させ、画面全体を真っ黒な「面」にする */
 #loader.swallow-darkness #fadeLayer {
   animation: none;
   transition: transform 2.0s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.5s ease-in;
@@ -46,18 +57,19 @@
   opacity: 1;
 }
 
+/* 最後のひと押し：影レイヤーの背後から画面を黒く塗りつぶす */
 #loader.swallow-darkness::after {
   content: "";
   position: absolute;
   inset: 0;
   background: #000;
-  z-index: 10001;
+  z-index: 10001; /* 画像(10000)と影(10002)の間 */
   opacity: 0;
   pointer-events: none;
   animation: finalBlackout 2.0s forwards;
 }
 
 @keyframes finalBlackout {
-  0% { opacity: 0; }
+  0%   { opacity: 0; }
   100% { opacity: 1; }
 }
