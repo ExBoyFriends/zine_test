@@ -6,44 +6,28 @@ import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
 import { showPage } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
-import { fadeInStart, fadeOutAndGo } from "../utils/fade.js";
 
-/* ===================== DOM ===================== */
 const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
 
-/* ===================== dots ===================== */
-function updateDots(index = 0) {
-  document.querySelectorAll(".dot").forEach((dot, i) => {
-    dot.classList.toggle("active", i === index);
-  });
-}
-
 /* ===================== Loader 完了 ===================== */
 initLoader(loader, () => {
-  state.index = 0;  // 初期化
+  state.index = 0; 
 
-  // 冒頭フェードイン
-  fadeInStart(); 
-
+  // loader.js が闇を引かせている間に、本編の準備だけを行う
   startChapter({
     chapter,
     dots,
     onStart() {
-      showPage(state.index);  // 最初のページを表示
-      updateDots(state.index);
-      initTapInteraction();   // タップ/スワイプ操作を初期化
+      showPage(state.index);
+      initTapInteraction(); // 操作の有効化
     }
   });
 });
 
-/* ===================== pageshow（bfcache） ===================== */
+/* ===================== bfcache 対策 ===================== */
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
-
-  // 再表示時も現在のページ状態を復元
   showPage(state.index);
-  updateDots(state.index);
 });
-
