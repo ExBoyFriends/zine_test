@@ -1,5 +1,4 @@
 /* background.css */
-/* background.css */
 
 .background {
   position: fixed;
@@ -8,44 +7,45 @@
   height: 100vh;
   background: url('../../image/background.jpg') center / cover no-repeat;
   z-index: 0;
-  background-color: #050505; /* 真っ黒よりわずかに上のグレー */
+  background-color: #000;
 }
 
-/* 影の層：右下から「半分」まで迫って引き返す */
+/* 影の層：右下から左上ギリギリまで侵食する */
 .background::before {
   content: "";
   position: absolute;
-  inset: -50%; 
+  inset: -100%; /* アニメーションの可動域を確保 */
   z-index: 1;
   
   /* 影の設計：
-     右下(80% 80%)から、画面中央(50%)に向かって影を伸ばす。
-     左上側(光源)は広めに透明領域を確保。 */
-  background: radial-gradient(circle at 80% 80%, 
-    rgba(0, 0, 0, 0.85) 0%,   /* 影の芯（少しだけ透過を残す） */
-    rgba(0, 0, 0, 0.4) 40%,   /* 影の境界 */
-    rgba(0, 0, 0, 0) 65%);    /* ここから先は原画のまま */
+     1. 起点を右下（90% 90%）に置き、下部の黒さを強調
+     2. 楕円（ellipse）にして左上方向へ長く伸ばす
+     3. 85%付近まで影を伸ばし、左上の隅だけを逃がす
+  */
+  background: radial-gradient(ellipse at 90% 90%, 
+    rgba(0, 0, 0, 0.95) 0%,   /* 下部はほぼ真っ黒に近い沈み込み */
+    rgba(0, 0, 0, 0.7) 45%,   /* 中間：スマホの中央付近 */
+    rgba(0, 0, 0, 0.3) 75%,   /* 左上への境界線 */
+    rgba(0, 0, 0, 0) 88%);    /* 左上の隅12%だけが原画のまま残る */
   
-  /* 乗算モード：暗くするだけで、明るくはしない */
   mix-blend-mode: multiply; 
   pointer-events: none;
-  filter: blur(100px); /* 境界を極限まで柔らかく */
+  filter: blur(120px); /* さらに深くぼかして、闇の境目を曖昧に */
 
-  /* 周期はゆったり、動きは最小限に */
-  animation: gentleShadow 10s ease-in-out infinite alternate;
+  animation: loomingDarkness 10s ease-in-out infinite alternate;
 }
 
-@keyframes gentleShadow {
+@keyframes loomingDarkness {
   0% { 
-    /* 【最も明るい時】影はほぼ画面外へ */
-    opacity: 0.1;
-    transform: scale(1.4) translate(15%, 15%);
+    /* 【明るい時】影が画面の外側へ大きく後退 */
+    opacity: 0.2;
+    transform: scale(1.6) translate(25%, 25%);
   }
   100% { 
-    /* 【最も暗い時】
-       影が画面の半分（中央）付近までじわっと重なる。
-       不透明度を 0.8 にすることで、一番暗い場所も「絶妙な暗がり」に留める。 */
-    opacity: 0.8;
+    /* 【暗い時】
+       影が画面全体を飲み込むように覆いかぶさる。
+       下部は深く沈み、左上だけがわずかに呼吸できる程度の光を保つ。 */
+    opacity: 0.95;
     transform: scale(1.0) translate(0, 0);
   }
 }
