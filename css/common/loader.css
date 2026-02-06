@@ -60,21 +60,22 @@
   }
 }
 
-/* --- 終了フェーズ1：暗転（右下から中央へ） --- */
+/* --- 前半は維持 --- */
+
+/* 終了フェーズ1：暗転 */
 #loader.swallow-darkness #fadeLayer {
-  /* 鼓動計算を止めて負荷を減らす */
   animation: none !important;
-  /* 1.0sで中央(0,0)へ。鼓動のリズムに合わせた鋭い動き */
   transition: transform 1.0s cubic-bezier(0.2, 1, 0.2, 1);
-  transform: scale(5.0) translate(0, 0) translateZ(0); 
+  /* scaleは3.0程度で十分画面を覆えます。大きくしすぎないのがコツ */
+  transform: scale(3.0) translate(0, 0) translateZ(0); 
   opacity: 1;
 }
 
-/* 暗転用の黒幕（影の隙間を埋め、完全な漆黒を作る） */
+/* ★重要：影の隙間を埋める黒幕。inset: -100%にして画面外の隙間を消す */
 #loader.swallow-darkness::after {
   content: "";
   position: absolute;
-  inset: -10%;
+  inset: -100%; /* 大きく広げて「左側の黒いもの」を完全に隠す */
   background: #000;
   z-index: 10001;
   opacity: 0;
@@ -83,22 +84,20 @@
 }
 
 @keyframes finalBlackout {
-  0%   { opacity: 0; }
+  0% { opacity: 0; }
   100% { opacity: 1; }
 }
 
-/* --- 終了フェーズ2：夜明け（右下へ引き返す） --- */
-/* 中央に居座った闇が、再び右下方向へ抜けていく */
+/* --- 終了フェーズ2：夜明け（引き波） --- */
 #loader.reveal-start #fadeLayer {
-  /* 2.8s：出だしは速く、後半は極めてゆっくり減速して消える */
+  /* 移動を translate(30%, 30%) 程度に抑え、左側のハミ出しを防ぐ */
   transition: transform 2.8s cubic-bezier(0.2, 1, 0.2, 1), 
               opacity 2.8s ease-in-out;
-  /* 右下方向(50%, 50%)へ移動しながらフェードアウト */
-  transform: scale(5.0) translate(50%, 50%) translateZ(0);
+  transform: scale(3.0) translate(30%, 30%) translateZ(0);
   opacity: 0;
 }
 
-/* 画像と黒幕も同期して消去 */
+/* 画像と黒幕も同期。ここで全てが消える */
 #loader.reveal-start .loader-bg-image,
 #loader.reveal-start::after {
   transition: opacity 2.8s ease-in-out;
