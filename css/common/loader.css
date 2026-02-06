@@ -52,8 +52,9 @@
 /* 終了時：闇を巨大化させ、画面全体を真っ黒な「面」にする */
 #loader.swallow-darkness #fadeLayer {
   animation: none;
-  transition: opacity 1.5s ease-in-out;
-  transform: scale(5.0) translateZ(0);
+  /* 1.0秒で一気に巨大化して塗りつぶす */
+  transition: transform 1.0s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(5.0) translate(0, 0) translateZ(0); 
   opacity: 1;
 }
 
@@ -61,6 +62,7 @@
 #loader.swallow-darkness::after {
   content: "";
   position: absolute;
+  inset: -20%;
   /* inset: 0 ではなく、少し外側まで広げておく */
   top: -10%;
   left: -10%;
@@ -70,10 +72,16 @@
   z-index: 10001;
   opacity: 0;
   pointer-events: none;
-  animation: finalBlackout 2.0s forwards;
+  animation: finalBlackout 1.0s forwards;
 }
 
 @keyframes finalBlackout {
   0%   { opacity: 0; }
   100% { opacity: 1; }
+}
+
+/* JSで制御する「夜明け」のフェード時間を 2.5s に設定 */
+#loader.swallow-darkness {
+  /* ここでゆっくりとフェードアウトさせる */
+  transition: opacity 2.5s ease-in-out;
 }
