@@ -26,21 +26,22 @@ function updateDots(index) {
   });
 }
 
+// chapter2_5/view.js
+
 export function showPage(index) {
   pages.forEach((page, i) => {
     const isActive = i === index;
-
     if (isActive) {
-      page.classList.add("active");
-      // アクティブな時だけ visibility を visible に戻す
+      // visibilityを先に変えてから、opacityアニメを効かせる
       page.style.visibility = "visible";
+      page.classList.add("active");
     } else {
       page.classList.remove("active", "show-text");
-      // 非アクティブ時は visibility: hidden。これで flex の計算を崩さず負荷を下げる
       page.style.visibility = "hidden";
     }
   });
 
+  // Dualページの反転処理
   const page = pages[index];
   if (page && page.classList.contains("dual")) {
     const flipped = page.dataset.flipped === "true";
