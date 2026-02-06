@@ -1,5 +1,4 @@
 /* ================ Loader / Fade ================ */
-/* ================ Loader / Fade ================ */
 
 #loader {
   position: fixed;
@@ -8,59 +7,62 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #020202; /* 闇を深くし、光のキレを際立たせる */
+  background-color: #020202;
   pointer-events: none;
 }
 
-/* 画像：完全に静止。光の反射を受け止める器 */
 #loader img.loader-inner {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  z-index: 9998;
-  opacity: 0.12; /* 闇の中でのベース視認度 */
+  z-index: 1;
+  opacity: 0.12; /* 背景の気配 */
 }
 
-/* スポットライト：サイレンのように鋭く広がり、一気に引く */
+/* 濁った白のスポットライト */
 #fadeLayer {
   position: fixed;
-  inset: -100%; /* 大きなスケール変化に対応するため可動域を拡大 */
-  z-index: 9999;
+  inset: -150%; /* さらなる広がりを許容 */
+  z-index: 2;
   pointer-events: none;
-  /* 左上起点。中心(0%)に白を置き、眩しさを表現 */
+  /* グラデーションを多層にして、リアルな光の回折を表現 */
   background: radial-gradient(circle at 15% 15%, 
-    rgba(255, 255, 255, 0.9) 0%, 
-    rgba(255, 210, 100, 0.4) 35%, 
-    rgba(0, 0, 0, 0) 75%);
+    rgba(255, 255, 250, 0.95) 0%,   /* 芯：濁った白 */
+    rgba(220, 230, 240, 0.4) 20%,   /* 中間：青白い霧 */
+    rgba(100, 100, 100, 0.1) 50%,   /* 外縁：濁り */
+    rgba(0, 0, 0, 0) 85%);
   
   mix-blend-mode: screen;
-  filter: blur(40px);
+  filter: blur(50px) contrast(1.2); /* ぼかしを深く、コントラストを強く */
   opacity: 0;
-  /* 加速して爆発し、瞬時に戻る独自のイージング */
-  animation: sirenSpotlight 2.8s cubic-bezier(0.15, 0, 0.15, 1) infinite;
+  /* 周期を2.2秒に短縮（テンポアップ）、溜めを短く */
+  animation: sirenSpotlight 2.2s cubic-bezier(0.1, 0, 0.1, 1) infinite !important;
 }
 
 @keyframes sirenSpotlight {
   0% { 
     opacity: 0; 
-    transform: scale(0.3) translate(-5%, -5%); 
+    transform: scale(0.2) translate(-10%, -10%); 
   }
-  30% { 
+  15% { /* 立ち上がりをさらに速く */
     opacity: 1; 
-    transform: scale(2.5) translate(0, 0); /* 一気に全体を飲み込む */
+    transform: scale(3.0) translate(0, 0); /* 画面全体を飲み込む爆発 */
   }
-  45% { 
+  35% { /* 引きのスピードも上げる */
     opacity: 0; 
-    transform: scale(0.6) translate(-2%, -2%); /* 鋭く引き抜く */
+    transform: scale(0.4) translate(-5%, -5%); 
   }
   100% { 
     opacity: 0;
-    transform: scale(0.3);
+    transform: scale(0.2);
   }
 }
 
+
+
+<div id="fadeLayer"></div>
 #fadeLayer.hide {
   opacity: 0;
   pointer-events: none;
