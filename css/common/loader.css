@@ -1,4 +1,3 @@
-/* loader.css 
 /* ================ Loader / Fade ================ */
 
 #loader {
@@ -6,13 +5,10 @@
   inset: 0;
   z-index: 10000;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #050505; /* 画像の裏側の闇 */
+  background-color: #020202; /* 闇を深くして光を際立たせる */
   pointer-events: none;
 }
 
-/* 画像：完全に静止。光によってのみ表情を変える */
 #loader img.loader-inner {
   position: fixed;
   inset: 0;
@@ -20,44 +16,43 @@
   height: 100vh;
   object-fit: cover;
   z-index: 9998;
-  opacity: 0.15; /* 闇の中の気配。光が引いた後もこの明るさに戻る */
+  opacity: 0.12; /* 光が引いた時は極限まで沈める */
 }
 
-/* スポットライト：左上から大胆に広がり、さっと引く */
+/* スポットライト：サイレンのように「鋭く突き刺し、一気に引く」 */
 #fadeLayer {
   position: fixed;
-  inset: -50%; /* 光が端で切れないよう広めに配置 */
+  inset: -100%; /* スケールを大きく動かすため、可動域を最大に */
   z-index: 9999;
   pointer-events: none;
-  /* 左上(15% 15%)を起点とした、温かみのある琥珀色の光 */
   background: radial-gradient(circle at 15% 15%, 
-    rgba(255, 235, 180, 0.7) 0%, 
-    rgba(255, 200, 100, 0.2) 40%, 
-    rgba(0, 0, 0, 0) 75%);
+    rgba(255, 255, 255, 0.9) 0%,   /* 中心は眩しい白 */
+    rgba(255, 220, 100, 0.4) 30%,  /* 琥珀色 */
+    rgba(0, 0, 0, 0) 70%);
   
   mix-blend-mode: screen;
-  filter: blur(25px); /* 光の輪郭を柔らかく広げる */
+  filter: blur(40px);
   opacity: 0;
-  /* 3秒周期。広がりと引きのコントラストを強調 */
-  animation: spotlightWave 3s ease-in-out infinite;
+  /* 周期を2.5秒に短縮し、鼓動のキレを出す */
+  animation: sirenSpotlight 2.5s cubic-bezier(0.15, 0, 0.15, 1) infinite;
 }
 
-@keyframes spotlightWave {
+@keyframes sirenSpotlight {
   0% { 
     opacity: 0; 
-    transform: scale(0.6); /* 芯に固まっている状態 */
+    transform: scale(0.3) translate(-10%, -10%); /* 左上の奥に引っ込んでいる */
   }
-  28% { 
+  35% { 
     opacity: 1; 
-    transform: scale(1.6); /* さっと全体を照らす（広がり） */
+    transform: scale(2.5) translate(0, 0); /* 「ふぁーん！」と一気に手前に爆発 */
   }
-  45% { 
+  50% { 
     opacity: 0; 
-    transform: scale(1.1); /* 強烈に引く（キレ） */
+    transform: scale(0.5) translate(-5%, -5%); /* 「ッ！」と一瞬で引く */
   }
   100% { 
     opacity: 0;
-    transform: scale(1.1); /* 残りの時間は闇を維持 */
+    transform: scale(0.3);
   }
 }
 
