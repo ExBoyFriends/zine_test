@@ -1,5 +1,4 @@
 /* background.css */
-
 /* background.css */
 
 .background {
@@ -9,41 +8,44 @@
   height: 100vh;
   background: url('../../image/background.jpg') center / cover no-repeat;
   z-index: 0;
-  /* 背景のベースを黒にしておく */
-  background-color: #000;
+  background-color: #050505; /* 真っ黒よりわずかに上のグレー */
 }
 
-/* 影の層：これが右下から左上へ迫ってくる */
+/* 影の層：右下から「半分」まで迫って引き返す */
 .background::before {
   content: "";
   position: absolute;
-  inset: -100%; 
+  inset: -50%; 
   z-index: 1;
   
-  /* 右下(85% 85%)を起点にした巨大な黒い影 */
-  background: radial-gradient(circle at 85% 85%, 
-    rgba(0, 0, 0, 1.0) 0%,    /* 起点は真っ暗 */
-    rgba(0, 0, 0, 0.8) 40%,   /* 濃い影 */
-    rgba(0, 0, 0, 0) 80%);    /* 左上の光源付近は透明（原画そのまま） */
+  /* 影の設計：
+     右下(80% 80%)から、画面中央(50%)に向かって影を伸ばす。
+     左上側(光源)は広めに透明領域を確保。 */
+  background: radial-gradient(circle at 80% 80%, 
+    rgba(0, 0, 0, 0.85) 0%,   /* 影の芯（少しだけ透過を残す） */
+    rgba(0, 0, 0, 0.4) 40%,   /* 影の境界 */
+    rgba(0, 0, 0, 0) 65%);    /* ここから先は原画のまま */
   
-  /* 乗算モードで「闇を上書き」する */
+  /* 乗算モード：暗くするだけで、明るくはしない */
   mix-blend-mode: multiply; 
   pointer-events: none;
-  filter: blur(60px); 
+  filter: blur(100px); /* 境界を極限まで柔らかく */
 
-  /* 9秒周期で、影が「迫る」と「退く」を繰り返す */
-  animation: shadowSinking 9s ease-in-out infinite alternate;
+  /* 周期はゆったり、動きは最小限に */
+  animation: gentleShadow 10s ease-in-out infinite alternate;
 }
 
-@keyframes shadowSinking {
+@keyframes gentleShadow {
   0% { 
-    /* 【明るい時】影が遠ざかっている状態 */
-    opacity: 0;
-    transform: scale(1.5) translate(20%, 20%);
+    /* 【最も明るい時】影はほぼ画面外へ */
+    opacity: 0.1;
+    transform: scale(1.4) translate(15%, 15%);
   }
   100% { 
-    /* 【暗い時】影が画面中央まで覆い被さってきた状態 */
-    opacity: 1.0;
+    /* 【最も暗い時】
+       影が画面の半分（中央）付近までじわっと重なる。
+       不透明度を 0.8 にすることで、一番暗い場所も「絶妙な暗がり」に留める。 */
+    opacity: 0.8;
     transform: scale(1.0) translate(0, 0);
   }
 }
