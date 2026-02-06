@@ -9,8 +9,9 @@
   background: #000;
   display: flex;
   overflow: hidden;
-  /* 夜明けのフェードアウト時間を定義 */
-  transition: opacity 2.5s ease-in-out;
+  /* 2.5秒〜3.0秒程度で十分「余韻」が出ます */
+  transition: opacity 2.8s cubic-bezier(0.2, 1, 0.2, 1);
+  will-change: opacity;
 }
 
 .loader-bg-image {
@@ -53,9 +54,7 @@
 /* 終了時：1.0秒で一気に真っ黒に塗りつぶす */
 #loader.swallow-darkness #fadeLayer {
   animation: none;
-  /* transformのみ1.0秒で完了させる */
   transition: transform 1.0s cubic-bezier(0.4, 0, 0.2, 1);
-  /* 5倍に巨大化させ、中央(0,0)で固定。これで左側の残像を防ぐ */
   transform: scale(5.0) translate(0, 0) translateZ(0); 
   opacity: 1;
 }
@@ -64,9 +63,9 @@
 #loader.swallow-darkness::after {
   content: "";
   position: absolute;
-  inset: -20%; /* 画面外まで広げて隙間を完全に封じる */
+  inset: -10%;
   background: #000;
-  z-index: 10001;
+  z-index: 10003;
   opacity: 0;
   pointer-events: none;
   animation: finalBlackout 1.0s forwards;
