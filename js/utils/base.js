@@ -83,8 +83,17 @@ window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
 
   const fade = document.getElementById("fadeLayer");
+  const loader = document.getElementById("loader");
+
+  // ローダーが存在する場合はローダーの再開に任せる
+  if (loader) {
+    // loader.js 側の start() が呼ばれるはずなので、ここでは介入しない
+    return;
+  }
+
   if (fade) {
     fade.classList.add("hide");
+    fade.style.opacity = "0";
     fade.style.pointerEvents = "none";
   }
 
