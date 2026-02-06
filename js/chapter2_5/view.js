@@ -1,3 +1,5 @@
+
+
 // chapter2_5/view.js
 
 const pages = Array.from(document.querySelectorAll(".page"));
@@ -14,16 +16,18 @@ function updateDots(index) {
 export function showPage(index) {
   pages.forEach((page, i) => {
     const isActive = i === index;
-    page.classList.toggle("active", isActive);
-    
-    if (!isActive) {
-      page.classList.remove("show-text");
-      page.style.visibility = "hidden";
-      page.style.pointerEvents = "none";
+
+    if (isActive) {
+      // 表示するページだけを描画対象にする
+      page.style.display = "flex";
+      // 1フレーム遅らせてactiveクラスをつけることでtransitionを確実に発動
+      requestAnimationFrame(() => {
+        page.classList.add("active");
+      });
     } else {
-      page.style.visibility = "visible";
-      page.style.pointerEvents = "auto";
-      page.style.zIndex = 10;
+      // 非アクティブなページは完全に消す（メモリ解放）
+      page.classList.remove("active", "show-text");
+      page.style.display = "none";
     }
   });
 
