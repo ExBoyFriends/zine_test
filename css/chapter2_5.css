@@ -31,9 +31,18 @@
   transform: translateZ(0);
 }
 
-/* アクティブでないページの画像は、描画計算をスキップさせる */
+/* アクティブでないページの画像は、描画計算をスキップさせる 
 .page:not(.active) img {
   display: none;
+} */
+
+.page img {
+  opacity: 0; /* 最初は透明 */
+  transition: opacity 1.5s cubic-bezier(.16, 1, .3, 1);
+}
+
+.page.active img {
+  opacity: 1; /* 親の.pageがactiveになったら画像も浮き上がる */
 }
 
 /* 画像の重なり計算を簡略化 */
