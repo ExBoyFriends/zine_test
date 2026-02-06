@@ -62,11 +62,13 @@ export function initLastPage(wrapper, getCurrentPage, totalPages) {
     }
   });
 
-  tapCover.addEventListener("pointerup", e => {
-    e.stopPropagation();
-    if (!opened) return;
-    goChapter2();
-  });
+ // tapCover のイベントを pointerdown に変更
+tapCover.addEventListener("pointerdown", e => {
+  e.preventDefault(); // 余計な挙動を防止
+  e.stopPropagation();
+  if (!opened) return;
+  goChapter2();
+});
 
   document.addEventListener("pointerup", () => {
     if (getCurrentPage() !== totalPages - 1 && opened) {
