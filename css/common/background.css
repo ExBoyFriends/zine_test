@@ -1,4 +1,4 @@
-/*common/background.css*/
+/* background.css */
 
 .background {
   position: fixed;
@@ -9,24 +9,24 @@
   z-index: 0;
 }
 
-/* 本編：左上から差し込む静かな光 */
+/* 本編背景：左上からの光が周期的に全体を包み込む */
 .background::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -20%;
   z-index: 1;
-  background: radial-gradient(circle at 5% 5%, 
-    rgba(255, 230, 180, 0.15) 0%, /* ここも琥珀色を薄く混ぜて統一感を出す */
-    rgba(0, 0, 0, 0) 65%);
+  background: radial-gradient(circle at 10% 10%, 
+    rgba(255, 235, 180, 0.25) 0%, 
+    rgba(0, 0, 0, 0) 70%);
   
   mix-blend-mode: screen;
   pointer-events: none;
 
-  /* 20秒かけて「気づかないほど静かに」呼吸 */
-  animation: superSlowBreath 20s ease-in-out infinite alternate;
+  /* 12秒の一定周期。じわじわではなく、情緒のある一定速度での明滅 */
+  animation: backgroundLight 12s linear infinite alternate;
 }
 
-@keyframes superSlowBreath {
+@keyframes backgroundLight {
   0%   { opacity: 0.1; }
-  100% { opacity: 0.4; }
+  100% { opacity: 0.45; }
 }
