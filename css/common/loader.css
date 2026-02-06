@@ -8,7 +8,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  /* 影がはみ出してもスクロールバーを出さない */
+  overflow: hidden; 
 }
 
 .loader-inner {
@@ -17,12 +18,13 @@
   object-fit: cover;
 }
 
-/* ローディング用の光（影）の層 */
+/* ローディング用の影の層 */
 #fadeLayer {
   position: absolute;
-  inset: -50%;
+  /* transform時の余白を確保 */
+  inset: -100%; 
   z-index: 10001;
-  /* 本編と同じグラデーション設計 */
+  /* 本編と同じく右下から左上へ向かうグラデーション */
   background: radial-gradient(ellipse at 85% 105%, 
     rgba(0, 0, 0, 1.0) 0%, 
     rgba(0, 0, 0, 0.8) 25%, 
@@ -30,8 +32,9 @@
     rgba(0, 0, 0, 0) 96%);
   mix-blend-mode: multiply;
   filter: blur(80px);
-  /* 2.5秒周期。本編よりかなり速く、緊張感を出す */
+  /* 2.5秒周期：本編より速い鼓動 */
   animation: fastLooming 2.5s ease-in-out infinite alternate;
+  will-change: opacity, transform;
 }
 
 @keyframes fastLooming {
@@ -39,11 +42,12 @@
   100% { opacity: 1.0; transform: scale(1.0); }
 }
 
-/* 終了時演出：闇が中央へせり出し、画面を完全に塗りつぶす */
+/* 終了時演出：闇を巨大化させ、画面全体を真っ黒な「面」にする */
 #loader.swallow-darkness #fadeLayer {
   animation: none;
   transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s;
-  transform: scale(0.4) translate(-30%, -30%); /* 影の芯を左上方向へ引きずり出す */
+  /* 4倍に拡大し、影の「芯（真っ黒な部分）」で画面を覆い尽くす */
+  transform: scale(4.0); 
   opacity: 1;
-  background: #000; /* 最後は完全な静寂（真っ黒）へ */
+  background: #000; /* 透過のない純粋な黒へ */
 }
