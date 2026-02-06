@@ -10,42 +10,44 @@
   background-color: #000;
 }
 
-/* 影の層：右下から左上ギリギリまで侵食する */
+/* 影の層：攻める時は左上隅まで、引く時は完全に消える */
 .background::before {
   content: "";
   position: absolute;
-  inset: -100%; /* アニメーションの可動域を確保 */
+  inset: -120%; /* 影を完全に画面外へ逃がすために広めに確保 */
   z-index: 1;
   
   /* 影の設計：
-     1. 起点を右下（90% 90%）に置き、下部の黒さを強調
-     2. 楕円（ellipse）にして左上方向へ長く伸ばす
-     3. 85%付近まで影を伸ばし、左上の隅だけを逃がす
+     1. 起点を右下（95% 95%）にして下部を完全に沈める
+     2. 透明になる位置を 94% まで伸ばし、左上隅ギリギリまで闇を攻めさせる
   */
-  background: radial-gradient(ellipse at 90% 90%, 
-    rgba(0, 0, 0, 0.95) 0%,   /* 下部はほぼ真っ黒に近い沈み込み */
-    rgba(0, 0, 0, 0.7) 45%,   /* 中間：スマホの中央付近 */
-    rgba(0, 0, 0, 0.3) 75%,   /* 左上への境界線 */
-    rgba(0, 0, 0, 0) 88%);    /* 左上の隅12%だけが原画のまま残る */
+  background: radial-gradient(ellipse at 95% 95%, 
+    rgba(0, 0, 0, 1.0) 0%,   /* 下部は完全な黒 */
+    rgba(0, 0, 0, 0.8) 40%, 
+    rgba(0, 0, 0, 0.4) 80%, 
+    rgba(0, 0, 0, 0) 94%);   /* 左上隅の数パーセントだけを死守 */
   
   mix-blend-mode: multiply; 
   pointer-events: none;
-  filter: blur(120px); /* さらに深くぼかして、闇の境目を曖昧に */
+  filter: blur(140px); /* 境界をさらに溶かして、より自然な空気感に */
 
-  animation: loomingDarkness 10s ease-in-out infinite alternate;
+  /* 周期は11秒に。ゆっくり攻め、ゆっくり引く */
+  animation: extremeLooming 11s ease-in-out infinite alternate;
 }
 
-@keyframes loomingDarkness {
+@keyframes extremeLooming {
   0% { 
-    /* 【明るい時】影が画面の外側へ大きく後退 */
-    opacity: 0.2;
-    transform: scale(1.6) translate(25%, 25%);
+    /* 【原画に戻る時】
+       opacityを0にし、さらに影を遠くへ飛ばすことで
+       完全に原画（100%の明るさ）に戻します */
+    opacity: 0;
+    transform: scale(2.0) translate(40%, 40%);
   }
   100% { 
-    /* 【暗い時】
-       影が画面全体を飲み込むように覆いかぶさる。
-       下部は深く沈み、左上だけがわずかに呼吸できる程度の光を保つ。 */
-    opacity: 0.95;
+    /* 【闇が攻める時】
+       左上を飲み込む寸前まで影がせり出す。
+       下部は漆黒に沈み、重厚な緊張感が生まれます。 */
+    opacity: 1.0;
     transform: scale(1.0) translate(0, 0);
   }
 }
