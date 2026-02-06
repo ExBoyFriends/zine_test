@@ -1,7 +1,5 @@
 /**
  * loader.js
- * 役割：鋭い闇の明滅演出。最後は画面を完全に飲み込み、本編へ繋ぐ。
- * 戻るボタン（bfcache）での再訪時も演出を再実行する。
  */
 export function initLoader(loader, onComplete) {
   let finished = false;
@@ -10,7 +8,6 @@ export function initLoader(loader, onComplete) {
   const safeComplete = () => {
     if (finished) return;
     finished = true;
-    // 本編を裏側で配置・起動（闇が満ちる前に呼ぶ）
     if (typeof onComplete === "function") onComplete();
   };
 
@@ -18,55 +15,44 @@ export function initLoader(loader, onComplete) {
     if (finished) return;
 
     if (loader) {
+      // 1. 暗闇の侵食開始（1.0sで真っ暗に）
       loader.classList.add("swallow-darkness");
     }
 
-    // ★闇が広がり始めたらすぐに裏側で本編をスタンバイ
+    // 裏側で本編を準備（ここはそのまま）
     setTimeout(safeComplete, 200); 
 
-    // 完全に闇が満ちた(2.0s後)タイミングで「夜明け」を開始
+    // 2. 鼓動のテンポに合わせて「1.0s後」に夜明けを開始
     setTimeout(() => {
       if (loader) {
-        // 1.5秒かけて、霧が晴れるようにゆっくりと本編を露出させる
-        loader.style.transition = "opacity 1.5s ease-in-out";
+        // CSS側で設定した transition: opacity 2.5s が効きます
         loader.style.opacity = "0";
       }
       
-      // フェード完了後、物理的に非表示にする
+      // 3. 2.5sかけてゆっくりフェードが終わるのを待つ
       setTimeout(() => {
         if (loader) loader.style.display = "none";
-      }, 1500); 
-    }, 2000); 
+      }, 2500); 
+    }, 1000); // ここを1.0sに短縮
   };
 
   const start = () => {
-    finished = false; // フラグのリセット
-
+    finished = false; 
     if (loader) {
       loader.classList.remove("swallow-darkness");
       loader.style.display = "flex";
       loader.style.opacity = "1";
-      loader.style.transition = "none"; // 前回の状態をリセット
+      loader.style.transition = "none";
     }
-    if (fadeLayer) {
-      fadeLayer.style.display = "block";
-    }
-
-    // 8.4秒間の演出。終了後に暗転へ
+    if (fadeLayer) fadeLayer.style.display = "block";
+    
     setTimeout(finish, 8400);
   };
 
-  // ページロード時の初回実行
-  if (document.readyState === "complete") {
-    start();
-  } else {
-    window.addEventListener("load", start, { once: true });
-  }
+  if (document.readyState === "complete") start();
+  else window.addEventListener("load", start, { once: true });
 
-  // ★戻るボタン（bfcache）対策
   window.addEventListener("pageshow", (e) => {
-    if (e.persisted) {
-      start(); 
-    }
+    if (e.persisted) start();
   });
 }
