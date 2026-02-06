@@ -1,6 +1,7 @@
 
 /* loader.css */
 
+
 #loader {
   position: fixed;
   inset: 0;
@@ -8,9 +9,10 @@
   background: #000;
   display: flex;
   overflow: hidden;
+  /* 夜明けのフェードアウト時間を定義 */
+  transition: opacity 2.5s ease-in-out;
 }
 
-/* 本編 background.css の .background と完全に一致させる */
 .loader-bg-image {
   position: absolute;
   inset: 0;
@@ -18,7 +20,6 @@
   height: 100vh;
   background: url('../../image/background.jpg') center / cover no-repeat;
   z-index: 10000;
-  /* GPUアクセラレーションを有効にしてカクつきを防止 */
   transform: translateZ(0);
 }
 
@@ -33,7 +34,7 @@
     rgba(0, 0, 0, 0) 96%);
   mix-blend-mode: multiply;
   filter: blur(80px);
-  /* 1.0秒周期：激しい鼓動 */
+  /* 1.0秒周期の鋭い鼓動 */
   animation: fastLooming 1.0s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
   will-change: transform, opacity;
 }
@@ -49,20 +50,21 @@
   }
 }
 
-/* 終了時：闇を巨大化させ、画面全体を真っ黒な「面」にする */
+/* 終了時：1.0秒で一気に真っ黒に塗りつぶす */
 #loader.swallow-darkness #fadeLayer {
   animation: none;
-  /* 1.0秒で一気に巨大化して塗りつぶす */
+  /* transformのみ1.0秒で完了させる */
   transition: transform 1.0s cubic-bezier(0.4, 0, 0.2, 1);
+  /* 5倍に巨大化させ、中央(0,0)で固定。これで左側の残像を防ぐ */
   transform: scale(5.0) translate(0, 0) translateZ(0); 
   opacity: 1;
 }
 
-/* 最後のひと押し：影レイヤーの背後から画面を黒く塗りつぶす */
+/* 最後のひと押し：影の背後を埋める黒幕 */
 #loader.swallow-darkness::after {
   content: "";
   position: absolute;
-  inset: -20%; /* これだけで上下左右外側までカバーされます */
+  inset: -20%; /* 画面外まで広げて隙間を完全に封じる */
   background: #000;
   z-index: 10001;
   opacity: 0;
@@ -73,10 +75,4 @@
 @keyframes finalBlackout {
   0%   { opacity: 0; }
   100% { opacity: 1; }
-}
-
-/* JSで制御する「夜明け」のフェード時間を 2.5s に設定 */
-#loader.swallow-darkness {
-  /* ここでゆっくりとフェードアウトさせる */
-  transition: opacity 2.5s ease-in-out;
 }
