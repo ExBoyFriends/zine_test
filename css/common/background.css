@@ -41,7 +41,7 @@
 
 @keyframes smoothLooming {
   0% { 
-    opacity: 0.3;
+    opacity: 0.2;
     transform: scale(1.4) translateZ(0); 
   }
   100% { 
