@@ -6,54 +6,51 @@
   z-index: 10000;
   background: #000;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  /* 影がはみ出してもスクロールバーを出さない */
-  overflow: hidden; 
+  overflow: hidden;
 }
 
-/* imgタグの代わりに、本編背景と全く同じ設定で描画 */
 .loader-bg-image {
   position: absolute;
   inset: 0;
   width: 100vw;
   height: 100vh;
-  /* ここを本編 background.css と完全に一致させる */
   background: url('../../image/background.jpg') center / cover no-repeat;
-  filter: none; /* ローダー時は加工なし */
-  /* GPUアクセラレーションを有効にしてカクつきを防止 */
+  z-index: 10000;
+  /* GPUメモリに常駐させ、再描画の遅延を抑える */
   transform: translateZ(0);
 }
 
-/* ローディング用の影の層 */
 #fadeLayer {
   position: absolute;
-  /* transform時の余白を確保 */
   inset: -100%; 
   z-index: 10001;
-  /* 本編と同じく右下から左上へ向かうグラデーション */
   background: radial-gradient(ellipse at 85% 105%, 
     rgba(0, 0, 0, 1.0) 0%, 
     rgba(0, 0, 0, 0.8) 25%, 
     rgba(0, 0, 0, 0.3) 70%, 
     rgba(0, 0, 0, 0) 96%);
+  /* ローディング中は原画と馴染ませる */
   mix-blend-mode: multiply;
   filter: blur(80px);
-  /* 2.5秒周期：本編より速い鼓動 */
   animation: fastLooming 2.5s ease-in-out infinite alternate;
-  will-change: opacity, transform;
+  /* アニメーションの対象をブラウザに伝え、負荷を最適化 */
+  will-change: transform, opacity;
 }
 
 @keyframes fastLooming {
-  0%   { opacity: 0; transform: scale(1.5); }
-  100% { opacity: 1.0; transform: scale(1.0); }
+  0%   { opacity: 0; transform: scale(1.4) translateZ(0); }
+  100% { opacity: 1.0; transform: scale(1.0) translateZ(0); }
 }
 
-/* 終了時：闇を巨大化させ、画面全体を真っ黒な「面」にする */
+/* 終了時：ここが重要！ */
 #loader.swallow-darkness #fadeLayer {
   animation: none;
-  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s;
-  transform: scale(4.0) translateZ(0); 
-  opacity: 1;
+  /* 透過を完全に排除し、mix-blend-modeを無効化することで「真っ黒な壁」にする */
+  mix-blend-mode: normal;
   background: #000; 
+  filter: none;
+  opacity: 1;
+  /* 影の「芯」を左上にグッと寄せて塗りつぶす */
+  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(3.5) translate(-15%, -15%) translateZ(0);
 }
