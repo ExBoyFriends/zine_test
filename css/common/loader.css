@@ -62,12 +62,7 @@
 #loader.swallow-darkness::after {
   content: "";
   position: absolute;
-  inset: -20%;
-  /* inset: 0 ではなく、少し外側まで広げておく */
-  top: -10%;
-  left: -10%;
-  width: 120%;
-  height: 120%;
+  inset: -20%; /* これだけで上下左右外側までカバーされます */
   background: #000;
   z-index: 10001;
   opacity: 0;
