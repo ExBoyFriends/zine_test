@@ -1,7 +1,9 @@
 /**
  * loader.js
- * 役割：左上からのスポットライト演出。
- * 画像は静止させ、光の鼓動のみをループ。最後は闇ごと本編へリレーする。
+ /**
+ * loader.js
+ * 役割：左上からの劇的なスポットライト演出を制御。
+ * 画像は静止。光の明滅周期と、終了時のスムーズなフェードアウトを管理。
  */
 export function initLoader(loader, onComplete) {
   let finished = false;
@@ -19,39 +21,38 @@ export function initLoader(loader, onComplete) {
     if (finished) return;
     finished = true;
 
-    // ローダー全体を完全に非表示にする
     if (loader) {
       loader.style.display = "none";
     }
 
-    // 本編開始のコールバック（fadeInStartなど）を実行
     if (typeof onComplete === "function") {
       onComplete();
     }
   };
 
   /**
-   * ローディング終了演出
-   * 8.4秒後、スポットライトを止めて、画像と闇をじわっと消す
+   * 終了演出
+   * 画像と光を、2.5秒かけて深い余韻とともにフェードアウト
    */
   const finish = () => {
     if (finished) return;
 
-    // 1. 画像と黒背景(loader)を1.8秒かけて本編へ溶け込ませる
+    // 終了時はさらに重厚なイージングで闇に沈める
+    const fadeStyle = "opacity 2.5s cubic-bezier(0.2, 0, 0.2, 1)";
+
     if (loader) {
-      loader.style.transition = "opacity 1.8s ease";
+      loader.style.transition = fadeStyle;
       loader.style.opacity = "0";
     }
 
-    // 2. スポットライト（fadeLayer）の動きを止め、同時に消し去る
     if (fadeLayer) {
       fadeLayer.style.animation = "none";
-      fadeLayer.style.transition = "opacity 1.8s ease";
+      fadeLayer.style.transition = fadeStyle;
       fadeLayer.style.opacity = "0";
     }
 
-    // 余韻が消えきる前に、本編の表示を開始させる（1.2秒後）
-    setTimeout(safeComplete, 1200); 
+    // フェードが完了する前に、本編の表示（fadeIn）を開始させる
+    setTimeout(safeComplete, 1800); 
   };
 
   /**
@@ -60,18 +61,16 @@ export function initLoader(loader, onComplete) {
   const start = () => {
     if (finished) return;
 
-    // 黒背景のローダーを表示
     if (loader) {
       loader.style.display = "flex";
       loader.style.opacity = "1";
     }
 
-    // スポットライトを開始
     if (fadeLayer) {
       fadeLayer.classList.remove("hide");
     }
 
-    // 8.4秒間、光の演出を見せる
+    // 8.4秒間（約3回分の脈動）を堪能させてから終了
     setTimeout(finish, 8400);
   };
 
@@ -81,7 +80,7 @@ export function initLoader(loader, onComplete) {
     window.addEventListener("load", start, { once: true });
   }
 
-  // ブラウザ戻る対策
+  // ブラウザの戻るボタン対策
   window.addEventListener("pageshow", (e) => {
     if (e.persisted) {
       safeComplete();
