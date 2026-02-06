@@ -1,15 +1,21 @@
 // utils/fade.js
 
-
-export function fadeInStart(duration = 1500) {　　//フェード1.5秒
+export function fadeInStart(duration = 2800) { // 2.8sに統一
   const fade = document.getElementById("fadeLayer");
   if (!fade) return;
 
-  fade.classList.remove("hide"); // 黒 → 表示
+  // ローダー実行中（swallow-darknessクラスがある時）は、
+  // loader.js側の演出を優先させるため、ここでは何もしない
+  if (document.getElementById("loader")?.classList.contains("swallow-darkness")) {
+    return;
+  }
+
+  fade.classList.remove("hide");
   fade.style.opacity = "1";
 
   requestAnimationFrame(() => {
-    fade.style.transition = `opacity ${duration}ms ease`;
+    // base.cssのイージングと一致させる
+    fade.style.transition = `opacity ${duration}ms cubic-bezier(.22,.61,.36,1)`;
     fade.style.opacity = "0";
   });
 
@@ -19,7 +25,7 @@ export function fadeInStart(duration = 1500) {　　//フェード1.5秒
   }, duration);
 }
 
-export function fadeOutAndGo(onFinish, duration = 1500) {  //フェード1.5秒
+export function fadeOutAndGo(onFinish, duration = 1500) {
   const fade = document.getElementById("fadeLayer");
   if (!fade) {
     onFinish?.();
@@ -28,6 +34,8 @@ export function fadeOutAndGo(onFinish, duration = 1500) {  //フェード1.5秒
 
   fade.classList.remove("hide");
   fade.style.opacity = "0";
+  fade.style.pointerEvents = "auto"; // 操作をロック
+  
   requestAnimationFrame(() => {
     fade.style.transition = `opacity ${duration}ms ease`;
     fade.style.opacity = "1";
