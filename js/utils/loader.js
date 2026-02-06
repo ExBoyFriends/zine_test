@@ -19,15 +19,12 @@ export function initLoader(loader, onComplete) {
       loader.classList.add("swallow-darkness");
     }
 
-    // 2.0秒かけて闇が満ちるのを待つ
+    // 2.0秒かけて深い闇に沈める
     setTimeout(() => {
       if (loader) {
-        // 真っ黒になったら、ローダー全体をスッと消して本編へ
         loader.style.transition = "opacity 1.0s ease-out";
         loader.style.opacity = "0";
       }
-
-      // 本編の初期化をバックグラウンドで開始
       setTimeout(safeComplete, 400);
     }, 2000);
   };
@@ -36,7 +33,6 @@ export function initLoader(loader, onComplete) {
     finished = false; 
 
     if (loader) {
-      // 全ての状態をリセット（戻るボタン対策）
       loader.classList.remove("swallow-darkness");
       loader.style.display = "flex";
       loader.style.opacity = "1";
@@ -47,7 +43,7 @@ export function initLoader(loader, onComplete) {
       fadeLayer.style.display = "block";
     }
 
-    // 8.4秒間の演出。終了後に暗転へ
+    // 8.4秒間で約8回の激しい明滅
     setTimeout(finish, 8400);
   };
 
@@ -58,8 +54,6 @@ export function initLoader(loader, onComplete) {
   }
 
   window.addEventListener("pageshow", (e) => {
-    if (e.persisted) {
-      start(); 
-    }
+    if (e.persisted) start();
   });
 }
