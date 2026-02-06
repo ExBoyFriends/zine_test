@@ -1,4 +1,3 @@
-
 /**
  * loader.js
  */
@@ -20,33 +19,47 @@ export function initLoader(loader, onComplete) {
       loader.classList.add("swallow-darkness");
     }
 
-    // CSSの「闇が満ちる」演出(2.0s)に合わせて待機
+    // 2.0秒かけて闇が満ちるのを待つ
     setTimeout(() => {
       if (loader) {
-        // 真っ黒になった世界をスッと引く（本編へ）
+        // 真っ黒になったら、ローダー全体をスッと消して本編へ
         loader.style.transition = "opacity 1.0s ease-out";
         loader.style.opacity = "0";
       }
 
-      // ローダーが完全に消えきる少し前に本編準備完了
-      setTimeout(safeComplete, 500);
-    }, 2000); // 2秒かけて真っ暗にする
+      // 本編の初期化をバックグラウンドで開始
+      setTimeout(safeComplete, 400);
+    }, 2000);
   };
 
   const start = () => {
     finished = false; 
+
     if (loader) {
+      // 全ての状態をリセット（戻るボタン対策）
+      loader.classList.remove("swallow-darkness");
       loader.style.display = "flex";
       loader.style.opacity = "1";
-      loader.classList.remove("swallow-darkness");
+      loader.style.transition = "none";
     }
+    
+    if (fadeLayer) {
+      fadeLayer.style.display = "block";
+    }
+
+    // 8.4秒間の演出。終了後に暗転へ
     setTimeout(finish, 8400);
   };
 
-  if (document.readyState === "complete") start();
-  else window.addEventListener("load", start, { once: true });
+  if (document.readyState === "complete") {
+    start();
+  } else {
+    window.addEventListener("load", start, { once: true });
+  }
 
   window.addEventListener("pageshow", (e) => {
-    if (e.persisted) start();
+    if (e.persisted) {
+      start(); 
+    }
   });
 }
