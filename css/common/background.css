@@ -1,5 +1,5 @@
-/* background.css */
 
+/* background.css */
 
 .background {
   position: fixed;
@@ -9,16 +9,18 @@
   background: url('../../image/background.jpg') center / cover no-repeat;
   z-index: 0;
   background-color: #000;
-  /* 最初から不透明度1で、ローダーの真下で待機 */
   opacity: 1; 
   backface-visibility: hidden;
+  /* 親要素にこれを追加して、子要素のハミ出しを計算に含めさせる */
+  transform-style: preserve-3d;
   transform: translateZ(0);
 }
 
 .background::before {
   content: "";
   position: absolute;
-  inset: -50%; 
+  /* insetをさらに広げ、計算の「ゆとり」を作る */
+  inset: -100%; 
   z-index: 1;
   background: radial-gradient(ellipse at 85% 105%, 
     rgba(0, 0, 0, 1.0) 0%,    
@@ -29,17 +31,21 @@
   mix-blend-mode: multiply; 
   pointer-events: none;
   filter: blur(100px); 
-  /* 本編は12秒かけてゆったりと */
+  
+  /* ★重要：ブラウザにアニメーションを事前申告して最適化させる */
+  will-change: transform, opacity;
+  
+  /* scaleの最小値を1.5以上に上げ、左端が絶対に画面内に入らないようにする */
   animation: smoothLooming 12s ease-in-out infinite alternate;
 }
 
 @keyframes smoothLooming {
   0% { 
     opacity: 0.2;
-    transform: scale(1.3) translateZ(0); 
+    transform: scale(1.8) translateZ(0); /* scaleを大きくして左端をガード */
   }
   100% { 
     opacity: 1.0;
-    transform: scale(1.0) translateZ(0);
+    transform: scale(1.5) translateZ(0); /* 最小でも画面より大きく */
   }
 }
