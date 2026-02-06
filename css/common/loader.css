@@ -1,30 +1,6 @@
 /* loader.css 
 /* ================ Loader / Fade ================ */
 
-/* 光の層：画像の上から琥珀色で照らす */
-#fadeLayer {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  background: radial-gradient(circle at 10% 10%, 
-    rgba(255, 220, 150, 0.5) 0%, 
-    rgba(150, 100, 20, 0.1) 45%, 
-    rgba(0, 0, 0, 0) 75%);
-  
-  mix-blend-mode: screen;
-  filter: blur(12px);
-  opacity: 0;
-  animation: goldSiren 3.5s ease-in-out infinite;
-}
-
-@keyframes goldSiren {
-  0%   { opacity: 0;   transform: scale(1.1); }
-  25%  { opacity: 1;   transform: scale(1.3); } /* さっと広がる光 */
-  60%  { opacity: 0;   transform: scale(0.9); } /* スーッと闇へ引く */
-  100% { opacity: 0; }
-}
-
 #loader {
   position: fixed;
   inset: 0;
@@ -32,11 +8,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  background-color: #000; 
+  background-color: #050505; /* 画像の裏側の闇 */
   pointer-events: none;
 }
 
+/* 画像：完全に静止。光によってのみ表情を変える */
 #loader img.loader-inner {
   position: fixed;
   inset: 0;
@@ -44,16 +20,45 @@
   height: 100vh;
   object-fit: cover;
   z-index: 9998;
-  opacity: 0.05;
-  /* 画像も光の後退に同期させて奥行き感を出す */
-  animation: imgGoldSync 3.5s ease-in-out infinite;
+  opacity: 0.15; /* 闇の中の気配。光が引いた後もこの明るさに戻る */
 }
 
-@keyframes imgGoldSync {
-0%   { opacity: 0.05; transform: scale(1.0); }
-  25%  { opacity: 0.6;  transform: scale(1.05); } /* 光と共に浮かび上がる */
-  60%  { opacity: 0.05; transform: scale(0.95); } /* 闇に溶けながら後退 */
-  100% { opacity: 0.05; }
+/* スポットライト：左上から大胆に広がり、さっと引く */
+#fadeLayer {
+  position: fixed;
+  inset: -50%; /* 光が端で切れないよう広めに配置 */
+  z-index: 9999;
+  pointer-events: none;
+  /* 左上(15% 15%)を起点とした、温かみのある琥珀色の光 */
+  background: radial-gradient(circle at 15% 15%, 
+    rgba(255, 235, 180, 0.7) 0%, 
+    rgba(255, 200, 100, 0.2) 40%, 
+    rgba(0, 0, 0, 0) 75%);
+  
+  mix-blend-mode: screen;
+  filter: blur(25px); /* 光の輪郭を柔らかく広げる */
+  opacity: 0;
+  /* 3秒周期。広がりと引きのコントラストを強調 */
+  animation: spotlightWave 3s ease-in-out infinite;
+}
+
+@keyframes spotlightWave {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.6); /* 芯に固まっている状態 */
+  }
+  28% { 
+    opacity: 1; 
+    transform: scale(1.6); /* さっと全体を照らす（広がり） */
+  }
+  45% { 
+    opacity: 0; 
+    transform: scale(1.1); /* 強烈に引く（キレ） */
+  }
+  100% { 
+    opacity: 0;
+    transform: scale(1.1); /* 残りの時間は闇を維持 */
+  }
 }
 
 #fadeLayer.hide {
