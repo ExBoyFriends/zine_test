@@ -23,10 +23,10 @@
   pointer-events: none;
 
   /* 12秒の一定周期。じわじわではなく、情緒のある一定速度での明滅 */
-  animation: backgroundLight 12s linear infinite alternate;
+  animation: backgroundLight 8s linear infinite alternate;
 }
 
 @keyframes backgroundLight {
-  0%   { opacity: 0.1; }
-  100% { opacity: 0.45; }
+  0%   { opacity: 0.05; }
+  100% { opacity: 0.8; }
 }
