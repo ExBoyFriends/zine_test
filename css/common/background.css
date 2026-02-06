@@ -36,7 +36,7 @@
   will-change: transform, opacity;
   
   /* アニメーションの動きを少し小さくして計算量を減らす */
-  animation: smoothLooming 15s ease-in-out infinite alternate;
+  animation: smoothLooming var(--bg-speed, 12s) ease-in-out infinite alternate;
 }
 
 @keyframes smoothLooming {
