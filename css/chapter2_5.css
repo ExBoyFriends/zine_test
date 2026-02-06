@@ -1,5 +1,9 @@
 /* chapter2_5.css */
 
+/* .chapter が表示されている間、背景のアニメーションを強制的に止める */
+.chapter.visible ~ .background::before {
+  animation-play-state: paused !important;
+}
 /* ===================== ページ ===================== */
 .page {
   position: fixed; 
