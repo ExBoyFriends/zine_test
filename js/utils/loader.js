@@ -1,12 +1,12 @@
 /**
  * loader.js
- * 役割：8.4秒間の琥珀色の鼓動演出。
- * 画像が闇に溶け、光が奥へ引いていく演出を管理し、本編へスムーズにリレーする。
+ * 役割：左上からのスポットライト演出。
+ * 画像は静止させ、光の鼓動のみをループ。最後は闇ごと本編へリレーする。
  */
 export function initLoader(loader, onComplete) {
   let finished = false;
 
-  // 黒い幕（光の層）の取得
+  // 光の層（fadeLayer）の取得
   const fadeLayer =
     document.getElementById("fadeLayer") ||
     document.getElementById("fadeout") ||
@@ -19,12 +19,12 @@ export function initLoader(loader, onComplete) {
     if (finished) return;
     finished = true;
 
-    // ローダー要素を完全に消去
+    // ローダー全体を完全に非表示にする
     if (loader) {
       loader.style.display = "none";
     }
 
-    // main.js側の本編開始処理（fadeInStartなど）を呼び出す
+    // 本編開始のコールバック（fadeInStartなど）を実行
     if (typeof onComplete === "function") {
       onComplete();
     }
@@ -32,27 +32,25 @@ export function initLoader(loader, onComplete) {
 
   /**
    * ローディング終了演出
-   * 8.4秒経過後、画像と光を同時に闇へと溶け込ませる
+   * 8.4秒後、スポットライトを止めて、画像と闇をじわっと消す
    */
   const finish = () => {
     if (finished) return;
 
-    // 1. 背景色（黒）を含めたローダー全体を1.8秒かけてフェードアウト
-    // これにより、画像が闇に溶け込んだ状態で静かに本編へ切り替わる
+    // 1. 画像と黒背景(loader)を1.8秒かけて本編へ溶け込ませる
     if (loader) {
       loader.style.transition = "opacity 1.8s ease";
       loader.style.opacity = "0";
     }
 
-    // 2. 光の層（fadeLayer）の動きを止め、同時に消し去る
+    // 2. スポットライト（fadeLayer）の動きを止め、同時に消し去る
     if (fadeLayer) {
-      // CSSアニメーション（鼓動）を停止して干渉を防ぐ
       fadeLayer.style.animation = "none";
       fadeLayer.style.transition = "opacity 1.8s ease";
       fadeLayer.style.opacity = "0";
     }
 
-    // フェードアウトの余韻（1.8秒）の途中で本編の準備を開始（1.2秒後）
+    // 余韻が消えきる前に、本編の表示を開始させる（1.2秒後）
     setTimeout(safeComplete, 1200); 
   };
 
@@ -62,29 +60,28 @@ export function initLoader(loader, onComplete) {
   const start = () => {
     if (finished) return;
 
-    // ローダーを表示（CSS側の背景黒設定と連動）
+    // 黒背景のローダーを表示
     if (loader) {
       loader.style.display = "flex";
       loader.style.opacity = "1";
     }
 
-    // 光の層を表示（CSS側の sirenWave アニメーション開始）
+    // スポットライトを開始
     if (fadeLayer) {
       fadeLayer.classList.remove("hide");
     }
 
-    // 指定した時間（8.4秒）だけ演出をループさせる
+    // 8.4秒間、光の演出を見せる
     setTimeout(finish, 8400);
   };
 
-  // ページの読み込み状況に応じて実行
   if (document.readyState === "complete") {
     start();
   } else {
     window.addEventListener("load", start, { once: true });
   }
 
-  // ブラウザの「戻る」ボタンで戻った際の表示不具合（bfcache）対策
+  // ブラウザ戻る対策
   window.addEventListener("pageshow", (e) => {
     if (e.persisted) {
       safeComplete();
