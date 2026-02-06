@@ -36,8 +36,9 @@
   mix-blend-mode: multiply;
   filter: blur(80px);
   /* 1.0秒周期の鋭い鼓動 */
-  animation: fastLooming 1.0s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
   will-change: transform, opacity;
+  transform: scale(2.2) translateZ(0);
+  animation: fastLooming 1.0s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
 }
 
 @keyframes fastLooming {
@@ -51,21 +52,26 @@
   }
 }
 
-/* 終了時：1.0秒で一気に真っ黒に塗りつぶす */
+/* 終了時（暗転）の設定 */
 #loader.swallow-darkness #fadeLayer {
-  animation: none;
-  transition: transform 1.0s cubic-bezier(0.4, 0, 0.2, 1);
+  /* [重要] アニメーションを即座に上書きして計算を止める */
+  animation: none !important; 
+  
+  /* 拡大の動きを滑らかに。1.0sで鼓動のリズムを維持 */
+  transition: transform 1.0s cubic-bezier(0.2, 1, 0.2, 1);
+  
+  /* 5倍に拡大して固定。translateZ(0)でGPUを使う */
   transform: scale(5.0) translate(0, 0) translateZ(0); 
   opacity: 1;
 }
 
-/* 最後のひと押し：影の背後を埋める黒幕 */
+/* 暗転用の黒幕（影の隙間を埋める） */
 #loader.swallow-darkness::after {
   content: "";
   position: absolute;
   inset: -10%;
   background: #000;
-  z-index: 10003;
+  z-index: 10001; /* 影と画像の間に挟む */
   opacity: 0;
   pointer-events: none;
   animation: finalBlackout 1.0s forwards;
