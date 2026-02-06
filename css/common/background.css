@@ -1,5 +1,6 @@
 /* background.css */
 
+/* background.css */
 
 .background {
   position: fixed;
@@ -8,59 +9,41 @@
   height: 100vh;
   background: url('../../image/background.jpg') center / cover no-repeat;
   z-index: 0;
+  /* 背景のベースを黒にしておく */
   background-color: #000;
-  
-  /* 画像そのものの明るさを制御 */
-  animation: bgFilterAnimation 9s ease-in-out infinite alternate;
 }
 
-@keyframes bgFilterAnimation {
-  0% { 
-    /* 光が引いた時：画像全体を深く沈め、ディテールを消す */
-    filter: brightness(0.15) contrast(1.3) saturate(0.5); 
-  }
-  100% { 
-    /* 光が満ちた時：画像本来の明るさ（1.0）に戻し、はっきり見せる */
-    filter: brightness(1.0) contrast(1.0) saturate(1.0); 
-  }
-}
-
+/* 影の層：これが右下から左上へ迫ってくる */
 .background::before {
   content: "";
   position: absolute;
   inset: -100%; 
   z-index: 1;
-  /* 黄色味を一切排除した「濁った白」のグラデーション */
-  background: radial-gradient(circle at 18% 18%, 
-    rgba(255, 255, 255, 0.8) 0%,   /* 芯：純白 */
-    rgba(230, 235, 240, 0.3) 30%,  /* 中間：青白い霧 */
-    rgba(150, 150, 160, 0.05) 70%, /* 外縁：わずかな気配 */
-    rgba(0, 0, 0, 0) 100%);
   
-  /* screenモードにより、画像の色を「持ち上げる」 */
-  mix-blend-mode: screen; 
+  /* 右下(85% 85%)を起点にした巨大な黒い影 */
+  background: radial-gradient(circle at 85% 85%, 
+    rgba(0, 0, 0, 1.0) 0%,    /* 起点は真っ暗 */
+    rgba(0, 0, 0, 0.8) 40%,   /* 濃い影 */
+    rgba(0, 0, 0, 0) 80%);    /* 左上の光源付近は透明（原画そのまま） */
+  
+  /* 乗算モードで「闇を上書き」する */
+  mix-blend-mode: multiply; 
   pointer-events: none;
-  filter: blur(100px); 
+  filter: blur(60px); 
 
-  animation: depthSinkingLight 9s ease-in-out infinite alternate;
+  /* 9秒周期で、影が「迫る」と「退く」を繰り返す */
+  animation: shadowSinking 9s ease-in-out infinite alternate;
 }
 
-@keyframes depthSinkingLight {
+@keyframes shadowSinking {
   0% { 
-    opacity: 0.1;
-    /* 暗い時は光源付近まで絞り込む（右下を闇にする） */
-    background: radial-gradient(circle at 18% 18%, 
-      rgba(255, 255, 255, 0.4) 0%, 
-      rgba(0, 0, 0, 0) 30%);
-    transform: scale(0.85);
+    /* 【明るい時】影が遠ざかっている状態 */
+    opacity: 0;
+    transform: scale(1.5) translate(20%, 20%);
   }
   100% { 
+    /* 【暗い時】影が画面中央まで覆い被さってきた状態 */
     opacity: 1.0;
-    /* 明るい時は全体に光を届ける */
-    background: radial-gradient(circle at 18% 18%, 
-      rgba(255, 255, 255, 0.8) 0%, 
-      rgba(220, 225, 235, 0.3) 50%, 
-      rgba(0, 0, 0, 0) 130%); 
-    transform: scale(1.25);
+    transform: scale(1.0) translate(0, 0);
   }
 }
