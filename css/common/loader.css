@@ -16,7 +16,6 @@
   height: 100vh;
   background: url('../../image/background.jpg') center / cover no-repeat;
   z-index: 10000;
-  /* GPUメモリに常駐させ、再描画の遅延を抑える */
   transform: translateZ(0);
 }
 
@@ -29,11 +28,9 @@
     rgba(0, 0, 0, 0.8) 25%, 
     rgba(0, 0, 0, 0.3) 70%, 
     rgba(0, 0, 0, 0) 96%);
-  /* ローディング中は原画と馴染ませる */
   mix-blend-mode: multiply;
   filter: blur(80px);
   animation: fastLooming 2.5s ease-in-out infinite alternate;
-  /* アニメーションの対象をブラウザに伝え、負荷を最適化 */
   will-change: transform, opacity;
 }
 
@@ -42,15 +39,33 @@
   100% { opacity: 1.0; transform: scale(1.0) translateZ(0); }
 }
 
-/* 終了時：ここが重要！ */
+/* 終了時：いきなり黒くせず、2秒かけて「闇が満ち切る」演出 */
 #loader.swallow-darkness #fadeLayer {
   animation: none;
-  /* 透過を完全に排除し、mix-blend-modeを無効化することで「真っ黒な壁」にする */
-  mix-blend-mode: normal;
-  background: #000; 
-  filter: none;
-  opacity: 1;
-  /* 影の「芯」を左上にグッと寄せて塗りつぶす */
-  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  /* transitionを2秒に。transformとopacity、そして色を同時に動かす */
+  transition: 
+    transform 2.0s cubic-bezier(0.4, 0, 0.2, 1), 
+    opacity 1.5s ease-in;
+  
+  /* 影を大きく、かつ左上に寄せることで画面を塗りつぶしていく */
   transform: scale(3.5) translate(-15%, -15%) translateZ(0);
+  opacity: 1;
+  
+  /* ここで一工夫：グラデーションを残したまま、徐々に濃くする */
+}
+
+/* 最後のひと押し：影レイヤーの背景を不透明にするための擬似要素 */
+#loader.swallow-darkness::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 10000; /* 画像より上で影より下 */
+  opacity: 0;
+  animation: finalBlackout 2.0s forwards;
+}
+
+@keyframes finalBlackout {
+  0%   { opacity: 0; }
+  100% { opacity: 1; } /* 2秒かけて画面全体を底から真っ黒にする */
 }
