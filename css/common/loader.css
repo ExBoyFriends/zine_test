@@ -52,8 +52,8 @@
 /* 終了時：闇を巨大化させ、画面全体を真っ黒な「面」にする */
 #loader.swallow-darkness #fadeLayer {
   animation: none;
-  transition: transform 2.0s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.5s ease-in;
-  transform: scale(3.5) translate(-15%, -15%) translateZ(0);
+  transition: opacity 1.5s ease-in-out;
+  transform: scale(5.0) translateZ(0);
   opacity: 1;
 }
 
@@ -61,9 +61,13 @@
 #loader.swallow-darkness::after {
   content: "";
   position: absolute;
-  inset: 0;
+  /* inset: 0 ではなく、少し外側まで広げておく */
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
   background: #000;
-  z-index: 10001; /* 画像(10000)と影(10002)の間 */
+  z-index: 10001;
   opacity: 0;
   pointer-events: none;
   animation: finalBlackout 2.0s forwards;
