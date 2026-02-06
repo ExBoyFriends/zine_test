@@ -1,14 +1,18 @@
 /* ================ Loader / Fade ================ */
+/* ================ Loader / Fade ================ */
 
 #loader {
   position: fixed;
   inset: 0;
   z-index: 10000;
   display: flex;
-  background-color: #020202; /* 闇を深くして光を際立たせる */
+  align-items: center;
+  justify-content: center;
+  background-color: #020202; /* 闇を深くし、光のキレを際立たせる */
   pointer-events: none;
 }
 
+/* 画像：完全に静止。光の反射を受け止める器 */
 #loader img.loader-inner {
   position: fixed;
   inset: 0;
@@ -16,39 +20,40 @@
   height: 100vh;
   object-fit: cover;
   z-index: 9998;
-  opacity: 0.12; /* 光が引いた時は極限まで沈める */
+  opacity: 0.12; /* 闇の中でのベース視認度 */
 }
 
-/* スポットライト：サイレンのように「鋭く突き刺し、一気に引く」 */
+/* スポットライト：サイレンのように鋭く広がり、一気に引く */
 #fadeLayer {
   position: fixed;
-  inset: -100%; /* スケールを大きく動かすため、可動域を最大に */
+  inset: -100%; /* 大きなスケール変化に対応するため可動域を拡大 */
   z-index: 9999;
   pointer-events: none;
+  /* 左上起点。中心(0%)に白を置き、眩しさを表現 */
   background: radial-gradient(circle at 15% 15%, 
-    rgba(255, 255, 255, 0.9) 0%,   /* 中心は眩しい白 */
-    rgba(255, 220, 100, 0.4) 30%,  /* 琥珀色 */
-    rgba(0, 0, 0, 0) 70%);
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(255, 210, 100, 0.4) 35%, 
+    rgba(0, 0, 0, 0) 75%);
   
   mix-blend-mode: screen;
   filter: blur(40px);
   opacity: 0;
-  /* 周期を2.5秒に短縮し、鼓動のキレを出す */
-  animation: sirenSpotlight 2.5s cubic-bezier(0.15, 0, 0.15, 1) infinite;
+  /* 加速して爆発し、瞬時に戻る独自のイージング */
+  animation: sirenSpotlight 2.8s cubic-bezier(0.15, 0, 0.15, 1) infinite;
 }
 
 @keyframes sirenSpotlight {
   0% { 
     opacity: 0; 
-    transform: scale(0.3) translate(-10%, -10%); /* 左上の奥に引っ込んでいる */
+    transform: scale(0.3) translate(-5%, -5%); 
   }
-  35% { 
+  30% { 
     opacity: 1; 
-    transform: scale(2.5) translate(0, 0); /* 「ふぁーん！」と一気に手前に爆発 */
+    transform: scale(2.5) translate(0, 0); /* 一気に全体を飲み込む */
   }
-  50% { 
+  45% { 
     opacity: 0; 
-    transform: scale(0.5) translate(-5%, -5%); /* 「ッ！」と一瞬で引く */
+    transform: scale(0.6) translate(-2%, -2%); /* 鋭く引き抜く */
   }
   100% { 
     opacity: 0;
