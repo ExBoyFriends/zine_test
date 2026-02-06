@@ -12,10 +12,15 @@
   overflow: hidden; 
 }
 
-.loader-inner {
+/* imgタグの代わりに、本編背景と全く同じ設定で描画 */
+.loader-bg-image {
+  position: absolute;
+  inset: 0;
   width: 100vw;
   height: 100vh;
-  object-fit: cover;
+  /* ここを本編 background.css と完全に一致させる */
+  background: url('../../image/background.jpg') center / cover no-repeat;
+  filter: none; /* ローダー時は加工なし */
 }
 
 /* ローディング用の影の層 */
