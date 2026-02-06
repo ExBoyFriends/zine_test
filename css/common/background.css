@@ -8,6 +8,9 @@
   background: url('../../image/background.jpg') center / cover no-repeat;
   z-index: 0;
   background-color: #000;
+  /* 描画のチラつきを抑えるためのヒント */
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 /* 影の層：左上を飲み込む寸前まで攻めるが、下部の沈み込み範囲は限定する */
