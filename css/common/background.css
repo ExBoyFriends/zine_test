@@ -45,7 +45,7 @@
     transform: scale(1.4) translateZ(0); 
   }
   100% { 
-    opacity: 0.5; /* 1.0より少し下げると透ける計算が楽になります */
+    opacity: 0.8; /* 1.0より少し下げると透ける計算が楽になります */
     transform: scale(1.1) translateZ(0);
   }
 }
