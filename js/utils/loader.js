@@ -14,28 +14,23 @@ export function initLoader(loader, onComplete) {
 
   const finish = () => {
     if (finished) return;
+    if (loader) loader.classList.add("swallow-darkness");
 
-    if (loader) {
-      // 1.0s の暗転アニメーション開始
-      loader.classList.add("swallow-darkness");
-    }
-
-    // 闇が広がり始めたらすぐに裏側で本編を準備
     setTimeout(safeComplete, 200); 
 
-    // 暗転が完了する「1.0秒後」に夜明けを開始
+    // 1.0秒後（真っ暗になった瞬間）
     setTimeout(() => {
       if (loader) {
-        // JSから transition と opacity を強制指定して
-        // 2.5秒のゆっくりしたフェードアウトを確実に実行させる
-        loader.style.transition = "opacity 2.5s ease-in-out";
+        if (fadeLayer) fadeLayer.style.display = 'none';
+
+        // 鼓動に合わせるため、出だしを速く、後半を極めて遅くしたイージング
+        loader.style.transition = "opacity 2.8s cubic-bezier(0.2, 1, 0.2, 1)";
         loader.style.opacity = "0";
       }
       
-      // フェードが完全に終わる 2.5s 後に要素を消去
       setTimeout(() => {
         if (loader) loader.style.display = "none";
-      }, 2500); 
+      }, 2800); 
     }, 1000); 
   };
 
