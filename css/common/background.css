@@ -30,7 +30,7 @@
   
   mix-blend-mode: multiply; 
   pointer-events: none;
-  filter: blur(60px);
+  filter: blur(35px);
   
   /* ★重要：ブラウザにアニメーションを事前申告して最適化させる */
   will-change: transform, opacity;
