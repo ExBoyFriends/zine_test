@@ -1,7 +1,8 @@
 /* chapter2_5.css */
 
 /* ===================== ページ ===================== */
-position: fixed; 
+.page {
+  position: fixed; 
   inset: 0;
   display: flex;
   justify-content: center;
