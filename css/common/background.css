@@ -10,44 +10,45 @@
   background-color: #000;
 }
 
-/* 影の層：攻める時は左上隅まで、引く時は完全に消える */
+/* 影の層：左上を飲み込む寸前まで攻めるが、下部の沈み込み範囲は限定する */
 .background::before {
   content: "";
   position: absolute;
-  inset: -120%; /* 影を完全に画面外へ逃がすために広めに確保 */
+  /* 余裕を持って配置し、transformの計算負荷を減らす */
+  inset: -50%; 
   z-index: 1;
   
   /* 影の設計：
-     1. 起点を右下（95% 95%）にして下部を完全に沈める
-     2. 透明になる位置を 94% まで伸ばし、左上隅ギリギリまで闇を攻めさせる
+     1. 起点を 80% 110%（画面の少し下外側）に置くことで、下部の沈みすぎを防止
+     2. 楕円の範囲を調整し、画面の3分の1（下部）に濃い影を集中させる
+     3. 境界を 96% まで伸ばし、左上隅ギリギリまで攻める
   */
-  background: radial-gradient(ellipse at 95% 95%, 
-    rgba(0, 0, 0, 1.0) 0%,   /* 下部は完全な黒 */
-    rgba(0, 0, 0, 0.8) 40%, 
-    rgba(0, 0, 0, 0.4) 80%, 
-    rgba(0, 0, 0, 0) 94%);   /* 左上隅の数パーセントだけを死守 */
+  background: radial-gradient(ellipse at 85% 105%, 
+    rgba(0, 0, 0, 1.0) 0%,    /* 下部：しっかり沈める */
+    rgba(0, 0, 0, 0.8) 25%,   /* ここまでが画面の下3分の1程度 */
+    rgba(0, 0, 0, 0.3) 70%,   /* 中間：薄い影が広がる */
+    rgba(0, 0, 0, 0) 96%);    /* 左上：消失点（極限まで攻める） */
   
   mix-blend-mode: multiply; 
   pointer-events: none;
-  filter: blur(140px); /* 境界をさらに溶かして、より自然な空気感に */
+  filter: blur(100px); 
 
-  /* 周期は11秒に。ゆっくり攻め、ゆっくり引く */
-  animation: extremeLooming 11s ease-in-out infinite alternate;
+  /* 周期を12秒に。linear ではなく ease-in-out で折り返しを滑らかに */
+  animation: smoothLooming 12s ease-in-out infinite alternate;
+  will-change: opacity, transform; /* ブラウザに最適化を指示（カクつき防止） */
 }
 
-@keyframes extremeLooming {
+@keyframes smoothLooming {
   0% { 
-    /* 【原画に戻る時】
-       opacityを0にし、さらに影を遠くへ飛ばすことで
-       完全に原画（100%の明るさ）に戻します */
+    /* 【原画に戻る時】完全に透明にし、影を少しだけ遠ざける */
     opacity: 0;
-    transform: scale(2.0) translate(40%, 40%);
+    transform: scale(1.3); 
   }
   100% { 
     /* 【闇が攻める時】
-       左上を飲み込む寸前まで影がせり出す。
-       下部は漆黒に沈み、重厚な緊張感が生まれます。 */
+       scaleを1.0に戻すことで影を画面内に収める。
+       translateを使わないことで、折り返しのカクつきを抑止 */
     opacity: 1.0;
-    transform: scale(1.0) translate(0, 0);
+    transform: scale(1.0);
   }
 }
