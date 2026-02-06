@@ -14,12 +14,14 @@ export function showPage(index) {
   pages.forEach((page, i) => {
     const isActive = i === index;
     if (isActive) {
-      // 表示フロー：まずvisibleにしてから、CSSのtransition（opacity）を効かせる
+      // 表示するページだけ「計算対象」に戻す
+      page.style.display = "flex"; 
       page.style.visibility = "visible";
-      page.classList.add("active");
+      // 少し遅らせてクラスを付けることで、transition を確実に走らせる
+      setTimeout(() => page.classList.add("active"), 10);
     } else {
-      // 非表示フロー：クラスを外して、visibilityを隠す
       page.classList.remove("active", "show-text");
+      page.style.display = "none"; // 非表示ページは存在を消す
       page.style.visibility = "hidden";
     }
   });
