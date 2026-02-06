@@ -1,3 +1,4 @@
+
 /* loader.css */
 
 #loader {
@@ -15,14 +16,14 @@
   width: 100vw;
   height: 100vh;
   background: url('../../image/background.jpg') center / cover no-repeat;
-  z-index: 10000;
+  z-index: 10000; /* 画像 */
   transform: translateZ(0);
 }
 
 #fadeLayer {
   position: absolute;
   inset: -100%; 
-  z-index: 10001;
+  z-index: 10002; /* 最前面：影 */
   background: radial-gradient(ellipse at 85% 105%, 
     rgba(0, 0, 0, 1.0) 0%, 
     rgba(0, 0, 0, 0.8) 25%, 
@@ -39,33 +40,29 @@
   100% { opacity: 1.0; transform: scale(1.0) translateZ(0); }
 }
 
-/* 終了時：いきなり黒くせず、2秒かけて「闇が満ち切る」演出 */
+/* 終了時：闇が満ちるアニメーション */
 #loader.swallow-darkness #fadeLayer {
   animation: none;
-  /* transitionを2秒に。transformとopacity、そして色を同時に動かす */
   transition: 
     transform 2.0s cubic-bezier(0.4, 0, 0.2, 1), 
     opacity 1.5s ease-in;
-  
-  /* 影を大きく、かつ左上に寄せることで画面を塗りつぶしていく */
   transform: scale(3.5) translate(-15%, -15%) translateZ(0);
   opacity: 1;
-  
-  /* ここで一工夫：グラデーションを残したまま、徐々に濃くする */
 }
 
-/* 最後のひと押し：影レイヤーの背景を不透明にするための擬似要素 */
+/* 最後のひと押し：徐々に画面を塗りつぶす黒幕 */
 #loader.swallow-darkness::after {
   content: "";
   position: absolute;
   inset: 0;
   background: #000;
-  z-index: 10000; /* 画像より上で影より下 */
+  z-index: 10001; /* 画像(10000)と影(10002)の間：画像だけを消す */
   opacity: 0;
+  pointer-events: none;
   animation: finalBlackout 2.0s forwards;
 }
 
 @keyframes finalBlackout {
   0%   { opacity: 0; }
-  100% { opacity: 1; } /* 2秒かけて画面全体を底から真っ黒にする */
+  100% { opacity: 1; }
 }
