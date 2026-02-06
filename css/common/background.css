@@ -10,17 +10,18 @@
   z-index: 0;
   background-color: #000;
   
-  /* 画像そのものの明るさを、光に合わせて動かす */
+  /* 画像そのものの明るさを制御 */
   animation: bgFilterAnimation 9s ease-in-out infinite alternate;
 }
 
-/* 画像自体の明るさを変えるアニメーション */
 @keyframes bgFilterAnimation {
   0% { 
-    filter: brightness(0.2) contrast(1.2); /* 闇：絵柄がほぼ消えるまで落とす */
+    /* 光が引いた時：画像全体を深く沈め、ディテールを消す */
+    filter: brightness(0.15) contrast(1.3) saturate(0.5); 
   }
   100% { 
-    filter: brightness(0.8) contrast(1.1); /* 明：絵柄が見える状態 */
+    /* 光が満ちた時：画像本来の明るさ（1.0）に戻し、はっきり見せる */
+    filter: brightness(1.0) contrast(1.0) saturate(1.0); 
   }
 }
 
@@ -29,29 +30,37 @@
   position: absolute;
   inset: -100%; 
   z-index: 1;
-  mix-blend-mode: screen;
+  /* 黄色味を一切排除した「濁った白」のグラデーション */
+  background: radial-gradient(circle at 18% 18%, 
+    rgba(255, 255, 255, 0.8) 0%,   /* 芯：純白 */
+    rgba(230, 235, 240, 0.3) 30%,  /* 中間：青白い霧 */
+    rgba(150, 150, 160, 0.05) 70%, /* 外縁：わずかな気配 */
+    rgba(0, 0, 0, 0) 100%);
+  
+  /* screenモードにより、画像の色を「持ち上げる」 */
+  mix-blend-mode: screen; 
   pointer-events: none;
-  filter: blur(80px); 
+  filter: blur(100px); 
 
-  /* 光の動き（さっきのコードと同じ） */
   animation: depthSinkingLight 9s ease-in-out infinite alternate;
 }
 
 @keyframes depthSinkingLight {
   0% { 
-    opacity: 0; /* 完全に消す */
+    opacity: 0.1;
+    /* 暗い時は光源付近まで絞り込む（右下を闇にする） */
     background: radial-gradient(circle at 18% 18%, 
-      rgba(255, 253, 240, 0.4) 0%, 
+      rgba(255, 255, 255, 0.4) 0%, 
       rgba(0, 0, 0, 0) 30%);
-    transform: scale(0.8);
+    transform: scale(0.85);
   }
   100% { 
     opacity: 1.0;
+    /* 明るい時は全体に光を届ける */
     background: radial-gradient(circle at 18% 18%, 
-      rgba(255, 253, 240, 0.9) 0%, 
-      rgba(255, 220, 140, 0.5) 40%, 
-      rgba(180, 150, 100, 0.2) 80%, 
+      rgba(255, 255, 255, 0.8) 0%, 
+      rgba(220, 225, 235, 0.3) 50%, 
       rgba(0, 0, 0, 0) 130%); 
-    transform: scale(1.2);
+    transform: scale(1.25);
   }
 }
