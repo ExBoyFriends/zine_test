@@ -28,7 +28,7 @@
     rgba(0, 0, 0, 0) 90%
   );    
   
-  mix-blend-mode: multiply; 
+  /*mix-blend-mode: multiply; */
   pointer-events: none;
   filter: blur(35px);
   
@@ -41,7 +41,7 @@
 
 @keyframes smoothLooming {
   0% { 
-    opacity: 0.2;
+    opacity: 0.3;
     transform: scale(1.4) translateZ(0); 
   }
   100% { 
