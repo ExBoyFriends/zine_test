@@ -1,5 +1,6 @@
 /* background.css */
 
+
 .background {
   position: fixed;
   inset: 0;
@@ -7,9 +8,20 @@
   height: 100vh;
   background: url('../../image/background.jpg') center / cover no-repeat;
   z-index: 0;
-  /* 下地を暗くしておくことで、光が引いた場所から闇に沈みます */
   background-color: #000;
-  filter: brightness(0.8);
+  
+  /* 画像そのものの明るさを、光に合わせて動かす */
+  animation: bgFilterAnimation 9s ease-in-out infinite alternate;
+}
+
+/* 画像自体の明るさを変えるアニメーション */
+@keyframes bgFilterAnimation {
+  0% { 
+    filter: brightness(0.2) contrast(1.2); /* 闇：絵柄がほぼ消えるまで落とす */
+  }
+  100% { 
+    filter: brightness(0.8) contrast(1.1); /* 明：絵柄が見える状態 */
+  }
 }
 
 .background::before {
@@ -17,47 +29,29 @@
   position: absolute;
   inset: -100%; 
   z-index: 1;
-  
-  /* 初期状態 */
-  background: radial-gradient(circle at 18% 18%, 
-    rgba(255, 253, 240, 0.9) 0%, 
-    rgba(255, 220, 140, 0.4) 30%, 
-    rgba(180, 150, 100, 0.1) 60%, 
-    rgba(0, 0, 0, 0) 100%);
-  
   mix-blend-mode: screen;
   pointer-events: none;
   filter: blur(80px); 
 
-  /* 周期を少しゆったりさせ、8秒〜10秒程度で「呼吸」させる */
+  /* 光の動き（さっきのコードと同じ） */
   animation: depthSinkingLight 9s ease-in-out infinite alternate;
 }
 
 @keyframes depthSinkingLight {
   0% { 
-    /* 【暗い時】
-       1. 不透明度を下げる
-       2. グラデーションの範囲を 100% → 40% へ急激に絞る
-       これによって、右下（遠い方）から先に真っ暗になります。
-    */
-    opacity: 0.05;
+    opacity: 0; /* 完全に消す */
     background: radial-gradient(circle at 18% 18%, 
-      rgba(255, 253, 240, 0.6) 0%,   /* 光源付近はかすかに残る */
-      rgba(255, 220, 140, 0.2) 15%, 
-      rgba(0, 0, 0, 0) 40%);         /* 40%以降は完全に闇 */
-    transform: scale(0.8) translate(-2%, -2%);
+      rgba(255, 253, 240, 0.4) 0%, 
+      rgba(0, 0, 0, 0) 30%);
+    transform: scale(0.8);
   }
   100% { 
-    /* 【明るい時】
-       1. 不透明度を最大に
-       2. 範囲を 130% まで広げ、画面の隅々まで光を届ける
-    */
     opacity: 1.0;
     background: radial-gradient(circle at 18% 18%, 
       rgba(255, 253, 240, 0.9) 0%, 
       rgba(255, 220, 140, 0.5) 40%, 
       rgba(180, 150, 100, 0.2) 80%, 
       rgba(0, 0, 0, 0) 130%); 
-    transform: scale(1.2) translate(0, 0);
+    transform: scale(1.2);
   }
 }
