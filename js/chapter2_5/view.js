@@ -10,28 +10,20 @@ function updateDots(index) {
   });
 }
 
-// chapter2_5/view.js
 
 export function showPage(index) {
   pages.forEach((page, i) => {
     const isActive = i === index;
-    
     if (isActive) {
-      // 1. まず「見える状態」にする（display:noneは使わない）
-      page.style.pointerEvents = "auto";
-      // 2. クラスを付けて CSS の transition を発動させる
       page.classList.add("active");
+      page.style.pointerEvents = "auto";
     } else {
-      // 消える側も transition しながら消える
       page.classList.remove("active", "show-text");
       page.style.pointerEvents = "none";
     }
   });
 
-  // ...DualページやDotsの処理はそのまま...
-}
-
-  // Dualページの反転処理（datasetを使用して状態を保持）
+  // Dualページの反転処理
   const page = pages[index];
   if (page && page.classList.contains("dual")) {
     const flipped = page.dataset.flipped === "true";
