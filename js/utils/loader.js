@@ -1,96 +1,60 @@
 /**
  * loader.js
-/**
- * loader.js
- * 役割：左上からの劇的なスポットライト演出を制御。
- * 画像は静止。濁った白の光が鋭く明滅し、最後は深い闇へ溶ける演出を管理。
+ * 役割：忍び寄る闇の演出。最後は画面を完全に飲み込み、本編へ繋ぐ。
  */
 export function initLoader(loader, onComplete) {
   let finished = false;
+  const fadeLayer = document.getElementById("fadeLayer");
 
-  // 光の層（fadeLayer）の取得
-  const fadeLayer =
-    document.getElementById("fadeLayer") ||
-    document.getElementById("fadeout") ||
-    null;
-
-  /**
-   * 本編を開始する最終処理
-   */
   const safeComplete = () => {
     if (finished) return;
     finished = true;
-
     if (loader) {
       loader.style.display = "none";
     }
-
-    // main.js側のコールバック（本編開始処理）を呼び出す
     if (typeof onComplete === "function") {
       onComplete();
     }
   };
 
-  /**
-   * ローディング終了演出
-   * 8.4秒後、明滅を止めて画像と光を同時に消し去る
-   */
   const finish = () => {
     if (finished) return;
 
-    // 終了フェードアウト：2.0秒かけて重厚に闇へ沈める
-    const fadeStyle = "opacity 2.0s cubic-bezier(0.4, 0, 0.2, 1)";
-
+    // 1. 闇が広がり、画面を完全に飲み込む演出を開始
     if (loader) {
-      loader.style.transition = fadeStyle;
-      loader.style.opacity = "0";
+      loader.classList.add("swallow-darkness");
     }
 
-    if (fadeLayer) {
-      // CSSアニメーションを即座に停止し、フェードアウトに干渉させない
-      fadeLayer.style.animation = "none";
-      fadeLayer.style.transition = fadeStyle;
-      fadeLayer.style.opacity = "0";
-    }
-
-    // 完全に消えきる一歩手前（1.4秒後）で本編を開始させ、滑らかに繋ぐ
-    setTimeout(safeComplete, 1400); 
+    // 2. 画面が真っ暗になったタイミング（1.2秒後）でフェードアウト
+    setTimeout(() => {
+      if (loader) {
+        loader.style.transition = "opacity 0.8s ease-out";
+        loader.style.opacity = "0";
+      }
+      // 3. ローダーが消えきる直前に本編を背後で開始（0.4秒後に実行）
+      setTimeout(safeComplete, 400);
+    }, 1200);
   };
 
-  /**
-   * 演出開始
-   */
   const start = () => {
     if (finished) return;
 
-    // ローダーを表示
     if (loader) {
       loader.style.display = "flex";
       loader.style.opacity = "1";
     }
 
-    // 光の層の準備（もしCSSで hide が設定されていれば解除）
-    if (fadeLayer) {
-      fadeLayer.classList.remove("hide");
-      // HTML構造に関わらず見えるよう、念のため最前面へ
-      fadeLayer.style.zIndex = "10001";
-    }
-
-    // 8.4秒間演出をループ。明滅のテンポ（2.2s周期）と合わせ、約4回弱の鼓動
+    // 8.4秒間演出をループ。その後、闇を広げて終了
     setTimeout(finish, 8400);
   };
 
-  // ページのロード状況を確認して実行
   if (document.readyState === "complete") {
     start();
   } else {
     window.addEventListener("load", start, { once: true });
   }
 
-  // bfcache（戻るボタン）対策
   window.addEventListener("pageshow", (e) => {
-    if (e.persisted) {
-      safeComplete();
-    }
+    if (e.persisted) safeComplete();
   });
 }
