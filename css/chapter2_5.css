@@ -16,7 +16,7 @@
   transition: opacity 2.0s cubic-bezier(.16, 1, .3, 1);
   
   /* レイヤーを独立させ、背景のblur計算と切り離す */
-  will-change: opacity;
+  will-change: transform, opacity;
   transform: translateZ(0);
 }
 
@@ -25,6 +25,11 @@
   visibility: visible;
   pointer-events: auto;
   z-index: 10;
+}
+
+/* アクティブでないページの画像は、描画計算をスキップさせる */
+.page:not(.active) img {
+  display: none;
 }
 
 /* 画像の重なり計算を簡略化 */
