@@ -32,7 +32,8 @@ function onPointerDown(e) {
 
     if (moved && Math.abs(dx) > 40 && dt < 500) {
       dx < 0 ? goNextFn() : goPrevFn();
-    } else if (!moved && dt < 300) {
+    } 
+    else if (!moved && dt < 300) {
       handleTap();
     }
 
@@ -40,7 +41,9 @@ function onPointerDown(e) {
   };
 
   const onPointerMove = (me) => {
-    if (Math.abs(me.clientX - startX) > 15) moved = true;
+    if (Math.abs(me.clientX - startX) > 15) {
+      moved = true;
+    }
   };
 
   const cleanup = () => {
@@ -62,4 +65,5 @@ function handleTap() {
     goNextFn();
   }
 }
+
 
