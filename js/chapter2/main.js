@@ -19,26 +19,20 @@ const loader   = document.getElementById("loader");
 const dotsWrap = document.querySelector(".dots");
 const dots     = [...document.querySelectorAll(".dot")];
 
-function updateDots(index = 0) {
-  const COUNT = dots.length;
-  const reversedIndex = (COUNT - 1) - index;
-  dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === reversedIndex);
-  });
-}
-
 let transitionDone = false;
 
-// 1. カルーセルを即座に作成（まだ start はしない）
+// カルーセルの初期化
 const carousel = initCarousel3D({
-  onIndexChange(index) { updateDots(index); },
+  onIndexChange(index) {
+    const reversedIndex = (dots.length - 1) - index;
+    dots.forEach((dot, i) => dot.classList.toggle("active", i === reversedIndex));
+  },
   onExit() { goChapter25(); }
 });
 
 if (carousel) {
   window.__carousel__ = carousel;
   initDragInput(carousel);
-  updateDots(0);
 }
 
 function goChapter25() {
@@ -49,49 +43,29 @@ function goChapter25() {
   });
 }
 
-// 2. 本編を「点火」する関数
 function initializeScene() {
-  console.log("Scene Initializing..."); // ログで確認
   if (chapter) chapter.classList.add("visible");
   if (dotsWrap) dotsWrap.classList.add("visible");
-
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
   }
-
   startAutoTransition(goChapter25);
-  
+  // エンジン始動
   if (window.__carousel__) {
-    window.__carousel__.stop(); // 念のため
-    window.__carousel__.start(); // ここで animate() が回り出す
-    console.log("Carousel Started");
+    window.__carousel__.start();
   }
 }
 
-// 3. 【重要】Loaderを待つが、万が一のために「自力」でも動くようにする
-if (loader) {
-  initLoader(loader, initializeScene);
-  
-  // 保険：Loaderが4.2秒+α経っても initializeScene を呼ばなかったら強制実行
-  setTimeout(() => {
-    if (window.__carousel__ && !chapter.classList.contains("visible")) {
-      console.warn("Loader timed out. Force starting...");
-      initializeScene();
-      loader.style.display = "none";
-    }
-  }, 6000); 
-} else {
-  // Loaderがない場合は即点火
-  initializeScene();
-}
-
+// 初回起動
+initLoader(loader, initializeScene);
 initGlitchLayer?.();
 
-// --- 戻るボタン（bfcache）対策 ---
+// 戻るボタン（bfcache）対策：すべてのゴミを掃除して再点火
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
-  
+
+  // 1. 出口の幕を強制排除
   const fadeout = document.getElementById("fadeout");
   if (fadeout) {
     fadeout.style.opacity = "0";
@@ -99,10 +73,15 @@ window.addEventListener("pageshow", e => {
     fadeout.classList.remove("active");
   }
 
+  // 2. 状態とエンジンの完全停止
   transitionDone = false;
   resetTransitionState();
+  if (window.__carousel__) {
+    window.__carousel__.stop();
+    window.__carousel__.reset(16); // EXIT_MAXから急減速させる演出
+  }
 
-  // 戻った時も「Loaderがある状態」からやり直したい場合
+  // 3. ローダーを再表示して再初期化
   const ld = document.getElementById("loader");
   if (ld) {
     ld.style.display = "flex";
