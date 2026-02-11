@@ -70,13 +70,25 @@ initGlitchLayer?.();
 
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
-  resetTransitionState();
-  transitionDone = false; // フラグリセット
   
+  // 1. 真っ暗な幕を消して、操作を有効に戻す（最重要！）
+  const overlay = document.getElementById("fadeout");
+  if (overlay) {
+    overlay.style.opacity = "0";
+    overlay.style.pointerEvents = "none";
+    overlay.classList.remove("active");
+  }
+  
+  // 2. 各種フラグをリセット
+  resetTransitionState();
+  transitionDone = false; 
+  
+  // 3. カルーセルを初期状態（急減速演出あり）で再始動
   if (window.__carousel__) {
     window.__carousel__.stop?.();
     window.__carousel__.start?.(); 
   }
-  // 自動遷移タイマーを再始動
+  
+  // 4. 自動遷移タイマーを 15秒（AUTO_DELAY）から再スタート
   startAutoTransition(goChapter25);
 });
