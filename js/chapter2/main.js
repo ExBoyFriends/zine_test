@@ -39,7 +39,8 @@ function goChapter25() {
   });
 }
 
-initLoader(loader, () => {
+// 初期化関数を共通化（初回ロードと復帰ロードで使用）
+function initializeScene() {
   startChapter({
     chapter,
     dots: dotsWrap,
@@ -52,7 +53,10 @@ initLoader(loader, () => {
       if (window.__carousel__?.start) window.__carousel__.start();
     }
   });
-});
+}
+
+// --- 初回起動 ---
+initLoader(loader, initializeScene);
 
 const carousel = initCarousel3D({
   onIndexChange(index) { updateDots(index); },
@@ -67,12 +71,11 @@ if (carousel) {
 
 initGlitchLayer?.();
 
-// 戻るボタン（bfcache）対策の完全版
+// --- 戻るボタン（bfcache）復帰時の処理 ---
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
   
-  // 1. カルーセルを覆っている「暗転幕」と「ローダー」を強制排除
-  // これが残っていると画面が真っ暗で固まったように見える
+  // 1. 出口用の暗転幕（fadeout）を即座に消す
   const fadeout = document.getElementById("fadeout");
   if (fadeout) {
     fadeout.style.opacity = "0";
@@ -80,21 +83,23 @@ window.addEventListener("pageshow", e => {
     fadeout.classList.remove("active");
   }
 
-  const ld = document.getElementById("loader");
-  if (ld) {
-    ld.style.display = "none";
-  }
-  
-  // 2. 状態フラグのリセット
+  // 2. 状態フラグとカルーセルのリセット
   transitionDone = false; 
   resetTransitionState();
-  
-  // 3. カルーセルの再始動
   if (window.__carousel__) {
     window.__carousel__.stop?.();
-    window.__carousel__.start?.(); 
+    // ここで start は呼ばない（loader完了を待つ）
   }
-  
-  // 4. 自動遷移タイマーの再登録
-  startAutoTransition(goChapter25);
+
+  // 3. 他のチャプターと同じように Loader を再表示して演出をやり直す
+  const ld = document.getElementById("loader") || loader;
+  if (ld) {
+    // スタイルを初期状態へ戻す
+    ld.style.display = "flex";
+    ld.style.opacity = "1";
+    ld.classList.remove("swallow-darkness", "reveal-start");
+
+    // 4. 再び initLoader を実行して、4.2秒の鼓動演出から再開
+    initLoader(ld, initializeScene);
+  }
 });
