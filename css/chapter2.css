@@ -21,6 +21,19 @@ img {
   pointer-events: none;
   -webkit-user-drag: none;
 }
+
+/* ===================== Chapter (追加) ===================== */
+.chapter {
+  opacity: 0;            /* 最初は透明（闇） */
+  visibility: hidden;
+  transition: opacity 2.5s ease; /* じわーっと明ける演出用 */
+  transform-style: preserve-3d;  /* 3Dを維持する */
+}
+
+.chapter.visible {
+  opacity: 1;            /* JSでクラスがついたら見える（夜明け） */
+  visibility: visible;
+}
 /* ===================== Scene ===================== */
 .scene {
   position: fixed;
