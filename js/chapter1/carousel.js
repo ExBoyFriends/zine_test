@@ -1,5 +1,6 @@
 
 // chapter1/carousel.js
+
 import { state } from "../utils/state.js";
 
 export function initCarousel(wrapper, pages) {
@@ -31,6 +32,15 @@ export function initCarousel(wrapper, pages) {
     updateDots();
   }
 
+  function goNext() {
+    if (currentPage < pages.length - 1) {
+      currentPage++;
+      state.prevIndex = state.index;
+      state.index = currentPage;
+      normalize();
+    }
+  }
+
   let isDragging = false;
   let startX = 0;
   let currentX = 0;
@@ -40,7 +50,6 @@ export function initCarousel(wrapper, pages) {
   wrapper.addEventListener("pointerup", end);
   wrapper.addEventListener("pointercancel", end);
 
-  // Safari fallback
   wrapper.addEventListener("touchstart", start);
   wrapper.addEventListener("touchmove", move);
   wrapper.addEventListener("touchend", end);
@@ -113,7 +122,8 @@ export function initCarousel(wrapper, pages) {
   normalize();
 
   return {
-    getCurrentPage: () => currentPage
+    getCurrentPage: () => currentPage,
+    goNext
   };
 }
 
