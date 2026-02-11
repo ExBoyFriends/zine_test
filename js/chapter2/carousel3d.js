@@ -1,5 +1,4 @@
 // chapter2/carousel3d.js
-// chapter2/carousel3d.js
 
 export function initCarousel3D(options = {}) {
   const cylinderFront = document.querySelector(".cylinder-front");
@@ -7,15 +6,12 @@ export function initCarousel3D(options = {}) {
   const frontPanels   = [...document.querySelectorAll(".cylinder-front .outer")];
   const backPanels    = [...document.querySelectorAll(".cylinder-back .inner")];
 
-  const COUNT_FRONT = frontPanels.length; // 5
-  const COUNT_BACK  = backPanels.length;  // 5
+  const FRONT_COUNT = frontPanels.length;
+  if (!FRONT_COUNT) return;
+  const BACK_COUNT  = backPanels.length;
 
-  if (!COUNT_FRONT) return;
-
-  // --- 円弧の分割角度 ---
-  const SNAP_FRONT = 180 / (COUNT_FRONT - 1); // 手前は半円
-  const SNAP_BACK  = 180 / (COUNT_BACK - 1);  // 奥も半円
-
+  const SNAP_FRONT = 360 / FRONT_COUNT;      // 手前は360°
+  const SNAP_BACK  = 180 / (BACK_COUNT-1);   // 奥は半円180°に均等配置
   const R_FRONT = 185;
   const R_BACK  = 170;
 
@@ -28,8 +24,7 @@ export function initCarousel3D(options = {}) {
   const AUTO_TOTAL = 35000;
   const AUTO_FINAL = 6000;
 
-  let visualAngleFront = 0;
-  let visualAngleBack  = 0;
+  let visualAngle = 0;
   let baseSpeed   = BASE_SPEED;
   let dragSpeed   = 0;
   let extraSpeed  = 0;
@@ -40,9 +35,9 @@ export function initCarousel3D(options = {}) {
   let autoStartTime = 0;
   let prevIndex = -1;
 
-  // front/back パネルに初期角度を設定（半円）
-  frontPanels.forEach((p, i) => p.dataset.base = -90 + i * SNAP_FRONT);
-  backPanels.forEach((p, i)  => p.dataset.base = -90 + i * SNAP_BACK);
+  // front/back パネルに初期角度を設定
+  frontPanels.forEach((p,i) => p.dataset.base = i * SNAP_FRONT);
+  backPanels.forEach((p,i) => p.dataset.base = i * SNAP_BACK);
 
   // 正面(front)パネルの判定
   function getFrontIndex() {
@@ -50,7 +45,7 @@ export function initCarousel3D(options = {}) {
     let closestIndex = 0;
     frontPanels.forEach((p, i) => {
       const base = parseFloat(p.dataset.base);
-      const rad = (base + visualAngleFront) * Math.PI / 180;
+      const rad = (base + visualAngle) * Math.PI / 180;
       const z = Math.cos(rad);
       if (z > maxZ) {
         maxZ = z;
@@ -94,10 +89,7 @@ export function initCarousel3D(options = {}) {
                   extraSpeed;
 
     dragSpeed *= 0.85;
-
-    // --- visualAngle 更新 ---
-    visualAngleFront += speed;      // 手前の回転
-    visualAngleBack  += speed * 0.6; // 奥は少し遅めでもOK、または同じなら speed
+    visualAngle += speed;
 
     // --- 正面インデックス更新 ---
     const currentIndex = getFrontIndex();
@@ -107,17 +99,18 @@ export function initCarousel3D(options = {}) {
     }
 
     // --- Cylinder 回転 ---
-    if (cylinderFront) cylinderFront.style.transform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngleFront}deg)`;
-    if (cylinderBack)  cylinderBack.style.transform  = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngleBack}deg)`;
+    const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+    if (cylinderFront) cylinderFront.style.transform = cylTransform;
+    if (cylinderBack)  cylinderBack.style.transform  = cylTransform;
 
-    // --- frontパネル配置 ---
+    // --- frontパネル配置（360°） ---
     frontPanels.forEach((p) => {
       const base = parseFloat(p.dataset.base);
       p.style.transform = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
     });
 
-    // --- backパネル配置 ---
-    backPanels.forEach((p, i) => {
+    // --- backパネル配置（半円180°）---
+    backPanels.forEach((p,i) => {
       const base = parseFloat(p.dataset.base);
       p.style.transform = `rotateY(${base}deg) translateZ(${R_BACK}px)`;
     });
@@ -146,6 +139,6 @@ export function initCarousel3D(options = {}) {
     endDrag()   {},
     setExtraSpeed(v){ extraSpeed=v; },
     stop,
-    reset(speed=BASE_SPEED){ visualAngleFront=0; visualAngleBack=0; baseSpeed=speed; }
+    reset(speed=BASE_SPEED){ visualAngle=0; baseSpeed=speed; }
   };
 }
