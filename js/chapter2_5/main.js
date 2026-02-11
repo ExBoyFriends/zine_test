@@ -14,7 +14,9 @@ const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
 
 initLoader(loader, () => {
+
   state.index = 0;
+  state.showingText = false;
 
   startChapter({
     chapter,
@@ -29,9 +31,28 @@ initLoader(loader, () => {
 
       showPage(state.index);
 
+      /* ==========================
+         ページ送り
+      ========================== */
+
+      let auto; // ← 後で代入
+
       function nextPage() {
+        auto?.pause();
+
         if (state.index >= pages.length - 1) return;
+
         state.index++;
+        state.showingText = false;
+        showPage(state.index);
+      }
+
+      function prevPage() {
+        auto?.pause();
+
+        if (state.index <= 0) return;
+
+        state.index--;
         state.showingText = false;
         showPage(state.index);
       }
@@ -46,14 +67,23 @@ initLoader(loader, () => {
         state.showingText = false;
       }
 
+      /* ==========================
+         タップ / スワイプ
+      ========================== */
+
       initTapInteraction({
         goNext: nextPage,
-        goPrev: () => {}
+        goPrev: prevPage
       });
 
-      initAutoPoemSlide({
+      /* ==========================
+         自動詩スライド
+      ========================== */
+
+      auto = initAutoPoemSlide({
         openDelay: 3000,
         showDelay: 3000,
+        resumeDelay: 5000, // 手動後5秒で復帰
         getIndex: () => state.index,
         total: pages.length,
         openText,
@@ -66,9 +96,10 @@ initLoader(loader, () => {
   });
 });
 
+/* ==========================
+   bfcache対策
+========================== */
 
-
-/* bfcache */
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
   showPage(state.index);
