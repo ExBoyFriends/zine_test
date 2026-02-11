@@ -1,7 +1,5 @@
 // chapter2/carousel3d.js
 
-// chapter2/carousel3d.js
-
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -37,6 +35,7 @@ export function initCarousel3D(options = {}) {
   
   let prevIndex = -1; 
 
+  // 各パネルに初期角度をデータ属性として保持
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
@@ -70,10 +69,9 @@ export function initCarousel3D(options = {}) {
       const remain  = AUTO_TOTAL - elapsed;
 
       if (remain <= AUTO_FINAL) {
-        // ★修正箇所: 加速が一定にとどまらない「e」の演出
-        const t = 1 - (remain / AUTO_FINAL); // 0 から 1 へ進む進捗率
-        // 指数関数的に天井(EXIT_MAX * 2)を突き抜けるように設定
-        // これにより、画面が切り替わる直前が「最高速」になります
+        // ★加速が一定にとどまらない「e」の演出
+        const t = 1 - (remain / AUTO_FINAL); 
+        // 指数関数（4乗）で EXIT_MAX の2倍まで加速し続ける
         baseSpeed = AUTO_MAX + (Math.pow(t, 4) * (EXIT_MAX * 2 - AUTO_MAX));
       } else {
         const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
@@ -85,11 +83,10 @@ export function initCarousel3D(options = {}) {
         options.onExit?.();
       }
     } else if (mode === "exit") {
-      // exitモードでも減速させないよう、さらに加速を維持
       baseSpeed += (EXIT_MAX * 2 - baseSpeed) * 0.15;
     }
 
-    // --- ドラッグ & ノイズ処理 ---
+    // --- 速度適用 ---
     const dragNoise = Math.sin(now * (0.018 + chaos * 0.04)) * Math.sin(now * 0.11) * chaos;
     const speed = baseSpeed * (1 + chaos * 0.18 * Math.sin(now * 0.012)) +
                   (dragSpeed * (1 - chaos * 0.6) + dragSpeed * dragNoise * 0.6) +
@@ -104,6 +101,7 @@ export function initCarousel3D(options = {}) {
       prevIndex = currentIndex;
     }
 
+    // --- Transform 適応 ---
     const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     front.style.transform = cylTransform;
     back.style.transform  = cylTransform;
@@ -131,33 +129,36 @@ export function initCarousel3D(options = {}) {
     rafId = null;
   }
 
-window.addEventListener("pageshow", e => {
+  /* ===== 戻ってきた時のリセット処理 ===== */
+  window.addEventListener("pageshow", e => {
+    if (!e.persisted) return;
+    
     stop();
     visualAngle = 0; 
     
-    // 1. 元の演出通り、戻った瞬間は「最高速(EXIT_MAX)」からスタート
+    // 1. 急減速演出のために最高速から開始
     baseSpeed = EXIT_MAX; 
-    
-    // 2. モードを normal に戻すことで、animate関数内の
-    // 「baseSpeed += (target - baseSpeed) * 0.05」が
-    // 高速(16)から通常(0.22〜1.6)への強力なブレーキとして働きます。
     mode = "normal"; 
     
+    // 2. 自動遷移の計算用変数を完全にリセット
+    autoStartTime = 0; 
     prevIndex = -1;
-    idleStartTime = performance.now();
     
-    // 3. 【重要】遷移フラグをリセット（これをしないと再度遷移しません）
-    // もし options などで外部からフラグを管理している場合はそこもリセットが必要
-    if (typeof transitionDone !== 'undefined') transitionDone = false;
-
+    // 3. タイマーの起点を「今」にする
     start();
   });
+
+  // 初回起動
   start();
 
   return {
     startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
     endHold()   { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
-    startAuto() { mode = "auto"; autoStartTime = performance.now(); },
+    startAuto() { 
+      // 自動遷移が始まる瞬間の時間を記録
+      mode = "auto"; 
+      autoStartTime = performance.now(); 
+    },
     startDrag() { dragSpeed = 0; },
     moveDrag(dx){ dragSpeed += dx * 0.05; },
     endDrag() {},
