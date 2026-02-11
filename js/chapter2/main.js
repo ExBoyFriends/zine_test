@@ -1,5 +1,4 @@
 // chapter2/main.js
-
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
@@ -32,7 +31,7 @@ function goChapter25() {
   if (transitionDone) return;
   transitionDone = true;
 
- // 回転を維持したまま、被せるようにフェードアウトを開始します
+  // カルーセルの回転を維持したまま暗転幕を被せる
   playExitTransition({
     onFinish() {
       location.href = "../HTML/chapter2_5.html";
@@ -68,27 +67,34 @@ if (carousel) {
 
 initGlitchLayer?.();
 
+// 戻るボタン（bfcache）対策の完全版
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
   
-  // 1. 真っ暗な幕を消して、操作を有効に戻す（最重要！）
-  const overlay = document.getElementById("fadeout");
-  if (overlay) {
-    overlay.style.opacity = "0";
-    overlay.style.pointerEvents = "none";
-    overlay.classList.remove("active");
+  // 1. カルーセルを覆っている「暗転幕」と「ローダー」を強制排除
+  // これが残っていると画面が真っ暗で固まったように見える
+  const fadeout = document.getElementById("fadeout");
+  if (fadeout) {
+    fadeout.style.opacity = "0";
+    fadeout.style.pointerEvents = "none";
+    fadeout.classList.remove("active");
+  }
+
+  const ld = document.getElementById("loader");
+  if (ld) {
+    ld.style.display = "none";
   }
   
-  // 2. 各種フラグをリセット
-  resetTransitionState();
+  // 2. 状態フラグのリセット
   transitionDone = false; 
+  resetTransitionState();
   
-  // 3. カルーセルを初期状態（急減速演出あり）で再始動
+  // 3. カルーセルの再始動
   if (window.__carousel__) {
     window.__carousel__.stop?.();
     window.__carousel__.start?.(); 
   }
   
-  // 4. 自動遷移タイマーを 15秒（AUTO_DELAY）から再スタート
+  // 4. 自動遷移タイマーの再登録
   startAutoTransition(goChapter25);
 });
