@@ -1,15 +1,14 @@
 /**
  * loader.js
  * 8.4s鼓動 → 1.0s暗転 → 2.8s引き波フェード
- * 初回・通常遷移・戻る すべて安定動作版
+ * 初回・通常遷移・戻る すべて安定動作版（最終安定）
  */
 
 export function initLoader(loader, onComplete) {
   if (!loader) return;
 
-  let finished = false;
+  let completed = false;
   let pulseTimer = null;
-  let swallowTimer1 = null;
   let swallowTimer2 = null;
   let hideTimer = null;
 
@@ -20,7 +19,6 @@ export function initLoader(loader, onComplete) {
   ================================= */
   const clearAllTimers = () => {
     clearTimeout(pulseTimer);
-    clearTimeout(swallowTimer1);
     clearTimeout(swallowTimer2);
     clearTimeout(hideTimer);
   };
@@ -29,8 +27,8 @@ export function initLoader(loader, onComplete) {
      本編開始（1回だけ）
   ================================= */
   const safeComplete = () => {
-    if (finished) return;
-    finished = true;
+    if (completed) return;
+    completed = true;
     onComplete?.();
   };
 
@@ -38,14 +36,10 @@ export function initLoader(loader, onComplete) {
      ローダー終了処理
   ================================= */
   const finish = () => {
-    if (finished) return;
-
     loader.classList.add("swallow-darkness");
 
-    // 暗転直後に本編準備開始
-    swallowTimer1 = setTimeout(() => {
-      safeComplete();
-    }, 200);
+    // ★ ここで即本編開始（依存排除）
+    safeComplete();
 
     // 1秒後：引き波フェード開始
     swallowTimer2 = setTimeout(() => {
@@ -55,14 +49,12 @@ export function initLoader(loader, onComplete) {
         "opacity 2.8s cubic-bezier(0.2, 1, 0.2, 1)";
       loader.style.opacity = "0";
 
-      // fadeLayer があれば視覚演出終了
       if (fadeLayer) {
         setTimeout(() => {
           fadeLayer.style.visibility = "hidden";
         }, 100);
       }
 
-      // 完全非表示
       hideTimer = setTimeout(() => {
         loader.style.display = "none";
       }, 2800);
@@ -70,11 +62,11 @@ export function initLoader(loader, onComplete) {
   };
 
   /* ================================
-     状態リセット（bfcache対策の核）
+     状態リセット（bfcache完全対応）
   ================================= */
   const resetState = () => {
     clearAllTimers();
-    finished = false;
+    completed = false;
 
     loader.classList.remove("swallow-darkness", "reveal-start");
     loader.style.transition = "none";
@@ -86,8 +78,7 @@ export function initLoader(loader, onComplete) {
       fadeLayer.style.display = "block";
     }
 
-    // ★ 強制リフロー（超重要）
-    void loader.offsetWidth;
+    void loader.offsetWidth; // 強制リフロー
   };
 
   /* ================================
@@ -117,7 +108,7 @@ export function initLoader(loader, onComplete) {
   });
 
   /* ================================
-     ページ離脱時にタイマー停止
+     ページ離脱時に停止
   ================================= */
   window.addEventListener("pagehide", () => {
     clearAllTimers();
