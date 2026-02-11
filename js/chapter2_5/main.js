@@ -14,7 +14,7 @@ const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
 
 initLoader(loader, () => {
-
+  // 状態のリセット
   state.index = 0;
   state.showingText = false;
 
@@ -22,68 +22,58 @@ initLoader(loader, () => {
     chapter,
     dots,
     onStart() {
-
       const pages = getPages();
 
       const transition = createTransitionManager({
         nextUrl: "chapter3.html"
       });
 
+      // 最初のページをセット
       showPage(state.index);
 
       /* ==========================
-         ページ送り
+          制御関数
       ========================== */
+      let auto;
 
-      let auto; // ← 後で代入
-
-      function nextPage() {
+      const nextPage = () => {
         auto?.pause();
-
         if (state.index >= pages.length - 1) return;
-
         state.index++;
         state.showingText = false;
         showPage(state.index);
-      }
+      };
 
-      function prevPage() {
+      const prevPage = () => {
         auto?.pause();
-
         if (state.index <= 0) return;
-
         state.index--;
         state.showingText = false;
         showPage(state.index);
-      }
+      };
 
-      function openText() {
+      const openText = () => {
         showText(state.index);
         state.showingText = true;
-      }
+      };
 
-      function closeText() {
+      const closeText = () => {
         hideText(state.index);
         state.showingText = false;
-      }
+      };
 
       /* ==========================
-         タップ / スワイプ
+          インタラクション開始
       ========================== */
-
       initTapInteraction({
         goNext: nextPage,
         goPrev: prevPage
       });
 
-      /* ==========================
-         自動詩スライド
-      ========================== */
-
       auto = initAutoPoemSlide({
         openDelay: 3000,
         showDelay: 3000,
-        resumeDelay: 5000, // 手動後5秒で復帰
+        resumeDelay: 5000,
         getIndex: () => state.index,
         total: pages.length,
         openText,
@@ -91,17 +81,13 @@ initLoader(loader, () => {
         goNext: nextPage,
         goLast: () => transition.goNext()
       });
-
+      
+      auto.start?.();
     }
   });
 });
-
-/* ==========================
-   bfcache対策
-========================== */
 
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
   showPage(state.index);
 });
-
