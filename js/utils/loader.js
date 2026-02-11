@@ -1,3 +1,5 @@
+//oader.js
+
 export function initLoader(loader, onComplete) {
   if (!loader) return;
 
@@ -72,11 +74,9 @@ export function initLoader(loader, onComplete) {
     start();
   } else {
     window.addEventListener("load", start, { once: true });
-    // もしloadが来なくても、3秒経ったら強制スタートさせる（保険）
-    setTimeout(() => { if(!completed && !pulseTimer) start(); }, 3000);
-  }
-
-  window.addEventListener("pageshow", (e) => {
-    if (e.persisted) start();
+  
+    window.addEventListener("pageshow", (e) => {
+    if (!document.body.contains(loader)) return;
+    start();
   });
 }
