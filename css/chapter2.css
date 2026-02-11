@@ -1,87 +1,124 @@
 /* chapter2.css */
+
+/* ===================== Reset ===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+/* ===================== HTML / Body ===================== */
+html,
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+/* ===================== Image Lock ===================== */
+img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
 /* ===================== Scene ===================== */
 .scene {
-  position: fixed;
-  inset: 0;
-  perspective: 1200px;
-  perspective-origin: 50% 45%;
-  touch-action: none;
-  z-index: 1;
-  /* 修正点1: シリンダーの奥行きを有効にする */
-  transform-style: preserve-3d;
+  position: fixed;
+  inset: 0;
+  perspective: 1200px;
+  perspective-origin: 50% 45%;
+  touch-action: none;
+  z-index: 1;
 }
-
-/* 修正点2: HTMLにある .chapter 要素も3D空間を維持する */
-.chapter {
-  transform-style: preserve-3d;
+/* ===================== Panel Common ===================== */
+.panel,
+.outer,
+.inner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-style: preserve-3d;
+  transform: translate(-50%, -50%);
 }
-
-/* --- 以下、あなたの元のCSSと全く同じ --- */
-
-.panel, .outer, .inner {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform-style: preserve-3d;
-  transform: translate(-50%, -50%);
+.outer,
+.inner {
+  will-change: transform;
 }
-.outer, .inner { will-change: transform; }
-
+/* ===================== Front Card ===================== */
 .outer {
-  width: 230px;
-  height: 300px;
-  backface-visibility: hidden;
+  width: 230px;
+  height: 300px;
+  backface-visibility: hidden;
 }
 .outer img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
 }
+/* ===================== Back Card ===================== */
 .inner {
-  width: 220px;
-  height: 290px;
-  backface-visibility: hidden;
-  background: url("../image/top_b.png") center / contain no-repeat;
-  filter: brightness(0.45);
-  opacity: 0.85;
+  width: 220px;
+  height: 290px;
+  backface-visibility: hidden;
+  background: url("../image/top_b.png") center / contain no-repeat;
+  filter: brightness(0.45);
+  opacity: 0.85;
 }
+/* ===================== Cylinder ===================== */
 .cylinder {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 420px;
-  height: 420px;
-  transform-style: preserve-3d;
-  transform: translate(-50%, -50%);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 420px;
+  height: 420px;
+  transform-style: preserve-3d;
+  transform: translate(-50%, -50%);
 }
-.cylinder-front { z-index: 2; }
-.cylinder-back { z-index: 1; pointer-events: none; }
+.cylinder-front {
+  z-index: 2;
+}
+.cylinder-back {
+  z-index: 1;
+  pointer-events: none;
+}
 
-.dots { pointer-events: none; }
-.dots.visible { pointer-events: auto; }
+/* ===================== Dots ===================== */
+.dots {
+  pointer-events: none;
+}
+.dots.visible {
+  pointer-events: auto;
+}
 
-/* 共通ルールとして必要な opacity 指定だけ追加 */
-.dots { opacity: 0; transition: opacity 1s; }
-.dots.visible { opacity: 1; }
-
-/* 遷移用の幕（共通） */
-#fadeout { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 100; }
-#fadeout.active { opacity: 1; }
-
-/* ...以下、glitch演出とAnimation（省略なし）... */
-
+/* ===================== Glitch Overlay ===================== */
+.glitch-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06) 1px, transparent 1px, transparent 3px);
+  opacity: 0;
+  mix-blend-mode: overlay;
+}
+.glitch-active .scene {
+  animation: glitchShake 0.15s infinite linear;
+  filter: contrast(1.3) saturate(1.2);
+}
+.glitch-active .glitch-overlay {
+  opacity: 1;
+  animation: glitchFlash 0.12s infinite steps(2);
+}
 /* ===================== Animations ===================== */
 @keyframes glitchShake {
-  0%   { transform: translate(0,0); }
-  25%  { transform: translate(-1px,1px); }
-  50%  { transform: translate(2px,-1px); }
-  75%  { transform: translate(-2px,2px); }
-  100% { transform: translate(0,0); }
+  0%   { transform: translate(0,0); }
+  25%  { transform: translate(-1px,1px); }
+  50%  { transform: translate(2px,-1px); }
+  75%  { transform: translate(-2px,2px); }
+  100% { transform: translate(0,0); }
 }
-
 @keyframes glitchFlash {
-  0%   { opacity: 0.05; }
-  50%  { opacity: 0.18; }
-  100% { opacity: 0.1; }
-}
+  0%   { opacity: 0.05; }
+  50%  { opacity: 0.18; }
+  100% { opacity: 0.1; }
+}　　　
