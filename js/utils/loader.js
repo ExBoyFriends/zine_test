@@ -72,14 +72,20 @@ export function initLoader(loader, onComplete) {
   // ページが表示された瞬間にカウントダウンを開始します。
   start();
 
-  // 万が一の保険：8秒経っても終わってなければ強制終了
-  setTimeout(() => {
-    if (!completed) finish();
-  }, 8000);
+ // loader.js の一番下
 
-  window.addEventListener("pageshow", (e) => {
-    if (document.body.contains(loader)) start();
-  });
+// 実行のタイミングを「HTMLの解析が終わった直後」にずらす
+setTimeout(() => {
+  start();
+}, 0); 
 
-  window.addEventListener("pagehide", clearAllTimers);
-}
+// 万が一の保険：8秒経っても終わってなければ強制終了
+setTimeout(() => {
+  if (!completed) finish();
+}, 8000);
+
+window.addEventListener("pageshow", (e) => {
+  if (document.body.contains(loader)) start();
+});
+
+window.addEventListener("pagehide", clearAllTimers);
