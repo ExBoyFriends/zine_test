@@ -1,6 +1,6 @@
 /**
- * loader.js
- * 修正版：内部スコープを整理し、確実に実行されるように修正
+ * loader.js (完全版)
+ * 4.2s鼓動 → 1.0s暗転 → 2.8s夜明けフェード
  */
 export function initLoader(loader, onComplete) {
   if (!loader) return;
@@ -26,10 +26,13 @@ export function initLoader(loader, onComplete) {
 
   const finish = () => {
     if (completed) return;
+    
+    // 暗転フェーズ開始
     loader.classList.add("swallow-darkness");
     safeComplete();
 
     darkTimer = setTimeout(() => {
+      // 夜明けフェード開始
       loader.classList.add("reveal-start");
       loader.style.transition = "opacity 2.8s cubic-bezier(0.2,1,0.2,1)";
       loader.style.opacity = "0";
@@ -47,7 +50,6 @@ export function initLoader(loader, onComplete) {
   };
 
   const start = () => {
-    // 二重起動防止
     if (!document.body.contains(loader) || completed) return;
     
     clearAllTimers();
@@ -61,24 +63,23 @@ export function initLoader(loader, onComplete) {
     }
     void loader.offsetWidth;
 
-    // 4.2秒後に終了処理へ
+    // 4.2秒の鼓動演出
     pulseTimer = setTimeout(finish, 4200); 
   };
 
-  // --- initLoader関数の中で実行命令を出す ---
-  
-  // 1. 即時実行（HTML解析後）
-  setTimeout(start, 0);
+  // --- 実行トリガー ---
+  // HTMLの解析が終わっているか確認してから実行
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
 
-  // 2. 万が一の保険：どんなことがあっても8秒後には幕を開ける
+  // 強制終了タイマー（最後の砦）
   setTimeout(() => {
-    if (!completed) {
-      console.log("保険のタイマーで作動");
-      finish();
-    }
-  }, 8000);
+    if (!completed) finish();
+  }, 6000);
 
-  // bfcache/ページ遷移対応
   window.addEventListener("pageshow", (e) => {
     if (e.persisted) start();
   });
