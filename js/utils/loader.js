@@ -27,15 +27,11 @@ export function initLoader(loader, onComplete) {
 
   const finish = () => {
     if (completed) return;
-
-    // 暗転フェーズ
     loader.classList.add("swallow-darkness");
     safeComplete();
 
     darkTimer = setTimeout(() => {
-      // 夜明けフェード開始
       loader.classList.add("reveal-start");
-
       loader.style.transition = "opacity 2.8s cubic-bezier(0.2,1,0.2,1)";
       loader.style.opacity = "0";
 
@@ -46,41 +42,40 @@ export function initLoader(loader, onComplete) {
 
       hideTimer = setTimeout(() => {
         loader.style.display = "none";
-        loader.remove();
+        loader.remove(); // 物理的に削除して干渉を防ぐ
       }, 2800);
     }, 1000);
   };
 
-  const resetState = () => {
+  const start = () => {
+    // すでに動いている、または要素がない場合は何もしない
+    if (!document.body.contains(loader) || pulseTimer) return;
+
+    // 状態をリセットして表示
     clearAllTimers();
     completed = false;
     loader.classList.remove("swallow-darkness", "reveal-start");
     loader.style.opacity = "1";
     loader.style.display = "flex";
-
     if (shadow) {
       shadow.style.display = "block";
       shadow.style.opacity = "1";
     }
     void loader.offsetWidth;
+
+    // ★ 鼓動演出を 4.2秒に設定
+    pulseTimer = setTimeout(finish, 4200); 
   };
 
-  const start = () => {
-    if (!document.body.contains(loader) || pulseTimer) return; // 二重実行防止
-    resetState();
-    
-    // ★ ここを短縮：鼓動演出を 1秒（1000）程度にする
-    pulseTimer = setTimeout(finish, 1000); 
-  };
-
-  // --- 実行ロジックの改善 ---
-  // loadイベントを待たずに、このスクリプトが読み込まれたら即座にカウントダウンを開始する
+  // --- 実行の仕組みを「即時」に変更 ---
+  // loadイベントを待つと永遠に終わらなくなるリスクがあるため、
+  // ページが表示された瞬間にカウントダウンを開始します。
   start();
 
-  // 保険：もし何らかの理由で止まった場合、5秒後に強制終了
+  // 万が一の保険：8秒経っても終わってなければ強制終了
   setTimeout(() => {
     if (!completed) finish();
-  }, 5000);
+  }, 8000);
 
   window.addEventListener("pageshow", (e) => {
     if (document.body.contains(loader)) start();
