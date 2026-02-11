@@ -1,31 +1,25 @@
-//chapter1/lastPage.js
 
-import { fadeOutAndGo } from "../utils/fade.js";
+// chapter1/lastPage.js
 
 export function initLastPage(
-  wrapper, 
-  getCurrentPage, 
+  wrapper,
+  getCurrentPage,
   totalPages,
   transition
-  ) {
-  
-  let opened = false;
-  let startX = 0;
+) {
 
-  const TAP_THRESHOLD = 6;
+  let opened = false;
 
   const lastPage = document.getElementById("last-page");
   const slideTop = lastPage?.querySelector(".slide-top");
   const topHit   = lastPage?.querySelector(".top-hit");
   const tapCover = lastPage?.querySelector(".tap-cover");
+  const topLayer = lastPage?.querySelector(".top-layer");
 
-  if (!lastPage || !slideTop || !topHit || !tapCover) return;
+  if (!lastPage || !slideTop || !topHit || !tapCover || !topLayer) return;
 
   const TRANSITION =
     "transform 1.4s cubic-bezier(.16,1.3,.3,1)";
-
-
-  const topLayer = lastPage.querySelector(".top-layer");
 
   const applyX = x => {
     topLayer.style.transition = TRANSITION;
@@ -33,9 +27,9 @@ export function initLastPage(
   };
 
   const open = () => {
+    if (opened) return;
     opened = true;
     lastPage.classList.add("opened");
-
     const slideWidth = slideTop.clientWidth / 2;
     applyX(-slideWidth);
   };
@@ -46,29 +40,16 @@ export function initLastPage(
     applyX(0);
   };
 
-  topHit.addEventListener("pointerdown", e => {
-    if (e.button !== 0) return;
-    if (getCurrentPage() !== totalPages - 1) return;
-    startX = e.clientX;
-  });
-
   topHit.addEventListener("pointerup", e => {
     if (getCurrentPage() !== totalPages - 1) return;
-
-    const dx = e.clientX - startX;
-    if (Math.abs(dx) < TAP_THRESHOLD) {
-      e.stopPropagation();
-      opened ? close() : open();
-    }
+    opened ? close() : open();
   });
 
- // tapCover のイベントを pointerdown に変更
-tapCover.addEventListener("pointerdown", e => {
-  e.preventDefault(); // 余計な挙動を防止
-  e.stopPropagation();
-  if (!opened) return;
-  
-   transition.goNext();
+  tapCover.addEventListener("pointerdown", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!opened) return;
+    transition.goNext();
   });
 
   document.addEventListener("pointerup", () => {
@@ -76,6 +57,12 @@ tapCover.addEventListener("pointerdown", e => {
       close();
     }
   });
+
+  return {
+    open,
+    close,
+    isOpened: () => opened
+  };
 }
-　
+
 
