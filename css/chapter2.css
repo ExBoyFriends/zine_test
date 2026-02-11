@@ -25,14 +25,12 @@ img {
 /* ===================== Chapter ===================== */
 .chapter {
   /* base.css の opacity や transition はそのまま活かす */
-  transform-style: preserve-3d; /* ← これが「奥行き」を復活させます */
+  transform-style: preserve-3d;
   
-  /* 中央配置を維持するための補正（巨大化対策） */
+  /* 余計な flex は消し、単純に画面全体を覆う通り道にする */
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* display: flex; などは削除 */
 }
 
 /* ===================== Scene ===================== */
