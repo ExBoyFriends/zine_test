@@ -1,4 +1,6 @@
-// utils/transitionManager.js
+/**
+ * transitionManager.js (完全版)
+ */
 import { fadeOutAndGo } from "./fade.js";
 
 export function createTransitionManager({
@@ -11,7 +13,6 @@ export function createTransitionManager({
 
   function startAuto() {
     if (!autoDelay) return;
-
     timer = setTimeout(() => {
       if (transitioning) return;
       if (!canAdvance()) return;
