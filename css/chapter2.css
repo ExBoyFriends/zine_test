@@ -23,24 +23,7 @@ img {
 }
 
 /* ===================== Chapter ===================== */
-.chapter {
-  position: absolute;
-  /* top, left, width, height を一旦削除または 0 に */
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  opacity: 0;
-  visibility: hidden;
-  transform-style: preserve-3d;
-  transition: opacity 2.8s ease, visibility 2.8s ease;
-  z-index: 5;
-}
 
-.chapter.visible {
-  opacity: 1 !important;
-  visibility: visible !important;
-}
 
 /* ===================== Scene ===================== */
 .scene {
