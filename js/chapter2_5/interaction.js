@@ -1,25 +1,27 @@
 // chapter2_5/interaction.js
 
-// chapter2_5/interaction.js
+import { state } from "../utils/state.js";
+import { showText, hideText } from "./view.js";
 
-import { state, resetTextState } from "../utils/state.js";
-import { showPage, showText, hideText, getPages } from "./view.js";
-
-const pages = getPages();
 let startX = 0;
 let startTime = 0;
 let moved = false;
 
-export function initTapInteraction() {
-  // 一度リセットしてから登録することで、リロード時の重なりを防止
+let goNextFn;
+let goPrevFn;
+
+export function initTapInteraction({ goNext, goPrev }) {
+
+  goNextFn = goNext;
+  goPrevFn = goPrev;
+
   document.removeEventListener("pointerdown", onPointerDown);
   document.addEventListener("pointerdown", onPointerDown);
 }
 
 function onPointerDown(e) {
-  // 左クリック（またはタッチ）以外は無視
   if (e.button !== 0 && e.pointerType === "mouse") return;
-  
+
   startX = e.clientX;
   startTime = performance.now();
   moved = false;
@@ -29,11 +31,11 @@ function onPointerDown(e) {
     const dt = performance.now() - startTime;
 
     if (moved && Math.abs(dx) > 40 && dt < 500) {
-      dx < 0 ? goNext() : goPrev();
+      dx < 0 ? goNextFn() : goPrevFn();
     } else if (!moved && dt < 300) {
       handleTap();
     }
-    
+
     cleanup();
   };
 
@@ -56,20 +58,8 @@ function handleTap() {
     state.showingText = true;
   } else {
     hideText(state.index);
-    goNext();
+    state.showingText = false;
+    goNextFn();
   }
 }
 
-function goNext() {
-  if (state.index >= pages.length - 1) return;
-  state.index++;
-  resetTextState();
-  showPage(state.index);
-}
-
-function goPrev() {
-  if (state.index <= 0) return;
-  state.index--;
-  resetTextState();
-  showPage(state.index);
-}
