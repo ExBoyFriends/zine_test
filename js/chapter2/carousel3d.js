@@ -114,7 +114,7 @@ export function initCarousel3D(options = {}) {
       const base = parseFloat(p.dataset.base);
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
-      p.style.transform = `rotateY(${base}deg) translateZ(${R_BACK}px)`;
+      p.style.transform = `rotateY(${base}deg) translateZ(${R_BACK}px)rotateY(180deg)`;
       p.style.opacity = z < 0 ? 1 : 0; // 奥の半円だけ表示
     });
 
