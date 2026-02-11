@@ -1,5 +1,5 @@
-// chapter2/carousel3d.js
 
+// chapter2/carousel3d.js
 export function initCarousel3D(options = {}) {
   const cylinderFront = document.querySelector(".cylinder-front");
   const cylinderBack  = document.querySelector(".cylinder-back");
@@ -101,20 +101,22 @@ export function initCarousel3D(options = {}) {
     if (cylinderFront) cylinderFront.style.transform = cylTransform;
     if (cylinderBack)  cylinderBack.style.transform  = cylTransform;
 
-    // --- frontパネル配置（前半円のみ表示）---
+    // --- frontパネル配置（半円だけ表示） ---
     frontPanels.forEach((p) => {
       const base = parseFloat(p.dataset.base);
-      const rad = (base + visualAngle) * Math.PI / 180;
+      const rad  = (base + visualAngle) * Math.PI / 180;
+      const z    = Math.cos(rad);
       p.style.transform = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
-      p.style.opacity = Math.cos(rad) > 0 ? "1" : "0";
+      p.style.opacity = z > 0 ? 1 : 0; // 手前の半円だけ表示
     });
 
-    // --- backパネル配置（後半円のみ表示）---
+    // --- backパネル配置（半円だけ表示） ---
     backPanels.forEach((p) => {
       const base = parseFloat(p.dataset.base);
-      const rad = (base + visualAngle) * Math.PI / 180;
+      const rad  = (base + visualAngle) * Math.PI / 180;
+      const z    = Math.cos(rad);
       p.style.transform = `rotateY(${base}deg) translateZ(${R_BACK}px)`;
-      p.style.opacity = Math.cos(rad) < 0 ? "1" : "0";
+      p.style.opacity = z < 0 ? 1 : 0; // 奥の半円だけ表示
     });
 
     rafId = requestAnimationFrame(animate);
