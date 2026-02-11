@@ -1,5 +1,7 @@
 // chapter2/carousel3d.js
 
+// chapter2/carousel3d.js
+
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -33,27 +35,18 @@ export function initCarousel3D(options = {}) {
   let idleStartTime = performance.now();
   let autoStartTime = 0;
   
-  // 初期インデックスを保持
   let prevIndex = -1; 
 
-  // 各パネルに初期角度をデータ属性として保持
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
-  /**
-   * 最も正面（Z軸手前）に近いパネルのインデックスを返す
-   */
   function getFrontIndex() {
     let maxZ = -2;
     let closestIndex = 0;
-
     outers.forEach((p, i) => {
       const base = parseFloat(p.dataset.base);
-      // パネルの現在の合計角度をラジアンに変換
       const currentRad = ((base + visualAngle) * Math.PI) / 180;
-      // Z値（奥行き）を計算。Math.cos(0) = 1 なので、1に近いほど正面。
       const z = Math.cos(currentRad);
-
       if (z > maxZ) {
         maxZ = z;
         closestIndex = i;
@@ -75,19 +68,25 @@ export function initCarousel3D(options = {}) {
     } else if (mode === "auto") {
       const elapsed = now - autoStartTime;
       const remain  = AUTO_TOTAL - elapsed;
+
       if (remain <= AUTO_FINAL) {
-        const t = 1 - remain / AUTO_FINAL;
-        baseSpeed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - baseSpeed) * 0.09;
+        // ★修正箇所: 加速が一定にとどまらない「e」の演出
+        const t = 1 - (remain / AUTO_FINAL); // 0 から 1 へ進む進捗率
+        // 指数関数的に天井(EXIT_MAX * 2)を突き抜けるように設定
+        // これにより、画面が切り替わる直前が「最高速」になります
+        baseSpeed = AUTO_MAX + (Math.pow(t, 4) * (EXIT_MAX * 2 - AUTO_MAX));
       } else {
         const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
         baseSpeed += (Math.max(baseSpeed, AUTO_MAX * t) - baseSpeed) * 0.05;
       }
+
       if (elapsed >= AUTO_TOTAL) {
         mode = "exit";
         options.onExit?.();
       }
     } else if (mode === "exit") {
-      baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
+      // exitモードでも減速させないよう、さらに加速を維持
+      baseSpeed += (EXIT_MAX * 2 - baseSpeed) * 0.15;
     }
 
     // --- ドラッグ & ノイズ処理 ---
@@ -99,14 +98,12 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // --- ★ 正面判定とドット更新 ---
     const currentIndex = getFrontIndex();
     if (currentIndex !== prevIndex) {
       options.onIndexChange?.(currentIndex);
       prevIndex = currentIndex;
     }
 
-    // --- Transform 適応 ---
     const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     front.style.transform = cylTransform;
     back.style.transform  = cylTransform;
@@ -118,14 +115,12 @@ export function initCarousel3D(options = {}) {
 
     inners.forEach((p) => {
       const base = parseFloat(p.dataset.base);
-      // 背面パネルは内側を向くように調整
       p.style.transform = `translate(-50%, -50%) rotateY(${base + 180}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
     });
 
     rafId = requestAnimationFrame(animate);
   }
 
-  // --- 制御系 ---
   function start() {
     idleStartTime = performance.now();
     rafId = requestAnimationFrame(animate);
@@ -157,4 +152,4 @@ export function initCarousel3D(options = {}) {
     endDrag() {},
     setExtraSpeed(v){ extraSpeed = v; }
   };
-}　　　　
+}
