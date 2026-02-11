@@ -79,8 +79,9 @@ const AUTO_FINAL = 4000;  // 最後の 3.5秒で指数関数的に猛加速
         options.onExit?.();
       }
     } else if (mode === "exit") {
-      // 遷移演出中も最高速を維持・微増させる
-      baseSpeed += (EXIT_MAX * 2 - baseSpeed) * 0.15;
+  // 止まるな！さらに加速しろ！
+  // EXIT_MAX * 3 くらいまで上限を上げると、消える瞬間にコマ送り感が最大になります
+      baseSpeed += (EXIT_MAX * 3 - baseSpeed) * 0.2; 
     }
 
     const dragNoise = Math.sin(now * (0.018 + chaos * 0.04)) * Math.sin(now * 0.11) * chaos;
