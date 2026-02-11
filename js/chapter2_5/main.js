@@ -9,7 +9,6 @@ import { initTapInteraction } from "./interaction.js";
 import { initAutoPoemSlide } from "../utils/autoPoemSlide.js";
 import { createTransitionManager } from "../utils/transitionManager.js";
 
-
 const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
@@ -17,56 +16,57 @@ const dots    = document.querySelector(".dots");
 initLoader(loader, () => {
   state.index = 0;
 
-  const pages = getPages();
-
   startChapter({
     chapter,
     dots,
     onStart() {
 
- const transition = createTransitionManager({
-  nextUrl: "chapter3.html"
-});
+      const pages = getPages();
 
-const pages = getPages();
+      const transition = createTransitionManager({
+        nextUrl: "chapter3.html"
+      });
 
-function nextPage() {
-  if (state.index >= pages.length - 1) return;
-  state.index++;
-  state.showingText = false;
-  showPage(state.index);
-}
+      showPage(state.index);
 
-function openText() {
-  showText(state.index);
-  state.showingText = true;
-}
+      function nextPage() {
+        if (state.index >= pages.length - 1) return;
+        state.index++;
+        state.showingText = false;
+        showPage(state.index);
+      }
 
-function closeText() {
-  hideText(state.index);
-  state.showingText = false;
-}
+      function openText() {
+        showText(state.index);
+        state.showingText = true;
+      }
 
-initTapInteraction({
-  goNext: nextPage,
-  goPrev: () => {}
-});
+      function closeText() {
+        hideText(state.index);
+        state.showingText = false;
+      }
 
-initAutoPoemSlide({
-  openDelay: 3000,
-  showDelay: 3000,
-  getIndex: () => state.index,
-  total: pages.length,
-  openText,
-  closeText,
-  goNext: nextPage,
-  goLast: () => transition.goNext()
-});
+      initTapInteraction({
+        goNext: nextPage,
+        goPrev: () => {}
+      });
 
+      initAutoPoemSlide({
+        openDelay: 3000,
+        showDelay: 3000,
+        getIndex: () => state.index,
+        total: pages.length,
+        openText,
+        closeText,
+        goNext: nextPage,
+        goLast: () => transition.goNext()
+      });
 
     }
   });
 });
+
+
 
 /* bfcache */
 window.addEventListener("pageshow", e => {
