@@ -1,84 +1,100 @@
 /**
  * loader.js
- * 役割：8.4sの鼓動後、1.0sで右下から暗転し、
- * その後2.8sかけて右下へ引き波のように消えていく夜明けを制御。
+ * 8.4s鼓動 → 1.0s暗転 → 2.8s引き波フェード
  */
 export function initLoader(loader, onComplete) {
   let finished = false;
+  let pulseTimer = null;
+  let swallowTimer1 = null;
+  let swallowTimer2 = null;
+  let hideTimer = null;
+
   const fadeLayer = document.getElementById("fadeLayer");
 
-  // 本編開始のトリガー（暗転が始まった直後に呼ぶ）
+  const clearAllTimers = () => {
+    clearTimeout(pulseTimer);
+    clearTimeout(swallowTimer1);
+    clearTimeout(swallowTimer2);
+    clearTimeout(hideTimer);
+  };
+
   const safeComplete = () => {
     if (finished) return;
     finished = true;
     if (typeof onComplete === "function") onComplete();
   };
 
- const finish = () => {
+  const finish = () => {
     if (finished) return;
-    
+
     if (loader) {
       loader.classList.add("swallow-darkness");
     }
 
-    // 200ms後に本編準備（カード表示など）を開始
-    setTimeout(safeComplete, 200); 
+    swallowTimer1 = setTimeout(safeComplete, 200);
 
-    // 1.0秒後：真っ暗になった瞬間
-    setTimeout(() => {
-      if (loader) {
-        // [修正ポイント] 
-        // 1. reveal-startを付与して「引き」のアニメを開始
-        loader.classList.add("reveal-start");
-        
-        // 2. loader全体をじわじわ消す
-        loader.style.transition = "opacity 2.8s cubic-bezier(0.2, 1, 0.2, 1)";
-        loader.style.opacity = "0";
+    swallowTimer2 = setTimeout(() => {
+      if (!loader) return;
 
-        // [カクつき・残像対策] 
-        // 影の計算（blurとradial-gradient）をこの瞬間に裏側で殺す
-        if (fadeLayer) {
-           // 0.1秒だけ待ってから、影の描画計算をOFFにする
-           setTimeout(() => {
-             fadeLayer.style.visibility = "hidden"; 
-           }, 100);
-        }
+      loader.classList.add("reveal-start");
+
+      loader.style.transition =
+        "opacity 2.8s cubic-bezier(0.2, 1, 0.2, 1)";
+      loader.style.opacity = "0";
+
+      if (fadeLayer) {
+        setTimeout(() => {
+          fadeLayer.style.visibility = "hidden";
+        }, 100);
       }
-      
-      // 全体が消え去るタイミング
-      setTimeout(() => {
-        if (loader) loader.style.display = "none";
-      }, 2800); 
-    }, 1000); 
+
+      hideTimer = setTimeout(() => {
+        loader.style.display = "none";
+      }, 2800);
+    }, 1000);
   };
 
-  // ローダーの初期化と開始
-  const start = () => {
-    finished = false; 
+  const resetState = () => {
+    clearAllTimers();
+    finished = false;
+
     if (loader) {
-      // 状態をリセット
       loader.classList.remove("swallow-darkness", "reveal-start");
-      loader.style.display = "flex";
-      loader.style.opacity = "1";
       loader.style.transition = "none";
+      loader.style.opacity = "1";
+      loader.style.display = "flex";
     }
+
     if (fadeLayer) {
+      fadeLayer.style.visibility = "visible";
       fadeLayer.style.display = "block";
     }
-    
-    // 8.4秒間のローディング鼓動演出ののち、終了プロセス（finish）へ
-    setTimeout(finish, 8400);
+
+    // ★ 強制リフロー（これが超重要）
+    void loader?.offsetWidth;
   };
 
-  // ページ読み込み完了時に実行
+  const start = () => {
+    resetState();
+    pulseTimer = setTimeout(finish, 8400);
+  };
+
+  // 初回ロード
   if (document.readyState === "complete") {
     start();
   } else {
     window.addEventListener("load", start, { once: true });
   }
 
-  // ブラウザの戻るボタン対策
+  // 戻る（bfcache）対応
   window.addEventListener("pageshow", (e) => {
-    if (e.persisted) start();
+    if (e.persisted) {
+      start(); // 同じ8.4秒フル再生
+    }
+  });
+
+  // ページ離脱時にタイマー全解除
+  window.addEventListener("pagehide", () => {
+    clearAllTimers();
   });
 }
