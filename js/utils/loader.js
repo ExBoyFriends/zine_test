@@ -7,7 +7,7 @@ export function initLoader(loader, onComplete) {
   let swallowTimer2 = null;
   let hideTimer = null;
 
-  const fadeLayer = document.getElementById("fadeLayer");
+  const fadeLayer = document.getElementById("loader-shadow");
 
   const clearAllTimers = () => {
     clearTimeout(pulseTimer);
