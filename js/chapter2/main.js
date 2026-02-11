@@ -1,4 +1,5 @@
 // chapter2/main.js
+
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
@@ -28,7 +29,7 @@ function updateDots(index = 0) {
 
 let transitionDone = false;
 
-// カルーセルの初期化（後で再利用するため変数に保持）
+// 1. カルーセルを即座に作成（まだ start はしない）
 const carousel = initCarousel3D({
   onIndexChange(index) { updateDots(index); },
   onExit() { goChapter25(); }
@@ -43,47 +44,54 @@ if (carousel) {
 function goChapter25() {
   if (transitionDone) return;
   transitionDone = true;
-
   playExitTransition({
-    onFinish() {
-      location.href = "../HTML/chapter2_5.html";
-    }
+    onFinish() { location.href = "../HTML/chapter2_5.html"; }
   });
 }
 
-// 本編を開始させるコア関数
+// 2. 本編を「点火」する関数
 function initializeScene() {
-  // 1. 本編の表示状態をリセット
+  console.log("Scene Initializing..."); // ログで確認
   if (chapter) chapter.classList.add("visible");
   if (dotsWrap) dotsWrap.classList.add("visible");
 
-  // 2. イベントバインド
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
   }
 
-  // 3. 重要：自動遷移タイマーと回転の「再始動」
   startAutoTransition(goChapter25);
+  
   if (window.__carousel__) {
-    window.__carousel__.stop?.(); // 二重起動防止
-    window.__carousel__.start?.(); // ここで requestAnimationFrame が動き出す
+    window.__carousel__.stop(); // 念のため
+    window.__carousel__.start(); // ここで animate() が回り出す
+    console.log("Carousel Started");
   }
 }
 
-// 初回ロード実行
-initLoader(loader, initializeScene);
+// 3. 【重要】Loaderを待つが、万が一のために「自力」でも動くようにする
+if (loader) {
+  initLoader(loader, initializeScene);
+  
+  // 保険：Loaderが4.2秒+α経っても initializeScene を呼ばなかったら強制実行
+  setTimeout(() => {
+    if (window.__carousel__ && !chapter.classList.contains("visible")) {
+      console.warn("Loader timed out. Force starting...");
+      initializeScene();
+      loader.style.display = "none";
+    }
+  }, 6000); 
+} else {
+  // Loaderがない場合は即点火
+  initializeScene();
+}
 
 initGlitchLayer?.();
 
-/* ========================================================
-   戻るボタン（bfcache）復帰時の完全リセット
-   ======================================================== */
+// --- 戻るボタン（bfcache）対策 ---
 window.addEventListener("pageshow", e => {
-  // 戻るボタンでの復帰時のみ実行
   if (!e.persisted) return;
-
-  // 1. 出口用の幕（fadeout）を強制排除
+  
   const fadeout = document.getElementById("fadeout");
   if (fadeout) {
     fadeout.style.opacity = "0";
@@ -91,35 +99,17 @@ window.addEventListener("pageshow", e => {
     fadeout.classList.remove("active");
   }
 
-  // 2. 論理状態のリセット
   transitionDone = false;
   resetTransitionState();
 
-  // 3. ローダーの見た目を「他のチャプターと同じ」に戻す
+  // 戻った時も「Loaderがある状態」からやり直したい場合
   const ld = document.getElementById("loader");
   if (ld) {
     ld.style.display = "flex";
     ld.style.opacity = "1";
     ld.classList.remove("swallow-darkness", "reveal-start");
-    
-    // 4. 他のチャプターと同じ loader 演出を再実行し、終わったら initializeScene を呼ぶ
-    // もし loader.js のフラグが原因で initializeScene が呼ばれない場合に備え、
-    // ここで直接「再点火」を予約する
     initLoader(ld, initializeScene);
-    
-    // loader.js が動かない時用の強制再起動タイマー
-    setTimeout(() => {
-      if (window.__carousel__ && !transitionDone) {
-        // まだ動いていなければ強制スタート
-        initializeScene();
-        // 幕を消す
-        ld.style.opacity = "0";
-        setTimeout(() => { ld.style.display = "none"; }, 500);
-      }
-    }, 4500); 
-
   } else {
-    // ローダー要素自体がない場合は、即座に再起動
     initializeScene();
   }
 });
