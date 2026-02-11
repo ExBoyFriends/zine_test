@@ -24,7 +24,7 @@ img {
 
 /* ===================== Structure ===================== */
 .chapter {
-  display: contents; /* 階層を無視させて3D空間を直結させる */
+  display: contents;
 }
 
 .scene {
@@ -44,31 +44,21 @@ img {
   width: 0;
   height: 0;
   transform-style: preserve-3d;
-  /* JSで上書きされる前のベース位置 */
   transform: translate(-50%, -50%);
 }
 
-.cylinder-front,
-.cylinder-back {
-/* ★最重要：ここを auto !important に書き換えてください */
-  z-index: auto !important; 
-  position: absolute;
-  transform-style: preserve-3d;
-}
-
 .cylinder-front {
-  z-index: 2; /* 手前に確実に表示 */
+  z-index: 2; /* 常に手前 */
 }
 
 .cylinder-back {
-  z-index: 1; /* 奥に表示 */
+  z-index: 1; /* 常に奥 */
   pointer-events: none;
 }
 
 /* ===================== Panels ===================== */
 .panel, .outer, .inner {
   position: absolute;
-  /* JSの計算と競合しないよう left/top は 0 に */
   left: 0;
   top: 0;
   transform-style: preserve-3d;
@@ -79,7 +69,6 @@ img {
 .outer {
   width: 230px;
   height: 300px;
-  /* 自身のサイズの半分をマイナスマージンで戻して中心を揃える */
   margin-left: -115px;
   margin-top: -150px;
 }
@@ -147,3 +136,4 @@ img {
   50% { opacity: 0.18; }
   100% { opacity: 0.1; }
 }
+
