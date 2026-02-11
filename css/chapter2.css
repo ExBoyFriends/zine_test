@@ -24,10 +24,17 @@ img {
 
 /* ===================== Chapter ===================== */
 .chapter {
-  /* base.css の opacity や transition はそのまま活かす */
+  /* 3D空間を絶対に維持する（これがないと縦並びになります） */
   transform-style: preserve-3d;
-}
+  
+  /* 親の .scene と同じサイズで画面を覆う */
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 
+  /* base.css の opacity / transition はそのまま効かせます */
+}
 /* ===================== Scene ===================== */
 .scene {
   position: fixed;
