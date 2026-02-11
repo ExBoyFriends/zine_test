@@ -1,7 +1,7 @@
 // chapter2/main.js
+
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
-import { startChapter } from "../utils/chapterStart.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
 import {
@@ -11,89 +11,106 @@ import {
 } from "./holdTransition.js";
 import { playExitTransition } from "./transitionOut.js";
 import { initGlitchLayer } from "./effects.js";
+import { fadeOutAndGo, fadeInStart } from "../utils/fade.js";
 
+/* =====================
+   DOM
+===================== */
 const scene    = document.querySelector(".scene");
 const chapter  = document.querySelector(".chapter");
 const loader   = document.getElementById("loader");
 const dotsWrap = document.querySelector(".dots");
 const dots     = [...document.querySelectorAll(".dot")];
 
-let transitionDone = false;
-
-// カルーセルの初期化
-const carousel = initCarousel3D({
-  onIndexChange(index) {
-    const reversedIndex = (dots.length - 1) - index;
-    dots.forEach((dot, i) => dot.classList.toggle("active", i === reversedIndex));
-  },
-  onExit() { goChapter25(); }
-});
-
-if (carousel) {
-  window.__carousel__ = carousel;
-  initDragInput(carousel);
-}
-
-function goChapter25() {
-  if (transitionDone) return;
-  transitionDone = true;
-  playExitTransition({
-    onFinish() { location.href = "../HTML/chapter2_5.html"; }
+/* =====================
+   Dots
+===================== */
+function updateDots(index = 0) {
+  const COUNT = dots.length;
+  const reversedIndex = (COUNT - 1) - index;
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("active", i === reversedIndex);
   });
 }
 
-// 共通ルール：loader.js が終わった時に呼ばれる
-function initializeScene() {
-  
-if (scene) {
-    scene.classList.add("visible");
-  }
+/* =====================
+   Chapter2 → 2.5 自動遷移
+===================== */
+function goChapter25() {
+  if (goChapter25._done) return;
+  goChapter25._done = true;
 
-  // ドットの表示
-  if (dotsWrap) dotsWrap.classList.add("visible");
+  // 独自 exit アニメーションで遷移
+  playExitTransition({
+    onFinish() {
+      location.href = "../HTML/chapter2_5.html";
+    }
+  });
+}
+goChapter25._done = false;
 
+/* =====================
+   Loader & 初期化
+===================== */
+initLoader(loader, () => {
+  // 1. 本編パーツを「表示可能」な状態にする
+  // chapterStart を使わず、ここで直接 visible クラスを付与します
+  chapter?.classList.add("visible");
+  dotsWrap?.classList.add("visible");
+
+  // 2. 3Dシーンのイベント設定
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
   }
 
+  // 3. 【重要】黒い幕（fadeLayer）をじわ〜っと開ける
+  // これを忘れると真っ暗なままになります
+  setTimeout(() => {
+    fadeInStart(1500); // 1.5秒かけて幕を開ける
+  }, 100);
+
+  // 4. 自動遷移のタイマー開始
   startAutoTransition(goChapter25);
-  
-  if (window.__carousel__) {
-    window.__carousel__.start(); 
-  }
-}
+});
 
-// 初回起動
-initLoader(loader, initializeScene);
-initGlitchLayer?.();
 
-// 戻るボタン（bfcache）復帰
-window.addEventListener("pageshow", e => {
-  if (!e.persisted) return;
-
-  const fadeout = document.getElementById("fadeout");
-  if (fadeout) {
-    fadeout.style.opacity = "0";
-    fadeout.style.pointerEvents = "none";
-    fadeout.classList.remove("active");
-  }
-
-  transitionDone = false;
-  resetTransitionState();
-
-  if (window.__carousel__) {
-    window.__carousel__.stop();
-    window.__carousel__.reset(16); 
-  }
-
-  const ld = document.getElementById("loader");
-  if (ld) {
-    ld.style.display = "flex";
-    ld.style.opacity = "1";
-    ld.classList.remove("swallow-darkness", "reveal-start");
-    initLoader(ld, initializeScene);
-  } else {
-    initializeScene();
+/* =====================
+   Carousel 3D
+===================== */
+const carousel = initCarousel3D({
+  onIndexChange(index) {
+    updateDots(index);
+  },
+  onExit() {
+    goChapter25();
   }
 });
+if (carousel) {
+  window.__carousel__ = carousel;
+  initDragInput(carousel);
+  updateDots(0);
+}
+
+/* =====================
+   Glitch 初期化
+===================== */
+initGlitchLayer?.();
+
+/* =====================
+   bfcache / 戻ったとき
+===================== */
+window.addEventListener("pageshow", e => {
+  if (!e.persisted) return;
+  resetTransitionState();
+  goChapter25._done = false;
+  window.__carousel__?.stop?.();
+});
+
+/* =====================
+   強制 exit（長押し完遂）
+===================== */
+window.addEventListener("force-exit", () => {
+  goChapter25();
+});
+
