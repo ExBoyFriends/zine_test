@@ -7,6 +7,7 @@ import { startChapter } from "../utils/chapterStart.js";
 import { initCarousel } from "./carousel.js";
 import { initLastPage } from "./lastPage.js";
 import { fadeInStart } from "../utils/fade.js";
+import { createTransitionManager } from "../utils/transitionManager.js";
 
 const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
@@ -25,6 +26,10 @@ initLoader(loader, () => {
     chapter,
     dots,
     onStart() {
+　　  const transition = createTransitionManager({
+        nextUrl: "chapter2.html"
+      });
+      
       // 1. カルーセルとラストページの初期化
       const carousel = initCarousel(wrapper, pages);
       initLastPage(last, () => carousel.getCurrentPage(), pages.length);
