@@ -1,4 +1,4 @@
-// chapter2/carousel3d.js
+//carousel3d.js
 
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
@@ -32,10 +32,8 @@ export function initCarousel3D(options = {}) {
   let rafId = null;
   let idleStartTime = performance.now();
   let autoStartTime = 0;
-  
   let prevIndex = -1; 
 
-  // 各パネルに初期角度をデータ属性として保持
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
 
@@ -57,7 +55,6 @@ export function initCarousel3D(options = {}) {
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
-    // --- モード別速度計算 ---
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
@@ -69,9 +66,8 @@ export function initCarousel3D(options = {}) {
       const remain  = AUTO_TOTAL - elapsed;
 
       if (remain <= AUTO_FINAL) {
-        // ★加速が一定にとどまらない「e」の演出
         const t = 1 - (remain / AUTO_FINAL); 
-        // 指数関数（4乗）で EXIT_MAX の2倍まで加速し続ける
+        // 指数加速：最後に向けて猛烈に速度が上がる（天井をEXIT_MAXの2倍に設定）
         baseSpeed = AUTO_MAX + (Math.pow(t, 4) * (EXIT_MAX * 2 - AUTO_MAX));
       } else {
         const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
@@ -83,10 +79,10 @@ export function initCarousel3D(options = {}) {
         options.onExit?.();
       }
     } else if (mode === "exit") {
+      // 遷移演出中も最高速を維持・微増させる
       baseSpeed += (EXIT_MAX * 2 - baseSpeed) * 0.15;
     }
 
-    // --- 速度適用 ---
     const dragNoise = Math.sin(now * (0.018 + chaos * 0.04)) * Math.sin(now * 0.11) * chaos;
     const speed = baseSpeed * (1 + chaos * 0.18 * Math.sin(now * 0.012)) +
                   (dragSpeed * (1 - chaos * 0.6) + dragSpeed * dragNoise * 0.6) +
@@ -101,7 +97,6 @@ export function initCarousel3D(options = {}) {
       prevIndex = currentIndex;
     }
 
-    // --- Transform 適応 ---
     const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     front.style.transform = cylTransform;
     back.style.transform  = cylTransform;
@@ -129,39 +124,30 @@ export function initCarousel3D(options = {}) {
     rafId = null;
   }
 
-  /* ===== 戻ってきた時のリセット処理 ===== */
   window.addEventListener("pageshow", e => {
     if (!e.persisted) return;
-    
     stop();
-    visualAngle = 0; 
-    
-    // 1. 急減速演出のために最高速から開始
-    baseSpeed = EXIT_MAX; 
-    mode = "normal"; 
-    
-    // 2. 自動遷移の計算用変数を完全にリセット
-    autoStartTime = 0; 
+    visualAngle = 0;
+    baseSpeed = EXIT_MAX; // 戻った瞬間の急減速演出用
+    mode = "normal";
+    autoStartTime = 0;
     prevIndex = -1;
-    
-    // 3. タイマーの起点を「今」にする
     start();
   });
 
-  // 初回起動
   start();
 
   return {
     startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
     endHold()   { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
     startAuto() { 
-      // 自動遷移が始まる瞬間の時間を記録
       mode = "auto"; 
       autoStartTime = performance.now(); 
     },
     startDrag() { dragSpeed = 0; },
     moveDrag(dx){ dragSpeed += dx * 0.05; },
-    endDrag() {},
-    setExtraSpeed(v){ extraSpeed = v; }
+    endDrag()   { isDragging = false; },
+    setExtraSpeed(v){ extraSpeed = v; },
+    stop() { stop(); }
   };
 }
