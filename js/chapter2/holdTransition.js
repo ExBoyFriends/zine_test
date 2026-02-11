@@ -7,7 +7,7 @@ let exited = false;
 let timer = null;
 let holding = false;
 
-const AUTO_DELAY = 20000;
+const AUTO_DELAY = 8500;
 const HOLD_DELAY = 600;
 
 export function resetTransitionState() {
