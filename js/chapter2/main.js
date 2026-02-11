@@ -2,7 +2,7 @@
 
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
-import { startChapter } from "../utils/chapterStart.js"; // 追加
+import { startChapter } from "../utils/chapterStart.js";
 import { initCarousel3D } from "./carousel3d.js";
 import { initDragInput } from "./inputDrag.js";
 import {
@@ -41,6 +41,7 @@ function goChapter25() {
   if (transitionDone) return;
   transitionDone = true;
 
+  // ※ carousel3d.js 側で mode = "exit" になり、加速が始まっている状態で呼ばれます
   playExitTransition({
     onFinish() {
       location.href = "../HTML/chapter2_5.html";
@@ -52,7 +53,6 @@ function goChapter25() {
    Loader & 初期化
 ===================== */
 initLoader(loader, () => {
-  // 共通の開始処理へ
   startChapter({
     chapter,
     dots: dotsWrap,
@@ -66,7 +66,7 @@ initLoader(loader, () => {
       // 2. 自動遷移のタイマー開始
       startAutoTransition(goChapter25);
 
-      // 3. Carouselの起動（あれば）
+      // 3. Carouselの起動
       if (window.__carousel__ && window.__carousel__.start) {
         window.__carousel__.start();
       }
@@ -98,13 +98,26 @@ if (carousel) {
 initGlitchLayer?.();
 
 /* =====================
-   イベントリスナー
+   イベントリスナー（戻ってきた時の処理）
 ===================== */
 window.addEventListener("pageshow", e => {
+  // ブラウザの「戻る」で来た場合のみ実行
   if (!e.persisted) return;
+
+  // 1. 各種フラグを「未完了」に戻す
   resetTransitionState();
   transitionDone = false;
-  window.__carousel__?.stop?.();
+
+  // 2. カルーセルの状態をリセット
+  // carousel3d.js 側の pageshow イベントで baseSpeed = 16 がセットされ、
+  // ここで再始動することで「高速からの急減速」が描画されます
+  if (window.__carousel__) {
+    window.__carousel__.stop?.();
+    window.__carousel__.start?.();
+  }
+
+  // 3. 【最重要】止まっていた「自動遷移タイマー」を最初からやり直す
+  startAutoTransition(goChapter25);
 });
 
 window.addEventListener("force-exit", () => {
