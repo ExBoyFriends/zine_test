@@ -44,7 +44,12 @@ function goChapter25() {
 
 // 共通ルール：loader.js が終わった時に呼ばれる
 function initializeScene() {
-  // .chapter は CSS で最初から opacity: 1 なので、ここでは dots などの表示のみ
+  // ★ ここを追加：chapter を表示させる
+  if (chapter) {
+    chapter.classList.add("visible");
+  }
+
+  // ドットの表示
   if (dotsWrap) dotsWrap.classList.add("visible");
 
   if (scene && !scene.__holdBound) {
@@ -55,7 +60,7 @@ function initializeScene() {
   startAutoTransition(goChapter25);
   
   if (window.__carousel__) {
-    window.__carousel__.start(); // 幕が引かれた瞬間に回転開始
+    window.__carousel__.start(); 
   }
 }
 
