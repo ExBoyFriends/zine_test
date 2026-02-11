@@ -1,4 +1,3 @@
-
 // chapter1/lastPage.js
 
 export function initLastPage(
