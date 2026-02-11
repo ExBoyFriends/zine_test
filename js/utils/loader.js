@@ -1,18 +1,24 @@
-//oader.js
+/**
+ * loader.js
+ * 安定版：8.4s鼓動 → 1.0s暗転 → 2.8s夜明けフェード → 本編開始
+ * 初回ロード・戻る・bfcache復帰に対応
+ */
 
 export function initLoader(loader, onComplete) {
   if (!loader) return;
 
   let completed = false;
   let pulseTimer = null;
-  let swallowTimer2 = null;
+  let darkTimer = null;
+  let fadeTimer = null;
   let hideTimer = null;
 
   const shadow = document.getElementById("loader-shadow");
 
   const clearAllTimers = () => {
     clearTimeout(pulseTimer);
-    clearTimeout(swallowTimer2);
+    clearTimeout(darkTimer);
+    clearTimeout(fadeTimer);
     clearTimeout(hideTimer);
   };
 
@@ -23,13 +29,17 @@ export function initLoader(loader, onComplete) {
   };
 
   const finish = () => {
+    if (completed) return;
+
+    // 暗転フェーズ
     loader.classList.add("swallow-darkness");
     safeComplete();
 
-    swallowTimer2 = setTimeout(() => {
+    darkTimer = setTimeout(() => {
+      // 夜明けフェード開始
       loader.classList.add("reveal-start");
 
-      loader.style.transition = "opacity 2.8s cubic-bezier(0.2, 1, 0.2, 1)";
+      loader.style.transition = "opacity 2.8s cubic-bezier(0.2,1,0.2,1)";
       loader.style.opacity = "0";
 
       if (shadow) {
@@ -37,6 +47,7 @@ export function initLoader(loader, onComplete) {
         shadow.style.opacity = "0";
       }
 
+      // 完全非表示
       hideTimer = setTimeout(() => {
         loader.style.display = "none";
         loader.remove();
@@ -56,12 +67,19 @@ export function initLoader(loader, onComplete) {
       shadow.style.display = "block";
       shadow.style.opacity = "1";
     }
+
+    // 強制リフローで CSS transition を確実に適用
+    void loader.offsetWidth;
   };
 
   const start = () => {
+    // すでに remove されている場合は無視
     if (!document.body.contains(loader)) return;
+
     resetState();
-    pulseTimer = setTimeout(finish, 4200);
+
+    // 鼓動フェーズ（初期 8.4秒） → その後 finish
+    pulseTimer = setTimeout(finish, 8400);
   };
 
   // 初回ロード
@@ -69,17 +87,21 @@ export function initLoader(loader, onComplete) {
     start();
   } else {
     window.addEventListener("load", start, { once: true });
+
+    // もしloadが遅延した場合の保険（3秒で強制起動）
+    setTimeout(() => {
+      if (!completed && !pulseTimer) start();
+    }, 3000);
   }
 
-  // bfcache復帰や戻るボタンでの再表示時
+  // bfcacheや戻るボタン対応
   window.addEventListener("pageshow", (e) => {
     if (!document.body.contains(loader)) return;
     start();
   });
 
-  // ページ離脱時にタイマー停止
+  // ページ離脱時にタイマーを完全停止
   window.addEventListener("pagehide", () => {
     clearAllTimers();
   });
 }
-
