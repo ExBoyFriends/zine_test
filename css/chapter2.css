@@ -50,8 +50,10 @@ img {
 
 .cylinder-front,
 .cylinder-back {
-  /* z-indexを排除して前後関係を3D計算に任せる */
+/* ★最重要：ここを auto !important に書き換えてください */
   z-index: auto !important; 
+  position: absolute;
+  transform-style: preserve-3d;
 }
 
 .cylinder-back {
