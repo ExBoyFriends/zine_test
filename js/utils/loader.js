@@ -1,7 +1,6 @@
 /**
  * loader.js
- * 安定版：8.4s鼓動 → 1.0s暗転 → 2.8s夜明けフェード → 本編開始
- * 初回ロード・戻る・bfcache復帰に対応
+ * 修正版：内部スコープを整理し、確実に実行されるように修正
  */
 export function initLoader(loader, onComplete) {
   if (!loader) return;
@@ -42,50 +41,47 @@ export function initLoader(loader, onComplete) {
 
       hideTimer = setTimeout(() => {
         loader.style.display = "none";
-        loader.remove(); // 物理的に削除して干渉を防ぐ
+        loader.remove(); 
       }, 2800);
     }, 1000);
   };
 
   const start = () => {
-    // すでに動いている、または要素がない場合は何もしない
-    if (!document.body.contains(loader) || pulseTimer) return;
-
-    // 状態をリセットして表示
+    // 二重起動防止
+    if (!document.body.contains(loader) || completed) return;
+    
     clearAllTimers();
-    completed = false;
     loader.classList.remove("swallow-darkness", "reveal-start");
     loader.style.opacity = "1";
     loader.style.display = "flex";
+
     if (shadow) {
       shadow.style.display = "block";
       shadow.style.opacity = "1";
     }
     void loader.offsetWidth;
 
-    // ★ 鼓動演出を 4.2秒に設定
+    // 4.2秒後に終了処理へ
     pulseTimer = setTimeout(finish, 4200); 
   };
 
-  // --- 実行の仕組みを「即時」に変更 ---
-  // loadイベントを待つと永遠に終わらなくなるリスクがあるため、
-  // ページが表示された瞬間にカウントダウンを開始します。
-  start();
+  // --- initLoader関数の中で実行命令を出す ---
+  
+  // 1. 即時実行（HTML解析後）
+  setTimeout(start, 0);
 
- // loader.js の一番下
+  // 2. 万が一の保険：どんなことがあっても8秒後には幕を開ける
+  setTimeout(() => {
+    if (!completed) {
+      console.log("保険のタイマーで作動");
+      finish();
+    }
+  }, 8000);
 
-// 実行のタイミングを「HTMLの解析が終わった直後」にずらす
-setTimeout(() => {
-  start();
-}, 0); 
+  // bfcache/ページ遷移対応
+  window.addEventListener("pageshow", (e) => {
+    if (e.persisted) start();
+  });
 
-// 万が一の保険：8秒経っても終わってなければ強制終了
-setTimeout(() => {
-  if (!completed) finish();
-}, 8000);
-
-window.addEventListener("pageshow", (e) => {
-  if (document.body.contains(loader)) start();
-});
-
-window.addEventListener("pagehide", clearAllTimers);
+  window.addEventListener("pagehide", clearAllTimers);
+}
