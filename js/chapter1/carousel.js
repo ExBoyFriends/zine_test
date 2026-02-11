@@ -1,4 +1,3 @@
-
 // chapter1/carousel.js
 
 import { state } from "../utils/state.js";
