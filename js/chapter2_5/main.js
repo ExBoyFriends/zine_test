@@ -4,41 +4,72 @@ import "../utils/base.js";
 import { state } from "../utils/state.js";
 import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
-import { showPage } from "./view.js";
+import { showPage, getPages, showText, hideText } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
+import { createTransitionManager } from "../utils/transitionManager.js";
+import { initAutoSlide } from "../utils/autoSlide.js";
 
 const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
 
-/* ===================== Loader 完了 ===================== */
-/* ===================== Loader 完了 ===================== */
 initLoader(loader, () => {
-  state.index = 0; 
+  state.index = 0;
 
-  // 背景の負荷を Chapter 2.5 用に最適化
-  const bg = document.querySelector('.background');
-  if (bg) {
-    // 速度を極限まで落とす（CSS側で --bg-speed: var(...) の設定が必要）
-    bg.style.setProperty('--bg-speed', '60s');
-    
-    // もしこれでも重い場合は、下の行のコメントを外してアニメーションを完全に止める
-    // bg.style.animation = 'none';
-  }
+  const pages = getPages();
 
-  // 本編の準備を開始
   startChapter({
     chapter,
     dots,
     onStart() {
+
+      // 🔥 chapter3へ
+      const transition = createTransitionManager({
+        nextUrl: "chapter3.html"
+      });
+
       showPage(state.index);
-      initTapInteraction();
+
+      // interactionに goNext を渡す
+      initTapInteraction({
+        goNext: nextPage,
+        goPrev: prevPage
+      });
+
+      function nextPage() {
+        if (state.index >= pages.length - 1) {
+          transition.goNext();
+          return;
+        }
+        state.index++;
+        state.showingText = false;
+        showPage(state.index);
+      }
+
+      function prevPage() {
+        if (state.index <= 0) return;
+        state.index--;
+        state.showingText = false;
+        showPage(state.index);
+      }
+
+      // 🔥 完全オート
+      initAutoSlide({
+        delay: 5000,
+        lastTransitionDelay: 3000,
+        getIndex: () => state.index,
+        total: pages.length,
+        goNext: nextPage,
+        onLastTransition: () => transition.goNext()
+      });
+
     }
   });
-}); // ← ここで initLoader を閉じる
+});
 
-/* ===================== bfcache 対策 ===================== */
+/* bfcache */
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
   showPage(state.index);
 });
+
