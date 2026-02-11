@@ -27,7 +27,7 @@ initLoader(loader, () => {
     dots,
     onStart() {
 　　  const transition = createTransitionManager({
-        nextUrl: "chapter2.html"
+        nextUrl: "chapter2.html",
        autoDelay: 8000   // ← ここで自動遷移秒数も入れられる
       });
       
