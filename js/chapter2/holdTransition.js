@@ -7,7 +7,7 @@ let exited = false;
 let timer = null;
 let holding = false;
 
-const AUTO_DELAY = 8500;// 8.5秒後に自動加速開始
+const AUTO_DELAY = 15000;// 8.5秒後に自動加速開始
 const HOLD_DELAY = 600;
 
 export function resetTransitionState() {
