@@ -2,7 +2,13 @@
 
 import { fadeOutAndGo } from "../utils/fade.js";
 
-export function initLastPage(wrapper, getCurrentPage, totalPages) {
+export function initLastPage(
+  wrapper, 
+  getCurrentPage, 
+  totalPages,
+  transition
+  ) {
+  
   let opened = false;
   let startX = 0;
 
