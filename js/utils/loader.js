@@ -1,4 +1,3 @@
-//loader.js
 export function initLoader(loader, onComplete) {
   if (!loader) return;
 
@@ -7,7 +6,8 @@ export function initLoader(loader, onComplete) {
   let swallowTimer2 = null;
   let hideTimer = null;
 
-  const fadeLayer = document.getElementById("loader-shadow");
+  // HTMLに合わせて取得
+  const shadow = document.getElementById("loader-shadow");
 
   const clearAllTimers = () => {
     clearTimeout(pulseTimer);
@@ -27,20 +27,21 @@ export function initLoader(loader, onComplete) {
 
     swallowTimer2 = setTimeout(() => {
       loader.classList.add("reveal-start");
+      
+      // 親ローダーを消す
       loader.style.transition = "opacity 2.8s cubic-bezier(0.2, 1, 0.2, 1)";
       loader.style.opacity = "0";
 
-      if (fadeLayer) {
-        // visibility だけでなく opacity も制御して確実に消す
-        fadeLayer.style.opacity = "0";
-        setTimeout(() => {
-          fadeLayer.style.visibility = "hidden";
-          fadeLayer.style.display = "none";
-        }, 100);
+      // ★ 影(shadow)も道連れに消す
+      if (shadow) {
+        shadow.style.transition = "opacity 2.8s ease-in-out";
+        shadow.style.opacity = "0";
       }
 
       hideTimer = setTimeout(() => {
         loader.style.display = "none";
+        // ★ 物理的に消去して、二度と画面を邪魔させない
+        loader.remove(); 
       }, 2800);
     }, 1000);
   };
@@ -50,34 +51,29 @@ export function initLoader(loader, onComplete) {
     completed = false;
 
     loader.classList.remove("swallow-darkness", "reveal-start");
-    loader.style.transition = "none";
     loader.style.opacity = "1";
     loader.style.display = "flex";
 
-    if (fadeLayer) {
-      fadeLayer.style.visibility = "visible";
-      fadeLayer.style.display = "block";
-      fadeLayer.style.opacity = "1"; // 明示的に戻す
+    if (shadow) {
+      shadow.style.display = "block";
+      shadow.style.opacity = "1";
     }
-    void loader.offsetWidth; 
   };
 
   const start = () => {
+    // すでに消えている(remove済み)なら何もしない
+    if (!document.body.contains(loader)) return;
     resetState();
-    // 確実にタイマーをセット
     pulseTimer = setTimeout(finish, 1000); 
   };
 
-  // --- 実行トリガー ---
+  // 実行トリガー：DOMContentLoadedでも動くようにし、loadイベントの遅延を回避
   if (document.readyState === "complete") {
     start();
   } else {
-    // どちらか早い方で実行
     window.addEventListener("load", start, { once: true });
-    // もしloadが遅すぎる場合のための予備（DOMContentLoaded）
-    document.addEventListener("DOMContentLoaded", () => {
-       if (!pulseTimer) start();
-    }, { once: true });
+    // もしloadが来なくても、3秒経ったら強制スタートさせる（保険）
+    setTimeout(() => { if(!completed && !pulseTimer) start(); }, 3000);
   }
 
   window.addEventListener("pageshow", (e) => {
