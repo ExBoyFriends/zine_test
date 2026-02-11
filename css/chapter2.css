@@ -22,33 +22,37 @@ img {
   -webkit-user-drag: none;
 }
 
-/* ===================== Chapter (追加) ===================== */
+/* ===================== Chapter ===================== */
 .chapter {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;   /* 確実に画面いっぱいに広げる */
-  height: 100vh;
+  /* top, left, width, height を一旦削除または 0 に */
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
   opacity: 0;
   visibility: hidden;
   transform-style: preserve-3d;
   transition: opacity 2.8s ease, visibility 2.8s ease;
-  z-index: 5;    /* 背景よりも確実に前に出す */
+  z-index: 5;
 }
 
 .chapter.visible {
   opacity: 1 !important;
   visibility: visible !important;
 }
+
 /* ===================== Scene ===================== */
 .scene {
-  position: fixed;
-  inset: 0;
-  perspective: 1200px;
-  perspective-origin: 50% 45%;
-  touch-action: none;
-  z-index: 10;
+  position: fixed;
+  inset: 0;
+  perspective: 1200px;
+  perspective-origin: 50% 45%;
+  touch-action: none;
+  z-index: 10;
   transform-style: preserve-3d;
+  /* はみ出しを防ぐ */
+  overflow: hidden; 
 }
 /* ===================== Panel Common ===================== */
 .panel,
