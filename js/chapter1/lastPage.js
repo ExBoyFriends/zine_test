@@ -24,12 +24,6 @@ export function initLastPage(
   const TRANSITION =
     "transform 1.4s cubic-bezier(.16,1.3,.3,1)";
 
-  const goChapter2 = () => {
-  fadeOutAndGo(() => {
-    location.href = "chapter2.html";
-  });
-};
-
 
   const topLayer = lastPage.querySelector(".top-layer");
 
