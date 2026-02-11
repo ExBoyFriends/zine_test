@@ -26,11 +26,6 @@ img {
 .chapter {
   /* base.css の opacity や transition はそのまま活かす */
   transform-style: preserve-3d;
-  
-  /* 余計な flex は消し、単純に画面全体を覆う通り道にする */
-  position: absolute;
-  inset: 0;
-  /* display: flex; などは削除 */
 }
 
 /* ===================== Scene ===================== */
