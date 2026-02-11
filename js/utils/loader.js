@@ -8,7 +8,6 @@ export function initLoader(loader, onComplete) {
   let swallowTimer2 = null;
   let hideTimer = null;
 
-  // HTMLに合わせて取得
   const shadow = document.getElementById("loader-shadow");
 
   const clearAllTimers = () => {
@@ -20,7 +19,7 @@ export function initLoader(loader, onComplete) {
   const safeComplete = () => {
     if (completed) return;
     completed = true;
-    if (onComplete) onComplete();
+    onComplete?.();
   };
 
   const finish = () => {
@@ -29,12 +28,10 @@ export function initLoader(loader, onComplete) {
 
     swallowTimer2 = setTimeout(() => {
       loader.classList.add("reveal-start");
-      
-      // 親ローダーを消す
+
       loader.style.transition = "opacity 2.8s cubic-bezier(0.2, 1, 0.2, 1)";
       loader.style.opacity = "0";
 
-      // ★ 影(shadow)も道連れに消す
       if (shadow) {
         shadow.style.transition = "opacity 2.8s ease-in-out";
         shadow.style.opacity = "0";
@@ -42,8 +39,7 @@ export function initLoader(loader, onComplete) {
 
       hideTimer = setTimeout(() => {
         loader.style.display = "none";
-        // ★ 物理的に消去して、二度と画面を邪魔させない
-        loader.remove(); 
+        loader.remove();
       }, 2800);
     }, 1000);
   };
@@ -63,20 +59,27 @@ export function initLoader(loader, onComplete) {
   };
 
   const start = () => {
-    // すでに消えている(remove済み)なら何もしない
     if (!document.body.contains(loader)) return;
     resetState();
-    pulseTimer = setTimeout(finish, 4200); 
+    pulseTimer = setTimeout(finish, 4200);
   };
 
-  // 実行トリガー：DOMContentLoadedでも動くようにし、loadイベントの遅延を回避
+  // 初回ロード
   if (document.readyState === "complete") {
     start();
   } else {
     window.addEventListener("load", start, { once: true });
-  
-    window.addEventListener("pageshow", (e) => {
+  }
+
+  // bfcache復帰や戻るボタンでの再表示時
+  window.addEventListener("pageshow", (e) => {
     if (!document.body.contains(loader)) return;
     start();
   });
+
+  // ページ離脱時にタイマー停止
+  window.addEventListener("pagehide", () => {
+    clearAllTimers();
+  });
 }
+
