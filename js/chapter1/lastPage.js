@@ -67,8 +67,9 @@ tapCover.addEventListener("pointerdown", e => {
   e.preventDefault(); // 余計な挙動を防止
   e.stopPropagation();
   if (!opened) return;
-  goChapter2();
-});
+  
+   transition.goNext();
+  });
 
   document.addEventListener("pointerup", () => {
     if (getCurrentPage() !== totalPages - 1 && opened) {
