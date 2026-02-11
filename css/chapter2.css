@@ -56,7 +56,12 @@ img {
   transform-style: preserve-3d;
 }
 
+.cylinder-front {
+  z-index: 2; /* 手前に確実に表示 */
+}
+
 .cylinder-back {
+  z-index: 1; /* 奥に表示 */
   pointer-events: none;
 }
 
