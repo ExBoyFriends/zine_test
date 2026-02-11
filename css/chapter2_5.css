@@ -17,7 +17,7 @@
   visibility: hidden;
   z-index: 1;
   /* transitionはアクティブになる時だけかける */
-  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 2.6s cubic-bezier(.22,.61,.36,1);
   
   /* レイヤーを独立させ、背景のblur計算と切り離す */
  will-change: opacity;
