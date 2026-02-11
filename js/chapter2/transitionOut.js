@@ -3,10 +3,10 @@
 let startTime = null;
 let rafId = null;
 
-// carousel3d.js の AUTO_FINAL (3500ms) に同期
-const TOTAL       = 4500; // 4.5秒（余裕分）
-const FADE_START  = 2000; // 加速が絶頂に向かう2秒後から暗転開始
-const FADE_FULL   = 4000; // 4秒で真っ白（あるいは真っ黒）に
+// carousel3d.js の演出に合わせる
+const TOTAL       = 3000; // 暗転開始からページ移動までの総時間（短くして勢いを出す）
+const FADE_START  = 0;    // goChapter25 が呼ばれた瞬間からフェード開始
+const FADE_FULL   = 2500; // 2.5秒で真っ暗に
 
 export function playExitTransition({ onFinish }) {
   const overlay = document.getElementById("fadeout");
@@ -20,26 +20,23 @@ export function playExitTransition({ onFinish }) {
 
   overlay.classList.remove("active");
   overlay.style.opacity = "0";
-  overlay.style.pointerEvents = "auto";
+  overlay.style.pointerEvents = "auto"; // 操作不能にする
 
   function tick(now) {
     const t = now - startTime;
 
-    // フェード処理のみ（加速はcarousel3d側で自動実行中）
-    if (t >= FADE_START) {
-      const p = Math.min((t - FADE_START) / (FADE_FULL - FADE_START), 1);
-      const eased = p * p; // 指数加速の終端に合わせるため加速気味のフェード
-      overlay.style.opacity = Math.min(eased, 1);
-    }
+    // 不透明度を上げていく（carousel3d は裏で爆走中）
+    const p = Math.min(t / FADE_FULL, 1);
+    const eased = p * p; // 徐々に暗く
+    overlay.style.opacity = eased;
 
     if (t >= TOTAL) {
       cancelAnimationFrame(rafId);
       overlay.classList.add("active");
-      onFinish?.();
+      onFinish?.(); // location.href 実行
       return;
     }
     rafId = requestAnimationFrame(tick);
   }
   rafId = requestAnimationFrame(tick);
 }
-  
