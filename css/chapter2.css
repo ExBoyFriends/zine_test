@@ -1,6 +1,5 @@
 /* chapter2.css */
-
-/* ===================== Reset ===================== */
+/* ===================== Reset & Base ===================== */
 * {
   margin: 0;
   padding: 0;
@@ -8,9 +7,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ===================== HTML / Body ===================== */
-html,
-body {
+html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -18,55 +15,66 @@ body {
   overscroll-behavior: none;
   user-select: none;
   -webkit-user-select: none;
-  -webkit-touch-callout: none;
 }
 
-/* ===================== Image Lock ===================== */
 img {
   pointer-events: none;
   -webkit-user-drag: none;
 }
 
-/* ===================== Chapter Structure ===================== */
+/* ===================== Structure ===================== */
 .chapter {
-  /* これを指定すると、HTML構造はそのままでも、
-     ブラウザ上では「存在しないもの」として扱われます。
-     中身のシリンダーが直接 .scene の子になり、3D空間が元通り繋がります。 */
-  display: contents;
+  display: contents; /* 階層を無視させて3D空間を直結させる */
 }
-/* ===================== Scene ===================== */
+
 .scene {
   position: fixed;
   inset: 0;
-  /* 遠近感の設定 */
   perspective: 1200px;
   perspective-origin: 50% 45%;
   touch-action: none;
   z-index: 2;
 }
 
-/* ===================== Panel Common ===================== */
-.panel,
-.outer,
-.inner {
+/* ===================== Cylinder ===================== */
+.cylinder {
   position: absolute;
   left: 50%;
   top: 50%;
+  width: 0;
+  height: 0;
   transform-style: preserve-3d;
+  /* JSで上書きされる前のベース位置 */
   transform: translate(-50%, -50%);
 }
 
-.outer,
-.inner {
-  will-change: transform;
+.cylinder-front,
+.cylinder-back {
+  /* z-indexを排除して前後関係を3D計算に任せる */
+  z-index: auto !important; 
 }
 
-/* ===================== Front Card ===================== */
+.cylinder-back {
+  pointer-events: none;
+}
+
+/* ===================== Panels ===================== */
+.panel, .outer, .inner {
+  position: absolute;
+  /* JSの計算と競合しないよう left/top は 0 に */
+  left: 0;
+  top: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+  backface-visibility: visible;
+}
+
 .outer {
   width: 230px;
   height: 300px;
-  /* 3D的な重なりを正しく計算させるため、これを visible に保つ */
-  backface-visibility: visible;
+  /* 自身のサイズの半分をマイナスマージンで戻して中心を揃える */
+  margin-left: -115px;
+  margin-top: -150px;
 }
 
 .outer img {
@@ -76,46 +84,20 @@ img {
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
 }
 
-/* ===================== Back Card ===================== */
 .inner {
   width: 220px;
   height: 290px;
-  backface-visibility: visible;
+  margin-left: -110px;
+  margin-top: -145px;
   background: url("../image/top_b.png") center / contain no-repeat;
   filter: brightness(0.45);
   opacity: 0.85;
 }
 
-/* ===================== Cylinder ===================== */
-.cylinder {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 420px;
-  height: 420px;
-  /* シリンダー自体も 3D空間を維持 */
-  transform-style: preserve-3d;
-  transform: translate(-50%, -50%);
-}
+/* ===================== UI & Effects ===================== */
+.dots { pointer-events: none; }
+.dots.visible { pointer-events: auto; }
 
-.cylinder-front {
-  z-index: 2;
-}
-
-.cylinder-back {
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* ===================== Dots ===================== */
-.dots {
-  pointer-events: none;
-}
-.dots.visible {
-  pointer-events: auto;
-}
-
-/* ===================== Glitch Overlay ===================== */
 .glitch-overlay {
   position: fixed;
   inset: 0;
@@ -136,7 +118,6 @@ img {
   animation: glitchFlash 0.12s infinite steps(2);
 }
 
-/* ===================== Special Layers ===================== */
 #fadeout {
   position: fixed;
   inset: 0;
@@ -145,22 +126,17 @@ img {
   pointer-events: none;
   z-index: 100;
 }
+#fadeout.active { opacity: 1; }
 
-#fadeout.active {
-  opacity: 1;
-}
-
-/* ===================== Animations ===================== */
 @keyframes glitchShake {
-  0%   { transform: translate(0,0); }
-  25%  { transform: translate(-1px,1px); }
-  50%  { transform: translate(2px,-1px); }
-  75%  { transform: translate(-2px,2px); }
+  0% { transform: translate(0,0); }
+  25% { transform: translate(-1px,1px); }
+  50% { transform: translate(2px,-1px); }
+  75% { transform: translate(-2px,2px); }
   100% { transform: translate(0,0); }
 }
-
 @keyframes glitchFlash {
-  0%   { opacity: 0.05; }
-  50%  { opacity: 0.18; }
+  0% { opacity: 0.05; }
+  50% { opacity: 0.18; }
   100% { opacity: 0.1; }
 }
