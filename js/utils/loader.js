@@ -65,7 +65,7 @@ export function initLoader(loader, onComplete) {
   const start = () => {
     resetState();
     // 確実にタイマーをセット
-    pulseTimer = setTimeout(finish, 10000); 
+    pulseTimer = setTimeout(finish, 1000); 
   };
 
   // --- 実行トリガー ---
