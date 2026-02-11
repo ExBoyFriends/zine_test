@@ -20,8 +20,8 @@ export function initCarousel3D(options = {}) {
   const EXIT_MAX   = 16;
   const IDLE_MAX   = 1.6;
   const IDLE_TIME  = 25000;
- const AUTO_TOTAL = 11500; // 加速開始から終了まで 11.5秒
-const AUTO_FINAL = 3500;  // 最後の 3.5秒で指数関数的に猛加速
+ const AUTO_TOTAL = 13500; // 加速開始から終了まで 11.5秒
+const AUTO_FINAL = 4000;  // 最後の 3.5秒で指数関数的に猛加速
 
   let visualAngle = 0;
   let baseSpeed   = BASE_SPEED;
