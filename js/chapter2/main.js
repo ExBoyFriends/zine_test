@@ -44,9 +44,9 @@ function goChapter25() {
 
 // 共通ルール：loader.js が終わった時に呼ばれる
 function initializeScene() {
-  // ★ ここを追加：chapter を表示させる
-  if (chapter) {
-    chapter.classList.add("visible");
+  
+if (scene) {
+    scene.classList.add("visible");
   }
 
   // ドットの表示
