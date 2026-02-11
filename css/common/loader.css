@@ -30,7 +30,7 @@
 }
 
 /* 鼓動し、画面を飲み込む楕円の影 */
-#fadeLayer {
+#loader-shadow {
   position: absolute;
   inset: -100%; 
   z-index: 10002;
@@ -63,7 +63,7 @@
 /* --- 前半は維持 --- */
 
 /* 終了フェーズ1：暗転 */
-#loader.swallow-darkness #fadeLayer {
+#loader.swallow-darkness #loader-shadow {
   animation: none !important;
   transition: transform 1.0s cubic-bezier(0.2, 1, 0.2, 1);
   /* scaleは3.0程度で十分画面を覆えます。大きくしすぎないのがコツ */
@@ -89,7 +89,7 @@
 }
 
 /* --- 終了フェーズ2：夜明け（引き波） --- */
-#loader.reveal-start #fadeLayer {
+#loader.reveal-start #loader-shadow {
   /* 移動を translate(30%, 30%) 程度に抑え、左側のハミ出しを防ぐ */
   transition: transform 2.8s cubic-bezier(0.2, 1, 0.2, 1), 
               opacity 2.8s ease-in-out;
