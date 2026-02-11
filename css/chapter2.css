@@ -42,6 +42,7 @@ img {
   perspective-origin: 50% 45%;
   touch-action: none;
   z-index: 1;
+  transform-style: preserve-3d;
 }
 /* ===================== Panel Common ===================== */
 .panel,
