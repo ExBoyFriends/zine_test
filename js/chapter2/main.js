@@ -32,6 +32,7 @@ function goChapter25() {
   if (transitionDone) return;
   transitionDone = true;
 
+ // 回転を維持したまま、被せるようにフェードアウトを開始します
   playExitTransition({
     onFinish() {
       location.href = "../HTML/chapter2_5.html";
