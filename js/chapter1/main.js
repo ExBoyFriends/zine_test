@@ -28,11 +28,18 @@ initLoader(loader, () => {
     onStart() {
 　　  const transition = createTransitionManager({
         nextUrl: "chapter2.html"
+       autoDelay: 8000   // ← ここで自動遷移秒数も入れられる
       });
       
       // 1. カルーセルとラストページの初期化
       const carousel = initCarousel(wrapper, pages);
-      initLastPage(last, () => carousel.getCurrentPage(), pages.length);
+  
+      initLastPage(
+        last,
+        () => carousel.getCurrentPage(), 
+        pages.length,
+        transition 
+      );
 
       // 2. 準備が整ったので、少しだけ待ってから「黒い幕」を開ける
       // これで画像がパッと出るのではなく、じわ〜っと浮き上がります
