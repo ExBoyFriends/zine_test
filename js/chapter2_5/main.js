@@ -6,8 +6,9 @@ import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
 import { showPage, getPages, showText, hideText } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
+import { initAutoPoemSlide } from "../utils/autoPoemSlide.js";
 import { createTransitionManager } from "../utils/transitionManager.js";
-import { initAutoSlide } from "../utils/autoSlide.js";
+
 
 const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
@@ -23,45 +24,45 @@ initLoader(loader, () => {
     dots,
     onStart() {
 
-      // 🔥 chapter3へ
-      const transition = createTransitionManager({
-        nextUrl: "chapter3.html"
-      });
+ const transition = createTransitionManager({
+  nextUrl: "chapter3.html"
+});
 
-      showPage(state.index);
+const pages = getPages();
 
-      // interactionに goNext を渡す
-      initTapInteraction({
-        goNext: nextPage,
-        goPrev: prevPage
-      });
+function nextPage() {
+  if (state.index >= pages.length - 1) return;
+  state.index++;
+  state.showingText = false;
+  showPage(state.index);
+}
 
-      function nextPage() {
-        if (state.index >= pages.length - 1) {
-          transition.goNext();
-          return;
-        }
-        state.index++;
-        state.showingText = false;
-        showPage(state.index);
-      }
+function openText() {
+  showText(state.index);
+  state.showingText = true;
+}
 
-      function prevPage() {
-        if (state.index <= 0) return;
-        state.index--;
-        state.showingText = false;
-        showPage(state.index);
-      }
+function closeText() {
+  hideText(state.index);
+  state.showingText = false;
+}
 
-      // 🔥 完全オート
-      initAutoSlide({
-        delay: 5000,
-        lastTransitionDelay: 3000,
-        getIndex: () => state.index,
-        total: pages.length,
-        goNext: nextPage,
-        onLastTransition: () => transition.goNext()
-      });
+initTapInteraction({
+  goNext: nextPage,
+  goPrev: () => {}
+});
+
+initAutoPoemSlide({
+  openDelay: 3000,
+  showDelay: 3000,
+  getIndex: () => state.index,
+  total: pages.length,
+  openText,
+  closeText,
+  goNext: nextPage,
+  goLast: () => transition.goNext()
+});
+
 
     }
   });
