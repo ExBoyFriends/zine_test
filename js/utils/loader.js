@@ -64,7 +64,7 @@ export function initLoader(loader, onComplete) {
     // すでに消えている(remove済み)なら何もしない
     if (!document.body.contains(loader)) return;
     resetState();
-    pulseTimer = setTimeout(finish, 1000); 
+    pulseTimer = setTimeout(finish, 4200); 
   };
 
   // 実行トリガー：DOMContentLoadedでも動くようにし、loadイベントの遅延を回避
