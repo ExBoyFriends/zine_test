@@ -1,5 +1,4 @@
 //carousel3d.js
-
 export function initCarousel3D(options = {}) {
   const front  = document.querySelector(".cylinder-front");
   const back   = document.querySelector(".cylinder-back");
@@ -13,15 +12,14 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  /* ===== 回転定数 ===== */
   const BASE_SPEED = 0.22;
   const HOLD_SPEED = 8;
   const AUTO_MAX   = 12;
   const EXIT_MAX   = 16;
   const IDLE_MAX   = 1.6;
   const IDLE_TIME  = 25000;
- const AUTO_TOTAL = 13500; // 加速開始から終了まで 11.5秒
-const AUTO_FINAL = 4000;  // 最後の 3.5秒で指数関数的に猛加速
+  const AUTO_TOTAL = 13500;
+  const AUTO_FINAL = 4000;
 
   let visualAngle = 0;
   let baseSpeed   = BASE_SPEED;
@@ -30,9 +28,9 @@ const AUTO_FINAL = 4000;  // 最後の 3.5秒で指数関数的に猛加速
   let mode = "normal";
 
   let rafId = null;
-  let idleStartTime = performance.now();
+  let idleStartTime = 0;
   let autoStartTime = 0;
-  let prevIndex = -1; 
+  let prevIndex = -1;
 
   outers.forEach((p, i) => (p.dataset.base = i * SNAP));
   inners.forEach((p, i) => (p.dataset.base = i * SNAP));
@@ -53,6 +51,7 @@ const AUTO_FINAL = 4000;  // 最後の 3.5秒で指数関数的に猛加速
   }
 
   function animate(now) {
+    if (!idleStartTime) idleStartTime = now;
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
     if (mode === "normal") {
@@ -64,24 +63,19 @@ const AUTO_FINAL = 4000;  // 最後の 3.5秒で指数関数的に猛加速
     } else if (mode === "auto") {
       const elapsed = now - autoStartTime;
       const remain  = AUTO_TOTAL - elapsed;
-
       if (remain <= AUTO_FINAL) {
-        const t = 1 - (remain / AUTO_FINAL); 
-        // 指数加速：最後に向けて猛烈に速度が上がる（天井をEXIT_MAXの2倍に設定）
+        const t = 1 - (remain / AUTO_FINAL);
         baseSpeed = AUTO_MAX + (Math.pow(t, 4) * (EXIT_MAX * 2 - AUTO_MAX));
       } else {
         const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
         baseSpeed += (Math.max(baseSpeed, AUTO_MAX * t) - baseSpeed) * 0.05;
       }
-
       if (elapsed >= AUTO_TOTAL) {
         mode = "exit";
         options.onExit?.();
       }
     } else if (mode === "exit") {
-  // 止まるな！さらに加速しろ！
-  // EXIT_MAX * 3 くらいまで上限を上げると、消える瞬間にコマ送り感が最大になります
-      baseSpeed += (EXIT_MAX * 3 - baseSpeed) * 0.2; 
+      baseSpeed += (EXIT_MAX * 3 - baseSpeed) * 0.2;
     }
 
     const dragNoise = Math.sin(now * (0.018 + chaos * 0.04)) * Math.sin(now * 0.11) * chaos;
@@ -115,30 +109,23 @@ const AUTO_FINAL = 4000;  // 最後の 3.5秒で指数関数的に猛加速
     rafId = requestAnimationFrame(animate);
   }
 
-  function start() {
-    idleStartTime = performance.now();
-    rafId = requestAnimationFrame(animate);
-  }
-
-  function stop() {
-    cancelAnimationFrame(rafId);
-    rafId = null;
-  }
-
-  window.addEventListener("pageshow", e => {
-    if (!e.persisted) return;
-    stop();
-    visualAngle = 0;
-    baseSpeed = EXIT_MAX; // 戻った瞬間の急減速演出用
-    mode = "normal";
-    autoStartTime = 0;
-    prevIndex = -1;
-    start();
-  });
-
-  start();
-
   return {
+    start() {
+      if (rafId) return;
+      idleStartTime = performance.now();
+      rafId = requestAnimationFrame(animate);
+    },
+    stop() {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+    },
+    reset(speed = BASE_SPEED) {
+      visualAngle = 0;
+      baseSpeed = speed;
+      mode = "normal";
+      idleStartTime = 0;
+      autoStartTime = 0;
+    },
     startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
     endHold()   { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
     startAuto() { 
@@ -147,8 +134,7 @@ const AUTO_FINAL = 4000;  // 最後の 3.5秒で指数関数的に猛加速
     },
     startDrag() { dragSpeed = 0; },
     moveDrag(dx){ dragSpeed += dx * 0.05; },
-    endDrag()   { isDragging = false; },
-    setExtraSpeed(v){ extraSpeed = v; },
-    stop() { stop(); }
+    endDrag()   { },
+    setExtraSpeed(v){ extraSpeed = v; }
   };
 }
