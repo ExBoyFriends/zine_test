@@ -1,47 +1,47 @@
 /**
- * fade.js (完全版)
+ * fade.js (CSS同期・完全版)
  */
 export function fadeInStart(duration = 3400) {
-  const fade = document.getElementById("fadeLayer");
-  if (!fade) return;
+  // 共通CSSの設計に基づき、loader自体をフェードアウトさせる
+  const loader = document.getElementById("loader");
+  if (!loader) return;
 
-  if (document.getElementById("loader")?.classList.contains("swallow-darkness")) {
-    return;
-  }
+  // すでに暗転処理が始まっている場合は二重実行しない
+  if (loader.classList.contains("swallow-darkness")) return;
 
-  fade.classList.remove("hide");
-  fade.style.pointerEvents = "auto";
-  fade.style.opacity = "1";
-
-  requestAnimationFrame(() => {
-    fade.style.transition = `opacity ${duration}ms cubic-bezier(.16,1,.3,1)`;
-    fade.style.opacity = "0";
-  });
+  loader.style.transition = `opacity ${duration}ms cubic-bezier(.16,1,.3,1)`;
+  loader.style.opacity = "0";
 
   setTimeout(() => {
-    fade.style.pointerEvents = "none";
-  }, duration - 250);
-
-  setTimeout(() => {
-    fade.classList.add("hide");
+    loader.style.display = "none";
   }, duration);
 }
 
-// transitionManagerで使われる「暗転して移動」
 export function fadeOutAndGo(callback, duration = 1000) {
-  const fade = document.getElementById("fadeLayer");
-  if (!fade) {
-    callback?.();
-    return;
+  // 移動時は画面全体を暗くする必要があるため、
+  // bodyに一時的な黒い幕を作るか、既存のloaderを再利用します
+  let overlay = document.getElementById("loader");
+  
+  if (!overlay) {
+    // loaderが既に削除されている場合は、簡易的な幕を生成
+    overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.inset = "0";
+    overlay.style.background = "#000";
+    overlay.style.zIndex = "20000";
+    overlay.style.opacity = "0";
+    overlay.style.transition = `opacity ${duration}ms ease-in-out`;
+    document.body.appendChild(overlay);
+  } else {
+    // 既存のloaderがある場合はリセットして表示
+    overlay.style.display = "flex";
+    overlay.style.opacity = "0";
+    overlay.classList.remove("reveal-start");
   }
 
-  fade.classList.remove("hide");
-  fade.style.pointerEvents = "auto";
-  fade.style.transition = `opacity ${duration}ms ease-in-out`;
-
-  requestAnimationFrame(() => {
-    fade.style.opacity = "1";
-  });
+  // 強制的に再描画させてから暗転
+  void overlay.offsetWidth;
+  overlay.style.opacity = "1";
 
   setTimeout(() => {
     callback?.();
