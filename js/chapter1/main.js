@@ -52,9 +52,7 @@ initLoader(loader, () => {
         onLastTransition: () => transition.goNext()
       });
 
-      setTimeout(() => {
-        fadeInStart(2000);
-      }, 100);
+     
     }
   });
 });
