@@ -1,5 +1,4 @@
 /* chapter2.css */
-
 /* ===================== Reset ===================== */
 * {
   margin: 0;
@@ -7,20 +6,37 @@
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
+
 /* ===================== HTML / Body ===================== */
 html,
 body {
+  background-color: #000;
   overflow: hidden;
   overscroll-behavior: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
+  width: 100%;
+  height: 100%;
 }
+
 /* ===================== Image Lock ===================== */
 img {
   pointer-events: none;
   -webkit-user-drag: none;
 }
+
+/* ===================== Chapter Structure ===================== */
+/* 最初から見える状態にしておき、loader が消えるのを待つ */
+.chapter {
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+}
+
 /* ===================== Scene ===================== */
 .scene {
   position: fixed;
@@ -28,34 +44,36 @@ img {
   perspective: 1200px;
   perspective-origin: 50% 45%;
   touch-action: none;
-  z-index: 1;
+  z-index: 2;
 }
+
 /* ===================== Panel Common ===================== */
-.panel,
-.outer,
-.inner {
+.panel, .outer, .inner {
   position: absolute;
   left: 50%;
   top: 50%;
   transform-style: preserve-3d;
   transform: translate(-50%, -50%);
 }
-.outer,
-.inner {
+
+.outer, .inner {
   will-change: transform;
 }
+
 /* ===================== Front Card ===================== */
 .outer {
   width: 230px;
   height: 300px;
   backface-visibility: hidden;
 }
+
 .outer img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
 }
+
 /* ===================== Back Card ===================== */
 .inner {
   width: 220px;
@@ -65,6 +83,7 @@ img {
   filter: brightness(0.45);
   opacity: 0.85;
 }
+
 /* ===================== Cylinder ===================== */
 .cylinder {
   position: absolute;
@@ -75,20 +94,41 @@ img {
   transform-style: preserve-3d;
   transform: translate(-50%, -50%);
 }
-.cylinder-front {
-  z-index: 2;
-}
+
 .cylinder-back {
-  z-index: 1;
   pointer-events: none;
 }
 
 /* ===================== Dots ===================== */
 .dots {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+  z-index: 20;
   pointer-events: none;
 }
+
 .dots.visible {
+  opacity: 1;
   pointer-events: auto;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transition: all 0.4s ease;
+}
+
+.dot.active {
+  background: #fff;
+  box-shadow: 0 0 10px #fff;
 }
 
 /* ===================== Glitch Overlay ===================== */
@@ -101,14 +141,31 @@ img {
   opacity: 0;
   mix-blend-mode: overlay;
 }
+
 .glitch-active .scene {
   animation: glitchShake 0.15s infinite linear;
   filter: contrast(1.3) saturate(1.2);
 }
+
 .glitch-active .glitch-overlay {
   opacity: 1;
   animation: glitchFlash 0.12s infinite steps(2);
 }
+
+/* ===================== Special Layers ===================== */
+#fadeout {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+#fadeout.active {
+  opacity: 1;
+}
+
 /* ===================== Animations ===================== */
 @keyframes glitchShake {
   0%   { transform: translate(0,0); }
@@ -117,6 +174,7 @@ img {
   75%  { transform: translate(-2px,2px); }
   100% { transform: translate(0,0); }
 }
+
 @keyframes glitchFlash {
   0%   { opacity: 0.05; }
   50%  { opacity: 0.18; }
