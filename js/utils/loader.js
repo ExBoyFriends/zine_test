@@ -1,9 +1,4 @@
-/**
- * loader.js
- * 8.4s鼓動 → 1.0s暗転 → 2.8s引き波フェード
- * 初回・通常遷移・戻る すべて安定動作版（最終安定）
- */
-
+//loader.js
 export function initLoader(loader, onComplete) {
   if (!loader) return;
 
@@ -14,44 +9,33 @@ export function initLoader(loader, onComplete) {
 
   const fadeLayer = document.getElementById("fadeLayer");
 
-  /* ================================
-     タイマー全解除
-  ================================= */
   const clearAllTimers = () => {
     clearTimeout(pulseTimer);
     clearTimeout(swallowTimer2);
     clearTimeout(hideTimer);
   };
 
-  /* ================================
-     本編開始（1回だけ）
-  ================================= */
   const safeComplete = () => {
     if (completed) return;
     completed = true;
-    onComplete?.();
+    if (onComplete) onComplete();
   };
 
-  /* ================================
-     ローダー終了処理
-  ================================= */
   const finish = () => {
     loader.classList.add("swallow-darkness");
-
-    // ★ ここで即本編開始（依存排除）
     safeComplete();
 
-    // 1秒後：引き波フェード開始
     swallowTimer2 = setTimeout(() => {
       loader.classList.add("reveal-start");
-
-      loader.style.transition =
-        "opacity 2.8s cubic-bezier(0.2, 1, 0.2, 1)";
+      loader.style.transition = "opacity 2.8s cubic-bezier(0.2, 1, 0.2, 1)";
       loader.style.opacity = "0";
 
       if (fadeLayer) {
+        // visibility だけでなく opacity も制御して確実に消す
+        fadeLayer.style.opacity = "0";
         setTimeout(() => {
           fadeLayer.style.visibility = "hidden";
+          fadeLayer.style.display = "none";
         }, 100);
       }
 
@@ -61,9 +45,6 @@ export function initLoader(loader, onComplete) {
     }, 1000);
   };
 
-  /* ================================
-     状態リセット（bfcache完全対応）
-  ================================= */
   const resetState = () => {
     clearAllTimers();
     completed = false;
@@ -76,41 +57,30 @@ export function initLoader(loader, onComplete) {
     if (fadeLayer) {
       fadeLayer.style.visibility = "visible";
       fadeLayer.style.display = "block";
+      fadeLayer.style.opacity = "1"; // 明示的に戻す
     }
-
-    void loader.offsetWidth; // 強制リフロー
+    void loader.offsetWidth; 
   };
 
-  /* ================================
-     ローダー開始
-  ================================= */
   const start = () => {
     resetState();
-    pulseTimer = setTimeout(finish, 8400);
+    // 確実にタイマーをセット
+    pulseTimer = setTimeout(finish, 8400); 
   };
 
-  /* ================================
-     初回ロード
-  ================================= */
+  // --- 実行トリガー ---
   if (document.readyState === "complete") {
     start();
   } else {
+    // どちらか早い方で実行
     window.addEventListener("load", start, { once: true });
+    // もしloadが遅すぎる場合のための予備（DOMContentLoaded）
+    document.addEventListener("DOMContentLoaded", () => {
+       if (!pulseTimer) start();
+    }, { once: true });
   }
 
-  /* ================================
-     bfcache復帰時のみ再生
-  ================================= */
   window.addEventListener("pageshow", (e) => {
-    if (e.persisted) {
-      start();
-    }
-  });
-
-  /* ================================
-     ページ離脱時に停止
-  ================================= */
-  window.addEventListener("pagehide", () => {
-    clearAllTimers();
+    if (e.persisted) start();
   });
 }
