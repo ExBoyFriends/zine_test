@@ -27,6 +27,13 @@ img {
   -webkit-user-drag: none;
 }
 
+/* ===================== Chapter Structure ===================== */
+.chapter {
+  /* これを指定すると、HTML構造はそのままでも、
+     ブラウザ上では「存在しないもの」として扱われます。
+     中身のシリンダーが直接 .scene の子になり、3D空間が元通り繋がります。 */
+  display: contents;
+}
 /* ===================== Scene ===================== */
 .scene {
   position: fixed;
