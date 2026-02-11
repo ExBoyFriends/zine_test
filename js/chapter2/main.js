@@ -1,5 +1,4 @@
 // chapter2/main.js
-
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
@@ -43,17 +42,20 @@ function goChapter25() {
   });
 }
 
+// 共通ルール：loader.js が終わった時に呼ばれる
 function initializeScene() {
-  if (chapter) chapter.classList.add("visible");
+  // .chapter は CSS で最初から opacity: 1 なので、ここでは dots などの表示のみ
   if (dotsWrap) dotsWrap.classList.add("visible");
+
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
   }
+
   startAutoTransition(goChapter25);
-  // エンジン始動
+  
   if (window.__carousel__) {
-    window.__carousel__.start();
+    window.__carousel__.start(); // 幕が引かれた瞬間に回転開始
   }
 }
 
@@ -61,11 +63,10 @@ function initializeScene() {
 initLoader(loader, initializeScene);
 initGlitchLayer?.();
 
-// 戻るボタン（bfcache）対策：すべてのゴミを掃除して再点火
+// 戻るボタン（bfcache）復帰
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
 
-  // 1. 出口の幕を強制排除
   const fadeout = document.getElementById("fadeout");
   if (fadeout) {
     fadeout.style.opacity = "0";
@@ -73,15 +74,14 @@ window.addEventListener("pageshow", e => {
     fadeout.classList.remove("active");
   }
 
-  // 2. 状態とエンジンの完全停止
   transitionDone = false;
   resetTransitionState();
+
   if (window.__carousel__) {
     window.__carousel__.stop();
-    window.__carousel__.reset(16); // EXIT_MAXから急減速させる演出
+    window.__carousel__.reset(16); 
   }
 
-  // 3. ローダーを再表示して再初期化
   const ld = document.getElementById("loader");
   if (ld) {
     ld.style.display = "flex";
