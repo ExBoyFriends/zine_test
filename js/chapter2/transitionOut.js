@@ -42,8 +42,4 @@ export function playExitTransition({ onFinish }) {
   }
   rafId = requestAnimationFrame(tick);
 }
-    rafId = requestAnimationFrame(tick);
-  }
-
-  rafId = requestAnimationFrame(tick);
-}
+  
