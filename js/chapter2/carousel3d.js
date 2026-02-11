@@ -131,16 +131,27 @@ export function initCarousel3D(options = {}) {
     rafId = null;
   }
 
-  window.addEventListener("pageshow", e => {
-    if (!e.persisted) return;
+window.addEventListener("pageshow", e => {
     stop();
-    visualAngle = 0;
-    baseSpeed = EXIT_MAX;
-    mode = "normal";
+    visualAngle = 0; 
+    
+    // 1. 元の演出通り、戻った瞬間は「最高速(EXIT_MAX)」からスタート
+    baseSpeed = EXIT_MAX; 
+    
+    // 2. モードを normal に戻すことで、animate関数内の
+    // 「baseSpeed += (target - baseSpeed) * 0.05」が
+    // 高速(16)から通常(0.22〜1.6)への強力なブレーキとして働きます。
+    mode = "normal"; 
+    
     prevIndex = -1;
+    idleStartTime = performance.now();
+    
+    // 3. 【重要】遷移フラグをリセット（これをしないと再度遷移しません）
+    // もし options などで外部からフラグを管理している場合はそこもリセットが必要
+    if (typeof transitionDone !== 'undefined') transitionDone = false;
+
     start();
   });
-
   start();
 
   return {
