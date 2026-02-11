@@ -1,6 +1,6 @@
 // utils/fade.js
 
-export function fadeInStart(duration = 2800) {
+export function fadeInStart(duration = 3400) {
   const fade = document.getElementById("fadeLayer");
   if (!fade) return;
 
@@ -13,16 +13,15 @@ export function fadeInStart(duration = 2800) {
   fade.style.opacity = "1";
 
   requestAnimationFrame(() => {
-    fade.style.transition = `opacity ${duration}ms cubic-bezier(.22,.61,.36,1)`;
+    fade.style.transition =
+      `opacity ${duration}ms cubic-bezier(.16,1,.3,1)`;
     fade.style.opacity = "0";
   });
 
-  // ★ 操作解放を少し早める（-200ms）
-  const unlockTime = duration - 200;
-
+  // 少し早めに操作解放（-250ms）
   setTimeout(() => {
     fade.style.pointerEvents = "none";
-  }, unlockTime);
+  }, duration - 250);
 
   setTimeout(() => {
     fade.classList.add("hide");
