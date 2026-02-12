@@ -69,10 +69,10 @@ img {
 
 .cylinder-back {
   pointer-events: none;
-  /* ★ ここが重要：JSが動く前の「本当の初期位置」として奥へ飛ばしておく */
-  transform: translate(-50%, -50%) translateZ(-1000px);
-  /* 最初は絶対に隠しておく */
   visibility: hidden !important;
+  /* 1000px も奥に飛ばさず、JSの R_BACK(170) に合わせる */
+  /* かつ、最初から「裏返し(rotateY(180deg))」にしておく */
+  transform: translate(-50%, -50%) translateZ(-170px) rotateY(180deg);
 }
 
 /* ===================== Panels ===================== */
