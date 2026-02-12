@@ -92,11 +92,11 @@
 .outer:nth-child(5) { transform: rotateY(288deg) translateZ(185px); }
 
 /* 後方パネル */
-.inner:nth-child(6) { transform: rotateY(0deg) translateZ(183px) rotateY(180deg); }
-.inner:nth-child(7) { transform: rotateY(72deg) translateZ(183px) rotateY(180deg); }
-.inner:nth-child(8) { transform: rotateY(144deg) translateZ(183px) rotateY(180deg); }
-.inner:nth-child(9) { transform: rotateY(216deg) translateZ(183px) rotateY(180deg); }
-.inner:nth-child(10){ transform: rotateY(288deg) translateZ(183px) rotateY(180deg); }
+.inner:nth-child(6) { transform: rotateY(0deg) translateZ(198px) rotateY(180deg); }
+.inner:nth-child(7) { transform: rotateY(72deg) translateZ(198px) rotateY(180deg); }
+.inner:nth-child(8) { transform: rotateY(144deg) translateZ(198px) rotateY(180deg); }
+.inner:nth-child(9) { transform: rotateY(216deg) translateZ(198px) rotateY(180deg); }
+.inner:nth-child(10){ transform: rotateY(288deg) translateZ(198px) rotateY(180deg); }
 
 /* ===================== UI & Effects ===================== */
 
