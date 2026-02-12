@@ -127,13 +127,17 @@ export function initCarousel3D(options = {}) {
     rafId = requestAnimationFrame(animate);
   }
 
-  function start() {
+ function start() {
     const startTime = performance.now();
     idleStartTime = startTime;
 
-    // 【重要】animate を直接呼ぶことで、0フレーム目の被りとガタつきを抹殺する
-    // animate の最後で自動的に requestAnimationFrame が呼ばれるため、二重呼び出しは不要
+    // 1. 個別の setInitialFrame は使わず、animate を直接1回実行する。
+    // これにより「パネルの位置」＋「全体の傾き(-22deg)」＋「透明度」が描画前に一括確定する。
     animate(startTime);
+
+    // 2. animate の最後で自動的に requestAnimationFrame が呼ばれるため、
+    // ここで rafId = requestAnimationFrame(animate) を書く必要はありません。
+    // (書くと二重ループになり、回転が倍速になる原因になります)
   }
 
   function stop() {
