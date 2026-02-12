@@ -1,10 +1,8 @@
 /* chapter2.css */
-/* ===================== Reset & Base ===================== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
@@ -12,26 +10,17 @@ html, body {
   height: 100%;
   overflow: hidden;
   background-color: #000;
-  overscroll-behavior: none;
-  user-select: none;
-  -webkit-user-select: none;
 }
 
-img {
-  pointer-events: none;
-  -webkit-user-drag: none;
-}
-
-/* ===================== Structure ===================== */
+/* ===================== Scene Setup ===================== */
 .chapter {
   position: relative;
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
   opacity: 0;
-  /* 修正：初期化のドタバタを隠すため、transition に少し「待ち（delay）」を入れます */
-  /* 0.5s 待ってから 2.8s かけてじわっと出す */
-  transition: opacity 2.8s ease-out 0.5s;
+  /* 滑らかさの核心：加速曲線（bezier）でフェードを制御 */
+  transition: opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
@@ -45,83 +34,43 @@ img {
   inset: 0;
   perspective: 1200px;
   perspective-origin: 50% 45%;
-  touch-action: none;
   transform-style: preserve-3d;
-  
-}
-/* ===================== Cylinder ===================== */
-.cylinder {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 0;
-  height: 0;
-  transform-style: preserve-3d;
-  transform: translate(-50%, -50%);
 }
 
+/* ===================== Cylinder ===================== */
 .cylinder-front,
 .cylinder-back {
-  z-index: auto !important; 
   position: absolute;
-  transform-style: preserve-3d;
-  contain: none;
   top: 50%;
   left: 50%;
-
+  transform-style: preserve-3d;
   opacity: 0;
-  display: none;
-  transition: opacity 0.3s ease;
+  visibility: hidden;
+  transition: opacity 0.8s ease;
 }
 
-/* JSで配置が完了した時に付与するクラス */
 .cylinder-ready {
   opacity: 1 !important;
-  display: block !important;
+  visibility: visible !important;
 }
 
 .cylinder-front {
-  /* 初期値に傾きを追加 */
-  transform: translate(-50%, -50%) rotateX(-22deg) translateZ(1px);
-}
-/* 表面のトランプ（JSが動く前の初期配置） */
-.cylinder-front .outer {
-  /* JSの R_FRONT = 185px と合わせる */
-  /* 最初は 0番を正面、1番以降を適当な角度に散らしておく */
-  transform: rotateY(0deg) translateZ(185px);
+  transform: translate(-50%, -50%) rotateX(-22deg);
 }
 
-/* 各トランプに個別の初期角度を与える（JSが上書きするまでの一時しのぎ） */
-/* 枚数が多い場合は主要な数枚だけでもOK */
-.cylinder-front .outer:nth-child(1) { transform: rotateY(0deg) translateZ(185px); }
-.cylinder-front .outer:nth-child(2) { transform: rotateY(45deg) translateZ(185px); }
-.cylinder-front .outer:nth-child(3) { transform: rotateY(90deg) translateZ(185px); }
-/* ...これを書けば書くほど、JS起動前の「重なり」は消えます */
 .cylinder-back {
-  pointer-events: none;
-  visibility: hidden; 
-
-  /* JSの R_BACK=170 と rotateX(-22deg) にミリ単位で合わせる */
-  transform: translate(-50%, -50%) rotateX(-22deg) translateZ(-170px) rotateY(180deg);
+  /* JS の R_BACK と合わせる。visibility: hidden は JS が z 判定をしてから解除される */
+  transform: translate(-50%, -50%) rotateX(-22deg) rotateY(180deg);
 }
-
-
 
 /* ===================== Panels ===================== */
-.panel, .outer, .inner {
+.outer, .inner {
   position: absolute;
   left: 0;
   top: 0;
   transform-style: preserve-3d;
-  will-change: transform, opacity; 
+  will-change: transform, opacity;
   backface-visibility: visible;
-  transform: translateZ(0);
-  transition: opacity 0.3s ease;
-}
-
-.outer, .inner {
-  will-change: transform; /* ブラウザに「これは動くぞ」と予告して GPU を構えさせる */
-  transition: none !important; /* 不透明度変化中の個別の transition は負荷になるので切る */
 }
 
 .outer {
@@ -135,7 +84,6 @@ img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  
 }
 
 .inner {
@@ -147,7 +95,6 @@ img {
   opacity: 0.85;
   filter: brightness(0.45);
 }
-
 /* ===================== UI & Effects ===================== */
 .dots { pointer-events: none; }
 .dots.visible { pointer-events: auto; }
