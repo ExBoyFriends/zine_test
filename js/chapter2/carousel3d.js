@@ -120,8 +120,15 @@ export function initCarousel3D(options = {}) {
       const z    = Math.cos(rad);
 
       p.style.transform  = `rotateY(${base}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
-      p.style.opacity    = z < 0 ? Math.min(-z * 20, 1) : 0;
-      p.style.visibility = z < 0 ? "visible" : "hidden";
+     // z < 0（奥側）の時だけ表示。
+      // 初動で opacity 0 から 1 へパッと切り替わるようにします。
+      if (z < 0) {
+        p.style.opacity = Math.min(-z * 20, 1);
+        p.style.visibility = "visible";
+      } else {
+        p.style.opacity = 0;
+        p.style.visibility = "hidden";
+      }
     });
 
     rafId = requestAnimationFrame(animate);
