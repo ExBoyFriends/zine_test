@@ -141,9 +141,6 @@ export function initCarousel3D(options = {}) {
     // 2. 【重要】描画ループに入る「前」に、その場で全計算を完了させる
     // これで 1コマ目から正しい位置・透明度になります
     animate(startTime); 
-
-    // 3. ループ開始
-    rafId = requestAnimationFrame(animate);
   }
   function stop() {
     cancelAnimationFrame(rafId);
