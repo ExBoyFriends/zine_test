@@ -66,8 +66,10 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85; // ドラッグ慣性の減衰
     visualAngle += totalSpeed;
 
-    // 3. 親シリンダーの回転適用（中央固定 translate(-50%, -50%) を維持）
-    cylinder.style.transform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+  // 3. 親シリンダーの回転適用
+    // パースを 4000px にした場合、少しだけ手前に寄せる(translateZ(500px))か、
+    // あるいは scale(1.2) などで大きさを調整すると、ちょうど良いサイズになります。
+    cylinder.style.transform = `translate(-50%, -50%) translateZ(500px) rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
     // 4. 表(outer)の処理
     frontPanels.forEach((p, i) => {
