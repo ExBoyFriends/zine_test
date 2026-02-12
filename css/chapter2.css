@@ -45,9 +45,9 @@ html, body {
   width: 0;
   height: 0;
   transform-style: preserve-3d;
-  transform: translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(0deg);
-  visibility: hidden;
+  transform: translate(-50%, -50%);
   opacity: 0;
+  visibility: hidden;
   transition: opacity 1.5s ease;
 }
 
