@@ -52,29 +52,25 @@ img {
 
 .cylinder-front,
 .cylinder-back {
-  /* ★z-indexを auto !important にしてグループ化を解除 */
   z-index: auto !important; 
   position: absolute;
   transform-style: preserve-3d;
   contain: none;
-
   top: 50%;
   left: 50%;
 }
 
 .cylinder-front {
-  /* JSが効くまでの初期ポーズ */
+  /* 初期値に傾きを追加 */
   transform: translate(-50%, -50%) rotateX(-22deg) translateZ(1px);
 }
 
 .cylinder-back {
   pointer-events: none;
-  /* JS起動前の被り防止に visibility: hidden は維持 */
   visibility: hidden;
-  /* JSの計算値 (R_BACK=170) と初期値を一致させて縮小を防ぐ */
+  /* translateZ を -170px にし、傾きと反転をJSの計算と一致させる */
   transform: translate(-50%, -50%) rotateX(-22deg) translateZ(-170px) rotateY(180deg);
 }
-
 /* ===================== Panels ===================== */
 .panel, .outer, .inner {
   position: absolute;
