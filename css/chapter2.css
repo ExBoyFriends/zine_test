@@ -17,7 +17,7 @@
   transform-style: preserve-3d;
 
  /* 初期表示の固定 transform（base.css とは別） */
-  transform: rotateX(-22deg) rotateY(0deg) translateZ(0);
+  transform: rotateX(-18deg) rotateY(0deg) translateZ(0);
   opacity: 1;
   pointer-events: auto;
   will-change: opacity;
@@ -38,12 +38,19 @@
   left: 50%;
   width: 1px;
   height: 1px;
-  transform: rotateX(-22deg) rotateY(0deg) translateZ(0);
+  /* カメラ少し下げ、初期角度も更新 */
+  transform: rotateX(-18deg) rotateY(0deg) translateY(15px) translateZ(0);
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
   will-change: transform;
   opacity: 1;
 }
+
+/* rotateX が主な角度調整
+
+  translateY は微調整用
+
+  translateZ はカメラ距離  */
 
 .cylinder-ready {
   opacity: 1;
@@ -58,7 +65,6 @@
   top: 50%;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  /* will-change を transform に限定 */
   will-change: transform;
 }
 
