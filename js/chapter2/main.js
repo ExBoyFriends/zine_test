@@ -52,29 +52,36 @@ goChapter25._done = false;
 /* =====================
    Loader & 初期化
 ===================== */
+// chapter2/main.js
+
 initLoader(loader, () => {
-  // 1. まず 3D のイベントをバインド
+  // 1. 3Dのイベント準備
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
   }
 
-  // 2. この時点で carousel3d.js の start() 内の animate(now) が
-  // 1回実行されており、全パネルの Z 軸は確定しています。
-
-  // 3. ほんの少しだけ待ってから「表示」を開始する
+  /* 【ここが修正ポイント】
+     1フレーム目：JSが「配置計算」を命令する
+     2フレーム目：ブラウザがその計算を「グラフィックチップ」に送る
+     この「2フレーム」を待ってから visible を付けることで、
+     重なった状態は100%ユーザーの目に触れなくなります。
+  */
   requestAnimationFrame(() => {
-    // 3Dモデルを透明度 0 のまま「配置済み」として visible にする
-    chapter?.classList.add("visible");
-    dotsWrap?.classList.add("visible");
+    requestAnimationFrame(() => {
+      // 2. 完全に配置された状態で、姿を見せる
+      chapter?.classList.add("visible");
+      dotsWrap?.classList.add("visible");
+      
+      // 3. 隠していた奥のパネルもここで表示
+      const backCyl = document.querySelector(".cylinder-back");
+      if (backCyl) backCyl.style.visibility = "visible";
 
-   // 【追加】隠していた奥のシリンダーを表示許可する
-    const backCyl = document.querySelector(".cylinder-back");
-    if (backCyl) backCyl.style.visibility = "visible";
-
-    setTimeout(() => {
-      fadeInStart(1500); 
-    }, 100);
+      // 4. 黒い幕を上げる
+      setTimeout(() => {
+        fadeInStart(1500); 
+      }, 100);
+    });
   });
 
   startAutoTransition(goChapter25);
