@@ -29,15 +29,15 @@ img {
   height: 100%;
   transform-style: preserve-3d;
   opacity: 0;
-  transition: opacity 3.5s ease-out;
+  /* 修正：初期化のドタバタを隠すため、transition に少し「待ち（delay）」を入れます */
+  /* 0.5s 待ってから 2.8s かけてじわっと出す */
+  transition: opacity 2.8s ease-out 0.5s;
   pointer-events: none;
 }
 
 .chapter.visible {
   opacity: 1 !important;
   pointer-events: auto;
-  /* visible が付いた瞬間に、2.8秒かけて「綺麗な状態」を表示開始 */
-  transition: opacity 2.8s cubic-bezier(.22, .61, .36, 1);
 }
 
 .scene {
@@ -117,6 +117,11 @@ img {
   backface-visibility: visible;
   transform: translateZ(0);
   transition: opacity 0.3s ease;
+}
+
+.outer, .inner {
+  will-change: transform; /* ブラウザに「これは動くぞ」と予告して GPU を構えさせる */
+  transition: none !important; /* 不透明度変化中の個別の transition は負荷になるので切る */
 }
 
 .outer {
