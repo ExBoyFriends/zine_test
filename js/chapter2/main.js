@@ -54,35 +54,30 @@ goChapter25._done = false;
 ===================== */
 // chapter2/main.js
 
+// chapter2/main.js
+
 initLoader(loader, () => {
-  // 1. 3Dのイベント準備
-  if (scene && !scene.__holdBound) {
-    bindLongPressEvents(scene);
-    scene.__holdBound = true;
+  // --- 1. 計算だけを先に済ませる ---
+  // この時点で 3D の配置（animate）が裏で1回走ります
+  if (carousel) {
+    carousel.start(); 
   }
 
-  /* 【ここが修正ポイント】
-     1フレーム目：JSが「配置計算」を命令する
-     2フレーム目：ブラウザがその計算を「グラフィックチップ」に送る
-     この「2フレーム」を待ってから visible を付けることで、
-     重なった状態は100%ユーザーの目に触れなくなります。
-  */
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      // 2. 完全に配置された状態で、姿を見せる
-      chapter?.classList.add("visible");
-      dotsWrap?.classList.add("visible");
-      
-      // 3. 隠していた奥のパネルもここで表示
-      const backCyl = document.querySelector(".cylinder-back");
-      if (backCyl) backCyl.style.visibility = "visible";
+  // --- 2. まだ visible は付けない！ ---
+  // chapter.classList.add("visible") はここでは呼びません。
+  // なぜなら、CSS の transition: opacity 2.8s がここで始まってしまうと、
+  // loader が消えるのを待たずに透けて見えてしまうからです。
 
-      // 4. 黒い幕を上げる
-      setTimeout(() => {
-        fadeInStart(1500); 
-      }, 100);
-    });
-  });
+  // --- 3. 幕が開く「直前」に姿を現すように予約する ---
+  // loader.js 側の 800ms の待機に合わせて、こちらも少し遅らせます。
+  setTimeout(() => {
+    chapter?.classList.add("visible");
+    dotsWrap?.classList.add("visible");
+    
+    const backCyl = document.querySelector(".cylinder-back");
+    if (backCyl) backCyl.style.visibility = "visible";
+  }, 1000); // loader.js の待機時間 (800ms) より少しだけ後に設定
+});
 
   startAutoTransition(goChapter25);
 });
