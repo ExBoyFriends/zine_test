@@ -152,6 +152,9 @@ export function initCarousel3D(options = {}) {
     reset(speed = BASE_SPEED) {
       visualAngle = 0;
       baseSpeed = speed;
+     // 初期 transform を明示的に即適用
+  cylinder.style.transform =
+    `translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(0deg)`;
     }
   };
 }
