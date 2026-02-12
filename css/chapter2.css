@@ -41,9 +41,8 @@ img {
   perspective: 1200px;
   perspective-origin: 50% 45%;
   touch-action: none;
-　transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
-
 /* ===================== Cylinder ===================== */
 .cylinder {
   position: absolute;
