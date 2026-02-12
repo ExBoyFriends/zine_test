@@ -55,12 +55,7 @@ img {
   transform-style: preserve-3d;
 }
 
-.cylinder-front {
-  z-index: 2; /* 常に手前 */
-}
-
 .cylinder-back {
-  z-index: 1; /* 常に奥 */
   pointer-events: none;
 }
 
