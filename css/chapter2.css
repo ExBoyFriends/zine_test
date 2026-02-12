@@ -61,6 +61,15 @@ html, body {
 }
 
 /* ===================== Panels Layout ===================== */
+.outer, .inner {
+  position: absolute;
+  /* 絶対にここをチェック！ 親の (0,0) 地点から自分のサイズの半分戻す */
+  left: 50%;
+  top: 50%;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
 /* 前方パネル (半径 220px) */
 .outer {
   width: 180px;  /* 230pxから少し小さく */
