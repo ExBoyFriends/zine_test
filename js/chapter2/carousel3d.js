@@ -1,108 +1,60 @@
 // chapter2/carousel3d.js
 export function initCarousel3D(options = {}) {
-  const cylinderFront = document.querySelector(".cylinder-front");
-  const cylinderBack  = document.querySelector(".cylinder-back");
-  const frontPanels    = [...document.querySelectorAll(".cylinder-front .outer")];
-  const backPanels     = [...document.querySelectorAll(".cylinder-back .inner")];
+  const cylinder = document.querySelector(".main-cylinder");
+  const frontPanels = [...document.querySelectorAll(".outer")];
+  const backPanels = [...document.querySelectorAll(".inner")];
 
-  const COUNT = frontPanels.length;
-  if (!COUNT) return;
+  if (!cylinder) return;
 
-  const SNAP = 360 / COUNT;
-  const R_FRONT = 185;
-  const R_BACK  = 170;
+  let visualAngle = 0;
+  let baseSpeed = 0.22;
+  let dragSpeed = 0;
+  let extraSpeed = 0;
+  let mode = "normal";
+  let rafId = null;
+  let prevIndex = -1;
 
-  const BASE_SPEED = 0.22;
+  // 定数
   const HOLD_SPEED = 8;
-  const AUTO_MAX   = 12;
-  const EXIT_MAX   = 16;
-  const IDLE_MAX   = 1.6;
-  const IDLE_TIME  = 25000;
+  const AUTO_MAX = 12;
+  const EXIT_MAX = 16;
+  const IDLE_MAX = 1.6;
+  const IDLE_TIME = 25000;
   const AUTO_TOTAL = 35000;
   const AUTO_FINAL = 6000;
 
-  let visualAngle = 0;
-  let baseSpeed   = BASE_SPEED;
-  let dragSpeed   = 0;
-  let extraSpeed  = 0;
-  let mode        = "normal";
-
-  let rafId = null;
-  let idleStartTime = 0;
-  let autoStartTime = 0;
-  let prevIndex = -1;
-
-  frontPanels.forEach((p, i) => p.dataset.base = i * SNAP);
-  backPanels.forEach((p, i) => p.dataset.base = i * SNAP);
-
-  function getFrontIndex() {
-    let maxZ = -2;
-    let closestIndex = 0;
-    frontPanels.forEach((p, i) => {
-      const base = parseFloat(p.dataset.base);
-      const rad = (base + visualAngle) * Math.PI / 180;
-      const z = Math.cos(rad);
-      if (z > maxZ) { maxZ = z; closestIndex = i; }
-    });
-    return closestIndex;
-  }
-
   function updateRender(now) {
-    const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
-
+    // スピード計算
     if (mode === "normal") {
-      const t = Math.min((now - idleStartTime)/IDLE_TIME, 1);
-      const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
-      baseSpeed += (target - baseSpeed) * 0.05;
+      const t = Math.min((now - performance.now())/IDLE_TIME, 1); // 簡易化
+      baseSpeed += (IDLE_MAX - baseSpeed) * 0.005; 
     } else if (mode === "hold") {
       baseSpeed += (HOLD_SPEED - baseSpeed) * 0.12;
-    } else if (mode === "auto") {
-      const elapsed = now - autoStartTime;
-      const remain  = AUTO_TOTAL - elapsed;
-      if (remain <= AUTO_FINAL) {
-        const t = 1 - remain / AUTO_FINAL;
-        baseSpeed += ((AUTO_MAX + t * (EXIT_MAX - AUTO_MAX)) - baseSpeed) * 0.09;
-      } else {
-        const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
-        baseSpeed += (Math.max(baseSpeed, AUTO_MAX*t) - baseSpeed) * 0.05;
-      }
-      if (elapsed >= AUTO_TOTAL) {
-        mode = "exit";
-        options.onExit?.();
-      }
-    } else if (mode === "exit") {
-      baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
-    const speed = baseSpeed * (1 + chaos * 0.18 * Math.sin(now * 0.012)) + dragSpeed + extraSpeed;
+    const speed = baseSpeed + dragSpeed + extraSpeed;
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    const currentIndex = getFrontIndex();
-    if (currentIndex !== prevIndex) {
-      options.onIndexChange?.(currentIndex);
-      prevIndex = currentIndex;
-    }
+    // 親シリンダーを回転させるだけ (これが滑らかさの秘訣)
+    cylinder.style.transform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
-    const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
-    if (cylinderFront) cylinderFront.style.transform = cylTransform;
-    if (cylinderBack)  cylinderBack.style.transform  = cylTransform;
-
-    frontPanels.forEach(p => {
-      const base = parseFloat(p.dataset.base);
-      const rad  = (base + visualAngle) * Math.PI / 180;
-      const z    = Math.cos(rad);
-      p.style.transform  = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
-      p.style.opacity    = z > 0 ? Math.min(z * 20, 1) : 0;
+    // 各パネルの不透明度・表示切替 (奥行き感の維持)
+    frontPanels.forEach((p, i) => {
+      const rad = (i * 36 + visualAngle) * Math.PI / 180;
+      const z = Math.cos(rad);
+      p.style.opacity = z > 0 ? Math.min(z * 20, 1) : 0;
       p.style.visibility = z > 0 ? "visible" : "hidden";
+      if (z > 0.9 && i !== prevIndex) {
+        options.onIndexChange?.(i);
+        prevIndex = i;
+      }
     });
 
-    backPanels.forEach(p => {
-      const base = parseFloat(p.dataset.base);
-      const rad  = (base + visualAngle) * Math.PI / 180;
-      const z    = Math.cos(rad);
-      p.style.transform  = `rotateY(${base}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
-      p.style.opacity    = z < 0 ? Math.min(-z * 20, 1) : 0;
+    backPanels.forEach((p, i) => {
+      const rad = ((i + 5) * 36 + visualAngle) * Math.PI / 180;
+      const z = Math.cos(rad);
+      p.style.opacity = z < 0 ? Math.min(-z * 20, 1) : 0;
       p.style.visibility = z < 0 ? "visible" : "hidden";
     });
   }
@@ -112,31 +64,19 @@ export function initCarousel3D(options = {}) {
     rafId = requestAnimationFrame(animate);
   }
 
-
-function start() {
-  if (rafId) return;
-  const startTime = performance.now();
-  idleStartTime = startTime;
-
-  // 1. まず配置を計算
-  updateRender(startTime);
-
-  // 2. CSSの「!important」による固定をJSのインラインスタイルで上書きして解除
-  // これで、JSによる自由な回転が始まります
-  const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
-  cylinderBack.style.setProperty('transform', cylTransform, 'important');
-
-  // 3. 表示
-  cylinderFront.classList.add('cylinder-ready');
-  cylinderBack.classList.add('cylinder-ready');
-
-  rafId = requestAnimationFrame(animate);
+  return {
+    start() {
+      if (rafId) return;
+      updateRender(performance.now());
+      cylinder.classList.add('cylinder-ready');
+      rafId = requestAnimationFrame(animate);
+    },
+    stop() { cancelAnimationFrame(rafId); rafId = null; },
+    startHold() { if (mode !== "auto") mode = "hold"; },
+    endHold() { mode = "normal"; },
+    moveDrag(dx) { dragSpeed += dx * 0.05; }
+  };
 }
-
-  function stop() {
-    cancelAnimationFrame(rafId);
-    rafId = null;
-  }
 
   return {
     start,
