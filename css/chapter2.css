@@ -63,7 +63,11 @@ img {
   top: 0;
   transform-style: preserve-3d;
   will-change: transform;
+  /* opacity も追加 */
+  will-change: transform, opacity; 
   backface-visibility: visible;
+  /* 滑らかな変化のために transition を入れる（JSの更新頻度が高いので 0.1s 程度） */
+  transition: opacity 0.1s linear;
 }
 
 .outer {
