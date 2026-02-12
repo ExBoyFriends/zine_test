@@ -68,14 +68,33 @@ img {
   contain: none;
   top: 50%;
   left: 50%;
+
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* JSで配置が完了した時に付与するクラス */
+.cylinder-ready {
+  opacity: 1 !important;
 }
 
 .cylinder-front {
   /* 初期値に傾きを追加 */
   transform: translate(-50%, -50%) rotateX(-22deg) translateZ(1px);
 }
+/* 表面のトランプ（JSが動く前の初期配置） */
+.cylinder-front .outer {
+  /* JSの R_FRONT = 185px と合わせる */
+  /* 最初は 0番を正面、1番以降を適当な角度に散らしておく */
+  transform: rotateY(0deg) translateZ(185px);
+}
 
-/* --- cylinder-back の修正 --- */
+/* 各トランプに個別の初期角度を与える（JSが上書きするまでの一時しのぎ） */
+/* 枚数が多い場合は主要な数枚だけでもOK */
+.cylinder-front .outer:nth-child(1) { transform: rotateY(0deg) translateZ(185px); }
+.cylinder-front .outer:nth-child(2) { transform: rotateY(45deg) translateZ(185px); }
+.cylinder-front .outer:nth-child(3) { transform: rotateY(90deg) translateZ(185px); }
+/* ...これを書けば書くほど、JS起動前の「重なり」は消えます */
 .cylinder-back {
   pointer-events: none;
   visibility: hidden; 
@@ -83,6 +102,9 @@ img {
   /* JSの R_BACK=170 と rotateX(-22deg) にミリ単位で合わせる */
   transform: translate(-50%, -50%) rotateX(-22deg) translateZ(-170px) rotateY(180deg);
 }
+
+
+
 /* ===================== Panels ===================== */
 .panel, .outer, .inner {
   position: absolute;
