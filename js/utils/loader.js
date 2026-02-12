@@ -1,5 +1,5 @@
 /**
- * loader.js (CSS同期・完全版)
+ * loader.js (配置完了待ち・完全版)
  */
 export function initLoader(loader, onComplete) {
   if (!loader) return;
@@ -11,35 +11,44 @@ export function initLoader(loader, onComplete) {
     if (completed) return;
     completed = true;
 
-    // 1. まず暗転させる (CSS: .swallow-darkness)
+    // 1. まず暗転させる (1秒かけて真っ暗にする)
     loader.classList.add("swallow-darkness");
 
-    // 2. 暗転（1秒）が終わる頃に本編表示の準備を完了させる
+    // 2. 暗転が完了した「静寂の暗闇」の中で処理を行う
     setTimeout(() => {
-      if (onComplete) onComplete();
-
-      // 3. 夜明けフェード開始 (CSS: .reveal-start)
-      loader.classList.add("reveal-start");
-      loader.style.transition = "opacity 2.8s cubic-bezier(0.2,1,0.2,1)";
-      loader.style.opacity = "0";
-
-      if (shadow) {
-        shadow.style.transition = "opacity 2.8s ease-in-out";
-        shadow.style.opacity = "0";
+      if (onComplete) {
+        // ここで 3D の配置計算（animate）が実行される
+        onComplete();
       }
 
-      // 4. 完全に消えたら要素を削除
+      /* ========================================================
+         【ここが重要】
+         onComplete() を呼んだ直後ではなく、
+         ブラウザが「3Dの配置が終わったな」と描画を更新するまで
+         あえて「あと 0.8秒」暗闇を維持します。
+         ======================================================== */
       setTimeout(() => {
-        loader.style.display = "none";
-        if (loader.parentNode) loader.remove();
-      }, 3300);
-    }, 1500);
+        // 3. 全てが整ってから「夜明け」を開始
+        loader.classList.add("reveal-start");
+        
+        // JSでの直接指定を minimal にし、CSSの transition を優先させる
+        loader.style.opacity = "0";
+        if (shadow) shadow.style.opacity = "0";
+
+        // 4. 完全に消えたら要素を削除
+        setTimeout(() => {
+          loader.style.display = "none";
+          if (loader.parentNode) loader.remove();
+        }, 3000); // 2.8s の transition 終了後
+        
+      }, 800); // ← この 0.8秒が「重なり」を闇に葬る魔法の時間
+
+    }, 1200); // 暗転完了（1.0s）に少し余裕を持たせた時間
   };
 
   const start = () => {
     if (!document.body.contains(loader)) return;
-    // 5.2秒の鼓動演出のあと終了へ
-    setTimeout(finish, 5200);
+    setTimeout(finish, 5200); // 鼓動の時間
   };
 
   if (document.readyState === "loading") {
