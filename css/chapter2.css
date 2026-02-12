@@ -69,8 +69,10 @@ html, body {
   left: 0;
   top: 0;
   transform-style: preserve-3d;
-  will-change: transform, opacity;
+ will-change: transform;
   backface-visibility: visible;
+  /* 修正：パネル単体の transition を 0 にして、chapter 全体のフェードに同期させる */
+  transition: none !important;
 }
 
 .outer {
