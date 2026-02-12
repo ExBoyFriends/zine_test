@@ -59,7 +59,7 @@ export function initCarousel3D(options = {}) {
     visualAngle += totalSpeed;
 
     // 3. 親シリンダーの回転（これが滑らかさの肝）
-cylinder.style.transform = `rotateX(-22deg) rotateY(${visualAngle}deg)`;
+cylinder.style.transform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
     // 4. パネルごとの不透明度とインデックス管理
     frontPanels.forEach((p, i) => {
