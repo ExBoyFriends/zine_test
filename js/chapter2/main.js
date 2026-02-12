@@ -53,28 +53,29 @@ goChapter25._done = false;
    Loader & 初期化
 ===================== */
 initLoader(loader, () => {
-  // 1. 3Dシーンのイベント設定
+  // 1. まず 3D のイベントをバインド
   if (scene && !scene.__holdBound) {
     bindLongPressEvents(scene);
     scene.__holdBound = true;
   }
 
-  // 2. 【重要修正】3Dの配置計算が完了するのを待ってから表示を開始する
-  // 50ms待機させることで、JS側の animate() が最低1回走り、
-  // 正しい位置（奥側）に配置された状態で「visible」になります。
-  setTimeout(() => {
-    // ここで初めて 3D シーンとドットを表示（CSSの transition 2.8s が発動）
+  // 2. この時点で carousel3d.js の start() 内の animate(now) が
+  // 1回実行されており、全パネルの Z 軸は確定しています。
+
+  // 3. ほんの少しだけ待ってから「表示」を開始する
+  requestAnimationFrame(() => {
+    // 3Dモデルを透明度 0 のまま「配置済み」として visible にする
     chapter?.classList.add("visible");
     dotsWrap?.classList.add("visible");
 
-    // 3. 黒い幕（fadeLayer）をじわ〜っと開ける
-    fadeInStart(1500); 
-  }, 50);
+    // 4. 配置がブラウザに受理された直後に、黒い幕を上げる
+    setTimeout(() => {
+      fadeInStart(1500); 
+    }, 100);
+  });
 
-  // 4. 自動遷移のタイマー開始
   startAutoTransition(goChapter25);
 });
-
 /* =====================
    Carousel 3D
 ===================== */
