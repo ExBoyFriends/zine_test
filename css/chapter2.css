@@ -63,16 +63,16 @@ img {
 }
 
 .cylinder-front {
-  /* 手前側を物理的に少し前に出しておく（JSで上書きされますが、0フレーム目の保険です） */
-  transform: translate(-50%, -50%) translateZ(1px);
+  /* JSが効くまでの初期ポーズ */
+  transform: translate(-50%, -50%) rotateX(-22deg) translateZ(1px);
 }
 
 .cylinder-back {
   pointer-events: none;
-  visibility: hidden !important;
-  /* 1000px も奥に飛ばさず、JSの R_BACK(170) に合わせる */
-  /* かつ、最初から「裏返し(rotateY(180deg))」にしておく */
-  transform: translate(-50%, -50%) translateZ(-170px) rotateY(180deg);
+  /* JS起動前の被り防止に visibility: hidden は維持 */
+  visibility: hidden;
+  /* JSの計算値 (R_BACK=170) と初期値を一致させて縮小を防ぐ */
+  transform: translate(-50%, -50%) rotateX(-22deg) translateZ(-170px) rotateY(180deg);
 }
 
 /* ===================== Panels ===================== */
