@@ -30,12 +30,13 @@
   will-change: transform;
   transform: translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(0deg);
   opacity: 0;
-  pointer-events: none;
+ 
 }
 
 .cylinder-ready {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 /* ===================== Panels Layout ===================== */
