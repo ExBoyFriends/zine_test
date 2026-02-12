@@ -97,20 +97,20 @@ html, body {
   filter: brightness(0.45);
 }
 
-/* 半径 185px の円周上に 36度刻みで配置 */
-/* 前方パネル 0-144度 */
-.outer:nth-child(1) { transform: rotateY(0deg) translateZ(185px); }
-.outer:nth-child(2) { transform: rotateY(36deg) translateZ(185px); }
-.outer:nth-child(3) { transform: rotateY(72deg) translateZ(185px); }
-.outer:nth-child(4) { transform: rotateY(108deg) translateZ(185px); }
-.outer:nth-child(5) { transform: rotateY(144deg) translateZ(185px); }
+/* --- 前方パネル (5枚・72度刻み) --- */
+.outer:nth-child(1) { transform: rotateY(0deg) translateZ(300px); }
+.outer:nth-child(2) { transform: rotateY(72deg) translateZ(300px); }
+.outer:nth-child(3) { transform: rotateY(144deg) translateZ(300px); }
+.outer:nth-child(4) { transform: rotateY(216deg) translateZ(300px); }
+.outer:nth-child(5) { transform: rotateY(288deg) translateZ(300px); }
 
-/* 後方パネル 180-324度 (カード裏面が外側を向くよう rotateY(180deg) を付与) */
-.inner:nth-child(6) { transform: rotateY(180deg) translateZ(185px) rotateY(180deg); }
-.inner:nth-child(7) { transform: rotateY(216deg) translateZ(185px) rotateY(180deg); }
-.inner:nth-child(8) { transform: rotateY(252deg) translateZ(185px) rotateY(180deg); }
-.inner:nth-child(9) { transform: rotateY(288deg) translateZ(185px) rotateY(180deg); }
-.inner:nth-child(10) { transform: rotateY(324deg) translateZ(185px) rotateY(180deg); }
+/* --- 後方パネル (表のカードの真裏に配置) --- */
+/* 表が 0度の時、真裏(inner)も 0度地点に置いて rotateY(180deg) で内側を向かせます */
+.inner:nth-child(6) { transform: rotateY(0deg) translateZ(298px) rotateY(180deg); }
+.inner:nth-child(7) { transform: rotateY(72deg) translateZ(298px) rotateY(180deg); }
+.inner:nth-child(8) { transform: rotateY(144deg) translateZ(298px) rotateY(180deg); }
+.inner:nth-child(9) { transform: rotateY(216deg) translateZ(298px) rotateY(180deg); }
+.inner:nth-child(10) { transform: rotateY(288deg) translateZ(298px) rotateY(180deg); }
 /* ===================== UI & Effects ===================== */
 .dots { pointer-events: none; }
 .dots.visible { pointer-events: auto; }
