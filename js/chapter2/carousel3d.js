@@ -62,9 +62,9 @@ export function initCarousel3D(options = {}) {
       firstFrame = false;
     }
 
-    // カメラ少し下げた位置に更新
+    // --- カメラ少し下げた位置で回転適用 ---
     cylinder.style.transform =
-      `rotateX(-18deg) rotateY(${visualAngle}deg) translateY(25px) translateZ(0)`;
+      `rotateX(-18deg) rotateY(${visualAngle}deg) translateY(35px) translateZ(0)`;
 
     frontPanels.forEach((p, i) => {
       const angle = i * STEP;
@@ -110,27 +110,24 @@ export function initCarousel3D(options = {}) {
       if (rafId) return;
       firstFrame = true;
       idleStartTime = performance.now();
-      requestAnimationFrame(() => { rafId = requestAnimationFrame(animate); });
+      requestAnimationFrame(() => rafId = requestAnimationFrame(animate));
     },
-
     stop() {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = null;
     },
-
     startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
     endHold() { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
     startAuto() { mode = "auto"; autoStartTime = performance.now(); },
     startDrag() { dragSpeed = 0; },
     moveDrag(dx) { dragSpeed += dx * 0.05; },
     setExtraSpeed(v) { extraSpeed = v; },
-
     reset(speed = BASE_SPEED) {
       visualAngle = 0;
       baseSpeed = speed;
       firstFrame = true;
       cylinder.style.transform =
-        `rotateX(-18deg) rotateY(0deg) translateY(25px) translateZ(0)`;
+        `rotateX(-18deg) rotateY(0deg) translateY(35px) translateZ(0)`;
     }
   };
 }
