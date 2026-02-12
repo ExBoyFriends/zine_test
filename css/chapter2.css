@@ -7,10 +7,8 @@
   perspective: 1800px;
   perspective-origin: 50% 50%;
   transform-style: preserve-3d;
-  will-change: transform, opacity;
+  will-change: transform;
 }
-
-/* --- 半径設定 --- */
 
 .chapter {
   position: relative;
@@ -18,12 +16,13 @@
   height: 100%;
   transform-style: preserve-3d;
 
-  /* 初期表示で正しい角度・位置に固定 */
-  transform: rotateX(-22deg) rotateY(0deg) translateZ(0); 
-  opacity: 1; /* 初期表示で消えない場合 */
+ /* 初期表示の固定 transform（base.css とは別） */
+  transform: rotateX(-22deg) rotateY(0deg) translateZ(0);
+  opacity: 1;
   pointer-events: auto;
-  will-change: opacity; 
-
+  will-change: opacity;
+  transition: opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
 /* ===================== Unified Cylinder ===================== */
 .cylinder-wrapper {
   position: absolute;
@@ -33,19 +32,17 @@
   transform-style: preserve-3d;
 }
 
-
 .cylinder.main-cylinder {
   position: absolute;
   top: 50%;
   left: 50%;
-   width: 1px;
+  width: 1px;
   height: 1px;
   transform: rotateX(-22deg) rotateY(0deg) translateZ(0);
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
   will-change: transform;
   opacity: 1;
- 
 }
 
 .cylinder-ready {
