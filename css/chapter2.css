@@ -62,16 +62,22 @@ img {
   position: absolute;
   transform-style: preserve-3d;
   contain: none;
- 
+
+  top: 50%;
+  left: 50%;
+}
+
+.cylinder-front {
+  /* 手前側を物理的に少し前に出しておく（JSで上書きされますが、0フレーム目の保険です） */
+  transform: translate(-50%, -50%) translateZ(1px);
 }
 
 .cylinder-back {
   pointer-events: none;
-  /* JSが効く前は、物理的に「後ろ」に配置しておく */
+  /* ★ ここが重要：JSが動く前の「本当の初期位置」として奥へ飛ばしておく */
   transform: translate(-50%, -50%) translateZ(-1000px);
-  /* JSが効く前は非表示にしておく */
-  visibility: hidden;
- 
+  /* 最初は絶対に隠しておく */
+  visibility: hidden !important;
 }
 
 /* ===================== Panels ===================== */
