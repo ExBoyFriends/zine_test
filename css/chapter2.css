@@ -70,12 +70,14 @@ img {
   left: 50%;
 
   opacity: 0;
+  display: none;
   transition: opacity 0.3s ease;
 }
 
 /* JSで配置が完了した時に付与するクラス */
 .cylinder-ready {
   opacity: 1 !important;
+  display: block !important;
 }
 
 .cylinder-front {
