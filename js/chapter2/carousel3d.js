@@ -118,18 +118,19 @@ function start() {
   const startTime = performance.now();
   idleStartTime = startTime;
 
-  // ① まず「透明なまま」で1回計算を実行し、トランプを円形に並べる
+  // 1. まず配置を計算
   updateRender(startTime);
 
-  // ② ほんの一瞬（1フレーム）だけ待ち、ブラウザに「配置完了」を認識させる
-  requestAnimationFrame(() => {
-    // ③ 配置が終わってからクラスを付け、一気に表示させる
-    cylinderFront.classList.add('cylinder-ready');
-    cylinderBack.classList.add('cylinder-ready');
-    
-    // アニメーションループ開始
-    rafId = requestAnimationFrame(animate);
-  });
+  // 2. CSSの「!important」による固定をJSのインラインスタイルで上書きして解除
+  // これで、JSによる自由な回転が始まります
+  const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+  cylinderBack.style.setProperty('transform', cylTransform, 'important');
+
+  // 3. 表示
+  cylinderFront.classList.add('cylinder-ready');
+  cylinderBack.classList.add('cylinder-ready');
+
+  rafId = requestAnimationFrame(animate);
 }
 
   function stop() {
