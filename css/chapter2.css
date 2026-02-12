@@ -33,7 +33,7 @@ img {
   perspective: 1200px;
   perspective-origin: 50% 45%;
   touch-action: none;
-  z-index: 2;
+　transform-style: preserve-3d;
 }
 
 /* ===================== Cylinder ===================== */
