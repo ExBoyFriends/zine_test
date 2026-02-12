@@ -63,21 +63,18 @@ export function initCarousel3D(options = {}) {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
-   // 2. 角度の更新
-if (!firstFrame) {
-  const totalSpeed = baseSpeed + dragSpeed + extraSpeed;
-  dragSpeed *= 0.85;
-  visualAngle += totalSpeed;
-} else {
-  firstFrame = false;
-}
+    // 2. 角度の更新
+    if (!firstFrame) {
+      const totalSpeed = baseSpeed + dragSpeed + extraSpeed;
+      dragSpeed *= 0.85;
+      visualAngle += totalSpeed;
+    } else {
+      firstFrame = false;
+    }
 
-
-  // 3. 親シリンダーの回転適用
-    // 望遠(perspective:3000)なので、少し手前(translateZ(400px))に出してサイズを稼ぐ
-cylinder.style.transform =
-  `rotateX(-18deg) rotateY(0deg) translateY(15px) translateZ(0)`;
-
+    // 3. 親シリンダーの回転適用（カメラ位置を少し下げる）
+    cylinder.style.transform =
+      `rotateX(-18deg) rotateY(${visualAngle}deg) translateY(15px) translateZ(0)`;
 
     // 4. 表(outer)の処理
     frontPanels.forEach((p, i) => {
@@ -85,16 +82,15 @@ cylinder.style.transform =
       const rad = (angle + visualAngle) * Math.PI / 180;
       const z = Math.cos(rad);
 
-      // z > 0 (真横) ギリギリまで見えるようにし、重なりを美しく見せる
       if (z > 0.05) {
-        p.style.opacity = Math.pow(z, 0.8); // 減衰をさらに緩やかに
+        p.style.opacity = Math.pow(z, 0.8);
         p.style.visibility = "visible";
       } else {
         p.style.opacity = 0;
         p.style.visibility = "hidden";
       }
 
-      // ドットのインデックス更新判定（正面に来た瞬間）
+      // 正面に来た瞬間にインデックス更新
       if (z > 0.98 && i !== prevIndex) {
         options.onIndexChange?.(i);
         prevIndex = i;
@@ -107,7 +103,6 @@ cylinder.style.transform =
       const rad = (angle + visualAngle) * Math.PI / 180;
       const z = Math.cos(rad);
 
-      // 奥側（z < 0）にいる時、つまり表が後ろを向いている時にうっすら表示
       if (z < 0) {
         p.style.opacity = Math.min(-z * 0.8, 0.45);
         p.style.visibility = "visible";
@@ -127,51 +122,55 @@ cylinder.style.transform =
   return {
     start() {
       if (rafId) return;
-      
-      firstFrame = true; 
-      
-      idleStartTime = performance.now();  
 
-      
+      firstFrame = true;
+      idleStartTime = performance.now();
       requestAnimationFrame(() => {
-    rafId = requestAnimationFrame(animate);
-  });
+        rafId = requestAnimationFrame(animate);
+      });
     },
-    
+
     stop() {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = null;
     },
+
     startHold() {
       if (mode !== "auto" && mode !== "exit") mode = "hold";
     },
+
     endHold() {
       if (mode === "hold") {
         mode = "normal";
         idleStartTime = performance.now();
       }
     },
+
     startAuto() {
       mode = "auto";
       autoStartTime = performance.now();
     },
+
     startDrag() {
       dragSpeed = 0;
     },
+
     moveDrag(dx) {
       dragSpeed += dx * 0.05;
     },
+
     setExtraSpeed(v) {
       extraSpeed = v;
     },
+
     reset(speed = BASE_SPEED) {
       visualAngle = 0;
       baseSpeed = speed;
-      firstFrame = true; 
-      
-     // 初期 transform を明示的に即適用
-  cylinder.style.transform =
-    `rotateX(-18deg) rotateY(0deg) translateY(15px) translateZ(0)`;
+      firstFrame = true;
+
+      // 初期 transform を明示的に即適用
+      cylinder.style.transform =
+        `rotateX(-18deg) rotateY(0deg) translateY(15px) translateZ(0)`;
     }
   };
 }
