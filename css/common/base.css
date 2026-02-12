@@ -25,7 +25,6 @@ body {
 .chapter {
   opacity: 0;
   pointer-events: none;
-  will-change: opacity;
   will-change: transform, opacity;
   transform: translateZ(0);
   transition: opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1);
