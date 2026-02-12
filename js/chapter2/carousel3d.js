@@ -12,7 +12,7 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  // 回転関連定数
+  // 定数群 (変更なし)
   const BASE_SPEED = 0.22;
   const HOLD_SPEED = 8;
   const AUTO_MAX   = 12;
@@ -26,18 +26,17 @@ export function initCarousel3D(options = {}) {
   let baseSpeed   = BASE_SPEED;
   let dragSpeed   = 0;
   let extraSpeed  = 0;
-  let mode         = "normal";
+  let mode        = "normal";
 
   let rafId = null;
-  let idleStartTime = performance.now();
+  let idleStartTime = 0;
   let autoStartTime = 0;
   let prevIndex = -1;
 
-  // 各パネルに初期角度をセット
+  // 初期角度セット
   frontPanels.forEach((p, i) => p.dataset.base = i * SNAP);
   backPanels.forEach((p, i) => p.dataset.base = i * SNAP);
 
-  // 正面パネル判定
   function getFrontIndex() {
     let maxZ = -2;
     let closestIndex = 0;
@@ -45,19 +44,15 @@ export function initCarousel3D(options = {}) {
       const base = parseFloat(p.dataset.base);
       const rad = (base + visualAngle) * Math.PI / 180;
       const z = Math.cos(rad);
-      if (z > maxZ) {
-        maxZ = z;
-        closestIndex = i;
-      }
+      if (z > maxZ) { maxZ = z; closestIndex = i; }
     });
     return closestIndex;
   }
 
-  // アニメーションループ
-  function animate(now) {
+  // 描画ロジック本体（ループとは分離）
+  function updateRender(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
-    // モード別速度
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime)/IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
@@ -82,7 +77,6 @@ export function initCarousel3D(options = {}) {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
-    // ドラッグ＆ノイズ
     const dragNoise = Math.sin(now*(0.018+chaos*0.04)) * Math.sin(now*0.11) * chaos;
     const speed = baseSpeed * (1 + chaos*0.18*Math.sin(now*0.012)) +
                   (dragSpeed*(1-chaos*0.6) + dragSpeed*dragNoise*0.6) +
@@ -90,38 +84,30 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // 正面パネル更新
     const currentIndex = getFrontIndex();
     if (currentIndex !== prevIndex) {
       options.onIndexChange?.(currentIndex);
       prevIndex = currentIndex;
     }
 
-    // Cylinder回転 (傾き -22deg を含む)
     const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     if (cylinderFront) cylinderFront.style.transform = cylTransform;
     if (cylinderBack)  cylinderBack.style.transform  = cylTransform;
 
-    // --- frontパネル ---
     frontPanels.forEach(p => {
       const base = parseFloat(p.dataset.base);
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
-
       p.style.transform  = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
       p.style.opacity    = z > 0 ? Math.min(z * 20, 1) : 0;
       p.style.visibility = z > 0 ? "visible" : "hidden";
     });
 
-    // --- backパネル（反転） ---
     backPanels.forEach(p => {
       const base = parseFloat(p.dataset.base);
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
-
       p.style.transform  = `rotateY(${base}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
-     // z < 0（奥側）の時だけ表示。
-      // 初動で opacity 0 から 1 へパッと切り替わるようにします。
       if (z < 0) {
         p.style.opacity = Math.min(-z * 20, 1);
         p.style.visibility = "visible";
@@ -130,28 +116,36 @@ export function initCarousel3D(options = {}) {
         p.style.visibility = "hidden";
       }
     });
+  }
 
+  // ループ用
+  function animate(now) {
+    updateRender(now);
     rafId = requestAnimationFrame(animate);
   }
 
- function start() {
-  const startTime = performance.now();
-  idleStartTime = startTime;
+  // ★ 外部から呼ぶための start 関数
+  function start() {
+    if (rafId) return; // 二重起動防止
+    const startTime = performance.now();
+    idleStartTime = startTime;
 
-  // 1回だけ強制描画確定
-  animate(startTime);
+    // 幕が開く前に「今この瞬間」に1回だけ配置を確定させる
+    updateRender(startTime);
 
-}
-
+    // その後ループ開始
+    rafId = requestAnimationFrame(animate);
+  }
 
   function stop() {
     cancelAnimationFrame(rafId);
     rafId = null;
   }
 
-  start();
+  // ※ ここでの start() 自動実行は削除！ ※
 
   return {
+    start, // main.js から呼ぶ
     startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
     endHold()   { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
     startAuto() { mode = "auto"; autoStartTime = performance.now(); },
