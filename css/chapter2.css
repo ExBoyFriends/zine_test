@@ -16,8 +16,8 @@ html, body {
 .scene {
   position: fixed;
   inset: 0;
-  /* 1200px から 4000px へ。値を大きくするほど、手前と奥のサイズ差がなくなります */
-  perspective: 4000px; 
+  /* 歪みを抑えるため、カメラは遠く(望遠)に設定 */
+  perspective: 3000px;
   perspective-origin: 50% 50%;
   transform-style: preserve-3d;
 }
@@ -99,18 +99,19 @@ html, body {
   filter: brightness(0.45);
 }
 
-/* --- 半径設定（安定版 300px） --- */
-.outer:nth-child(1) { transform: rotateY(0deg) translateZ(300px); }
-.outer:nth-child(2) { transform: rotateY(72deg) translateZ(300px); }
-.outer:nth-child(3) { transform: rotateY(144deg) translateZ(300px); }
-.outer:nth-child(4) { transform: rotateY(216deg) translateZ(300px); }
-.outer:nth-child(5) { transform: rotateY(288deg) translateZ(300px); }
+/* 前方パネル */
+.outer:nth-child(1) { transform: rotateY(0deg) translateZ(160px); }
+.outer:nth-child(2) { transform: rotateY(72deg) translateZ(160px); }
+.outer:nth-child(3) { transform: rotateY(144deg) translateZ(160px); }
+.outer:nth-child(4) { transform: rotateY(216deg) translateZ(160px); }
+.outer:nth-child(5) { transform: rotateY(288deg) translateZ(160px); }
 
-.inner:nth-child(6) { transform: rotateY(0deg) translateZ(298px) rotateY(180deg); }
-.inner:nth-child(7) { transform: rotateY(72deg) translateZ(298px) rotateY(180deg); }
-.inner:nth-child(8) { transform: rotateY(144deg) translateZ(298px) rotateY(180deg); }
-.inner:nth-child(9) { transform: rotateY(216deg) translateZ(298px) rotateY(180deg); }
-.inner:nth-child(10) { transform: rotateY(288deg) translateZ(298px) rotateY(180deg); }
+/* 後方パネル (表より少しだけ内側) */
+.inner:nth-child(6) { transform: rotateY(0deg) translateZ(158px) rotateY(180deg); }
+.inner:nth-child(7) { transform: rotateY(72deg) translateZ(158px) rotateY(180deg); }
+.inner:nth-child(8) { transform: rotateY(144deg) translateZ(158px) rotateY(180deg); }
+.inner:nth-child(9) { transform: rotateY(216deg) translateZ(158px) rotateY(180deg); }
+.inner:nth-child(10) { transform: rotateY(288deg) translateZ(158px) rotateY(180deg); }
 
 /* ===================== UI & Effects ===================== */
 
