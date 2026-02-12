@@ -75,13 +75,11 @@ initLoader(loader, () => {
     void cylinder.offsetWidth; 
 
 
-    requestAnimationFrame(() => {
   requestAnimationFrame(() => {
     chapter?.classList.add("visible");
     cylinder.classList.add("cylinder-ready");
     dotsWrap?.classList.add("visible");
   });
-});
   } 
 
   startAutoTransition(goChapter25);
