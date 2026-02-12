@@ -16,7 +16,7 @@ html, body {
 .scene {
   position: fixed;
   inset: 0;
-  perspective: 1200px;
+  perspective: 800px;
   perspective-origin: 50% 45%;
   transform-style: preserve-3d;
 }
@@ -97,20 +97,20 @@ html, body {
   filter: brightness(0.45);
 }
 
-/* --- 前方パネル (5枚・72度刻み) --- */
-.outer:nth-child(1) { transform: rotateY(0deg) translateZ(300px); }
-.outer:nth-child(2) { transform: rotateY(72deg) translateZ(300px); }
-.outer:nth-child(3) { transform: rotateY(144deg) translateZ(300px); }
-.outer:nth-child(4) { transform: rotateY(216deg) translateZ(300px); }
-.outer:nth-child(5) { transform: rotateY(288deg) translateZ(300px); }
+/* --- 半径を 220px に縮小 --- */
+/* 前方パネル */
+.outer:nth-child(1) { transform: rotateY(0deg) translateZ(220px); }
+.outer:nth-child(2) { transform: rotateY(72deg) translateZ(220px); }
+.outer:nth-child(3) { transform: rotateY(144deg) translateZ(220px); }
+.outer:nth-child(4) { transform: rotateY(216deg) translateZ(220px); }
+.outer:nth-child(5) { transform: rotateY(288deg) translateZ(220px); }
 
-/* --- 後方パネル (表のカードの真裏に配置) --- */
-/* 表が 0度の時、真裏(inner)も 0度地点に置いて rotateY(180deg) で内側を向かせます */
-.inner:nth-child(6) { transform: rotateY(0deg) translateZ(298px) rotateY(180deg); }
-.inner:nth-child(7) { transform: rotateY(72deg) translateZ(298px) rotateY(180deg); }
-.inner:nth-child(8) { transform: rotateY(144deg) translateZ(298px) rotateY(180deg); }
-.inner:nth-child(9) { transform: rotateY(216deg) translateZ(298px) rotateY(180deg); }
-.inner:nth-child(10) { transform: rotateY(288deg) translateZ(298px) rotateY(180deg); }
+/* 後方パネル (表より 2px 内側に配置して厚みを感じさせる) */
+.inner:nth-child(6) { transform: rotateY(0deg) translateZ(218px) rotateY(180deg); }
+.inner:nth-child(7) { transform: rotateY(72deg) translateZ(218px) rotateY(180deg); }
+.inner:nth-child(8) { transform: rotateY(144deg) translateZ(218px) rotateY(180deg); }
+.inner:nth-child(9) { transform: rotateY(216deg) translateZ(218px) rotateY(180deg); }
+.inner:nth-child(10) { transform: rotateY(288deg) translateZ(218px) rotateY(180deg); }
 /* ===================== UI & Effects ===================== */
 .dots { pointer-events: none; }
 .dots.visible { pointer-events: auto; }
