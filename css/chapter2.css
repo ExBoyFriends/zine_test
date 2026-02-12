@@ -105,8 +105,6 @@ html, body {
 .inner:nth-child(10) { transform: rotateY(288deg) translateZ(298px) rotateY(180deg); }
 
 /* ===================== UI & Effects ===================== */
-.dots { pointer-events: none; }
-.dots.visible { pointer-events: auto; }
 
 .glitch-overlay {
   position: fixed;
