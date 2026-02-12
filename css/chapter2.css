@@ -12,18 +12,25 @@ html, body {
   background-color: #000;
 }
 
-/* chapter2.css */
-
+/* ===================== Scene Setup ===================== */
 .scene {
-  /* シーン全体に奥行きを与える */
+  position: fixed;
+  inset: 0;
   perspective: 1200px;
   perspective-origin: 50% 45%;
+  transform-style: preserve-3d;
 }
 
 .chapter {
-  /* ここに preserve-3d がないと、中の cylinder が平面化されます */
+  position: relative;
+  width: 100%;
+  height: 100%;
   transform-style: preserve-3d;
+  opacity: 0;
+  transition: opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.chapter.visible { opacity: 1; }
 
 .cylinder.main-cylinder {
   /* 子要素（パネル）に 3D 配置を許可する */
@@ -46,32 +53,39 @@ html, body {
   width: 0;
   height: 0;
   transform-style: preserve-3d;
-  /* 初期状態も translate(-50%, -50%) を含めておく */
+  /* JSが効くまでの初期位置。translate(-50%, -50%)が中央固定の鍵 */
   transform: translate(-50%, -50%) rotateX(-22deg) rotateY(0deg);
   opacity: 0;
   visibility: hidden;
   transition: opacity 1.2s ease;
 }
 
+.cylinder-ready {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 /* ===================== Panels Layout ===================== */
 .outer, .inner {
   position: absolute;
-  /* 親の(0,0)地点をカードの中心にするための設定 */
-  left: 50%; 
+  left: 50%;
   top: 50%;
   transform-style: preserve-3d;
+  backface-visibility: hidden; /* 裏側を表示しない設定でチラつき防止 */
   will-change: transform;
 }
 
-/* 重要：全パネルを一度「中心」に戻し、そこから rotateY で向きを変えて translateZ で外に飛ばす
-   これにより、綺麗な一つの円になります。
-*/
 .outer {
   width: 230px;
   height: 300px;
-  /* カードの中心を親の(0,0)に合わせる */
-  margin-left: -115px; 
+  margin-left: -115px;
   margin-top: -150px;
+}
+
+.outer img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .inner {
@@ -80,25 +94,23 @@ html, body {
   margin-left: -110px;
   margin-top: -145px;
   background: url("../image/top_b.png") center / contain no-repeat;
-  opacity: 0.85;
   filter: brightness(0.45);
 }
 
-/* --- 全10枚を 36度刻みで配置 --- */
-/* 前方パネル (半径 185px) */
+/* 半径 185px の円周上に 36度刻みで配置 */
+/* 前方パネル 0-144度 */
 .outer:nth-child(1) { transform: rotateY(0deg) translateZ(185px); }
 .outer:nth-child(2) { transform: rotateY(36deg) translateZ(185px); }
 .outer:nth-child(3) { transform: rotateY(72deg) translateZ(185px); }
 .outer:nth-child(4) { transform: rotateY(108deg) translateZ(185px); }
 .outer:nth-child(5) { transform: rotateY(144deg) translateZ(185px); }
 
-/* 後方パネル (半径を 185px に合わせる) */
+/* 後方パネル 180-324度 (カード裏面が外側を向くよう rotateY(180deg) を付与) */
 .inner:nth-child(6) { transform: rotateY(180deg) translateZ(185px) rotateY(180deg); }
 .inner:nth-child(7) { transform: rotateY(216deg) translateZ(185px) rotateY(180deg); }
 .inner:nth-child(8) { transform: rotateY(252deg) translateZ(185px) rotateY(180deg); }
 .inner:nth-child(9) { transform: rotateY(288deg) translateZ(185px) rotateY(180deg); }
 .inner:nth-child(10) { transform: rotateY(324deg) translateZ(185px) rotateY(180deg); }
-
 /* ===================== UI & Effects ===================== */
 .dots { pointer-events: none; }
 .dots.visible { pointer-events: auto; }
