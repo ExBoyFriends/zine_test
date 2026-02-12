@@ -106,12 +106,16 @@ export function initCarousel3D(options = {}) {
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
       p.style.transform = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
-      // zが0以下の時は完全に消す。0〜0.2の間で急激にフェードインさせる
-      // これにより、真横で「パッ」と消えるのではなく、一瞬で「フッ」と消えます
-      const opacity = Math.min(Math.max(z * 10, 0), 1);
+     // zが0より大きい（手前半分）の時だけ表示。
+      // 0になった瞬間に一瞬で消えるように調整
+      const opacity = z > 0 ? Math.min(z * 20, 1) : 0; 
       p.style.opacity = opacity;
+      
+      // 完全に奥にいったら非表示(display)にするのも手ですが、
+      // まずは opacity: 0 で十分なはずです
+      p.style.visibility = z > 0 ? "visible" : "hidden";
     });
-
+    
     // --- backパネル配置（半円だけ表示） ---
     backPanels.forEach((p) => {
       const base = parseFloat(p.dataset.base);
@@ -120,9 +124,10 @@ export function initCarousel3D(options = {}) {
      // rotateY(180deg) で画像を表に向ける
       p.style.transform = `rotateY(${base}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
 
-      // zが0以上の時は完全に消す。-0.2〜0の間でフェード
-      const opacity = Math.min(Math.max(-z * 10, 0), 1);
+      // zが0より小さい（奥半分）の時だけ表示。
+      const opacity = z < 0 ? Math.min(-z * 20, 1) : 0;
       p.style.opacity = opacity;
+      p.style.visibility = z < 0 ? "visible" : "hidden";
     });
 
     rafId = requestAnimationFrame(animate);
