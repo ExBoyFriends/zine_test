@@ -103,8 +103,6 @@ img {
   margin-top: -145px;
   background: url("../image/top_b.png") center / contain no-repeat;
   opacity: 0.85;
-  background-color: rgba(0, 0, 0, 0.5); 
-  background-blend-mode: multiply;
 }
 
 /* ===================== UI & Effects ===================== */
