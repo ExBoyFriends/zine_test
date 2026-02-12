@@ -1,10 +1,9 @@
 // chapter2/carousel3d.js
-
 export function initCarousel3D(options = {}) {
   const cylinderFront = document.querySelector(".cylinder-front");
   const cylinderBack  = document.querySelector(".cylinder-back");
-  const frontPanels   = [...document.querySelectorAll(".cylinder-front .outer")];
-  const backPanels    = [...document.querySelectorAll(".cylinder-back .inner")];
+  const frontPanels    = [...document.querySelectorAll(".cylinder-front .outer")];
+  const backPanels     = [...document.querySelectorAll(".cylinder-back .inner")];
 
   const COUNT = frontPanels.length;
   if (!COUNT) return;
@@ -27,7 +26,7 @@ export function initCarousel3D(options = {}) {
   let baseSpeed   = BASE_SPEED;
   let dragSpeed   = 0;
   let extraSpeed  = 0;
-  let mode        = "normal";
+  let mode         = "normal";
 
   let rafId = null;
   let idleStartTime = performance.now();
@@ -98,7 +97,7 @@ export function initCarousel3D(options = {}) {
       prevIndex = currentIndex;
     }
 
-    // Cylinder回転
+    // Cylinder回転 (傾き -22deg を含む)
     const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     if (cylinderFront) cylinderFront.style.transform = cylTransform;
     if (cylinderBack)  cylinderBack.style.transform  = cylTransform;
@@ -132,30 +131,9 @@ export function initCarousel3D(options = {}) {
     const startTime = performance.now();
     idleStartTime = startTime;
 
-    // 初期フレームを即時描画して奥のパネルの被りを防ぐ
-    const setInitialFrame = (panels, R, isFront) => {
-      panels.forEach(p => {
-        const base = parseFloat(p.dataset.base);
-        const rad  = (base + visualAngle) * Math.PI / 180;
-        const z    = Math.cos(rad);
-
-        if (isFront) {
-          p.style.transform  = `rotateY(${base}deg) translateZ(${R}px)`;
-          p.style.opacity    = z > 0 ? Math.min(z * 20, 1) : 0;
-          p.style.visibility = z > 0 ? "visible" : "hidden";
-        } else {
-          p.style.transform  = `rotateY(${base}deg) translateZ(${R}px) rotateY(180deg)`;
-          p.style.opacity    = z < 0 ? Math.min(-z * 20, 1) : 0;
-          p.style.visibility = z < 0 ? "visible" : "hidden";
-        }
-      });
-    };
-
-    setInitialFrame(frontPanels, R_FRONT, true);
-    setInitialFrame(backPanels, R_BACK, false);
-
-    // 描画ループ開始
-    rafId = requestAnimationFrame(animate);
+    // 【重要】animate を直接呼ぶことで、0フレーム目の被りとガタつきを抹殺する
+    // animate の最後で自動的に requestAnimationFrame が呼ばれるため、二重呼び出しは不要
+    animate(startTime);
   }
 
   function stop() {
@@ -177,5 +155,3 @@ export function initCarousel3D(options = {}) {
     reset(speed = BASE_SPEED){ visualAngle = 0; baseSpeed = speed; }
   };
 }
-
-
