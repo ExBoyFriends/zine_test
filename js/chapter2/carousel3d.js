@@ -1,33 +1,42 @@
-// chapter2/carousel3d.js
+/**
+ * Chapter 2: 3D Cylinder Carousel
+ * 5枚のカードを表裏ペアで管理し、72度ピッチで回転させる
+ */
 export function initCarousel3D(options = {}) {
   const cylinder = document.querySelector(".main-cylinder");
-  const allPanels = [...document.querySelectorAll(".outer, .inner")];
+  const frontPanels = [...document.querySelectorAll(".outer")];
+  const backPanels = [...document.querySelectorAll(".inner")];
 
   if (!cylinder) return null;
 
-  // 定数
-  const BASE_SPEED = 0.22;
-  const HOLD_SPEED = 8;
-  const AUTO_MAX   = 12;
-  const EXIT_MAX   = 16;
-  const IDLE_MAX   = 1.6;
-  const IDLE_TIME  = 25000;
-  const AUTO_TOTAL = 35000;
-  const AUTO_FINAL = 6000;
+  // --- 設定定数 ---
+  const COUNT = 5;          // カード枚数
+  const STEP = 360 / COUNT; // 72度刻み
+  const BASE_SPEED = 0.22;  // 通常時の回転速度
+  const HOLD_SPEED = 8;     // 長押し時の加速速度
+  const AUTO_MAX   = 12;    // 自動遷移時の最大速度
+  const EXIT_MAX   = 16;    // 終了時の爆走速度
+  const IDLE_MAX   = 1.6;   // 放置時の最高速度
+  const IDLE_TIME  = 25000; // 加速完了までの時間
+  const AUTO_TOTAL = 35000; // 自動遷移の総時間
+  const AUTO_FINAL = 6000;  // 最終加速フェーズの時間
 
-  // 状態変数
-  let visualAngle = 0;
+  // --- 内部状態 ---
+  let visualAngle = 0;      // 現在の回転角度
   let baseSpeed   = BASE_SPEED;
   let dragSpeed   = 0;
   let extraSpeed  = 0;
-  let mode        = "normal";
+  let mode        = "normal"; // normal | hold | auto | exit
   let rafId       = null;
   let prevIndex   = -1;
   let idleStartTime = 0;
   let autoStartTime = 0;
 
+  /**
+   * 毎フレームの計算と描画
+   */
   function updateRender(now) {
-    // 1. スピード計算
+    // 1. スピード計算（モードに応じた加速処理）
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
@@ -52,33 +61,51 @@ export function initCarousel3D(options = {}) {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
-    // 2. 回転更新
+    // 2. 角度の更新
     const totalSpeed = baseSpeed + dragSpeed + extraSpeed;
-    dragSpeed *= 0.85;
+    dragSpeed *= 0.85; // ドラッグ慣性の減衰
     visualAngle += totalSpeed;
 
-    // 3. 中央固定の回転
+    // 3. 親シリンダーの回転適用（中央固定を維持）
     cylinder.style.transform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
-    // 4. 統合された透明度・インデックス管理
-    allPanels.forEach((p, i) => {
-      const baseAngle = i * 36;
-      const rad = (baseAngle + visualAngle) * Math.PI / 180;
-      const z = Math.cos(rad); // 正面度(1が正面)
+    // 4. 各パネルの透明度・可視性計算
+    // 表(outer)の処理
+    frontPanels.forEach((p, i) => {
+      const angle = i * STEP;
+      const rad = (angle + visualAngle) * Math.PI / 180;
+      const z = Math.cos(rad); // 正面=1, 真横=0, 奥=-1
 
-      // カメラの方向（z > -0.1）を向いている間だけ表示
-      if (z > -0.1) {
-        p.style.opacity = Math.min((z + 0.1) * 8, 1);
+      // 手前（z > 0）にいる時だけ表示し、サイドへ行くほどフェードアウト
+      if (z > 0) {
+        p.style.opacity = Math.min(z * 3, 1);
         p.style.visibility = "visible";
       } else {
         p.style.opacity = 0;
         p.style.visibility = "hidden";
       }
 
-      // 表面カード(0-4)が正面に来たときにドットを更新
-      if (i < 5 && z > 0.98 && i !== prevIndex) {
+      // ドットのインデックス更新判定（正面に来た瞬間）
+      if (z > 0.98 && i !== prevIndex) {
         options.onIndexChange?.(i);
         prevIndex = i;
+      }
+    });
+
+    // 裏(inner)の処理
+    backPanels.forEach((p, i) => {
+      const angle = i * STEP;
+      const rad = (angle + visualAngle) * Math.PI / 180;
+      const z = Math.cos(rad);
+
+      // 奥側（z < 0）にいる時、つまり表が後ろを向いている時にうっすら表示
+      if (z < 0) {
+        // -z を使うことで、一番奥にいる時が一番濃くなるように設定（最大 0.45）
+        p.style.opacity = Math.min(-z * 0.8, 0.45);
+        p.style.visibility = "visible";
+      } else {
+        p.style.opacity = 0;
+        p.style.visibility = "hidden";
       }
     });
   }
@@ -88,6 +115,7 @@ export function initCarousel3D(options = {}) {
     rafId = requestAnimationFrame(animate);
   }
 
+  // 公開 API
   return {
     start() {
       if (rafId) return;
@@ -102,12 +130,31 @@ export function initCarousel3D(options = {}) {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = null;
     },
-    startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
-    endHold()   { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
-    startAuto() { mode = "auto"; autoStartTime = performance.now(); },
-    startDrag() { dragSpeed = 0; },
-    moveDrag(dx){ dragSpeed += dx * 0.05; },
-    setExtraSpeed(v){ extraSpeed = v; },
-    reset(speed = BASE_SPEED){ visualAngle = 0; baseSpeed = speed; }
+    startHold() {
+      if (mode !== "auto" && mode !== "exit") mode = "hold";
+    },
+    endHold() {
+      if (mode === "hold") {
+        mode = "normal";
+        idleStartTime = performance.now();
+      }
+    },
+    startAuto() {
+      mode = "auto";
+      autoStartTime = performance.now();
+    },
+    startDrag() {
+      dragSpeed = 0;
+    },
+    moveDrag(dx) {
+      dragSpeed += dx * 0.05;
+    },
+    setExtraSpeed(v) {
+      extraSpeed = v;
+    },
+    reset(speed = BASE_SPEED) {
+      visualAngle = 0;
+      baseSpeed = speed;
+    }
   };
 }
