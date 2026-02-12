@@ -65,7 +65,7 @@ initLoader(loader, () => {
     
     const backCyl = document.querySelector(".cylinder-back");
     if (backCyl) backCyl.style.visibility = "visible";
-  }, 1000); 
+  }, 800); 
 
   // 自動遷移の予約（ここを initLoader の中に入れる）
   startAutoTransition(goChapter25);
