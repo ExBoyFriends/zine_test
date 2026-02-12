@@ -120,11 +120,10 @@ export function initCarousel3D(options = {}) {
       if (rafId) return;
       idleStartTime = performance.now();
       updateRender(idleStartTime);
-      requestAnimationFrame(() => {
-        cylinder.classList.add('cylinder-ready');
-        rafId = requestAnimationFrame(animate);
-      });
+      
+      rafId = requestAnimationFrame(animate);
     },
+    
     stop() {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = null;
