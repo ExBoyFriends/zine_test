@@ -23,6 +23,7 @@ html, body {
 }
 
 /* --- 半径設定 --- */
+
 .chapter {
   position: relative;
   width: 100%;
@@ -45,8 +46,6 @@ html, body {
   height: 0;
   transform-style: preserve-3d;
   transform: translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(0deg);
-  /* ★ 修正点: visibility だけを即座に切り替え、opacity は親(chapter)に任せる */
-  /* もしくは秒数を親と完全に一致させる。ここでは親のフェードを利用するためシンプルにします */
   visibility: hidden;
   opacity: 0;
   transition: opacity 1.2s ease;
