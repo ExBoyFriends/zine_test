@@ -106,7 +106,10 @@ export function initCarousel3D(options = {}) {
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
       p.style.transform = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
-      p.style.opacity = z > 0 ? 1 : 0; // 手前の半円だけ表示
+      // z > 0 (手前) の時は 1、真横 (z = 0) に近づくほど 0 に近づける
+      // clamp(z * 5) などの係数で、消え始めるタイミングを調整できます
+      const opacity = Math.min(Math.max(z * 3, 0), 1); 
+      p.style.opacity = opacity;
     });
 
     // --- backパネル配置（半円だけ表示） ---
@@ -115,7 +118,10 @@ export function initCarousel3D(options = {}) {
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
       p.style.transform = `rotateY(${base}deg) translateZ(${R_BACK}px)rotateY(180deg)`;
-      p.style.opacity = z < 0 ? 1 : 0; // 奥の半円だけ表示
+      // z < 0 (奥側) の時に表示。同様に真横でふわっと消す
+      // -z を使うことで奥に行くほど 1 になる
+      const opacity = Math.min(Math.max(-z * 3, 0), 1);
+      p.style.opacity = opacity;
     });
 
     rafId = requestAnimationFrame(animate);
