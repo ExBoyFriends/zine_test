@@ -1,9 +1,9 @@
 //carousel3d.js
+
 export function initCarousel3D(options = {}) {
   const cylinder = document.querySelector(".main-cylinder");
   const frontPanels = [...document.querySelectorAll(".outer")];
   const backPanels = [...document.querySelectorAll(".inner")];
-
   if (!cylinder) return null;
 
   const COUNT = 5;
@@ -26,7 +26,6 @@ export function initCarousel3D(options = {}) {
   let prevIndex = -1;
   let idleStartTime = 0;
   let autoStartTime = 0;
-
   let firstFrame = true;
 
   function updateRender(now) {
@@ -46,10 +45,7 @@ export function initCarousel3D(options = {}) {
         const t = Math.pow(elapsed / (AUTO_TOTAL - AUTO_FINAL), 3);
         baseSpeed += (Math.max(baseSpeed, AUTO_MAX * t) - baseSpeed) * 0.05;
       }
-      if (elapsed >= AUTO_TOTAL) {
-        mode = "exit";
-        options.onExit?.();
-      }
+      if (elapsed >= AUTO_TOTAL) { mode = "exit"; options.onExit?.(); }
     } else if (mode === "exit") {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
@@ -58,76 +54,40 @@ export function initCarousel3D(options = {}) {
       const totalSpeed = baseSpeed + dragSpeed + extraSpeed;
       dragSpeed *= 0.85;
       visualAngle += totalSpeed;
-    } else {
-      firstFrame = false;
-    }
+    } else { firstFrame = false; }
 
-    // --- カメラ少し下げた位置で回転適用 ---
     cylinder.style.transform =
-      `rotateX(-18deg) rotateY(${visualAngle}deg) translateY(35px) translateZ(0)`;
+      `rotateX(-18deg) rotateY(${visualAngle}deg) translateY(45px) translateZ(0)`;
 
     frontPanels.forEach((p, i) => {
       const angle = i * STEP;
       const rad = (angle + visualAngle) * Math.PI / 180;
       const z = Math.cos(rad);
-
-      if (z > 0.05) {
-        p.style.opacity = Math.pow(z, 0.8);
-        p.style.visibility = "visible";
-      } else {
-        p.style.opacity = 0;
-        p.style.visibility = "hidden";
-      }
-
-      if (z > 0.98 && i !== prevIndex) {
-        options.onIndexChange?.(i);
-        prevIndex = i;
-      }
+      if (z > 0.05) { p.style.opacity = Math.pow(z, 0.8); p.style.visibility = "visible"; }
+      else { p.style.opacity = 0; p.style.visibility = "hidden"; }
+      if (z > 0.98 && i !== prevIndex) { options.onIndexChange?.(i); prevIndex = i; }
     });
 
     backPanels.forEach((p, i) => {
       const angle = i * STEP;
       const rad = (angle + visualAngle) * Math.PI / 180;
       const z = Math.cos(rad);
-
-      if (z < 0) {
-        p.style.opacity = Math.min(-z * 0.8, 0.45);
-        p.style.visibility = "visible";
-      } else {
-        p.style.opacity = 0;
-        p.style.visibility = "hidden";
-      }
+      if (z < 0) { p.style.opacity = Math.min(-z * 0.8, 0.45); p.style.visibility = "visible"; }
+      else { p.style.opacity = 0; p.style.visibility = "hidden"; }
     });
   }
 
-  function animate(now) {
-    updateRender(now);
-    rafId = requestAnimationFrame(animate);
-  }
+  function animate(now) { updateRender(now); rafId = requestAnimationFrame(animate); }
 
   return {
-    start() {
-      if (rafId) return;
-      firstFrame = true;
-      idleStartTime = performance.now();
-      requestAnimationFrame(() => rafId = requestAnimationFrame(animate));
-    },
-    stop() {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = null;
-    },
+    start() { if (rafId) return; firstFrame = true; idleStartTime = performance.now(); requestAnimationFrame(() => rafId = requestAnimationFrame(animate)); },
+    stop() { if (rafId) cancelAnimationFrame(rafId); rafId = null; },
     startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
     endHold() { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
     startAuto() { mode = "auto"; autoStartTime = performance.now(); },
     startDrag() { dragSpeed = 0; },
     moveDrag(dx) { dragSpeed += dx * 0.05; },
     setExtraSpeed(v) { extraSpeed = v; },
-    reset(speed = BASE_SPEED) {
-      visualAngle = 0;
-      baseSpeed = speed;
-      firstFrame = true;
-      cylinder.style.transform =
-        `rotateX(-18deg) rotateY(0deg) translateY(35px) translateZ(0)`;
-    }
+    reset(speed = BASE_SPEED) { visualAngle = 0; baseSpeed = speed; firstFrame = true; cylinder.style.transform = `rotateX(-18deg) rotateY(0deg) translateY(45px) translateZ(0)`; }
   };
 }
