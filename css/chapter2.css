@@ -78,12 +78,10 @@ img {
 /* --- cylinder-back の修正 --- */
 .cylinder-back {
   pointer-events: none;
-  
-  /* JSが動く前の一瞬だけ隠す（!importantは付けない） */
   visibility: hidden; 
 
   /* JSの R_BACK=170 と rotateX(-22deg) にミリ単位で合わせる */
-  transform: translate(-50%, -50%) rotateX(-22deg) translateZ(-170px) rotateY(180deg);
+  transform: translate(-50%, -50%) rotateX(-22deg);
 }
 /* ===================== Panels ===================== */
 .panel, .outer, .inner {
