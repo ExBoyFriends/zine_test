@@ -116,18 +116,26 @@ export function initCarousel3D(options = {}) {
       p.style.visibility = z > 0 ? "visible" : "hidden";
     });
     
-    // --- backパネル配置（半円だけ表示） ---
+  // --- backパネル配置（半円だけ表示） ---
     backPanels.forEach((p) => {
       const base = parseFloat(p.dataset.base);
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
-     // rotateY(180deg) で画像を表に向ける
+      
+      // rotateY(180deg) で画像を表に向ける
       p.style.transform = `rotateY(${base}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
 
-      // zが0より小さい（奥半分）の時だけ表示。
+      // zが0より小さい（奥半分）の時だけ表示
       const opacity = z < 0 ? Math.min(-z * 20, 1) : 0;
       p.style.opacity = opacity;
-      p.style.visibility = z < 0 ? "visible" : "hidden";
+
+      // ★ここを置き換え：
+      // 計算結果が z < 0 (奥側) になった瞬間だけ、CSSの強制非表示を上書きして表示させる
+      if (z < 0) {
+        p.style.setProperty("visibility", "visible", "important");
+      } else {
+        p.style.setProperty("visibility", "hidden", "important");
+      }
     });
 
     rafId = requestAnimationFrame(animate);
