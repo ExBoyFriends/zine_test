@@ -62,12 +62,12 @@ img {
   position: absolute;
   transform-style: preserve-3d;
   contain: none;
-  transform: translateZ(-2000px)
+ 
 }
 
 .cylinder-back {
   pointer-events: none;
-  transform: translateZ(-500px);
+ 
 }
 
 /* ===================== Panels ===================== */
