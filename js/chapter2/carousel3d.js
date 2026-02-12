@@ -69,22 +69,22 @@ export function initCarousel3D(options = {}) {
     // 3. 親シリンダーの回転適用（中央固定を維持）
     cylinder.style.transform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
-    // 4. 各パネルの透明度・可視性計算
-    // 表(outer)の処理
+  // 4. 表(outer)の処理
     frontPanels.forEach((p, i) => {
       const angle = i * STEP;
       const rad = (angle + visualAngle) * Math.PI / 180;
-      const z = Math.cos(rad); // 正面=1, 真横=0, 奥=-1
+      const z = Math.cos(rad);
 
-      // 手前（z > 0）にいる時だけ表示し、サイドへ行くほどフェードアウト
-      if (z > 0) {
-        p.style.opacity = Math.min(z * 3, 1);
+      // z > 0.2 くらいで早めにフェードを開始させ、サイドの「消えゆく感じ」を強調
+      if (z > 0.1) {
+        // 指数関数的に透明度を変えると、より「きゅっと」した質感になります
+        p.style.opacity = Math.pow(z, 1.2); 
         p.style.visibility = "visible";
       } else {
         p.style.opacity = 0;
         p.style.visibility = "hidden";
       }
-
+      
       // ドットのインデックス更新判定（正面に来た瞬間）
       if (z > 0.98 && i !== prevIndex) {
         options.onIndexChange?.(i);
@@ -92,16 +92,15 @@ export function initCarousel3D(options = {}) {
       }
     });
 
-    // 裏(inner)の処理
+   // 5. 裏(inner)の処理
     backPanels.forEach((p, i) => {
       const angle = i * STEP;
       const rad = (angle + visualAngle) * Math.PI / 180;
       const z = Math.cos(rad);
 
-      // 奥側（z < 0）にいる時、つまり表が後ろを向いている時にうっすら表示
-      if (z < 0) {
-        // -z を使うことで、一番奥にいる時が一番濃くなるように設定（最大 0.45）
-        p.style.opacity = Math.min(-z * 0.8, 0.45);
+      // 奥側の裏面は、より「影」の中に沈んでいるように
+      if (z < -0.1) {
+        p.style.opacity = Math.min(Math.abs(z) * 0.6, 0.4);
         p.style.visibility = "visible";
       } else {
         p.style.opacity = 0;
