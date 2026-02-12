@@ -76,8 +76,7 @@ if (!firstFrame) {
   // 3. 親シリンダーの回転適用
     // 望遠(perspective:3000)なので、少し手前(translateZ(400px))に出してサイズを稼ぐ
     cylinder.style.transform =
-  `rotateX(-22deg)
-   rotateY(${visualAngle}deg)`;
+  `rotateX(-22deg) rotateY(${visualAngle}deg) translateZ(0)`;
 
     // 4. 表(outer)の処理
     frontPanels.forEach((p, i) => {
