@@ -29,8 +29,6 @@ body {
   will-change: opacity;
   /* 2.8秒の贅沢な夜明けイージングに統一 */
   transition: opacity 2.8s cubic-bezier(.22, .61, .36, 1);
-
-  transform-style: preserve-3d;
 }
 
 .chapter.visible {
