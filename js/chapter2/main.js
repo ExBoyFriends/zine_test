@@ -62,19 +62,27 @@ if (carousel) {
 
 // 3. ローダー完了後のシーケンス
 initLoader(loader, () => {
-  if (carousel) {
-    carousel.start(); // 3D計算開始
-  }
+  // main.js の中で cylinder を再取得するか、carousel から取得できるようにします
+  const cylinder = document.querySelector(".main-cylinder");
 
-  // 3-2. 配置が確定するわずかな時間の後、フェードイン
-  // 100msだと「計算中」にフェードが始まってしまうので
-  // 300ms〜400ms 程度確保し、描画が安定してから visible にします
- setTimeout(() => {
-    chapter?.classList.add("visible");
-    dotsWrap?.classList.add("visible");
-  }, 350); // ここを 350 に変更
+  if (carousel && cylinder) {
+    // 1. まず座標計算を1回実行（この時 cylinder は opacity 0 なので見えません）
+    carousel.reset(0.22); 
+    carousel.start();
+    
+    // 2. ブラウザに「今の座標（transform）を即座に適用して」と強制命令（リフロー）
+    // これにより CSS の初期値との「ジャンプ」を防ぎます
+    void cylinder.offsetWidth; 
 
-  // 3-3. 一定時間操作がない場合の自動遷移タイマー開始
+    // 3. 座標が確定した後にフェードインさせる
+    setTimeout(() => {
+      chapter?.classList.add("visible");
+      cylinder.classList.add("cylinder-ready");
+      dotsWrap?.classList.add("visible");
+    }, 100);
+  } 
+
+  // 自動遷移タイマーもここ（initLoader の中）で開始
   startAutoTransition(goChapter25);
 });
 
