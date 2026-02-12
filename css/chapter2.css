@@ -58,9 +58,19 @@ html, body {
   transform: translate(-50%, -50%) rotateX(-22deg);
 }
 
+.cylinder-front .outer {
+  transform: translateZ(185px);
+}
+
 .cylinder-back {
-  /* JS の R_BACK と合わせる。visibility: hidden は JS が z 判定をしてから解除される */
-  transform: translate(-50%, -50%) rotateX(-22deg) rotateY(180deg);
+ /* 修正：最初から translateZ(-170px) を強制する */
+  /* これで、手前のカード(Z=0〜185)と重なることは物理的に不可能です */
+  transform: translate(-50%, -50%) rotateX(-22deg) translateZ(-170px) rotateY(180deg) !important;
+  
+  /* 最初は隠しておき、JSが動いたら出す（これは維持） */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.8s ease;
 }
 
 /* ===================== Panels ===================== */
