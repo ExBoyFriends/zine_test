@@ -67,6 +67,10 @@ img {
 
 .cylinder-back {
   pointer-events: none;
+  /* JSが効く前は、物理的に「後ろ」に配置しておく */
+  transform: translate(-50%, -50%) translateZ(-1000px);
+  /* JSが効く前は非表示にしておく */
+  visibility: hidden;
  
 }
 
