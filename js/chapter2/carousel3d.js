@@ -1,7 +1,5 @@
-/**
- * Chapter 2: 3D Cylinder Carousel
- * 5枚のカードを表裏ペアで管理し、72度ピッチで回転させる
- */
+//carousel3d.js
+
 export function initCarousel3D(options = {}) {
   const cylinder = document.querySelector(".main-cylinder");
   const frontPanels = [...document.querySelectorAll(".outer")];
@@ -9,36 +7,29 @@ export function initCarousel3D(options = {}) {
 
   if (!cylinder) return null;
 
-  // --- 設定定数 ---
-  const COUNT = 5;          // カード枚数
-  const STEP = 360 / COUNT; // 72度刻み
-  const BASE_SPEED = 0.22;  // 通常時の回転速度
-  const HOLD_SPEED = 8;     // 長押し時の加速速度
-  const AUTO_MAX   = 12;    // 自動遷移時の最大速度
-  const EXIT_MAX   = 16;    // 終了時の爆走速度
-  const IDLE_MAX   = 1.6;   // 放置時の最高速度
-  const IDLE_TIME  = 25000; // 加速完了までの時間
-  const AUTO_TOTAL = 35000; // 自動遷移の総時間
-  const AUTO_FINAL = 6000;  // 最終加速フェーズの時間
+  const COUNT = 5;
+  const STEP = 360 / COUNT;
+  const BASE_SPEED = 0.22;
+  const HOLD_SPEED = 8;
+  const AUTO_MAX   = 12;
+  const EXIT_MAX   = 16;
+  const IDLE_MAX   = 1.6;
+  const IDLE_TIME  = 25000;
+  const AUTO_TOTAL = 35000;
+  const AUTO_FINAL = 6000;
 
-  // --- 内部状態 ---
-  let visualAngle = 0;      // 現在の回転角度
+  let visualAngle = 0;
   let baseSpeed   = BASE_SPEED;
   let dragSpeed   = 0;
   let extraSpeed  = 0;
-  let mode        = "normal"; // normal | hold | auto | exit
+  let mode        = "normal";
   let rafId       = null;
   let prevIndex   = -1;
   let idleStartTime = 0;
   let autoStartTime = 0;
-
   let firstFrame = true;
 
-  /**
-   * 毎フレームの計算と描画
-   */
   function updateRender(now) {
-    // 1. スピード計算（モードに応じた加速処理）
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
@@ -63,7 +54,6 @@ export function initCarousel3D(options = {}) {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
-    // 2. 角度の更新
     if (!firstFrame) {
       const totalSpeed = baseSpeed + dragSpeed + extraSpeed;
       dragSpeed *= 0.85;
@@ -72,11 +62,10 @@ export function initCarousel3D(options = {}) {
       firstFrame = false;
     }
 
-    // 3. 親シリンダーの回転適用（カメラ位置を少し下げる）
+    // カメラ少し下げ
     cylinder.style.transform =
-      `rotateX(-18deg) rotateY(${visualAngle}deg) translateY(15px) translateZ(0)`;
+      `rotateX(-15deg) rotateY(${visualAngle}deg) translateY(25px) translateZ(0)`;
 
-    // 4. 表(outer)の処理
     frontPanels.forEach((p, i) => {
       const angle = i * STEP;
       const rad = (angle + visualAngle) * Math.PI / 180;
@@ -90,14 +79,12 @@ export function initCarousel3D(options = {}) {
         p.style.visibility = "hidden";
       }
 
-      // 正面に来た瞬間にインデックス更新
       if (z > 0.98 && i !== prevIndex) {
         options.onIndexChange?.(i);
         prevIndex = i;
       }
     });
 
-    // 5. 裏(inner)の処理
     backPanels.forEach((p, i) => {
       const angle = i * STEP;
       const rad = (angle + visualAngle) * Math.PI / 180;
@@ -118,11 +105,9 @@ export function initCarousel3D(options = {}) {
     rafId = requestAnimationFrame(animate);
   }
 
-  // 公開 API
   return {
     start() {
       if (rafId) return;
-
       firstFrame = true;
       idleStartTime = performance.now();
       requestAnimationFrame(() => {
@@ -167,10 +152,8 @@ export function initCarousel3D(options = {}) {
       visualAngle = 0;
       baseSpeed = speed;
       firstFrame = true;
-
-      // 初期 transform を明示的に即適用
       cylinder.style.transform =
-        `rotateX(-18deg) rotateY(0deg) translateY(15px) translateZ(0)`;
+        `rotateX(-15deg) rotateY(0deg) translateY(25px) translateZ(0)`;
     }
   };
 }
