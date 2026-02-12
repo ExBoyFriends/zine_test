@@ -20,6 +20,15 @@
 }
 
 /* ===================== Unified Cylinder ===================== */
+.cylinder-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateZ(400px);
+  transform-style: preserve-3d;
+}
+
+
 .cylinder.main-cylinder {
   position: absolute;
   top: 50%;
