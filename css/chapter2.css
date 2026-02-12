@@ -19,7 +19,12 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-}
+
+  /* 初期表示で正しい角度・位置に固定 */
+  transform: translateZ(0) rotateX(-22deg);
+  opacity: 1; /* 初期表示で消えない場合 */
+  pointer-events: auto;
+  will-change: transform, opacity;
 
 /* ===================== Unified Cylinder ===================== */
 .cylinder-wrapper {
