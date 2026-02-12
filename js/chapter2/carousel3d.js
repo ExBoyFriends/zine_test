@@ -67,7 +67,7 @@ export function initCarousel3D(options = {}) {
     visualAngle += totalSpeed;
 
     // 3. 親シリンダーの回転適用（中央固定を維持）
-    cylinder.style.transform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+    cylinder.style.transform = `translate(-50%, -50%) rotateX(-12deg) rotateY(${visualAngle}deg)`;
 
   // 4. 表(outer)の処理
     frontPanels.forEach((p, i) => {
