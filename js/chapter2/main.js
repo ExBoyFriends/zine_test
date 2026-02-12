@@ -1,5 +1,4 @@
 // chapter2/main.js
-
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
 import { initCarousel3D } from "./carousel3d.js";
@@ -11,20 +10,12 @@ import {
 } from "./holdTransition.js";
 import { playExitTransition } from "./transitionOut.js";
 import { initGlitchLayer } from "./effects.js";
-import { fadeOutAndGo, fadeInStart } from "../utils/fade.js";
 
-/* =====================
-   DOM
-===================== */
-const scene    = document.querySelector(".scene");
 const chapter  = document.querySelector(".chapter");
 const loader   = document.getElementById("loader");
 const dotsWrap = document.querySelector(".dots");
 const dots     = [...document.querySelectorAll(".dot")];
 
-/* =====================
-   Dots
-===================== */
 function updateDots(index = 0) {
   const COUNT = dots.length;
   const reversedIndex = (COUNT - 1) - index;
@@ -33,14 +24,9 @@ function updateDots(index = 0) {
   });
 }
 
-/* =====================
-   Chapter2 → 2.5 自動遷移
-===================== */
 function goChapter25() {
   if (goChapter25._done) return;
   goChapter25._done = true;
-
-  // 独自 exit アニメーションで遷移
   playExitTransition({
     onFinish() {
       location.href = "../HTML/chapter2_5.html";
@@ -49,31 +35,6 @@ function goChapter25() {
 }
 goChapter25._done = false;
 
-/* =====================
-   Loader & 初期化
-===================== */
-initLoader(loader, () => {
-  // --- 1. 計算だけを先に済ませる ---
-  if (carousel) {
-    carousel.start(); 
-  }
-
-  // --- 2. 幕が開く「直前」に姿を現すように予約する ---
-  setTimeout(() => {
-    chapter?.classList.add("visible");
-    dotsWrap?.classList.add("visible");
-    
-    const backCyl = document.querySelector(".cylinder-back");
-    if (backCyl) backCyl.style.visibility = "visible";
-  }, 800); 
-
-  // 自動遷移の予約（ここを initLoader の中に入れる）
-  startAutoTransition(goChapter25);
-}); 
-
-/* =====================
-   Carousel 3D
-===================== */
 const carousel = initCarousel3D({
   onIndexChange(index) {
     updateDots(index);
@@ -82,20 +43,29 @@ const carousel = initCarousel3D({
     goChapter25();
   }
 });
+
 if (carousel) {
   window.__carousel__ = carousel;
   initDragInput(carousel);
   updateDots(0);
 }
 
-/* =====================
-   Glitch 初期化
-===================== */
+initLoader(loader, () => {
+  // 1. まず 3D 計算を開始（不透明度 0 なので見えません）
+  if (carousel) carousel.start();
+
+  // 2. 3D の初期化が安定し、ブラウザの負荷が下がるまで少し待つ
+  setTimeout(() => {
+    // 3. 満を持して、滑らかなフェードインを開始
+    chapter?.classList.add("visible");
+    dotsWrap?.classList.add("visible");
+  }, 1200); 
+
+  startAutoTransition(goChapter25);
+});
+
 initGlitchLayer?.();
 
-/* =====================
-   bfcache / 戻ったとき
-===================== */
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
   resetTransitionState();
@@ -103,10 +73,6 @@ window.addEventListener("pageshow", e => {
   window.__carousel__?.stop?.();
 });
 
-/* =====================
-   強制 exit（長押し完遂）
-===================== */
 window.addEventListener("force-exit", () => {
   goChapter25();
 });
-
