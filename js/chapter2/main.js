@@ -74,15 +74,14 @@ initLoader(loader, () => {
     // これにより CSS の初期値との「ジャンプ」を防ぎます
     void cylinder.offsetWidth; 
 
-    // 3. 座標が確定した後にフェードインさせる
-    setTimeout(() => {
+
+    requestAnimationFrame(() => {
       chapter?.classList.add("visible");
-      cylinder.classList.add("cylinder-ready");
+      cylinder.classList.add("cylinder-ready"); // ここで初めて表示！
       dotsWrap?.classList.add("visible");
-    }, 100);
+    });
   } 
 
-  // 自動遷移タイマーもここ（initLoader の中）で開始
   startAutoTransition(goChapter25);
 });
 
