@@ -1,4 +1,5 @@
 // chapter2/carousel3d.js
+
 export function initCarousel3D(options = {}) {
   const cylinderFront = document.querySelector(".cylinder-front");
   const cylinderBack  = document.querySelector(".cylinder-back");
@@ -108,8 +109,8 @@ export function initCarousel3D(options = {}) {
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
 
-      p.style.transform = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
-      p.style.opacity   = z > 0 ? Math.min(z * 20, 1) : 0;
+      p.style.transform  = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
+      p.style.opacity    = z > 0 ? Math.min(z * 20, 1) : 0;
       p.style.visibility = z > 0 ? "visible" : "hidden";
     });
 
@@ -131,27 +132,30 @@ export function initCarousel3D(options = {}) {
     const startTime = performance.now();
     idleStartTime = startTime;
 
-    // 初期配置を即時適用（初動の奥パネル被り防止）
-    frontPanels.forEach(p => {
-      const base = parseFloat(p.dataset.base);
-      const rad  = (base + visualAngle) * Math.PI / 180;
-      const z    = Math.cos(rad);
-      p.style.transform  = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
-      p.style.opacity    = z > 0 ? Math.min(z * 20, 1) : 0;
-      p.style.visibility = z > 0 ? "visible" : "hidden";
-    });
+    // 初期フレームを即時描画して奥のパネルの被りを防ぐ
+    const setInitialFrame = (panels, R, isFront) => {
+      panels.forEach(p => {
+        const base = parseFloat(p.dataset.base);
+        const rad  = (base + visualAngle) * Math.PI / 180;
+        const z    = Math.cos(rad);
 
-    backPanels.forEach(p => {
-      const base = parseFloat(p.dataset.base);
-      const rad  = (base + visualAngle) * Math.PI / 180;
-      const z    = Math.cos(rad);
-      p.style.transform  = `rotateY(${base}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
-      p.style.opacity    = z < 0 ? Math.min(-z * 20, 1) : 0;
-      p.style.visibility = z < 0 ? "visible" : "hidden";
-    });
+        if (isFront) {
+          p.style.transform  = `rotateY(${base}deg) translateZ(${R}px)`;
+          p.style.opacity    = z > 0 ? Math.min(z * 20, 1) : 0;
+          p.style.visibility = z > 0 ? "visible" : "hidden";
+        } else {
+          p.style.transform  = `rotateY(${base}deg) translateZ(${R}px) rotateY(180deg)`;
+          p.style.opacity    = z < 0 ? Math.min(-z * 20, 1) : 0;
+          p.style.visibility = z < 0 ? "visible" : "hidden";
+        }
+      });
+    };
+
+    setInitialFrame(frontPanels, R_FRONT, true);
+    setInitialFrame(backPanels, R_BACK, false);
 
     // 描画ループ開始
-    animate(startTime);
+    rafId = requestAnimationFrame(animate);
   }
 
   function stop() {
