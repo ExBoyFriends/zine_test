@@ -39,10 +39,8 @@
   left: 50%;
   width: 1px;
   height: 1px;
-
   /* カメラ少し下げ、初期角度も更新 */
-  transform: rotateX(-18deg) rotateY(0deg) translateY(25px) translateZ(0);
-
+  transform: rotateX(-18deg) rotateY(0deg) translateY(35px) translateZ(0);
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
   will-change: transform;
@@ -65,42 +63,43 @@
   will-change: transform;
 }
 
+/* 前方パネルサイズ・位置調整 */
 .outer {
-  width: 200px;   /* 少し小さく */
-  height: 260px;
-  margin-left: -100px;
-  margin-top: -130px;
+  width: 250px;
+  height: 320px;
+  margin-left: -125px; /* 中央に配置 */
+  margin-top: -160px;  /* 中央に配置 */
 }
 
 .outer img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  image-rendering: -webkit-optimize-contrast;
 }
 
+/* 後方パネルサイズ・位置調整 */
 .inner {
-  width: 190px;
-  height: 250px;
-  margin-left: -95px;
-  margin-top: -125px;
+  width: 240px;
+  height: 310px;
+  margin-left: -120px;
+  margin-top: -155px;
   background: url("../image/top_b.png") center / contain no-repeat;
   filter: brightness(0.45);
 }
 
 /* 前方パネル */
-.outer:nth-child(1) { transform: rotateY(0deg) translateZ(160px); }
-.outer:nth-child(2) { transform: rotateY(72deg) translateZ(160px); }
-.outer:nth-child(3) { transform: rotateY(144deg) translateZ(160px); }
-.outer:nth-child(4) { transform: rotateY(216deg) translateZ(160px); }
-.outer:nth-child(5) { transform: rotateY(288deg) translateZ(160px); }
+.outer:nth-child(1) { transform: rotateY(0deg) translateX(0px) translateZ(185px); }
+.outer:nth-child(2) { transform: rotateY(72deg) translateX(0px) translateZ(185px); }
+.outer:nth-child(3) { transform: rotateY(144deg) translateX(0px) translateZ(185px); }
+.outer:nth-child(4) { transform: rotateY(216deg) translateX(0px) translateZ(185px); }
+.outer:nth-child(5) { transform: rotateY(288deg) translateX(0px) translateZ(185px); }
 
 /* 後方パネル */
-.inner:nth-child(6) { transform: rotateY(0deg) translateZ(172px) rotateY(180deg); }
-.inner:nth-child(7) { transform: rotateY(72deg) translateZ(172px) rotateY(180deg); }
-.inner:nth-child(8) { transform: rotateY(144deg) translateZ(172px) rotateY(180deg); }
-.inner:nth-child(9) { transform: rotateY(216deg) translateZ(172px) rotateY(180deg); }
-.inner:nth-child(10){ transform: rotateY(288deg) translateZ(172px) rotateY(180deg); }
+.inner:nth-child(6) { transform: rotateY(0deg) translateX(0px) translateZ(198px) rotateY(180deg); }
+.inner:nth-child(7) { transform: rotateY(72deg) translateX(0px) translateZ(198px) rotateY(180deg); }
+.inner:nth-child(8) { transform: rotateY(144deg) translateX(0px) translateZ(198px) rotateY(180deg); }
+.inner:nth-child(9) { transform: rotateY(216deg) translateX(0px) translateZ(198px) rotateY(180deg); }
+.inner:nth-child(10){ transform: rotateY(288deg) translateX(0px) translateZ(198px) rotateY(180deg); }
 
 /* ===================== UI & Effects ===================== */
 .glitch-overlay {
