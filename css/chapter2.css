@@ -33,10 +33,19 @@ html, body {
 .chapter.visible { opacity: 1; }
 
 .cylinder.main-cylinder {
-  /* 子要素（パネル）に 3D 配置を許可する */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
   transform-style: preserve-3d;
-  /* translate(-50%, -50%) で親の中心を画面中央に。rotateX で少し傾ける */
+  /* ここ！ JSの初期値と完全に一致させます */
   transform: translate(-50%, -50%) rotateX(-22deg) rotateY(0deg);
+  
+  opacity: 0;
+  visibility: hidden;
+  /* transition は opacity だけにする（transformを入れると計算開始時にゆっくり動いてしまうため） */
+  transition: opacity 1.2s ease; 
 }
 
 .panel {
