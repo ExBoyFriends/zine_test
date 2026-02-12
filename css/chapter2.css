@@ -16,9 +16,17 @@ html, body {
 .scene {
   position: fixed;
   inset: 0;
-  perspective: 1200px;
+  /* 1200px から 4000px へ。値を大きくするほど、手前と奥のサイズ差がなくなります */
+  perspective: 4000px; 
   perspective-origin: 50% 50%;
   transform-style: preserve-3d;
+}
+
+/* --- 半径設定 --- */
+/* 半径 300px のままだと、カメラを引いた分、全体が小さく見えるようになります */
+/* もし全体を大きく戻したい場合は、この 300px を 500px くらいに広げてください */
+.outer:nth-child(1) { 
+  transform: rotateY(0deg) translateZ(300px); 
 }
 
 .chapter {
