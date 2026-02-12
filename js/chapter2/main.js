@@ -68,7 +68,10 @@ initLoader(loader, () => {
     chapter?.classList.add("visible");
     dotsWrap?.classList.add("visible");
 
-    // 4. 配置がブラウザに受理された直後に、黒い幕を上げる
+   // 【追加】隠していた奥のシリンダーを表示許可する
+    const backCyl = document.querySelector(".cylinder-back");
+    if (backCyl) backCyl.style.visibility = "visible";
+
     setTimeout(() => {
       fadeInStart(1500); 
     }, 100);
