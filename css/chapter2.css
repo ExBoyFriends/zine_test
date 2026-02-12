@@ -16,7 +16,7 @@
   transform-style: preserve-3d;
 
   /* 初期表示の固定 transform */
-  transform: rotateX(-12deg) rotateY(0deg) translateX(0px) translateY(15px) translateZ(50px);
+ transform: rotateX(-8deg) rotateY(0deg) translateY(10px) translateZ(60px);
   opacity: 1;
   pointer-events: auto;
   will-change: opacity;
@@ -38,7 +38,7 @@
   left: 50%;
   width: 1px;
   height: 1px;
-  transform: rotateX(-12deg) rotateY(0deg) translateY(15px) translateZ(50px);
+   transform: rotateX(-8deg) rotateY(0deg) translateY(10px) translateZ(60px);
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
   will-change: transform;
