@@ -48,7 +48,7 @@ html, body {
   transform: translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(0deg);
   visibility: hidden;
   opacity: 0;
-  transition: opacity 1.2s ease;
+  transition: opacity 1.5s ease;
 }
 
 .cylinder-ready {
