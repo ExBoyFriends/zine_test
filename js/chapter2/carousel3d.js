@@ -127,10 +127,14 @@ export function initCarousel3D(options = {}) {
  // carousel3d.js の start()
 function start() {
   if (rafId) return;
+  
   const startTime = performance.now();
-  updateRender(startTime); // ここで配置確定
+  idleStartTime = startTime;
 
-  // 配置が終わった瞬間に、シリンダーを表示させる
+  // 1. まず計算だけ終わらせる
+  updateRender(startTime);
+
+  // 2. クラス追加は「即座」に行い、描画ループを回す
   cylinderFront.classList.add('cylinder-ready');
   cylinderBack.classList.add('cylinder-ready');
 
