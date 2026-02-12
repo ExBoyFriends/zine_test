@@ -124,18 +124,18 @@ export function initCarousel3D(options = {}) {
     rafId = requestAnimationFrame(animate);
   }
 
-  // ★ 外部から呼ぶための start 関数
-  function start() {
-    if (rafId) return; // 二重起動防止
-    const startTime = performance.now();
-    idleStartTime = startTime;
+ // carousel3d.js の start()
+function start() {
+  if (rafId) return;
+  const startTime = performance.now();
+  updateRender(startTime); // ここで配置確定
 
-    // 幕が開く前に「今この瞬間」に1回だけ配置を確定させる
-    updateRender(startTime);
+  // 配置が終わった瞬間に、シリンダーを表示させる
+  cylinderFront.classList.add('cylinder-ready');
+  cylinderBack.classList.add('cylinder-ready');
 
-    // その後ループ開始
-    rafId = requestAnimationFrame(animate);
-  }
+  rafId = requestAnimationFrame(animate);
+}
 
   function stop() {
     cancelAnimationFrame(rafId);
