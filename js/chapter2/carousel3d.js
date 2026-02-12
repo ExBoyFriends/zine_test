@@ -135,6 +135,9 @@ export function initCarousel3D(options = {}) {
 
   function start() {
     idleStartTime = performance.now();
+
+    animate(idleStartTime);
+    
     rafId = requestAnimationFrame(animate);
   }
 
