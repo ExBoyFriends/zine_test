@@ -1,8 +1,7 @@
 // chapter2/carousel3d.js
 export function initCarousel3D(options = {}) {
   const cylinder = document.querySelector(".main-cylinder");
-  const frontPanels = [...document.querySelectorAll(".outer")];
-  const backPanels = [...document.querySelectorAll(".inner")];
+  const allPanels = [...document.querySelectorAll(".outer, .inner")];
 
   if (!cylinder) return null;
 
@@ -28,7 +27,7 @@ export function initCarousel3D(options = {}) {
   let autoStartTime = 0;
 
   function updateRender(now) {
-    // 1. スピード計算（モード別）
+    // 1. スピード計算
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
@@ -53,34 +52,34 @@ export function initCarousel3D(options = {}) {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
-    // 2. 角度の更新
+    // 2. 回転更新
     const totalSpeed = baseSpeed + dragSpeed + extraSpeed;
     dragSpeed *= 0.85;
     visualAngle += totalSpeed;
 
-    // 3. 親シリンダーの回転（これが滑らかさの肝）
-cylinder.style.transform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+    // 3. 中央固定の回転
+    cylinder.style.transform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
-    // 4. パネルごとの不透明度とインデックス管理
-    frontPanels.forEach((p, i) => {
-      const rad = (i * 36 + visualAngle) * Math.PI / 180;
-      const z = Math.cos(rad);
-      p.style.opacity = z > 0 ? Math.min(z * 20, 1) : 0;
-      p.style.visibility = z > 0 ? "visible" : "hidden";
-      
-      // 正面に一番近いものを判定
-      if (z > 0.98 && i !== prevIndex) {
+    // 4. 統合された透明度・インデックス管理
+    allPanels.forEach((p, i) => {
+      const baseAngle = i * 36;
+      const rad = (baseAngle + visualAngle) * Math.PI / 180;
+      const z = Math.cos(rad); // 正面度(1が正面)
+
+      // カメラの方向（z > -0.1）を向いている間だけ表示
+      if (z > -0.1) {
+        p.style.opacity = Math.min((z + 0.1) * 8, 1);
+        p.style.visibility = "visible";
+      } else {
+        p.style.opacity = 0;
+        p.style.visibility = "hidden";
+      }
+
+      // 表面カード(0-4)が正面に来たときにドットを更新
+      if (i < 5 && z > 0.98 && i !== prevIndex) {
         options.onIndexChange?.(i);
         prevIndex = i;
       }
-    });
-
-    backPanels.forEach((p, i) => {
-      // インデックス5枚分(180度)ずらす
-      const rad = ((i + 5) * 36 + visualAngle) * Math.PI / 180;
-      const z = Math.cos(rad);
-      p.style.opacity = z < 0 ? Math.min(-z * 20, 1) : 0;
-      p.style.visibility = z < 0 ? "visible" : "hidden";
     });
   }
 
@@ -94,8 +93,6 @@ cylinder.style.transform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visu
       if (rafId) return;
       idleStartTime = performance.now();
       updateRender(idleStartTime);
-      
-      // 最初の計算が終わってから表示クラスを追加
       requestAnimationFrame(() => {
         cylinder.classList.add('cylinder-ready');
         rafId = requestAnimationFrame(animate);
