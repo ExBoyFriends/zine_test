@@ -38,7 +38,6 @@
   left: 50%;
   width: 1px;
   height: 1px;
-  transform: rotateX(-12deg) rotateY(0deg) translateX(10px) translateY(20px) translateZ(30px);
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
   will-change: transform;
