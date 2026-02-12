@@ -103,3 +103,12 @@
   transition: opacity 2.8s ease-in-out;
   opacity: 0;
 }
+
+
+#loader.reveal-start,
+#loader.reveal-start::after,
+#loader.reveal-start .loader-bg-image {
+  opacity: 0 !important;
+  transition: opacity 2.8s ease-in-out !important;
+  pointer-events: none !important;
+}
