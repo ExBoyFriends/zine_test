@@ -32,14 +32,14 @@ export function initLoader(loader, onComplete) {
       setTimeout(() => {
         loader.style.display = "none";
         if (loader.parentNode) loader.remove();
-      }, 2800);
-    }, 1000);
+      }, 3300);
+    }, 1500);
   };
 
   const start = () => {
     if (!document.body.contains(loader)) return;
-    // 4.2秒の鼓動演出のあと終了へ
-    setTimeout(finish, 4200);
+    // 5.2秒の鼓動演出のあと終了へ
+    setTimeout(finish, 5200);
   };
 
   if (document.readyState === "loading") {
