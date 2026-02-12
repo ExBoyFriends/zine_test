@@ -75,10 +75,9 @@ export function initCarousel3D(options = {}) {
       const rad = (angle + visualAngle) * Math.PI / 180;
       const z = Math.cos(rad);
 
-      // z > 0.2 くらいで早めにフェードを開始させ、サイドの「消えゆく感じ」を強調
-      if (z > 0.1) {
-        // 指数関数的に透明度を変えると、より「きゅっと」した質感になります
-        p.style.opacity = Math.pow(z, 1.2); 
+      // 半径を狭めた分、z > 0 (真横) ギリギリまで少しだけ見えるように調整
+      if (z > 0.05) {
+        p.style.opacity = Math.pow(z, 1.1); // 少しだけ減衰を緩やかに
         p.style.visibility = "visible";
       } else {
         p.style.opacity = 0;
