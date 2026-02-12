@@ -62,6 +62,7 @@ img {
   position: absolute;
   transform-style: preserve-3d;
   contain: none;
+  opacity: 0;
 }
 
 .cylinder-back {
