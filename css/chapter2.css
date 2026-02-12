@@ -7,9 +7,7 @@
   perspective: 1800px;
   perspective-origin: 50% 50%;
   transform-style: preserve-3d;
-
-   will-change: transform, opacity;
-  transform: translateZ(0) rotateX(-22deg);
+  will-change: transform, opacity;
 }
 
 /* --- 半径設定 --- */
@@ -21,10 +19,10 @@
   transform-style: preserve-3d;
 
   /* 初期表示で正しい角度・位置に固定 */
-  transform: translateZ(0) rotateX(-22deg);
+  transform: rotateX(-22deg) rotateY(0deg) translateZ(0); 
   opacity: 1; /* 初期表示で消えない場合 */
   pointer-events: auto;
-  will-change: transform, opacity;
+  will-change: opacity; 
 
 /* ===================== Unified Cylinder ===================== */
 .cylinder-wrapper {
