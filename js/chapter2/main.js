@@ -62,16 +62,17 @@ if (carousel) {
 
 // 3. ローダー完了後のシーケンス
 initLoader(loader, () => {
-  // 3-1. 3D計算を先行開始（この時点では opacity 0 なのでカクつきが見えない）
   if (carousel) {
-    carousel.start();
+    carousel.start(); // 3D計算開始
   }
 
   // 3-2. 配置が確定するわずかな時間の後、フェードイン
-  setTimeout(() => {
+  // 100msだと「計算中」にフェードが始まってしまうので
+  // 300ms〜400ms 程度確保し、描画が安定してから visible にします
+ setTimeout(() => {
     chapter?.classList.add("visible");
     dotsWrap?.classList.add("visible");
-  }, 100);
+  }, 350); // ここを 350 に変更
 
   // 3-3. 一定時間操作がない場合の自動遷移タイマー開始
   startAutoTransition(goChapter25);
