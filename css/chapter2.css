@@ -24,7 +24,15 @@ img {
 
 /* ===================== Structure ===================== */
 .chapter {
-  display: contents;
+ position: relative;
+  width: 100%;
+  height: 100%;
+  
+  /* 親から子へ 3D 空間を強制的に繋ぐ */
+  transform-style: preserve-3d; 
+  
+  /* will-change がある場合は、3D計算を邪魔しないように注意 */
+  will-change: transform;
 }
 
 .scene {
@@ -53,6 +61,7 @@ img {
   z-index: auto !important; 
   position: absolute;
   transform-style: preserve-3d;
+  contain: none;
 }
 
 .cylinder-back {
@@ -84,7 +93,7 @@ img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+  
 }
 
 .inner {
@@ -93,8 +102,9 @@ img {
   margin-left: -110px;
   margin-top: -145px;
   background: url("../image/top_b.png") center / contain no-repeat;
-  filter: brightness(0.45);
   opacity: 0.85;
+  background-color: rgba(0, 0, 0, 0.5); 
+  background-blend-mode: multiply;
 }
 
 /* ===================== UI & Effects ===================== */
