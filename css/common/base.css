@@ -25,12 +25,9 @@ body {
 .chapter {
   opacity: 0;
   pointer-events: none;
-  /* 描画負荷を軽減し、チラつきを抑えるための事前申告 */
   will-change: opacity;
-  /* 2.8秒の贅沢な夜明けイージングに統一 */
   transition: opacity 2.8s cubic-bezier(.22, .61, .36, 1);
 }
-
 .chapter.visible {
   opacity: 1 !important;
   pointer-events: auto;
