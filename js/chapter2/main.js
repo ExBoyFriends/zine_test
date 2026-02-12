@@ -76,10 +76,12 @@ initLoader(loader, () => {
 
 
   requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
     chapter?.classList.add("visible");
     cylinder.classList.add("cylinder-ready");
     dotsWrap?.classList.add("visible");
   });
+});
   } 
 
   startAutoTransition(goChapter25);
