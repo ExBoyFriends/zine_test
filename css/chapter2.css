@@ -109,10 +109,10 @@
   mix-blend-mode: overlay;
 }
 
-.glitch-active .scene {
+/* .glitch-active .scene {
   animation: glitchShake 0.15s infinite linear;
   filter: contrast(1.3) saturate(1.2);
-}
+}   */
 
 .glitch-active .glitch-overlay {
   opacity: 1;
