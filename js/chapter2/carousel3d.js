@@ -67,9 +67,8 @@ export function initCarousel3D(options = {}) {
     visualAngle += totalSpeed;
 
   // 3. 親シリンダーの回転適用
-    // パースを 4000px にした場合、少しだけ手前に寄せる(translateZ(500px))か、
-    // あるいは scale(1.2) などで大きさを調整すると、ちょうど良いサイズになります。
-    cylinder.style.transform = `translate(-50%, -50%) translateZ(500px) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+    // 望遠(perspective:3000)なので、少し手前(translateZ(400px))に出してサイズを稼ぐ
+    cylinder.style.transform = `translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
     // 4. 表(outer)の処理
     frontPanels.forEach((p, i) => {
@@ -77,9 +76,9 @@ export function initCarousel3D(options = {}) {
       const rad = (angle + visualAngle) * Math.PI / 180;
       const z = Math.cos(rad);
 
-      // z > 0 (手前半分) にいる時だけ表示
-      if (z > 0) {
-        p.style.opacity = Math.min(z * 3, 1);
+      // z > 0 (真横) ギリギリまで見えるようにし、重なりを美しく見せる
+      if (z > 0.05) {
+        p.style.opacity = Math.pow(z, 0.8); // 減衰をさらに緩やかに
         p.style.visibility = "visible";
       } else {
         p.style.opacity = 0;
