@@ -12,6 +12,7 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
+  // 回転関連定数
   const BASE_SPEED = 0.22;
   const HOLD_SPEED = 8;
   const AUTO_MAX   = 12;
@@ -25,18 +26,18 @@ export function initCarousel3D(options = {}) {
   let baseSpeed   = BASE_SPEED;
   let dragSpeed   = 0;
   let extraSpeed  = 0;
-  let mode = "normal";
+  let mode        = "normal";
 
   let rafId = null;
   let idleStartTime = performance.now();
   let autoStartTime = 0;
   let prevIndex = -1;
 
-  // front/back パネルに初期角度を設定
+  // 各パネルに初期角度をセット
   frontPanels.forEach((p, i) => p.dataset.base = i * SNAP);
   backPanels.forEach((p, i) => p.dataset.base = i * SNAP);
 
-  // 正面(front)パネルの判定
+  // 正面パネル判定
   function getFrontIndex() {
     let maxZ = -2;
     let closestIndex = 0;
@@ -52,10 +53,11 @@ export function initCarousel3D(options = {}) {
     return closestIndex;
   }
 
+  // アニメーションループ
   function animate(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
-    // --- モード別速度 ---
+    // モード別速度
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime)/IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
@@ -80,76 +82,78 @@ export function initCarousel3D(options = {}) {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
+    // ドラッグ＆ノイズ
     const dragNoise = Math.sin(now*(0.018+chaos*0.04)) * Math.sin(now*0.11) * chaos;
     const speed = baseSpeed * (1 + chaos*0.18*Math.sin(now*0.012)) +
                   (dragSpeed*(1-chaos*0.6) + dragSpeed*dragNoise*0.6) +
                   extraSpeed;
-
     dragSpeed *= 0.85;
     visualAngle += speed;
 
-    // --- 正面インデックス更新 ---
+    // 正面パネル更新
     const currentIndex = getFrontIndex();
     if (currentIndex !== prevIndex) {
       options.onIndexChange?.(currentIndex);
       prevIndex = currentIndex;
     }
 
-    // --- Cylinder 回転 ---
+    // Cylinder回転
     const cylTransform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
     if (cylinderFront) cylinderFront.style.transform = cylTransform;
     if (cylinderBack)  cylinderBack.style.transform  = cylTransform;
 
-    // --- frontパネル配置（半円だけ表示） ---
-    frontPanels.forEach((p) => {
+    // --- frontパネル ---
+    frontPanels.forEach(p => {
       const base = parseFloat(p.dataset.base);
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
+
       p.style.transform = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
-     // zが0より大きい（手前半分）の時だけ表示。
-      // 0になった瞬間に一瞬で消えるように調整
-      const opacity = z > 0 ? Math.min(z * 20, 1) : 0; 
-      p.style.opacity = opacity;
-      
-      // 完全に奥にいったら非表示(display)にするのも手ですが、
-      // まずは opacity: 0 で十分なはずです
+      p.style.opacity   = z > 0 ? Math.min(z * 20, 1) : 0;
       p.style.visibility = z > 0 ? "visible" : "hidden";
     });
-    
-  // --- backパネル配置（半円だけ表示） ---
-    backPanels.forEach((p) => {
+
+    // --- backパネル（反転） ---
+    backPanels.forEach(p => {
       const base = parseFloat(p.dataset.base);
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
-      
-      // rotateY(180deg) で画像を表に向ける
-      p.style.transform = `rotateY(${base}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
 
-      // zが0より小さい（奥半分）の時だけ表示
-      const opacity = z < 0 ? Math.min(-z * 20, 1) : 0;
-      p.style.opacity = opacity;
-
-      // ★ここを置き換え：
-      // 計算結果が z < 0 (奥側) になった瞬間だけ、CSSの強制非表示を上書きして表示させる
-      if (z < 0) {
-        p.style.setProperty("visibility", "visible", "important");
-      } else {
-        p.style.setProperty("visibility", "hidden", "important");
-      }
+      p.style.transform  = `rotateY(${base}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
+      p.style.opacity    = z < 0 ? Math.min(-z * 20, 1) : 0;
+      p.style.visibility = z < 0 ? "visible" : "hidden";
     });
 
     rafId = requestAnimationFrame(animate);
   }
 
- function start() {
-    // 1. まず現在の時間を取得
+  function start() {
     const startTime = performance.now();
     idleStartTime = startTime;
-    
-    // 2. 【重要】描画ループに入る「前」に、その場で全計算を完了させる
-    // これで 1コマ目から正しい位置・透明度になります
-    animate(startTime); 
+
+    // 初期配置を即時適用（初動の奥パネル被り防止）
+    frontPanels.forEach(p => {
+      const base = parseFloat(p.dataset.base);
+      const rad  = (base + visualAngle) * Math.PI / 180;
+      const z    = Math.cos(rad);
+      p.style.transform  = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
+      p.style.opacity    = z > 0 ? Math.min(z * 20, 1) : 0;
+      p.style.visibility = z > 0 ? "visible" : "hidden";
+    });
+
+    backPanels.forEach(p => {
+      const base = parseFloat(p.dataset.base);
+      const rad  = (base + visualAngle) * Math.PI / 180;
+      const z    = Math.cos(rad);
+      p.style.transform  = `rotateY(${base}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
+      p.style.opacity    = z < 0 ? Math.min(-z * 20, 1) : 0;
+      p.style.visibility = z < 0 ? "visible" : "hidden";
+    });
+
+    // 描画ループ開始
+    animate(startTime);
   }
+
   function stop() {
     cancelAnimationFrame(rafId);
     rafId = null;
@@ -158,14 +162,15 @@ export function initCarousel3D(options = {}) {
   start();
 
   return {
-    startHold() { if (mode!=="auto"&&mode!=="exit") mode="hold"; },
-    endHold()   { if (mode==="hold") { mode="normal"; idleStartTime=performance.now(); } },
-    startAuto() { mode="auto"; autoStartTime=performance.now(); },
-    startDrag() { dragSpeed=0; },
-    moveDrag(dx){ dragSpeed+=dx*0.05; },
+    startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
+    endHold()   { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
+    startAuto() { mode = "auto"; autoStartTime = performance.now(); },
+    startDrag() { dragSpeed = 0; },
+    moveDrag(dx){ dragSpeed += dx * 0.05; },
     endDrag()   {},
-    setExtraSpeed(v){ extraSpeed=v; },
+    setExtraSpeed(v){ extraSpeed = v; },
     stop,
-    reset(speed=BASE_SPEED){ visualAngle=0; baseSpeed=speed; }
+    reset(speed = BASE_SPEED){ visualAngle = 0; baseSpeed = speed; }
   };
 }
+
