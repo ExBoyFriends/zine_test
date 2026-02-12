@@ -28,7 +28,6 @@
   height: 0;
   transform-style: preserve-3d;
   will-change: transform;
-  transform: translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(0deg);
   opacity: 1;
  
 }
