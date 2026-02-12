@@ -47,6 +47,14 @@ img {
   transform: translate(-50%, -50%);
 }
 
+.cylinder-front,
+.cylinder-back {
+  /* ★z-indexを auto !important にしてグループ化を解除 */
+  z-index: auto !important; 
+  position: absolute;
+  transform-style: preserve-3d;
+}
+
 .cylinder-front {
   z-index: 2; /* 常に手前 */
 }
