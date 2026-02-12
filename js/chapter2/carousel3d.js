@@ -130,8 +130,12 @@ if (!firstFrame) {
       
       firstFrame = true; 
       
-      idleStartTime = performance.now();       
-      rafId = requestAnimationFrame(animate);
+      idleStartTime = performance.now();  
+
+      
+      requestAnimationFrame(() => {
+    rafId = requestAnimationFrame(animate);
+  });
     },
     
     stop() {
