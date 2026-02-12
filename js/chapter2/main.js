@@ -52,35 +52,25 @@ goChapter25._done = false;
 /* =====================
    Loader & 初期化
 ===================== */
-// chapter2/main.js
-
-// chapter2/main.js
-
 initLoader(loader, () => {
   // --- 1. 計算だけを先に済ませる ---
-  // この時点で 3D の配置（animate）が裏で1回走ります
   if (carousel) {
     carousel.start(); 
   }
 
-  // --- 2. まだ visible は付けない！ ---
-  // chapter.classList.add("visible") はここでは呼びません。
-  // なぜなら、CSS の transition: opacity 2.8s がここで始まってしまうと、
-  // loader が消えるのを待たずに透けて見えてしまうからです。
-
-  // --- 3. 幕が開く「直前」に姿を現すように予約する ---
-  // loader.js 側の 800ms の待機に合わせて、こちらも少し遅らせます。
+  // --- 2. 幕が開く「直前」に姿を現すように予約する ---
   setTimeout(() => {
     chapter?.classList.add("visible");
     dotsWrap?.classList.add("visible");
     
     const backCyl = document.querySelector(".cylinder-back");
     if (backCyl) backCyl.style.visibility = "visible";
-  }, 1000); // loader.js の待機時間 (800ms) より少しだけ後に設定
-});
+  }, 1000); 
 
+  // 自動遷移の予約（ここを initLoader の中に入れる）
   startAutoTransition(goChapter25);
-});
+}); 
+
 /* =====================
    Carousel 3D
 ===================== */
