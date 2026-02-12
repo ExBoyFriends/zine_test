@@ -112,17 +112,28 @@ export function initCarousel3D(options = {}) {
     rafId = requestAnimationFrame(animate);
   }
 
-  function start() {
-    if (rafId) return;
-    const startTime = performance.now();
-    idleStartTime = startTime;
-    updateRender(startTime);
+  // chapter2/carousel3d.js
 
+function start() {
+  if (rafId) return;
+  const startTime = performance.now();
+  idleStartTime = startTime;
+
+  // 1. まず「透明なまま」で計算だけ終わらせる
+  updateRender(startTime);
+
+  // 2. ブラウザに「配置が完了した」と確信させてから出現させる
+  cylinderFront.style.display = "block";
+  cylinderBack.style.display = "block";
+
+  // 3. 次の描画タイミングでクラス（opacity:1）を付与
+  requestAnimationFrame(() => {
     cylinderFront.classList.add('cylinder-ready');
     cylinderBack.classList.add('cylinder-ready');
+  });
 
-    rafId = requestAnimationFrame(animate);
-  }
+  rafId = requestAnimationFrame(animate);
+}
 
   function stop() {
     cancelAnimationFrame(rafId);
