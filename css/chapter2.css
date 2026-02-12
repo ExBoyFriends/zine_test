@@ -16,7 +16,8 @@ html, body {
 .scene {
   position: fixed;
   inset: 0;
-  perspective: 800px;
+  /* 800pxから1400pxへ。値を大きくするとカメラが遠ざかる効果になります */
+  perspective: 1400px; 
   perspective-origin: 50% 45%;
   transform-style: preserve-3d;
 }
@@ -67,11 +68,11 @@ html, body {
   margin-left: -115px;
   margin-top: -150px;
 }
-.outer:nth-child(1) { transform: rotateY(0deg) translateZ(220px); }
-.outer:nth-child(2) { transform: rotateY(72deg) translateZ(220px); }
-.outer:nth-child(3) { transform: rotateY(144deg) translateZ(220px); }
-.outer:nth-child(4) { transform: rotateY(216deg) translateZ(220px); }
-.outer:nth-child(5) { transform: rotateY(288deg) translateZ(220px); }
+.outer:nth-child(1) { transform: rotateY(0deg) translateZ(180px); }
+.outer:nth-child(2) { transform: rotateY(72deg) translateZ(180px); }
+.outer:nth-child(3) { transform: rotateY(144deg) translateZ(180px); }
+.outer:nth-child(4) { transform: rotateY(216deg) translateZ(180px); }
+.outer:nth-child(5) { transform: rotateY(288deg) translateZ(180px); }
 
 /* 後方パネル (表より少し内側の 218px) */
 .inner {
@@ -82,11 +83,11 @@ html, body {
   background: url("../image/top_b.png") center / contain no-repeat;
   filter: brightness(0.45);
 }
-.inner:nth-child(6) { transform: rotateY(0deg) translateZ(218px) rotateY(180deg); }
-.inner:nth-child(7) { transform: rotateY(72deg) translateZ(218px) rotateY(180deg); }
-.inner:nth-child(8) { transform: rotateY(144deg) translateZ(218px) rotateY(180deg); }
-.inner:nth-child(9) { transform: rotateY(216deg) translateZ(218px) rotateY(180deg); }
-.inner:nth-child(10) { transform: rotateY(288deg) translateZ(218px) rotateY(180deg); }
+.inner:nth-child(6) { transform: rotateY(0deg) translateZ(178px) rotateY(180deg); }
+.inner:nth-child(7) { transform: rotateY(72deg) translateZ(178px) rotateY(180deg); }
+.inner:nth-child(8) { transform: rotateY(144deg) translateZ(178px) rotateY(180deg); }
+.inner:nth-child(9) { transform: rotateY(216deg) translateZ(178px) rotateY(180deg); }
+.inner:nth-child(10) { transform: rotateY(288deg) translateZ(178px) rotateY(180deg); }
 
 /* ===================== UI & Effects ===================== */
 .dots { pointer-events: none; }
