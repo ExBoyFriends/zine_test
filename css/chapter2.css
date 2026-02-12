@@ -30,13 +30,12 @@
   transform-style: preserve-3d;
   transform: translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(0deg);
   opacity: 0;
-  visibility: hidden;
-  
+  pointer-events: none;
 }
 
 .cylinder-ready {
   opacity: 1;
-  visibility: visible;
+  pointer-events: auto;
 }
 
 /* ===================== Panels Layout ===================== */
