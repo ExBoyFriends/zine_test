@@ -112,27 +112,24 @@ export function initCarousel3D(options = {}) {
     rafId = requestAnimationFrame(animate);
   }
 
-  // chapter2/carousel3d.js
 
 function start() {
   if (rafId) return;
   const startTime = performance.now();
   idleStartTime = startTime;
 
-  // 1. まず「透明なまま」で計算だけ終わらせる
+  // ① まず「透明なまま」で1回計算を実行し、トランプを円形に並べる
   updateRender(startTime);
 
-  // 2. ブラウザに「配置が完了した」と確信させてから出現させる
-  cylinderFront.style.display = "block";
-  cylinderBack.style.display = "block";
-
-  // 3. 次の描画タイミングでクラス（opacity:1）を付与
+  // ② ほんの一瞬（1フレーム）だけ待ち、ブラウザに「配置完了」を認識させる
   requestAnimationFrame(() => {
+    // ③ 配置が終わってからクラスを付け、一気に表示させる
     cylinderFront.classList.add('cylinder-ready');
     cylinderBack.classList.add('cylinder-ready');
+    
+    // アニメーションループ開始
+    rafId = requestAnimationFrame(animate);
   });
-
-  rafId = requestAnimationFrame(animate);
 }
 
   function stop() {
