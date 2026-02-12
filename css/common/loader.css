@@ -65,9 +65,9 @@
 /* 終了フェーズ1：暗転 */
 #loader.swallow-darkness #loader-shadow {
   animation: none !important;
-  transition: transform 1.0s cubic-bezier(0.2, 1, 0.2, 1);
-  /* scaleは3.0程度で十分画面を覆えます。大きくしすぎないのがコツ */
-  transform: scale(3.0) translate(0, 0) translateZ(0); 
+  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  /* 3.0から2.0へ。画面を覆うにはこれで十分です */
+  transform: scale(2.0) translateZ(0); 
   opacity: 1;
 }
 
