@@ -12,7 +12,6 @@ export function initCarousel3D(options = {}) {
   const R_FRONT = 185;
   const R_BACK  = 170;
 
-  // 定数群 (変更なし)
   const BASE_SPEED = 0.22;
   const HOLD_SPEED = 8;
   const AUTO_MAX   = 12;
@@ -33,7 +32,6 @@ export function initCarousel3D(options = {}) {
   let autoStartTime = 0;
   let prevIndex = -1;
 
-  // 初期角度セット
   frontPanels.forEach((p, i) => p.dataset.base = i * SNAP);
   backPanels.forEach((p, i) => p.dataset.base = i * SNAP);
 
@@ -49,7 +47,6 @@ export function initCarousel3D(options = {}) {
     return closestIndex;
   }
 
-  // 描画ロジック本体（ループとは分離）
   function updateRender(now) {
     const chaos = Math.min(Math.max((baseSpeed - 4) / 6, 0), 1);
 
@@ -77,10 +74,7 @@ export function initCarousel3D(options = {}) {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
-    const dragNoise = Math.sin(now*(0.018+chaos*0.04)) * Math.sin(now*0.11) * chaos;
-    const speed = baseSpeed * (1 + chaos*0.18*Math.sin(now*0.012)) +
-                  (dragSpeed*(1-chaos*0.6) + dragSpeed*dragNoise*0.6) +
-                  extraSpeed;
+    const speed = baseSpeed * (1 + chaos * 0.18 * Math.sin(now * 0.012)) + dragSpeed + extraSpeed;
     dragSpeed *= 0.85;
     visualAngle += speed;
 
@@ -108,48 +102,35 @@ export function initCarousel3D(options = {}) {
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
       p.style.transform  = `rotateY(${base}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
-      if (z < 0) {
-        p.style.opacity = Math.min(-z * 20, 1);
-        p.style.visibility = "visible";
-      } else {
-        p.style.opacity = 0;
-        p.style.visibility = "hidden";
-      }
+      p.style.opacity    = z < 0 ? Math.min(-z * 20, 1) : 0;
+      p.style.visibility = z < 0 ? "visible" : "hidden";
     });
   }
 
-  // ループ用
   function animate(now) {
     updateRender(now);
     rafId = requestAnimationFrame(animate);
   }
 
- // carousel3d.js の start()
-function start() {
-  if (rafId) return;
-  
-  const startTime = performance.now();
-  idleStartTime = startTime;
+  function start() {
+    if (rafId) return;
+    const startTime = performance.now();
+    idleStartTime = startTime;
+    updateRender(startTime);
 
-  // 1. まず計算だけ終わらせる
-  updateRender(startTime);
+    cylinderFront.classList.add('cylinder-ready');
+    cylinderBack.classList.add('cylinder-ready');
 
-  // 2. クラス追加は「即座」に行い、描画ループを回す
-  cylinderFront.classList.add('cylinder-ready');
-  cylinderBack.classList.add('cylinder-ready');
-
-  rafId = requestAnimationFrame(animate);
-}
+    rafId = requestAnimationFrame(animate);
+  }
 
   function stop() {
     cancelAnimationFrame(rafId);
     rafId = null;
   }
 
-  // ※ ここでの start() 自動実行は削除！ ※
-
   return {
-    start, // main.js から呼ぶ
+    start,
     startHold() { if (mode !== "auto" && mode !== "exit") mode = "hold"; },
     endHold()   { if (mode === "hold") { mode = "normal"; idleStartTime = performance.now(); } },
     startAuto() { mode = "auto"; autoStartTime = performance.now(); },
