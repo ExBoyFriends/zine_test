@@ -68,35 +68,34 @@
   margin-top: -150px;
 }
 
-.outer img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: -webkit-optimize-contrast;
-}
-
-.inner {
-  width: 220px;
-  height: 290px;
-  margin-left: -110px;
-  margin-top: -145px;
-  background: url("../image/top_b.png") center / contain no-repeat;
-  filter: brightness(0.45);
-}
-
 /* 前方パネル */
-.outer:nth-child(1) { transform: rotateY(0deg) translateZ(185px); }
-.outer:nth-child(2) { transform: rotateY(72deg) translateZ(185px); }
-.outer:nth-child(3) { transform: rotateY(144deg) translateZ(185px); }
-.outer:nth-child(4) { transform: rotateY(216deg) translateZ(185px); }
-.outer:nth-child(5) { transform: rotateY(288deg) translateZ(185px); }
+.outer {
+  width: 210px;
+  height: 280px;
+  margin-left: -105px;
+  margin-top: -140px;
+}
+
+.outer:nth-child(1) { transform: rotateY(0deg) translateZ(170px); }
+.outer:nth-child(2) { transform: rotateY(72deg) translateZ(170px); }
+.outer:nth-child(3) { transform: rotateY(144deg) translateZ(170px); }
+.outer:nth-child(4) { transform: rotateY(216deg) translateZ(170px); }
+.outer:nth-child(5) { transform: rotateY(288deg) translateZ(170px); }
 
 /* 後方パネル */
-.inner:nth-child(6) { transform: rotateY(0deg) translateZ(198px) rotateY(180deg); }
-.inner:nth-child(7) { transform: rotateY(72deg) translateZ(198px) rotateY(180deg); }
-.inner:nth-child(8) { transform: rotateY(144deg) translateZ(198px) rotateY(180deg); }
-.inner:nth-child(9) { transform: rotateY(216deg) translateZ(198px) rotateY(180deg); }
-.inner:nth-child(10){ transform: rotateY(288deg) translateZ(198px) rotateY(180deg); }
+.inner {
+  width: 200px;
+  height: 270px;
+  margin-left: -100px;
+  margin-top: -135px;
+}
+
+.inner:nth-child(6) { transform: rotateY(0deg) translateZ(185px) rotateY(180deg); }
+.inner:nth-child(7) { transform: rotateY(72deg) translateZ(185px) rotateY(180deg); }
+.inner:nth-child(8) { transform: rotateY(144deg) translateZ(185px) rotateY(180deg); }
+.inner:nth-child(9) { transform: rotateY(216deg) translateZ(185px) rotateY(180deg); }
+.inner:nth-child(10){ transform: rotateY(288deg) translateZ(185px) rotateY(180deg); }
+
 
 /* ===================== UI & Effects ===================== */
 .glitch-overlay {
