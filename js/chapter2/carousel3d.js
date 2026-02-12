@@ -106,8 +106,9 @@ export function initCarousel3D(options = {}) {
       const rad  = (base + visualAngle) * Math.PI / 180;
       const z    = Math.cos(rad);
       p.style.transform = `rotateY(${base}deg) translateZ(${R_FRONT}px)`;
-      // 数値を小さく（1.5など）すると、消える範囲が狭まり、より長く表示されます
-      const opacity = Math.min(Math.max(z * 1.5 + 0.5, 0), 1);
+      // zが0以下の時は完全に消す。0〜0.2の間で急激にフェードインさせる
+      // これにより、真横で「パッ」と消えるのではなく、一瞬で「フッ」と消えます
+      const opacity = Math.min(Math.max(z * 10, 0), 1);
       p.style.opacity = opacity;
     });
 
@@ -119,8 +120,8 @@ export function initCarousel3D(options = {}) {
      // rotateY(180deg) で画像を表に向ける
       p.style.transform = `rotateY(${base}deg) translateZ(${R_BACK}px) rotateY(180deg)`;
 
-      // 奥側の不透明度計算：-z が高いほど奥にある。ここも 1.5 で緩やかに
-      const opacity = Math.min(Math.max(-z * 1.5 + 0.5, 0), 1);
+      // zが0以上の時は完全に消す。-0.2〜0の間でフェード
+      const opacity = Math.min(Math.max(-z * 10, 0), 1);
       p.style.opacity = opacity;
     });
 
