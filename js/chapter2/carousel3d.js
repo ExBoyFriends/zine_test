@@ -32,6 +32,8 @@ export function initCarousel3D(options = {}) {
   let idleStartTime = 0;
   let autoStartTime = 0;
 
+  let firstFrame = true;
+
   /**
    * 毎フレームの計算と描画
    */
@@ -61,10 +63,15 @@ export function initCarousel3D(options = {}) {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
-    // 2. 角度の更新
-    const totalSpeed = baseSpeed + dragSpeed + extraSpeed;
-    dragSpeed *= 0.85; // ドラッグ慣性の減衰
-    visualAngle += totalSpeed;
+   // 2. 角度の更新
+if (!firstFrame) {
+  const totalSpeed = baseSpeed + dragSpeed + extraSpeed;
+  dragSpeed *= 0.85;
+  visualAngle += totalSpeed;
+} else {
+  firstFrame = false;
+}
+
 
   // 3. 親シリンダーの回転適用
     // 望遠(perspective:3000)なので、少し手前(translateZ(400px))に出してサイズを稼ぐ
@@ -118,8 +125,10 @@ export function initCarousel3D(options = {}) {
   return {
     start() {
       if (rafId) return;
-      idleStartTime = performance.now();
-       
+      
+      firstFrame = true; 
+      
+      idleStartTime = performance.now();       
       rafId = requestAnimationFrame(animate);
     },
     
@@ -152,6 +161,8 @@ export function initCarousel3D(options = {}) {
     reset(speed = BASE_SPEED) {
       visualAngle = 0;
       baseSpeed = speed;
+      firstFrame = true; 
+      
      // 初期 transform を明示的に即適用
   cylinder.style.transform =
     `translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(0deg)`;
