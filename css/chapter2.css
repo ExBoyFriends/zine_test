@@ -1,5 +1,4 @@
 /* chapter2.css */
-
 /* ===================== Scene Setup ===================== */
 .scene {
   position: fixed;
@@ -16,13 +15,14 @@
   height: 100%;
   transform-style: preserve-3d;
 
- /* 初期表示の固定 transform（base.css とは別） */
-  transform: rotateX(-18deg) rotateY(0deg) translateZ(0);
+  /* 初期表示の固定 transform */
+  transform: rotateX(-15deg) rotateY(0deg) translateZ(0);
   opacity: 1;
   pointer-events: auto;
   will-change: opacity;
   transition: opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 /* ===================== Unified Cylinder ===================== */
 .cylinder-wrapper {
   position: absolute;
@@ -38,19 +38,12 @@
   left: 50%;
   width: 1px;
   height: 1px;
-  /* カメラ少し下げ、初期角度も更新 */
-  transform: rotateX(-18deg) rotateY(0deg) translateY(15px) translateZ(0);
+  transform: rotateX(-15deg) rotateY(0deg) translateY(25px) translateZ(0);
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
   will-change: transform;
   opacity: 1;
 }
-
-/* rotateX が主な角度調整
-
-  translateY は微調整用
-
-  translateZ はカメラ距離  */
 
 .cylinder-ready {
   opacity: 1;
@@ -79,7 +72,6 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  /* 画像自体のチラつき防止 */
   image-rendering: -webkit-optimize-contrast;
 }
 
@@ -107,7 +99,6 @@
 .inner:nth-child(10){ transform: rotateY(288deg) translateZ(198px) rotateY(180deg); }
 
 /* ===================== UI & Effects ===================== */
-
 .glitch-overlay {
   position: fixed;
   inset: 0;
@@ -118,10 +109,10 @@
   mix-blend-mode: overlay;
 }
 
- .glitch-active .scene {
+.glitch-active .scene {
   animation: glitchShake 0.15s infinite linear;
   filter: contrast(1.3) saturate(1.2);
-}   
+}
 
 .glitch-active .glitch-overlay {
   opacity: 1;
