@@ -141,8 +141,6 @@ export function initCarousel3D(options = {}) {
   // 1回だけ強制描画確定
   animate(startTime);
 
-  // すぐ2フレーム目へ
-  rafId = requestAnimationFrame(animate);
 }
 
 
