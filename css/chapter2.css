@@ -29,6 +29,11 @@ img {
   height: 100%;
   transform-style: preserve-3d;
   opacity: 0;
+  transition: opacity 2.0s ease-out;
+}
+
+.chapter.visible {
+  opacity: 1;
 }
 
 .scene {
@@ -38,8 +43,7 @@ img {
   perspective-origin: 50% 45%;
   touch-action: none;
   transform-style: preserve-3d;
-  opacity: 1;
-  transition: opacity 2.0s ease-out;
+  
 }
 /* ===================== Cylinder ===================== */
 .cylinder {
