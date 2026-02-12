@@ -119,12 +119,18 @@ export function initCarousel3D(options = {}) {
     start() {
       if (rafId) return;
       idleStartTime = performance.now();
-      updateRender(idleStartTime);
+      
+      // 【重要】まず1回、描画計算だけを実行して位置を確定させる
+      updateRender(idleStartTime); 
+      
+      // その直後に「cylinder-ready」を追加してフェードインを開始
       requestAnimationFrame(() => {
         cylinder.classList.add('cylinder-ready');
+        // ループ開始
         rafId = requestAnimationFrame(animate);
       });
     },
+    
     stop() {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = null;
