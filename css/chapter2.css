@@ -30,10 +30,14 @@ img {
   transform-style: preserve-3d;
   opacity: 0;
   transition: opacity 2.0s ease-out;
+  pointer-events: none;
 }
 
 .chapter.visible {
-  opacity: 1;
+  opacity: 1 !important;
+  pointer-events: auto;
+  /* visible が付いた瞬間に、2.8秒かけて「綺麗な状態」を表示開始 */
+  transition: opacity 2.8s cubic-bezier(.22, .61, .36, 1);
 }
 
 .scene {
