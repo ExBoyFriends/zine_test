@@ -75,7 +75,9 @@ if (!firstFrame) {
 
   // 3. 親シリンダーの回転適用
     // 望遠(perspective:3000)なので、少し手前(translateZ(400px))に出してサイズを稼ぐ
-    cylinder.style.transform = `translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(${visualAngle}deg)`;
+    cylinder.style.transform =
+  `rotateX(-22deg)
+   rotateY(${visualAngle}deg)`;
 
     // 4. 表(outer)の処理
     frontPanels.forEach((p, i) => {
@@ -165,7 +167,7 @@ if (!firstFrame) {
       
      // 初期 transform を明示的に即適用
   cylinder.style.transform =
-    `translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(0deg)`;
+    `rotateX(-22deg) rotateY(0deg)`;
     }
   };
 }
