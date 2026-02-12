@@ -66,24 +66,24 @@ export function initCarousel3D(options = {}) {
     dragSpeed *= 0.85; // ドラッグ慣性の減衰
     visualAngle += totalSpeed;
 
-    // 3. 親シリンダーの回転適用（中央固定を維持）
+    // 3. 親シリンダーの回転適用（中央固定 translate(-50%, -50%) を維持）
     cylinder.style.transform = `translate(-50%, -50%) rotateX(-22deg) rotateY(${visualAngle}deg)`;
 
-  // 4. 表(outer)の処理
+    // 4. 表(outer)の処理
     frontPanels.forEach((p, i) => {
       const angle = i * STEP;
       const rad = (angle + visualAngle) * Math.PI / 180;
       const z = Math.cos(rad);
 
-      // 半径を狭めた分、z > 0 (真横) ギリギリまで少しだけ見えるように調整
-      if (z > 0.05) {
-        p.style.opacity = Math.pow(z, 1.1); // 少しだけ減衰を緩やかに
+      // z > 0 (手前半分) にいる時だけ表示
+      if (z > 0) {
+        p.style.opacity = Math.min(z * 3, 1);
         p.style.visibility = "visible";
       } else {
         p.style.opacity = 0;
         p.style.visibility = "hidden";
       }
-      
+
       // ドットのインデックス更新判定（正面に来た瞬間）
       if (z > 0.98 && i !== prevIndex) {
         options.onIndexChange?.(i);
@@ -91,15 +91,15 @@ export function initCarousel3D(options = {}) {
       }
     });
 
-   // 5. 裏(inner)の処理
+    // 5. 裏(inner)の処理
     backPanels.forEach((p, i) => {
       const angle = i * STEP;
       const rad = (angle + visualAngle) * Math.PI / 180;
       const z = Math.cos(rad);
 
-      // 奥側の裏面は、より「影」の中に沈んでいるように
-      if (z < -0.1) {
-        p.style.opacity = Math.min(Math.abs(z) * 0.6, 0.4);
+      // 奥側（z < 0）にいる時、つまり表が後ろを向いている時にうっすら表示
+      if (z < 0) {
+        p.style.opacity = Math.min(-z * 0.8, 0.45);
         p.style.visibility = "visible";
       } else {
         p.style.opacity = 0;
@@ -118,18 +118,12 @@ export function initCarousel3D(options = {}) {
     start() {
       if (rafId) return;
       idleStartTime = performance.now();
-      
-      // 【重要】まず1回、描画計算だけを実行して位置を確定させる
-      updateRender(idleStartTime); 
-      
-      // その直後に「cylinder-ready」を追加してフェードインを開始
+      updateRender(idleStartTime);
       requestAnimationFrame(() => {
         cylinder.classList.add('cylinder-ready');
-        // ループ開始
         rafId = requestAnimationFrame(animate);
       });
     },
-    
     stop() {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = null;
