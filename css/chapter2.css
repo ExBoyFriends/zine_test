@@ -16,8 +16,8 @@ html, body {
 .scene {
   position: fixed;
   inset: 0;
-  /* 800pxから1400pxへ。値を大きくするとカメラが遠ざかる効果になります */
-  perspective: 1400px; 
+  /* 1400px でも拡大して見えるなら、思い切って 2500px くらいまで引きましょう */
+  perspective: 2500px; 
   perspective-origin: 50% 45%;
   transform-style: preserve-3d;
 }
@@ -63,11 +63,12 @@ html, body {
 /* ===================== Panels Layout ===================== */
 /* 前方パネル (半径 220px) */
 .outer {
-  width: 230px;
-  height: 300px;
-  margin-left: -115px;
-  margin-top: -150px;
+  width: 180px;  /* 230pxから少し小さく */
+  height: 240px; /* 300pxから少し小さく */
+  margin-left: -90px;
+  margin-top: -120px;
 }
+
 .outer:nth-child(1) { transform: rotateY(0deg) translateZ(180px); }
 .outer:nth-child(2) { transform: rotateY(72deg) translateZ(180px); }
 .outer:nth-child(3) { transform: rotateY(144deg) translateZ(180px); }
@@ -76,13 +77,14 @@ html, body {
 
 /* 後方パネル (表より少し内側の 218px) */
 .inner {
-  width: 220px;
-  height: 290px;
-  margin-left: -110px;
-  margin-top: -145px;
+  width: 176px;
+  height: 236px;
+  margin-left: -88px;
+  margin-top: -118px;
   background: url("../image/top_b.png") center / contain no-repeat;
   filter: brightness(0.45);
 }
+
 .inner:nth-child(6) { transform: rotateY(0deg) translateZ(178px) rotateY(180deg); }
 .inner:nth-child(7) { transform: rotateY(72deg) translateZ(178px) rotateY(180deg); }
 .inner:nth-child(8) { transform: rotateY(144deg) translateZ(178px) rotateY(180deg); }
