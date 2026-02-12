@@ -7,45 +7,48 @@ export function initLoader(loader, onComplete) {
   let completed = false;
   const shadow = document.getElementById("loader-shadow");
 
-  const finish = () => {
-    if (completed) return;
-    completed = true;
+// loader.js 内の finish 関数を書き換え
 
-    // 1. まず暗転させる (1秒かけて真っ暗にする)
-    loader.classList.add("swallow-darkness");
+const finish = () => {
+  if (completed) return;
+  completed = true;
 
-    // 2. 暗転が完了した「静寂の暗闇」の中で処理を行う
-    setTimeout(() => {
-      if (onComplete) {
-        // ここで 3D の配置計算（animate）が実行される
-        onComplete();
-      }
+  // 1. まず暗転させる
+  loader.classList.add("swallow-darkness");
 
-      /* ========================================================
-         【ここが重要】
-         onComplete() を呼んだ直後ではなく、
-         ブラウザが「3Dの配置が終わったな」と描画を更新するまで
-         あえて「あと 0.8秒」暗闇を維持します。
-         ======================================================== */
-      setTimeout(() => {
-        // 3. 全てが整ってから「夜明け」を開始
-        loader.classList.add("reveal-start");
+  // 2. 1.2秒後、真っ暗な中で本編の初期化を開始
+  setTimeout(() => {
+    if (onComplete) onComplete();
+
+    /* ========================================================
+       ここからが「重なり」を消すための鉄壁のフローです。
+       setTimeout(..., 0) ではなく、2回描画を待つことで
+       ブラウザに「3D配置が完了した画面」を内部的に作らせます。
+       ======================================================== */
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
         
-        // JSでの直接指定を minimal にし、CSSの transition を優先させる
-        loader.style.opacity = "0";
-        if (shadow) shadow.style.opacity = "0";
-
-        // 4. 完全に消えたら要素を削除
+        // 3Dの配置が完了した「あと」で、さらに 800ms の静寂を作る
+        // これで「暗転から明けるまでの時間」が物理的に伸びます。
         setTimeout(() => {
-          loader.style.display = "none";
-          if (loader.parentNode) loader.remove();
-        }, 3000); // 2.8s の transition 終了後
-        
-      }, 800); // ← この 0.8秒が「重なり」を闇に葬る魔法の時間
+          // 3. 全てが整ってから夜明け
+          loader.classList.add("reveal-start");
+          
+          loader.style.opacity = "0";
+          if (shadow) shadow.style.opacity = "0";
 
-    }, 1200); // 暗転完了（1.0s）に少し余裕を持たせた時間
-  };
+          setTimeout(() => {
+            loader.style.display = "none";
+            if (loader.parentNode) loader.remove();
+          }, 3000);
 
+        }, 800); // ← ここを 1000 や 1500 にすれば、さらに暗闇が伸びます
+      });
+    });
+
+  }, 1200); 
+};
+  
   const start = () => {
     if (!document.body.contains(loader)) return;
     setTimeout(finish, 5200); // 鼓動の時間
