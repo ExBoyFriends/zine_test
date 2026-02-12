@@ -26,16 +26,17 @@
   left: 50%;
   width: 0;
   height: 0;
+  will-change: transform;
   transform-style: preserve-3d;
   transform: translate(-50%, -50%) translateZ(400px) rotateX(-22deg) rotateY(0deg);
   opacity: 0;
   visibility: hidden;
-  transition: opacity 1.5s ease;
+  
 }
 
 .cylinder-ready {
-  opacity: 1 !important;
-  visibility: visible !important;
+  opacity: 1;
+  visibility: visible;
 }
 
 /* ===================== Panels Layout ===================== */
