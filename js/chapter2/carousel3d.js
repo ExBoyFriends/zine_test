@@ -135,17 +135,16 @@ export function initCarousel3D(options = {}) {
   }
 
  function start() {
-    const startTime = performance.now();
-    idleStartTime = startTime;
+  const startTime = performance.now();
+  idleStartTime = startTime;
 
-    // 1. 個別の setInitialFrame は使わず、animate を直接1回実行する。
-    // これにより「パネルの位置」＋「全体の傾き(-22deg)」＋「透明度」が描画前に一括確定する。
-    animate(startTime);
+  // 1回だけ強制描画確定
+  animate(startTime);
 
-    // 2. animate の最後で自動的に requestAnimationFrame が呼ばれるため、
-    // ここで rafId = requestAnimationFrame(animate) を書く必要はありません。
-    // (書くと二重ループになり、回転が倍速になる原因になります)
-  }
+  // すぐ2フレーム目へ
+  rafId = requestAnimationFrame(animate);
+}
+
 
   function stop() {
     cancelAnimationFrame(rafId);
