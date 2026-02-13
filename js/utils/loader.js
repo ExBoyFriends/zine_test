@@ -7,34 +7,40 @@ export function initLoader(loader, onComplete) {
   let completed = false;
   const shadow = document.getElementById("loader-shadow");
 
-// loader.js 内の finish 関数を書き換え
-
-// loader.js 内の finish 関数を以下に差し替え
+// loader.js 内の finish 関数
 
 const finish = () => {
   if (completed) return;
   completed = true;
 
-  // 1. 暗転
+  console.log("Loader: Starting finish sequence..."); // デバッグ
   loader.classList.add("swallow-darkness");
 
-  // 2. 1.2秒後、暗闇の中で処理
   setTimeout(() => {
-    
-   // ★追加：計算を開始する前に、display: none を解除して「実体」を作る
     const chapter = document.querySelector(".chapter");
-    if (chapter) chapter.classList.add("active");
-    
-    setTimeout(() => {
-       if (onComplete) onComplete();
-    }, 0);
+    if (chapter) {
+      console.log("Loader: Activating chapter...");
+      chapter.classList.add("active");
+      
+      // ★重要：一度ブラウザにレイアウトを計算させる（リフロー強制）
+      void chapter.offsetWidth; 
+    }
 
-    // 3. ブラウザに「準備して！」と伝えてから幕を開ける
+    setTimeout(() => {
+      console.log("Loader: Executing onComplete...");
+      if (onComplete) {
+        try {
+          onComplete();
+        } catch (e) {
+          console.error("Loader: Error in onComplete:", e);
+        }
+      }
+    }, 50); // 0msではなく少し待つと3D計算が安定します
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        // 配置完了を待つ「静寂」の時間
         setTimeout(() => {
-          // これで確実に reveal-start を実行させる
+          console.log("Loader: Revealing start...");
           loader.classList.add("reveal-start");
           loader.style.opacity = "0";
           if (shadow) shadow.style.opacity = "0";
@@ -42,10 +48,9 @@ const finish = () => {
           setTimeout(() => {
             loader.remove();
           }, 3000);
-        }, 1000); // ここを 1000 にして余裕を持たせる
+        }, 1000);
       });
     });
-
   }, 1200); 
 };
   
