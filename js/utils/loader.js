@@ -21,8 +21,10 @@ const finish = () => {
   // 2. 1.2秒後、暗闇の中で処理
   setTimeout(() => {
     
-    // ★ポイント：onComplete() を直接呼ばず、setTimeout(..., 0) で包む
-    // これにより、3Dの重い計算が「幕開けの準備」を邪魔しなくなります
+   // ★追加：計算を開始する前に、display: none を解除して「実体」を作る
+    const chapter = document.querySelector(".chapter");
+    if (chapter) chapter.classList.add("active");
+    
     setTimeout(() => {
        if (onComplete) onComplete();
     }, 0);
