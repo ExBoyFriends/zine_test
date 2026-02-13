@@ -5,7 +5,6 @@ const TOTAL = 3000, FADE_FULL = 2500;
 
 export function playExitTransition({ onFinish }) {
   const overlay = document.getElementById("fadeout");
-  // カルーセル全体を包んでいる .chapter を取得
   const chapter = document.querySelector(".chapter"); 
   
   if (!overlay) { onFinish?.(); return; }
@@ -20,10 +19,9 @@ export function playExitTransition({ onFinish }) {
     const t = now - startTime;
     const p = Math.min(t / FADE_FULL, 1);
     
-    // 黒ベタのフェードイン
     overlay.style.opacity = p * p;
     
-    // 【追加】カルーセル本体を徐々に透明にする（回転は止まらない）
+    // 回転は継続させたまま、見た目だけを透明にする
     if (chapter) {
       chapter.style.opacity = (1 - p).toString();
     }
