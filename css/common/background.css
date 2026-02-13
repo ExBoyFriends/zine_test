@@ -26,7 +26,14 @@
     rgba(0, 0, 0, 1.0) 0%,    
     rgba(0, 0, 0, 0.6) 50%, 
     rgba(0, 0, 0, 0) 90%
+
+    animation-play-state: paused;
   );    
+
+  /* Chapterが表示されている時だけアニメーションを動かす */
+body:not(.transitioning) .chapter.visible ~ .background::before {
+  animation-play-state: running;
+}
   
   /*mix-blend-mode: multiply; */
   pointer-events: none;
