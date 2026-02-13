@@ -27,14 +27,12 @@ initLoader(loader, () => {
     chapter,
     dots,
     onStart() {
-      // loader.jsの暗転明けに合わせて中身を出す
-      setTimeout(() => {
+     
         requestAnimationFrame(() => {
           chapter?.classList.add("visible");
           dots?.classList.add("visible");
+          showPage(state.index);
         });
-        showPage(state.index);
-      }, 500);
 
       const pages = getPages();
       const transition = createTransitionManager({ nextUrl: "chapter3.html" });
