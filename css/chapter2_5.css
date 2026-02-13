@@ -1,47 +1,43 @@
 /* chapter2_5.css */
 
-body:not(.transitioning) .chapter.visible ~ .background::before {
+/* .chapter が表示されている間、背景のアニメーションを強制的に止める */
+.chapter.visible ~ .background::before {
   animation-play-state: paused !important;
 }
 /* ===================== ページ ===================== */
 .page {
   position: absolute;
   inset: 0;
-  display: none;
+  display: flex;
   justify-content: center;
   align-items: center;
+  /* 非アクティブ時は完全に計算から除外する */
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
   z-index: 1;
+  /* transitionはアクティブになる時だけかける */
   transition: opacity 2.6s cubic-bezier(.22,.61,.36,1);
-  will-change: opacity;
+  
+  /* レイヤーを独立させ、背景のblur計算と切り離す */
+ will-change: opacity;
 }
 
 .page.active {
-  display: flex; /* 存在を出す */
-}
-
-.page.visible {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
   z-index: 10;
+  transform: translateZ(0);
 }
 
-/* アクティブでないページの画像は、描画計算をスキップさせる 
-.page:not(.active) img {
-  display: none;
-} */
-
 .page img {
-  opacity: 0; 
+  opacity: 0; /* 最初は透明 */
   transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: opacity;
 }
 
 .page.active img {
-  opacity: 1; 
+  opacity: 1; /* 親の.pageがactiveになったら画像も浮き上がる */
 }
 
 /* 画像の重なり計算を簡略化 */
@@ -49,14 +45,16 @@ body:not(.transitioning) .chapter.visible ~ .background::before {
   max-width: 90vw;
   max-height: 90vh;
   object-fit: contain;
+  /* 画像の描画を安定させる */
   backface-visibility: hidden;
 }
 
+/* dualページのはみ出し制限 */
 .page.dual .dual-images {
   position: relative;
   width: 100vw;
   height: 100vh;
-  overflow: hidden; 
+  overflow: hidden; /* はみ出しをカットして計算量を減らす */
 }
 
 .page.dual img {
@@ -100,10 +98,10 @@ body:not(.transitioning) .chapter.visible ~ .background::before {
   text-align: center;
   line-height: 1.8;
   opacity: 0;
-  transition: opacity 1.2s ease, background 1.2s ease;
+  transition: opacity 1.2s ease;
 
   box-sizing: border-box;
-  z-index: 15;
+  z-index: 20;
   
 /* テキストが長くなった時に備え、文字自体の左右にだけ余白を入れる */
   display: flex;
