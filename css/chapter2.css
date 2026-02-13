@@ -24,7 +24,7 @@
 /* ===================== Cylinder ===================== */
 .cylinder-wrapper {
   position: absolute;
-  top: 58%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   transform-style: preserve-3d;
@@ -67,8 +67,11 @@
   backface-visibility: hidden;
   will-change: transform;
 
-  top: 0;
-  bottom: 0; 
+  /* 修正：上端ではなく、親要素の50%の位置（中央）を基準にする */
+  top: 50%;
+  left: 50%;
+
+  /* 回転の「軸」は足元に固定したままにする */
   transform-origin: 50% 100% 0;
 }
 
@@ -92,19 +95,20 @@
   filter: brightness(0.45);
 }
 
-/* 前パネル配置：すべての行の先頭に translate(-50%, -100%) を追加 */
-.outer:nth-child(1) { transform: translate(-50%, -100%) rotateY(0deg) translateZ(160px); }
-.outer:nth-child(2) { transform: translate(-50%, -100%) rotateY(72deg) translateZ(160px); }
-.outer:nth-child(3) { transform: translate(-50%, -100%) rotateY(144deg) translateZ(160px); }
-.outer:nth-child(4) { transform: translate(-50%, -100%) rotateY(216deg) translateZ(160px); }
-.outer:nth-child(5) { transform: translate(-50%, -100%) rotateY(288deg) translateZ(160px); }
+/* 前パネル配置：translate(-50%, -50%) に統一 */
+/* これで画像の中心が画面中央に吸い寄せられます */
+.outer:nth-child(1) { transform: translate(-50%, -50%) rotateY(0deg) translateZ(160px); }
+.outer:nth-child(2) { transform: translate(-50%, -50%) rotateY(72deg) translateZ(160px); }
+.outer:nth-child(3) { transform: translate(-50%, -50%) rotateY(144deg) translateZ(160px); }
+.outer:nth-child(4) { transform: translate(-50%, -50%) rotateY(216deg) translateZ(160px); }
+.outer:nth-child(5) { transform: translate(-50%, -50%) rotateY(288deg) translateZ(160px); }
 
-/* 後パネル配置：こちらも同様 */
-.inner:nth-child(6)  { transform: translate(-50%, -100%) rotateY(0deg) translateZ(160px) rotateY(180deg); }
-.inner:nth-child(7)  { transform: translate(-50%, -100%) rotateY(72deg) translateZ(160px) rotateY(180deg); }
-.inner:nth-child(8)  { transform: translate(-50%, -100%) rotateY(144deg) translateZ(160px) rotateY(180deg); }
-.inner:nth-child(9)  { transform: translate(-50%, -100%) rotateY(216deg) translateZ(160px) rotateY(180deg); }
-.inner:nth-child(10) { transform: translate(-50%, -100%) rotateY(288deg) translateZ(160px) rotateY(180deg); }
+/* 後パネル配置：同様に translate(-50%, -50%) */
+.inner:nth-child(6)  { transform: translate(-50%, -50%) rotateY(0deg) translateZ(160px) rotateY(180deg); }
+.inner:nth-child(7)  { transform: translate(-50%, -50%) rotateY(72deg) translateZ(160px) rotateY(180deg); }
+.inner:nth-child(8)  { transform: translate(-50%, -50%) rotateY(144deg) translateZ(160px) rotateY(180deg); }
+.inner:nth-child(9)  { transform: translate(-50%, -50%) rotateY(216deg) translateZ(160px) rotateY(180deg); }
+.inner:nth-child(10) { transform: translate(-50%, -50%) rotateY(288deg) translateZ(160px) rotateY(180deg); }
 /* ===================== UI & Effects ===================== */
 .glitch-overlay {
   position: fixed;
