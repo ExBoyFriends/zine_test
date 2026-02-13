@@ -8,11 +8,16 @@
   <title>Chapter 2</title>
 
  <link rel="manifest" href="../manifest.json">
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('../sw.js');
-    }
-  </script>
+ <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // むき出しの場所にあるsw.jsを登録
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker 登録成功!', reg))
+        .catch(err => console.log('Service Worker 登録失敗...', err));
+    });
+  }
+</script>
 
   <link rel="stylesheet" href="../css/common/base.css">
   <link rel="stylesheet" href="../css/common/background.css">
