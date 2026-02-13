@@ -47,3 +47,19 @@ export function fadeOutAndGo(callback, duration = 1000) {
     callback?.();
   }, duration);
 }
+
+
+/**
+ * ページが表示されたとき（戻るボタン対策）
+ */
+window.addEventListener('pageshow', (event) => {
+  const loader = document.getElementById("loader");
+  if (loader) {
+    // もし「戻る」で戻ってきたら、loaderを強制的に消すか、
+    // あるいはもう一度フェードインさせる
+    loader.style.opacity = "0";
+    setTimeout(() => {
+      loader.style.display = "none";
+    }, 500);
+  }
+});
