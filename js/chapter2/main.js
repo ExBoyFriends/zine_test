@@ -13,6 +13,7 @@ import { initGlitchLayer } from "./effects.js";
 
 const chapter = document.querySelector(".chapter");
 const loader  = document.getElementById("loader");
+const dotsWrap = document.querySelector(".dots");
 const dots    = [...document.querySelectorAll(".dot")];
 
 function updateDots(index = 0) {
@@ -50,6 +51,9 @@ initLoader(loader, () => {
     carousel.reset(0.22);
     carousel.start();
     chapter?.classList.add("visible");
+
+    dotsWrap?.classList.add("visible");
+    
     startAutoTransition(goChapter25);
   }
 });
@@ -76,6 +80,12 @@ window.addEventListener("pageshow", e => {
     chapter.style.opacity = "1";
     chapter.classList.add("visible");
   }
+
+  if (dotsWrap) {
+    dotsWrap.classList.add("visible");
+    dotsWrap.style.opacity = "1"; // CSSでopacity制御している場合
+  }
+  
   const overlay = document.getElementById("fadeout");
   if (overlay) {
     overlay.style.opacity = "0";
