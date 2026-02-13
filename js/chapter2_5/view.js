@@ -10,15 +10,23 @@ function updateDots(index) {
   });
 }
 
-
 export function showPage(index) {
   pages.forEach((page, i) => {
     const isActive = i === index;
+    
     if (isActive) {
+      // 1. 存在を出現させる (display: flex)
       page.classList.add("active");
+      
+      // 2. 1フレーム待ってからフェードイン (opacity: 1)
+      requestAnimationFrame(() => {
+        page.classList.add("visible");
+      });
+      
       page.style.pointerEvents = "auto";
     } else {
-      page.classList.remove("active", "show-text");
+      // 非アクティブなページは即座に存在を消して負荷を下げる
+      page.classList.remove("active", "visible", "show-text");
       page.style.pointerEvents = "none";
     }
   });
