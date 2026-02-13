@@ -3,7 +3,6 @@
 import "../utils/base.js";
 import { state } from "../utils/state.js";
 import { initLoader } from "../utils/loader.js";
-import { startChapter } from "../utils/chapterStart.js";
 import { showPage, getPages, showText, hideText } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
 import { initAutoPoemSlide } from "../utils/autoPoemSlide.js";
@@ -13,36 +12,23 @@ const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
 
-// chapter2_5/main.js
-
 initLoader(loader, () => {
+  // 1. 状態リセット
   state.index = 0;
   state.showingText = false;
 
-  // ★修正：fadeInStart(3400) を削除
-  // ★修正：chapter?.classList.add("active") も削除（loader.jsに任せる）
+  // 2. 表示開始
+  requestAnimationFrame(() => {
+    chapter?.classList.add("visible");
+    dots?.classList.add("visible");
+    showPage(state.index); // 最初のページだけ先に描画
 
-  startChapter({
-    chapter,
-    dots,
-    onStart() {
-     
-        requestAnimationFrame(() => {
-          chapter?.classList.add("visible");
-          dots?.classList.add("visible");
-          showPage(state.index);
-        });
-
+    // 3. インタラクションやオートスライドは、少し遅らせて「裏」で構築
+    // ローダーの「鼓動」と「夜明け」を止めないための余白です
+    setTimeout(() => {
       const pages = getPages();
       const transition = createTransitionManager({ nextUrl: "chapter3.html" });
 
-      // showPage(state.index); // ← ここで呼ぶと幕が開く前に一瞬見えちゃうので、上のsetTimeout内だけでOK
-      
-      // ...以下、オートスライド等の初期化
-
-      /* ==========================
-          制御関数
-      ========================== */
       let auto;
 
       const nextPage = () => {
@@ -71,9 +57,6 @@ initLoader(loader, () => {
         state.showingText = false;
       };
 
-      /* ==========================
-          インタラクション開始
-      ========================== */
       initTapInteraction({
         goNext: nextPage,
         goPrev: prevPage
@@ -92,10 +75,11 @@ initLoader(loader, () => {
       });
       
       auto.start?.();
-    }
+    }, 150);
   });
 });
 
+// ...bfcache 対策は変更なし（元のまま）...
 // bfcache (戻るボタン) 対策
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
