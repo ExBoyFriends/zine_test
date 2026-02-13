@@ -14,21 +14,20 @@ const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
 
+// chapter2_5/main.js
+
 initLoader(loader, () => {
   state.index = 0;
   state.showingText = false;
 
-  // 1. ローディング画面をフェードアウトさせる（ここを追加！）
-  fadeInStart(3400);
-
-  // 2. chapterコンテナを出現させる準備
-  chapter?.classList.add("active");
+  // ★修正：fadeInStart(3400) を削除
+  // ★修正：chapter?.classList.add("active") も削除（loader.jsに任せる）
 
   startChapter({
     chapter,
     dots,
     onStart() {
-      // 3. 少し遅らせてから中身を可視化
+      // loader.jsの暗転明けに合わせて中身を出す
       setTimeout(() => {
         requestAnimationFrame(() => {
           chapter?.classList.add("visible");
@@ -39,6 +38,10 @@ initLoader(loader, () => {
 
       const pages = getPages();
       const transition = createTransitionManager({ nextUrl: "chapter3.html" });
+
+      // showPage(state.index); // ← ここで呼ぶと幕が開く前に一瞬見えちゃうので、上のsetTimeout内だけでOK
+      
+      // ...以下、オートスライド等の初期化
 
       /* ==========================
           制御関数
