@@ -34,7 +34,7 @@
   position: relative;
   width: 0;
   height: 0;
-  transform-origin: 50% 50% 0;
+  transform-origin: 50% 100% 0;
   transform-style: preserve-3d;
   will-change: transform;
   opacity: 1;
@@ -46,12 +46,30 @@
   pointer-events: auto;
 }
 
+/* カルーセルの足元に固定された影/土台 */
+.main-cylinder::after {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0,0,0,0.7) 0%, transparent 60%);
+  /* 足元に水平に敷く */
+  transform: translate(-50%, -50%) rotateX(90deg);
+  left: 50%;
+  top: 0; /* transform-originを100%にしたので、ここが足元になります */
+  z-index: -1;
+}
+
 /* ===================== Panels Layout ===================== */
 .outer, .inner {
   position: absolute;
   transform-style: preserve-3d;
   backface-visibility: hidden;
   will-change: transform;
+
+  top: auto;
+  bottom: 0; 
+  transform-origin: bottom center;
 }
 
 /* 前面パネル */
