@@ -30,11 +30,12 @@ initLoader(loader, () => {
     chapter,
     dots,
     onStart() {
-      // 2. 1フレーム後にフェードイン開始
-      requestAnimationFrame(() => {
-        chapter?.classList.add("visible");
-        dots?.classList.add("visible");
-      });
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          chapter?.classList.add("visible");
+          dots?.classList.add("visible");
+        });
+      }, 500); // 0.5秒のタメを作る
 
       const transition = createTransitionManager({ nextUrl: "chapter2.html" });
       const carousel = initCarousel(wrapper, pages);
