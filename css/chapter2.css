@@ -24,7 +24,7 @@
 /* ===================== Cylinder ===================== */
 .cylinder-wrapper {
   position: absolute;
-  top: 50%;
+  top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
   transform-style: preserve-3d;
@@ -53,10 +53,9 @@
   width: 500px;
   height: 500px;
   background: radial-gradient(circle, rgba(0,0,0,0.7) 0%, transparent 60%);
-  /* 足元に水平に敷く */
   transform: translate(-50%, -50%) rotateX(90deg);
   left: 50%;
-  top: 0; /* transform-originを100%にしたので、ここが足元になります */
+  top: 160px;  
   z-index: -1;
 }
 
