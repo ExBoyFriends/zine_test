@@ -3,7 +3,6 @@
 import "../utils/base.js";
 import { state } from "../utils/state.js";
 import { initLoader } from "../utils/loader.js";
-import { startChapter } from "../utils/chapterStart.js";
 import { initCarousel } from "./carousel.js";
 import { initLastPage } from "./lastPage.js";
 import { createTransitionManager } from "../utils/transitionManager.js";
@@ -18,20 +17,17 @@ const pages   = document.querySelectorAll(".carousel-page");
 const last    = document.getElementById("last-page");
 
 initLoader(loader, () => {
+  // 1. 暗闇の中で、最小限の状態リセット
   state.index = 0;
 
-  // fadeInStart(3400); ← 不要なので消す！loader.jsがやってくれます
+  // 2. ブラウザの描画準備を待って表示を開始（Chapter 2方式）
+  requestAnimationFrame(() => {
+    chapter?.classList.add("visible");
+    dots?.classList.add("visible");
 
-  // chapter?.classList.add("active"); ← loader.js内でやってくれるので消してOK
-
-  startChapter({
-    chapter,
-    dots,
-    onStart() {
-    
-        chapter?.classList.add("visible");
-        dots?.classList.add("visible");
-
+    // 3. 重い初期化処理は、さらに次のフレーム、またはわずかな遅延を入れる
+    // これにより、ローダーのフェードアウト（夜明け）初動がカクつかなくなります
+    setTimeout(() => {
       const transition = createTransitionManager({ nextUrl: "chapter2.html" });
       const carousel = initCarousel(wrapper, pages);
       const lastController = initLastPage(
@@ -51,9 +47,11 @@ initLoader(loader, () => {
         onLastOpen: () => lastController.open(),
         onLastTransition: () => transition.goNext()
       });
-    }
+    }, 100); 
   });
 });
+
+// ...pageshow の記述は変更なし（元のまま）...
 
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
