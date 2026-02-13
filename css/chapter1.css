@@ -22,7 +22,7 @@ body {
 .carousel-page {
   position: absolute;
   inset: 0;
-  display: none;
+  display: flex;
   justify-content: center;
   align-items: center;
 
@@ -30,15 +30,12 @@ body {
   transition: opacity 2.6s cubic-bezier(.22,.61,.36,1);
   pointer-events: none;
   will-change: opacity;
+
   touch-action: none;
 }
 
 .carousel-page.active {
-  display: flex !important;
-}
-
-.carousel-page.visible {
-  opacity: 1 !important;
+  opacity: 1;
   pointer-events: auto;
 }
 
@@ -55,7 +52,6 @@ body {
   max-width: 540px;
   -webkit-user-drag: none;
   display: block; 
-  opacity: 1;
 }
 
 /* =====================
@@ -128,8 +124,8 @@ body {
 }
 
 #last-page.opened .tap-cover {
-  z-index: 10;
-  opacity: 0;
+  z-index: 5;
+  opacity: 1; /* 見えるようにする（デバッグ用なら。不要なら0のままでもOK） */
   pointer-events: auto;
 }
 
@@ -153,4 +149,3 @@ body {
     background: url("../image/eye.jpg") center / cover no-repeat;
   }
 }
-
