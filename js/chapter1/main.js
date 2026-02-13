@@ -21,21 +21,21 @@ const last    = document.getElementById("last-page");
 initLoader(loader, () => {
   state.index = 0;
 
-  fadeInStart(3400);
-  
-  // 1. まず存在を出現させる
-  chapter?.classList.add("active");
+  // fadeInStart(3400); ← 不要なので消す！loader.jsがやってくれます
+
+  // chapter?.classList.add("active"); ← loader.js内でやってくれるので消してOK
 
   startChapter({
     chapter,
     dots,
     onStart() {
-      setTimeout(() => {
-        requestAnimationFrame(() => {
-          chapter?.classList.add("visible");
-          dots?.classList.add("visible");
-        });
-      }, 500); // 0.5秒のタメを作る
+      // loader.jsの演出が終わるタイミングを見計らって中身を出すだけ
+      requestAnimationFrame(() => {
+        chapter?.classList.add("visible");
+        dots?.classList.add("visible");
+      });
+
+      // ...以下、初期化処理
 
       const transition = createTransitionManager({ nextUrl: "chapter2.html" });
       const carousel = initCarousel(wrapper, pages);
