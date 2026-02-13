@@ -55,26 +55,32 @@ if (carousel) {
   updateDots(0);
 }
 
-/**
- * ローダー完了時の処理
- */
+// chapter2/main.js
+
+let carousel; // 外で定義
+
 initLoader(loader, () => {
+  // ここで初めてカルーセルを構築・初期化する（activeになった後なので安全）
+  carousel = initCarousel3D({
+    onIndexChange(index) { updateDots(index); },
+    onExit() { goChapter25(); }
+  });
+
   if (carousel && chapter) {
+    window.__carousel__ = carousel;
+    initDragInput(carousel);
     
     carousel.reset(0.22);
     carousel.start();
 
-
-// 確実に display: block が反映されてから visible を付ける
-  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
       chapter.classList.add("visible");
       dotsWrap?.classList.add("visible");
     });
     
     startAutoTransition(goChapter25);
-  } 
+  }
 });
-
 initGlitchLayer?.();
 
 /**
