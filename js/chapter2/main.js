@@ -66,13 +66,17 @@ initLoader(loader, () => {
     carousel.reset(0.22);
     carousel.start();
 
-    // 2. 1フレーム待ってからフェードイン（opacity）
-    requestAnimationFrame(() => {
+
+// 確実に display: block が反映されてから visible を付ける
+    setTimeout(() => {
       chapter.classList.add("visible");
       dotsWrap?.classList.add("visible");
-    });
+      console.log("Chapter is now visible");
+    }, 50); // わずかなディレイを入れると安定します
     
     startAutoTransition(goChapter25);
+  } else {
+    console.error("Carousel or Chapter element not found");
   }
 });
 
