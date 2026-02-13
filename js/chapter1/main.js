@@ -1,4 +1,3 @@
-
 // chapter1/main.js
 
 import "../utils/base.js";
@@ -22,17 +21,21 @@ const last    = document.getElementById("last-page");
 initLoader(loader, () => {
   state.index = 0;
 
+  // 1. まず存在を出現させる
+  chapter?.classList.add("active");
+
   startChapter({
     chapter,
     dots,
     onStart() {
-
-      const transition = createTransitionManager({
-        nextUrl: "chapter2.html"
+      // 2. 1フレーム後にフェードイン開始
+      requestAnimationFrame(() => {
+        chapter?.classList.add("visible");
+        dots?.classList.add("visible");
       });
 
+      const transition = createTransitionManager({ nextUrl: "chapter2.html" });
       const carousel = initCarousel(wrapper, pages);
-
       const lastController = initLastPage(
         last,
         () => carousel.getCurrentPage(),
@@ -40,7 +43,6 @@ initLoader(loader, () => {
         transition
       );
 
-      // ⭐ 完全オート制御
       initAutoSlide({
         delay: 5000,
         lastOpenDelay: 5000,
@@ -51,19 +53,14 @@ initLoader(loader, () => {
         onLastOpen: () => lastController.open(),
         onLastTransition: () => transition.goNext()
       });
-
-     
     }
   });
-});
-
-window.addEventListener("pageshow", e => {
-  if (!e.persisted) return;
-  state.index = state.index ?? 0;
 });
 
 // bfcache 復帰対応
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
   state.index = state.index ?? 0;
+  // 戻ってきたときも active/visible を確実にする
+  chapter?.classList.add("active", "visible");
 });
