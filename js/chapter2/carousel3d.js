@@ -62,7 +62,7 @@ export function initCarousel3D(options = {}) {
       firstFrame = false;
     }
 
-    // --- 軸を中央に固定、カメラ位置調整（斜め上から） ---
+    // 軸固定＆カメラ斜め上から
     cylinder.style.transform =
       `rotateX(-12deg) rotateY(${visualAngle}deg) translateY(0px) translateZ(220px)`;
 
@@ -130,4 +130,3 @@ export function initCarousel3D(options = {}) {
     }
   };
 }
-
