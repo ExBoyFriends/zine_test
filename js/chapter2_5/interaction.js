@@ -3,20 +3,22 @@
 import { state } from "../utils/state.js";
 import { showText, hideText } from "./view.js";
 
+// 管理用変数を初期化関数でリセットするように変更
 let startX = 0;
 let startTime = 0;
 let moved = false;
-
-let goNextFn;
-let goPrevFn;
+let goNextFn = null;
+let goPrevFn = null;
 
 export function initTapInteraction({ goNext, goPrev }) {
-
   goNextFn = goNext;
   goPrevFn = goPrev;
 
-  document.removeEventListener("pointerdown", onPointerDown);
-  document.addEventListener("pointerdown", onPointerDown);
+  // ローディングの邪魔をしないよう、イベント登録を1フレーム遅らせる
+  requestAnimationFrame(() => {
+    document.removeEventListener("pointerdown", onPointerDown);
+    document.addEventListener("pointerdown", onPointerDown);
+  });
 }
 
 function onPointerDown(e) {
@@ -31,7 +33,7 @@ function onPointerDown(e) {
     const dt = performance.now() - startTime;
 
     if (moved && Math.abs(dx) > 40 && dt < 500) {
-      dx < 0 ? goNextFn() : goPrevFn();
+      dx < 0 ? goNextFn?.() : goPrevFn?.();
     } 
     else if (!moved && dt < 300) {
       handleTap();
@@ -62,6 +64,6 @@ function handleTap() {
   } else {
     hideText(state.index);
     state.showingText = false;
-    goNextFn();
+    goNextFn?.();
   }
 }
