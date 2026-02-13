@@ -1,5 +1,4 @@
 //carousel3d.js
-
 export function initCarousel3D(options = {}) {
   const cylinder = document.querySelector(".main-cylinder");
   const frontPanels = [...document.querySelectorAll(".outer")];
