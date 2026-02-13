@@ -14,7 +14,7 @@ export function initCarousel3D(options = {}) {
   const EXIT_MAX = 16;
   const IDLE_MAX = 1.6;
   const IDLE_TIME = 25000;
-  const AUTO_TOTAL = 14000;
+  const AUTO_TOTAL = 10000;
   const AUTO_FINAL = 3000;
 
   let visualAngle = 0;
@@ -29,7 +29,6 @@ export function initCarousel3D(options = {}) {
   let firstFrame = true;
 
   function updateRender(now) {
-    // モード別スピード
     if (mode === "normal") {
       const t = Math.min((now - idleStartTime) / IDLE_TIME, 1);
       const target = BASE_SPEED + t * (IDLE_MAX - BASE_SPEED);
@@ -54,7 +53,6 @@ export function initCarousel3D(options = {}) {
       baseSpeed += (EXIT_MAX - baseSpeed) * 0.15;
     }
 
-    // 回転計算
     if (!firstFrame) {
       const totalSpeed = baseSpeed + dragSpeed + extraSpeed;
       dragSpeed *= 0.85;
@@ -63,11 +61,8 @@ export function initCarousel3D(options = {}) {
       firstFrame = false;
     }
 
-    // --- 軸を中央に固定、斜め上からのカメラアングル ---
-    cylinder.style.transform =
-            `rotateX(-12deg) rotateY(${visualAngle}deg) translateZ(0px)`;
+    cylinder.style.transform = `rotateX(-12deg) rotateY(${visualAngle}deg) translateZ(0px)`;
 
-    // 前パネル
     frontPanels.forEach((p, i) => {
       const angle = i * STEP;
       const rad = (angle + visualAngle) * Math.PI / 180;
@@ -85,7 +80,6 @@ export function initCarousel3D(options = {}) {
       }
     });
 
-    // 後パネル
     backPanels.forEach((p, i) => {
       const angle = i * STEP;
       const rad = (angle + visualAngle) * Math.PI / 180;
@@ -126,6 +120,8 @@ export function initCarousel3D(options = {}) {
       visualAngle = 0;
       baseSpeed = speed;
       firstFrame = true;
+      mode = "normal"; // 加速モードを解除
+      idleStartTime = performance.now();
       cylinder.style.transform = `rotateX(-12deg) rotateY(0deg)`;
     }
   };
