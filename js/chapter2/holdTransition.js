@@ -3,7 +3,7 @@
 import { startGlitch, stopGlitch } from "./effects.js";
 
 let pressing = false, exited = false, timer = null, holding = false;
-const AUTO_DELAY = 15000, HOLD_DELAY = 200; // 長押し 200ms
+const AUTO_DELAY = 10000, HOLD_DELAY = 200; // 長押し 200ms
 
 export function resetTransitionState() { pressing = holding = exited = false; clearTimeout(timer); timer = null; }
 
