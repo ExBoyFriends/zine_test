@@ -60,24 +60,19 @@ if (carousel) {
  */
 initLoader(loader, () => {
   if (carousel && chapter) {
-    // 1. 存在を有効化（display: block/flex）
-    chapter.classList.add("active");
     
     carousel.reset(0.22);
     carousel.start();
 
 
 // 確実に display: block が反映されてから visible を付ける
-    setTimeout(() => {
+  requestAnimationFrame(() => {
       chapter.classList.add("visible");
       dotsWrap?.classList.add("visible");
-      console.log("Chapter is now visible");
-    }, 50); // わずかなディレイを入れると安定します
+    });
     
     startAutoTransition(goChapter25);
-  } else {
-    console.error("Carousel or Chapter element not found");
-  }
+  } 
 });
 
 initGlitchLayer?.();
