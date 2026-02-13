@@ -14,21 +14,20 @@ const chapter = document.querySelector(".chapter");
 const dots    = document.querySelector(".dots");
 
 initLoader(loader, () => {
-  // 状態のリセット
   state.index = 0;
   state.showingText = false;
+
+  // chapterコンテナ自体を出現させる
+  chapter?.classList.add("active", "visible");
 
   startChapter({
     chapter,
     dots,
     onStart() {
       const pages = getPages();
+      const transition = createTransitionManager({ nextUrl: "chapter3.html" });
 
-      const transition = createTransitionManager({
-        nextUrl: "chapter3.html"
-      });
-
-      // 最初のページをセット
+      // showPage 内で .active を操作するように view.js を組んでいる前提
       showPage(state.index);
 
       /* ==========================
