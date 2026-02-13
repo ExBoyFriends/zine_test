@@ -22,7 +22,7 @@ body {
 .carousel-page {
   position: absolute;
   inset: 0;
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
 
@@ -30,11 +30,14 @@ body {
   transition: opacity 2.6s cubic-bezier(.22,.61,.36,1);
   pointer-events: none;
   will-change: opacity;
-
   touch-action: none;
 }
 
 .carousel-page.active {
+  display: flex;
+}
+
+.carousel-page.visible {
   opacity: 1;
   pointer-events: auto;
 }
@@ -124,8 +127,8 @@ body {
 }
 
 #last-page.opened .tap-cover {
-  z-index: 5;
-  opacity: 1; /* 見えるようにする（デバッグ用なら。不要なら0のままでもOK） */
+  z-index: 10;
+  opacity: 0;
   pointer-events: auto;
 }
 
