@@ -10,11 +10,18 @@
   <title>chapter 1</title>
 
  <link rel="manifest" href="../manifest.json">
+   <meta name="theme-color" content="#000000">
+   <meta name="apple-mobile-web-app-capable" content="yes">
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('../sw.js');
-    }
-  </script>
+   if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // むき出しの場所にあるsw.jsを登録
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker 登録成功!', reg))
+        .catch(err => console.log('Service Worker 登録失敗...', err));
+    });
+  }
+</script>
 
   <link rel="stylesheet" href="../css/common/base.css">
   <link rel="stylesheet" href="../css/common/background.css">
