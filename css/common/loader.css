@@ -112,3 +112,10 @@
   transition: opacity 2.8s ease-in-out !important;
   pointer-events: none !important;
 }
+
+/* 夜明けの時に、黒幕も一緒に消す設定をより強固に */
+#loader.reveal-start::after {
+  animation: none !important; /* 暗転アニメを止める */
+  opacity: 0 !important;
+  transition: opacity 2.8s ease-in-out !important;
+}
