@@ -21,6 +21,8 @@ const last    = document.getElementById("last-page");
 initLoader(loader, () => {
   state.index = 0;
 
+  fadeInStart(3400);
+  
   // 1. まず存在を出現させる
   chapter?.classList.add("active");
 
