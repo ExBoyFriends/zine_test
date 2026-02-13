@@ -7,6 +7,13 @@
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Chapter 2</title>
 
+ <link rel="manifest" href="../manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('../sw.js');
+    }
+  </script>
+
   <link rel="stylesheet" href="../css/common/base.css">
   <link rel="stylesheet" href="../css/common/background.css">
   <link rel="stylesheet" href="../css/common/loader.css">
