@@ -40,8 +40,6 @@ initLoader(loader, () => {
       const pages = getPages();
       const transition = createTransitionManager({ nextUrl: "chapter3.html" });
 
-      showPage(state.index);
-
       /* ==========================
           制御関数
       ========================== */
