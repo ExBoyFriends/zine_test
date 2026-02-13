@@ -1,5 +1,4 @@
 // chapter2/main.js
-
 import "../utils/base.js";
 import { initLoader } from "../utils/loader.js";
 import { initCarousel3D } from "./carousel3d.js";
@@ -12,10 +11,9 @@ import {
 import { playExitTransition } from "./transitionOut.js";
 import { initGlitchLayer } from "./effects.js";
 
-const chapter  = document.querySelector(".chapter");
-const loader   = document.getElementById("loader");
-const dotsWrap = document.querySelector(".dots");
-const dots     = [...document.querySelectorAll(".dot")];
+const chapter = document.querySelector(".chapter");
+const loader  = document.getElementById("loader");
+const dots    = [...document.querySelectorAll(".dot")];
 
 function updateDots(index = 0) {
   const COUNT = dots.length;
@@ -36,7 +34,6 @@ function goChapter25() {
 }
 goChapter25._done = false;
 
-// --- カルーセル初期化 ---
 const carousel = initCarousel3D({
   onIndexChange(index) { updateDots(index); },
   onExit() { goChapter25(); }
@@ -48,33 +45,46 @@ if (carousel) {
   updateDots(0);
 }
 
-// --- ローダー完了後シーケンス ---
 initLoader(loader, () => {
-  const cylinder = document.querySelector(".main-cylinder");
-  if (carousel && cylinder) {
+  if (carousel) {
     carousel.reset(0.22);
     carousel.start();
-    void cylinder.offsetWidth; // リフロー
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      chapter?.classList.add("visible");
-      cylinder.classList.add("cylinder-ready");
-      dotsWrap?.classList.add("visible");
-    }));
+    chapter?.classList.add("visible");
+    startAutoTransition(goChapter25);
   }
-  startAutoTransition(goChapter25);
 });
 
 initGlitchLayer?.();
 
+// 戻ってきた時の処理を修正統合
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
+  
+  // 状態とフラグのリセット
   resetTransitionState();
   goChapter25._done = false;
-  window.__carousel__?.stop?.();
+  
+  // カルーセルの速度とモードをリセットして再開
+  if (window.__carousel__) {
+    window.__carousel__.stop();
+    window.__carousel__.reset(0.22);
+    window.__carousel__.start();
+  }
+
+  // 見た目のリセット
+  if (chapter) {
+    chapter.style.opacity = "1";
+    chapter.classList.add("visible");
+  }
+  const overlay = document.getElementById("fadeout");
+  if (overlay) {
+    overlay.style.opacity = "0";
+    overlay.style.pointerEvents = "none";
+    overlay.classList.remove("active");
+  }
+
+  // 自動遷移タイマーを再始動
+  startAutoTransition(goChapter25);
 });
 
-window.addEventListener("force-exit", () => { goChapter25(); });
-
-// --- 長押しイベントを body にバインド ---
 bindLongPressEvents(document.body);
-
