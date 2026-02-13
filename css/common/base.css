@@ -28,7 +28,7 @@ body {
 }
 
 .chapter.active {
-  display: block;     /* これがないと JSで add("active") しても表示されません */
+  display: block !important;     /* これがないと JSで add("active") しても表示されません */
 }
 
 .chapter.visible {
