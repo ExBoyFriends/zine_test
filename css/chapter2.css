@@ -24,9 +24,9 @@
 /* ===================== Cylinder ===================== */
 .cylinder-wrapper {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
-  transform: translate(-50%, -75%);
+  transform: translate(-50%, -50%);
   transform-style: preserve-3d;
 }
 
