@@ -65,7 +65,7 @@ export function initCarousel3D(options = {}) {
 
     // --- 軸を中央に固定、斜め上からのカメラアングル ---
     cylinder.style.transform =
-      `rotateX(-12deg) rotateY(${visualAngle}deg)`;
+      `rotateX(-12deg) rotateY(${visualAngle}deg) translateZ(220px)`;
 
     // 前パネル
     frontPanels.forEach((p, i) => {
@@ -126,7 +126,7 @@ export function initCarousel3D(options = {}) {
       visualAngle = 0;
       baseSpeed = speed;
       firstFrame = true;
-      cylinder.style.transform = `rotateX(-12deg) rotateY(0deg)`;
+      cylinder.style.transform = `rotateX(-12deg) rotateY(0deg) translateZ(220px)`;
     }
   };
 }
