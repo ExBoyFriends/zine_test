@@ -1,4 +1,5 @@
 //carousel3d.js
+
 export function initCarousel3D(options = {}) {
   const cylinder = document.querySelector(".main-cylinder");
   const frontPanels = [...document.querySelectorAll(".outer")];
@@ -62,9 +63,9 @@ export function initCarousel3D(options = {}) {
       firstFrame = false;
     }
 
-    // 軸固定＆カメラ斜め上から
+    // --- 軸を中央に固定、斜め上からのカメラアングル ---
     cylinder.style.transform =
-      `rotateX(-12deg) rotateY(${visualAngle}deg) translateY(0px) translateZ(220px)`;
+      `rotateX(-12deg) rotateY(${visualAngle}deg)`;
 
     // 前パネル
     frontPanels.forEach((p, i) => {
@@ -125,8 +126,7 @@ export function initCarousel3D(options = {}) {
       visualAngle = 0;
       baseSpeed = speed;
       firstFrame = true;
-      cylinder.style.transform =
-        `rotateX(-12deg) rotateY(0deg) translateY(0px) translateZ(220px)`;
+      cylinder.style.transform = `rotateX(-12deg) rotateY(0deg)`;
     }
   };
 }
