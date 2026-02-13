@@ -15,3 +15,4 @@ export function initDragInput(carousel) {
   scene.addEventListener("pointerup", () => { if (isDragging) { carousel.endDrag?.(); isDragging = false; } });
   scene.addEventListener("pointercancel", () => { if (isDragging) { carousel.endDrag?.(); isDragging = false; } });
 }
+
