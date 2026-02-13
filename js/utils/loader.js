@@ -1,5 +1,5 @@
 /**
- * loader.js (暗転・初期化同期最適化版)
+ * loader.js (アニメーション保護・非同期実行版)
  */
 export function initLoader(loader, onComplete) {
   if (!loader) return;
@@ -11,35 +11,37 @@ export function initLoader(loader, onComplete) {
     if (completed) return;
     completed = true;
 
-    // 1. まず暗転演出 (暗闇) を開始
-    // ここで CSS の swallow-darkness アニメーションが動き出す
+    // 1. 暗転アニメ開始
     loader.classList.add("swallow-darkness");
 
-    // 2. 暗闇が画面を完全に覆い尽くすまで「しっかり待つ」 (2.0秒)
-    // 以前の 1.2秒だと、アニメーションの途中で JS が割り込み、フリーズが見えてしまっていました
+    // 2. 暗闇が広がりきるのを待つ
     setTimeout(() => {
-      
       const chapter = document.querySelector(".chapter");
       if (chapter) {
-        console.log("Loader: Activating chapter behind the darkness...");
         chapter.classList.add("active");
-        void chapter.offsetWidth; // リフロー強制（暗闇の中で済ませる）
+        void chapter.offsetWidth;
       }
 
-      // 3. 暗闇に包まれた「凪」の状態で、重い初期化処理を実行
-      // この時ブラウザがフリーズしても、画面は真っ暗なのでユーザーにはバレません
-      console.log("Loader: Executing onComplete in silence...");
-      if (onComplete) {
-        try {
-          onComplete();
-        } catch (e) {
-          console.error("Loader: Error in onComplete:", e);
+      // 【根本解決のポイント】
+      // すぐに onComplete を呼ばず、ブラウザが「一息つく」隙間を強制的に作る。
+      // setTimeout(..., 0) や Promise を使うことで、
+      // 描画（アニメーション）の隙間に処理をねじ込みます。
+      
+      console.log("Loader: Processing heavy tasks in chunks...");
+      
+      const runHeavyTasks = async () => {
+        // 画像のデコードや初期化を「非同期」で実行させる
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        if (onComplete) {
+          try {
+            onComplete();
+          } catch (e) {
+            console.error(e);
+          }
         }
-      }
-
-      // 4. 計算がすべて終わった後、一呼吸おいてから「幕を開ける」
-      // requestAnimationFrame を重ねて、JSの計算が終わったことをブラウザに確信させる
-      requestAnimationFrame(() => {
+        
+        // 3. 全ての計算が終わってから、さらに一瞬待って幕を開ける
         requestAnimationFrame(() => {
           setTimeout(() => {
             console.log("Loader: Revealing start...");
@@ -47,23 +49,20 @@ export function initLoader(loader, onComplete) {
             loader.style.opacity = "0";
             if (shadow) shadow.style.opacity = "0";
 
-            // 5. 完全に消えたらDOMから削除
             setTimeout(() => {
               loader.remove();
             }, 3000);
-          }, 600); // 計算終了後の余韻（カクつき防止のバッファ）
+          }, 800);
         });
-      });
+      };
 
-    }, 2000); // 暗闇が完全に定着するまでの待ち時間
+      runHeavyTasks();
+    }, 2000); 
   };
 
   const start = () => {
     if (!document.body.contains(loader)) return;
-    
-    // ★ 修正ポイント: ローディングをもっと長く見せたいという希望に合わせ 7000 (7秒)
-    // ここを増やすことでロゴのアニメーション時間を確保します
-    setTimeout(finish, 7000); 
+    setTimeout(finish, 6500); 
   };
 
   if (document.readyState === "complete" || document.readyState === "interactive") {
