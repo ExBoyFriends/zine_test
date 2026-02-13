@@ -53,15 +53,18 @@ const finish = () => {
     });
   }, 1200); 
 };
-  
+
+
   const start = () => {
+    console.log("Loader: Fast-looming start..."); // これがコンソールに出るか確認
     if (!document.body.contains(loader)) return;
-    setTimeout(finish, 5200); // 鼓動の時間
+    setTimeout(finish, 5200); 
   };
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", start);
-  } else {
+  // すでにDOMが読み込み済みのケースを確実に拾う
+  if (document.readyState === "complete" || document.readyState === "interactive") {
     start();
+  } else {
+    document.addEventListener("DOMContentLoaded", start);
   }
 }
