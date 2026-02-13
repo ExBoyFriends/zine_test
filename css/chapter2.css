@@ -52,6 +52,10 @@
   will-change: transform;
   top: 50%;
   left: 50%;
+
+  margin-top: -160px; /* height 320px の半分 */
+  margin-left: -125px; /* width 250px の半分 */
+  
   transform-origin: 50% 100% 0;
 }
 
@@ -69,26 +73,28 @@
 
 /* 背面パネル */
 .inner {
+  margin-top: -155px; /* 310px の半分 */
+  margin-left: -120px; /* 240px の半分 */
+  
   width: 240px;
   height: 310px;
   background: url("../image/top_b.png") center / contain no-repeat;
   filter: brightness(0.45);
 }
 
-/* 前パネル配置：translate(-50%, -50%) に統一 */
-/* これで画像の中心が画面中央に吸い寄せられます */
-.outer:nth-child(1) { transform: translate(-50%, -50%) rotateY(0deg) translateZ(160px); }
-.outer:nth-child(2) { transform: translate(-50%, -50%) rotateY(72deg) translateZ(160px); }
-.outer:nth-child(3) { transform: translate(-50%, -50%) rotateY(144deg) translateZ(160px); }
-.outer:nth-child(4) { transform: translate(-50%, -50%) rotateY(216deg) translateZ(160px); }
-.outer:nth-child(5) { transform: translate(-50%, -50%) rotateY(288deg) translateZ(160px); }
 
-/* 後パネル配置：同様に translate(-50%, -50%) */
-.inner:nth-child(6)  { transform: translate(-50%, -50%) rotateY(0deg) translateZ(160px) rotateY(180deg); }
-.inner:nth-child(7)  { transform: translate(-50%, -50%) rotateY(72deg) translateZ(160px) rotateY(180deg); }
-.inner:nth-child(8)  { transform: translate(-50%, -50%) rotateY(144deg) translateZ(160px) rotateY(180deg); }
-.inner:nth-child(9)  { transform: translate(-50%, -50%) rotateY(216deg) translateZ(160px) rotateY(180deg); }
-.inner:nth-child(10) { transform: translate(-50%, -50%) rotateY(288deg) translateZ(160px) rotateY(180deg); }
+.outer:nth-child(1) { transform: rotateY(0deg) translateZ(160px); }
+.outer:nth-child(2) { transform: rotateY(72deg) translateZ(160px); }
+.outer:nth-child(3) { transform: rotateY(144deg) translateZ(160px); }
+.outer:nth-child(4) { transform: rotateY(216deg) translateZ(160px); }
+.outer:nth-child(5) { transform: rotateY(288deg) translateZ(160px); }
+
+.inner:nth-child(6)  { transform: rotateY(0deg) translateZ(160px) rotateY(180deg); }
+.inner:nth-child(7)  { transform: rotateY(72deg) translateZ(160px) rotateY(180deg); }
+.inner:nth-child(8)  { transform: rotateY(144deg) translateZ(160px) rotateY(180deg); }
+.inner:nth-child(9)  { transform: rotateY(216deg) translateZ(160px) rotateY(180deg); }
+.inner:nth-child(10) { transform: rotateY(288deg) translateZ(160px) rotateY(180deg); }
+
 /* ===================== UI & Effects ===================== */
 .glitch-overlay {
   position: fixed;
