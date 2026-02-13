@@ -19,7 +19,7 @@ initLoader(loader, () => {
   state.showingText = false;
 
   // 1. ローディング画面をフェードアウトさせる（ここを追加！）
-  fadeInStart(2000); 
+  fadeInStart(3400);
 
   // 2. chapterコンテナを出現させる準備
   chapter?.classList.add("active");
