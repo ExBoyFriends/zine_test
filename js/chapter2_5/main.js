@@ -8,6 +8,7 @@ import { showPage, getPages, showText, hideText } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
 import { initAutoPoemSlide } from "../utils/autoPoemSlide.js";
 import { createTransitionManager } from "../utils/transitionManager.js";
+import { fadeInStart } from "../utils/fade.js"; // インポート確認
 
 const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
@@ -17,17 +18,25 @@ initLoader(loader, () => {
   state.index = 0;
   state.showingText = false;
 
-  // chapterコンテナ自体を出現させる
-  chapter?.classList.add("active", "visible");
+  // 1. ローディング画面をフェードアウトさせる（ここを追加！）
+  fadeInStart(2000); 
+
+  // 2. chapterコンテナを出現させる準備
+  chapter?.classList.add("active");
 
   startChapter({
     chapter,
     dots,
     onStart() {
+      // 3. コンテンツをふわっと表示
+      requestAnimationFrame(() => {
+        chapter?.classList.add("visible");
+        dots?.classList.add("visible");
+      });
+
       const pages = getPages();
       const transition = createTransitionManager({ nextUrl: "chapter3.html" });
 
-      // showPage 内で .active を操作するように view.js を組んでいる前提
       showPage(state.index);
 
       /* ==========================
@@ -86,7 +95,16 @@ initLoader(loader, () => {
   });
 });
 
+// bfcache (戻るボタン) 対策
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
+
+  // 戻ってきたときにローディング幕が残っていたら強制消去
+  if (loader) {
+    loader.style.display = "none";
+    loader.style.opacity = "0";
+  }
+
+  // 状態を復元
   showPage(state.index);
 });
