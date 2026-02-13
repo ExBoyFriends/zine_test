@@ -8,7 +8,6 @@ import { showPage, getPages, showText, hideText } from "./view.js";
 import { initTapInteraction } from "./interaction.js";
 import { initAutoPoemSlide } from "../utils/autoPoemSlide.js";
 import { createTransitionManager } from "../utils/transitionManager.js";
-import { fadeInStart } from "../utils/fade.js"; // インポート確認
 
 const loader  = document.getElementById("loader");
 const chapter = document.querySelector(".chapter");
