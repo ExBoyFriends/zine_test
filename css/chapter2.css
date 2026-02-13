@@ -15,10 +15,9 @@
   height: 100%;
   transform-style: preserve-3d;
   transform: rotateX(-12deg) rotateY(0deg);
-  opacity: 1;
   pointer-events: auto;
   will-change: transform, opacity;
-  transition: opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s ease;
 }
 
 /* ===================== Cylinder ===================== */
@@ -37,7 +36,6 @@
   transform-origin: 50% 100% 0;
   transform-style: preserve-3d;
   will-change: transform;
-  opacity: 1;
 }
 
 .cylinder-ready {
@@ -52,12 +50,8 @@
   transform-style: preserve-3d;
   backface-visibility: hidden;
   will-change: transform;
-
-  /* 修正：上端ではなく、親要素の50%の位置（中央）を基準にする */
   top: 50%;
   left: 50%;
-
-  /* 回転の「軸」は足元に固定したままにする */
   transform-origin: 50% 100% 0;
 }
 
