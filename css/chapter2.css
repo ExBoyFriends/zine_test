@@ -67,8 +67,8 @@
   backface-visibility: hidden;
   will-change: transform;
 
-  top: 50;
-  bottom: 50; 
+  top: 0;
+  bottom: 0; 
   transform-origin: 50% 100% 0;
 }
 
