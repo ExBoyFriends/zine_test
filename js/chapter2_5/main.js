@@ -28,11 +28,14 @@ initLoader(loader, () => {
     chapter,
     dots,
     onStart() {
-      // 3. コンテンツをふわっと表示
-      requestAnimationFrame(() => {
-        chapter?.classList.add("visible");
-        dots?.classList.add("visible");
-      });
+      // 3. 少し遅らせてから中身を可視化
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          chapter?.classList.add("visible");
+          dots?.classList.add("visible");
+        });
+        showPage(state.index);
+      }, 500);
 
       const pages = getPages();
       const transition = createTransitionManager({ nextUrl: "chapter3.html" });
