@@ -57,10 +57,17 @@ initLoader(loader, () => {
   });
 });
 
-// bfcache 復帰対応
 window.addEventListener("pageshow", e => {
   if (!e.persisted) return;
+  
+  // 1. 真っ黒な幕(loader)を強制的に非表示にする
+  const loader = document.getElementById("loader");
+  if (loader) {
+    loader.style.display = "none";
+    loader.style.opacity = "0";
+  }
+
   state.index = state.index ?? 0;
-  // 戻ってきたときも active/visible を確実にする
   chapter?.classList.add("active", "visible");
+  dots?.classList.add("visible");
 });
