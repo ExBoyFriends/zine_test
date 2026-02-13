@@ -6,7 +6,6 @@ import { initLoader } from "../utils/loader.js";
 import { startChapter } from "../utils/chapterStart.js";
 import { initCarousel } from "./carousel.js";
 import { initLastPage } from "./lastPage.js";
-import { fadeInStart } from "../utils/fade.js";
 import { createTransitionManager } from "../utils/transitionManager.js";
 import { initAutoSlide } from "../utils/autoSlide.js";
 
@@ -29,13 +28,9 @@ initLoader(loader, () => {
     chapter,
     dots,
     onStart() {
-      // loader.jsの演出が終わるタイミングを見計らって中身を出すだけ
-      requestAnimationFrame(() => {
+    
         chapter?.classList.add("visible");
         dots?.classList.add("visible");
-      });
-
-      // ...以下、初期化処理
 
       const transition = createTransitionManager({ nextUrl: "chapter2.html" });
       const carousel = initCarousel(wrapper, pages);
