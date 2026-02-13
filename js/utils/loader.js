@@ -13,7 +13,6 @@ const finish = () => {
   if (completed) return;
   completed = true;
 
-  console.log("Loader: Starting finish sequence..."); // デバッグ
   loader.classList.add("swallow-darkness");
 
   setTimeout(() => {
@@ -56,7 +55,6 @@ const finish = () => {
 
 
   const start = () => {
-    console.log("Loader: Fast-looming start..."); // これがコンソールに出るか確認
     if (!document.body.contains(loader)) return;
     setTimeout(finish, 5200); 
   };
